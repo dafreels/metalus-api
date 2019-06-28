@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "applications.json",
+    "$ref": "#/definitions/applications",
+    "definitions": {
+        "applications": {
+            "type": "object",
+            "required": [
+                "id",
+                "name",
+                "executions"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sparkConf": {
+                    "type": "object",
+                    "properties": {
+                        "kryoClasses": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "setOptions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "stepPackages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "globals": {
+                    "type": "object"
+                },
+                "executions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "pipelines"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "parents": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "pipelines": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "$ref": "pipelines.json#/definitions/pipelines"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

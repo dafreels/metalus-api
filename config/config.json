@@ -1,0 +1,69 @@
+{
+  "storageType": "file",
+  "middleware": {
+    "json": {
+      "enabled": true,
+      "priority": 30,
+      "route": "/api*",
+      "module": {
+        "name": "body-parser",
+        "method": "json",
+        "arguments": [
+          {
+            "limit": "2mb"
+          }
+        ]
+      }
+    },
+    "static-schema": {
+      "enabled": true,
+      "priority": 11,
+      "route": "/schemas",
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./schemas",
+          {
+            "extensions": [
+              "json"
+            ]
+          }
+        ]
+      }
+    },
+    "static": {
+      "enabled": true,
+      "priority": 10,
+      "route": "/",
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./dist/metl"
+        ]
+      }
+    },
+    "router": {
+      "module": {
+        "arguments": [
+          {
+            "directory": "path:./controllers"
+          }
+        ]
+      }
+    },
+    "appsec": {
+      "priority": 110,
+      "module": {
+        "name": "lusca",
+        "arguments": [
+          {
+            "csrf": false,
+            "xframe": "SAMEORIGIN",
+            "p3p": false,
+            "csp": false
+          }
+        ]
+      }
+    }
+  }
+}

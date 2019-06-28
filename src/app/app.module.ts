@@ -2,15 +2,26 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { StepsService} from "./common/steps.service";
+import { LandingComponent } from './landing/landing.component';
+import { MatCardModule, MatGridListModule, MatToolbarModule } from "@angular/material";
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    MatCardModule,
+    MatGridListModule,
+    MatToolbarModule,
+    HttpClientModule
   ],
-  providers: [],
+  declarations: [
+    AppComponent,
+    LandingComponent
+  ],
+  providers: [
+    StepsService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

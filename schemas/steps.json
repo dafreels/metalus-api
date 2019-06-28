@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "steps.json",
+    "$ref": "#/definitions/steps",
+    "definitions": {
+        "steps": {
+            "required": [
+                "id",
+                "displayName",
+                "type"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "unique": true
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Pipeline",
+                        "branch",
+                        "fork",
+                        "join"
+                    ]
+                },
+                "params": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "name",
+                            "type",
+                            "required"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "integer",
+                                    "list",
+                                    "boolean",
+                                    "script",
+                                    "string",
+                                    "text",
+                                    "result",
+                                    "object"
+                                ]
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "required": {
+                                "type": "boolean"
+                            },
+                            "defaultValue": {
+                                "type": "string"
+                            },
+                            "language": {
+                                "type": "string"
+                            },
+                            "className": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "engineMeta": {
+                    "type": "object",
+                    "properties": {
+                        "spark": {
+                            "type": "string",
+                            "description": "Contains the step object and function to be called at runtime."
+                        },
+                        "pkg": {
+                            "type": "string",
+                            "description": "Package where this step is located"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
