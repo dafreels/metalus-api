@@ -18,3 +18,7 @@ export interface IParam {
   language: string,
   className: string
 }
+
+export interface IStepsResponse {
+  steps: IStep[]
+}

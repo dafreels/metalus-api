@@ -2,10 +2,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { StepsService} from "./common/steps.service";
+import { PipelinesService } from "./pipelines/pipelines.service";
+import { StepsService} from "./steps/steps.service";
 import { LandingComponent } from './landing/landing.component';
 import { MatCardModule, MatGridListModule, MatToolbarModule } from "@angular/material";
 import { HttpClientModule } from '@angular/common/http';
+import {ApplicationssService} from "./applications/applications.service";
+import {PackageObjectsService} from "./packageObjects/package-objects.service";
 
 @NgModule({
   imports: [
@@ -20,6 +23,9 @@ import { HttpClientModule } from '@angular/common/http';
     LandingComponent
   ],
   providers: [
+    ApplicationssService,
+    PackageObjectsService,
+    PipelinesService,
     StepsService
   ],
   bootstrap: [AppComponent]
