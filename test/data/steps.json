@@ -1,0 +1,48 @@
+[
+  {
+    "id": "87db259d-606e-46eb-b723-82923349640f",
+    "displayName": "Load DataFrame from HDFS path",
+    "description": "This step will read a dataFrame from the given HDFS path",
+    "type": "Pipeline",
+    "category": "InputOutput",
+    "params": [
+      {
+        "type": "text",
+        "name": "path",
+        "required": false
+      },
+      {
+        "type": "object",
+        "name": "options",
+        "required": false,
+        "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+      }
+    ],
+    "engineMeta": {
+      "spark": "HDFSSteps.readFromPath",
+      "pkg": "com.acxiom.pipeline.steps"
+    }
+  },
+  {
+    "id": "bad_step_data",
+    "description": "This step will read a dataFrame from the given HDFS path",
+    "category": "InputOutput",
+    "params": [
+      {
+        "type": "text",
+        "name": "path",
+        "required": false
+      },
+      {
+        "type": "object",
+        "name": "options",
+        "required": false,
+        "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+      }
+    ],
+    "engineMeta": {
+      "spark": "HDFSSteps.readFromPath",
+      "pkg": "com.acxiom.pipeline.steps"
+    }
+  }
+]

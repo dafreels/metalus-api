@@ -24,6 +24,7 @@
                     "type": "string",
                     "enum": [
                         "Pipeline",
+                        "pipeline",
                         "branch",
                         "fork",
                         "join"

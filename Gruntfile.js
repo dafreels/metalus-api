@@ -6,6 +6,6 @@ module.exports = (grunt) => {
 
   grunt.registerTask('test:functional', [
     'clean:coverage',
-    'mocha_nyc:functional'
+    'shell:api_tests'
   ]);
 };
