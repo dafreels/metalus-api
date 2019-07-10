@@ -49,7 +49,7 @@ describe('Steps API File Tests', () => {
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('step');
     const step = stepResponse.step;
-    verifyStep(step);
+    verifyStep(step, body);
   });
 
   it('Should get the inserted step', async () => {
@@ -61,7 +61,7 @@ describe('Steps API File Tests', () => {
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('step');
     const step = stepResponse.step;
-    verifyStep(step);
+    verifyStep(step, body);
   });
 
   it('Should get all steps', async () => {
@@ -73,7 +73,7 @@ describe('Steps API File Tests', () => {
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('steps').lengthOf(1);
     const step = stepResponse.steps[0];
-    verifyStep(step);
+    verifyStep(step, body);
   });
 
   it('Should update a step', async () => {
@@ -87,7 +87,7 @@ describe('Steps API File Tests', () => {
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('step');
     const step = stepResponse.step;
-    verifyStep(step);
+    verifyStep(step, body);
   });
 
   it('Should delete a step', async () => {
@@ -105,7 +105,7 @@ describe('Steps API File Tests', () => {
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('step');
     const step = stepResponse.step;
-    verifyStep(step);
+    verifyStep(step, body);
   });
 
   it('Should update a single step using post', async () => {
@@ -118,17 +118,38 @@ describe('Steps API File Tests', () => {
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('step');
     const step = stepResponse.step;
-    verifyStep(step);
+    verifyStep(step, body);
   });
 
-  function verifyStep(step) {
-    expect(step).to.have.property('id').equal(body.id);
-    expect(step).to.have.property('displayName').equal(body.displayName);
-    expect(step).to.have.property('type').equal(body.type);
+  it('Should insert multiple steps', async () => {
+    const stepIds = ['8daea683-ecde-44ce-988e-41630d251cb8', '0a296858-e8b7-43dd-9f55-88d00a7cd8fa', 'e4dad367-a506-5afd-86c0-82c2cf5cd15c'];
+    const data = stepData.filter(step => stepIds.indexOf(step.id) !== -1);
+    let response = await request(mock)
+      .post('/api/v1/steps/')
+      .send(data)
+      .expect('Content-Type', /json/)
+      .expect(201);
+    let stepResponse = JSON.parse(response.text);
+    expect(stepResponse).to.exist;
+    expect(stepResponse).to.have.property('steps').lengthOf(3);
+    stepResponse.steps.forEach(step => verifyStep(step, data.find(s => s.id === step.id)));
+    response = await request(mock)
+      .get('/api/v1/steps/')
+      .expect('Content-Type', /json/)
+      .expect(200);
+    stepResponse = JSON.parse(response.text);
+    expect(stepResponse).to.exist;
+    expect(stepResponse).to.have.property('steps').lengthOf(4);
+  });
+
+  function verifyStep(step, original) {
+    expect(step).to.have.property('id').equal(original.id);
+    expect(step).to.have.property('displayName').equal(original.displayName);
+    expect(step).to.have.property('type').equal(original.type);
     expect(step).to.have.property('creationDate');
     expect(step).to.have.property('modifiedDate');
-    expect(step).to.have.nested.property('engineMeta.spark').equal(body.engineMeta.spark);
-    expect(step).to.have.property('params').lengthOf(2);
-    expect(step.params).to.have.deep.members(body.params);
+    expect(step).to.have.nested.property('engineMeta.spark').equal(original.engineMeta.spark);
+    expect(step).to.have.property('params').lengthOf(original.params.length);
+    expect(step.params).to.have.deep.members(original.params);
   }
 });

@@ -15,9 +15,9 @@ class PackageObjectsModel extends BaseModel {
                     const objectValidator = this.getValidator(JSON.parse(packageObject.schema));
                     const validation = objectValidator(jsonObj);
                     if(!validation) {
-                        reject(objectValidator.errors);
+                        resolve({ isValid: false, errors: objectValidator.errors });
                     } else {
-                        resolve(true);
+                        resolve({ isValid: true });
                     }
                 })
                 .catch(err => {

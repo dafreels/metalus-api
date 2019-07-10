@@ -44,5 +44,70 @@
       "spark": "HDFSSteps.readFromPath",
       "pkg": "com.acxiom.pipeline.steps"
     }
+  },
+  {
+    "id": "8daea683-ecde-44ce-988e-41630d251cb8",
+    "displayName": "Load DataFrame from HDFS paths",
+    "description": "This step will read a dataFrame from the given HDFS paths",
+    "type": "Pipeline",
+    "category": "InputOutput",
+    "params": [
+      {
+        "type": "text",
+        "name": "paths",
+        "required": false
+      },
+      {
+        "type": "object",
+        "name": "options",
+        "required": false,
+        "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+      }
+    ],
+    "engineMeta": {
+      "spark": "HDFSSteps.readFromPaths",
+      "pkg": "com.acxiom.pipeline.steps"
+    }
+  },
+  {
+    "id": "0a296858-e8b7-43dd-9f55-88d00a7cd8fa",
+    "displayName": "Write DataFrame to HDFS",
+    "description": "This step will write a dataFrame in a given format to HDFS",
+    "type": "Pipeline",
+    "category": "InputOutput",
+    "params": [
+      {
+        "type": "text",
+        "name": "dataFrame",
+        "required": false
+      },
+      {
+        "type": "text",
+        "name": "path",
+        "required": false
+      },
+      {
+        "type": "object",
+        "name": "options",
+        "required": false,
+        "className": "com.acxiom.pipeline.steps.DataFrameWriterOptions"
+      }
+    ],
+    "engineMeta": {
+      "spark": "HDFSSteps.writeToPath",
+      "pkg": "com.acxiom.pipeline.steps"
+    }
+  },
+  {
+    "id": "e4dad367-a506-5afd-86c0-82c2cf5cd15c",
+    "displayName": "Create HDFS FileManager",
+    "description": "Simple function to generate the HDFSFileManager for the local HDFS file system",
+    "type": "Pipeline",
+    "category": "InputOutput",
+    "params": [],
+    "engineMeta": {
+      "spark": "HDFSSteps.createFileManager",
+      "pkg": "com.acxiom.pipeline.steps"
+    }
   }
 ]

@@ -1,32 +1,55 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "pipelines.json",
-    "$ref": "#/definitions/pipelines",
-    "definitions": {
-        "pipelines": {
-            "type": "object",
-            "required": [
-                "id",
-                "name",
-                "steps"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "steps": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "steps.json#/definitions/steps"
-                    }
-                }
-            }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "pipelines.json",
+  "$ref": "#/definitions/pipelines",
+  "definitions": {
+    "pipelines": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "pipelines.json#/definitions/pipeline-steps"
+          }
         }
+      }
+    },
+    "pipeline-steps": {
+      "allOf": [
+        {
+          "$ref": "steps.json#/definitions/steps"
+        },
+        {
+          "required": [
+            "stepId"
+          ],
+          "properties": {
+            "stepId": {
+              "type": "string"
+            },
+            "nextStepId": {
+              "type": "string"
+            },
+            "executeIfEmpty": {
+              "type": "string"
+            }
+          }
+        }
+      ]
     }
+  }
 }

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "com.acxiom.pipeline.steps.DataFrameReaderOptions",
+    "schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Data Frame Reader Options\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"format\":{\"type\":\"string\"},\"options\":{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\"}},\"schema\":{\"$ref\":\"#/definitions/Schema\"}},\"definitions\":{\"Schema\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"attributes\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/Attribute\"}}}},\"Attribute\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"name\":{\"type\":\"string\"},\"dataType\":{\"type\":\"string\"}}}}}"
+  },
+  {
+    "id": "com.acxiom.pipeline.steps.DataFrameWriterOptions",
+    "schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Data Frame Writer Options\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"format\":{\"type\":\"string\"},\"saveMode\":{\"type\":\"string\"},\"options\":{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\"}},\"bucketingOptions\":{\"$ref\":\"#/definitions/BucketingOptions\"},\"partitionBy\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"sortBy\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"definitions\":{\"BucketingOptions\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"numBuckets\":{\"type\":\"integer\"},\"columns\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"numBuckets\"]}}}"
+  },
+  {
+    "id": "com.acxiom.pipeline.steps.Transformations",
+    "schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Transformations\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"columnDetails\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/ColumnDetails\"}},\"filter\":{\"type\":\"string\"},\"standardizeColumnNames\":{}},\"definitions\":{\"ColumnDetails\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"outputField\":{\"type\":\"string\"},\"inputAliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"expression\":{\"type\":\"string\"}}}}}"
+  },
+  {
+    "id": "com.acxiom.pipeline.steps.Schema",
+    "schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Schema\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"attributes\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/Attribute\"}}},\"definitions\":{\"Attribute\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"name\":{\"type\":\"string\"},\"dataType\":{\"type\":\"string\"}}}}}"
+  },
+  {
+    "id": "com.acxiom.pipeline.steps.JDBCDataFrameReaderOptions",
+    "schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"JDBC Data Frame Reader Options\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"url\":{\"type\":\"string\"},\"table\":{\"type\":\"string\"},\"predicates\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"readerOptions\":{\"$ref\":\"#/definitions/DataFrameReaderOptions\"}},\"definitions\":{\"DataFrameReaderOptions\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"format\":{\"type\":\"string\"},\"options\":{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\"}},\"schema\":{\"$ref\":\"#/definitions/Schema\"}}},\"Schema\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"attributes\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/definitions/Attribute\"}}}},\"Attribute\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"name\":{\"type\":\"string\"},\"dataType\":{\"type\":\"string\"}}}}}"
+  },
+  {
+    "id": "com.acxiom.pipeline.steps.JDBCDataFrameWriterOptions",
+    "schema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"JDBC Data Frame Writer Options\",\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"url\":{\"type\":\"string\"},\"table\":{\"type\":\"string\"},\"writerOptions\":{\"$ref\":\"#/definitions/DataFrameWriterOptions\"}},\"definitions\":{\"DataFrameWriterOptions\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"format\":{\"type\":\"string\"},\"saveMode\":{\"type\":\"string\"},\"options\":{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\"}},\"bucketingOptions\":{\"$ref\":\"#/definitions/BucketingOptions\"},\"partitionBy\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"sortBy\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}}},\"BucketingOptions\":{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"numBuckets\":{\"type\":\"integer\"},\"columns\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"numBuckets\"]}}}"
+  }
+]
