@@ -55,7 +55,7 @@ describe('Steps Validation File Tests', () => {
       .post('/api/v1/steps/')
       .send(badBody)
       .expect('Content-Type', /json/)
-      .expect(500);
+      .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('errors').lengthOf(2);
@@ -73,7 +73,7 @@ describe('Steps Validation File Tests', () => {
       .post('/api/v1/steps/')
       .send(badBody)
       .expect('Content-Type', /json/)
-      .expect(500);
+      .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('errors').lengthOf(1);

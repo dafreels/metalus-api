@@ -1,86 +1,168 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "applications.json",
-    "$ref": "#/definitions/applications",
-    "definitions": {
-        "applications": {
-            "type": "object",
-            "required": [
-                "id",
-                "name",
-                "executions"
-            ],
-            "properties": {
-                "id": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "applications.json",
+  "$ref": "#/definitions/applications",
+  "definitions": {
+    "applications": {
+      "allOf": [
+        {
+          "$ref": "applications.json#/definitions/BaseApplicationConfig"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "executions"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "sparkConf": {
+              "type": "object",
+              "properties": {
+                "kryoClasses": {
+                  "type": "array",
+                  "items": {
                     "type": "string"
+                  }
                 },
-                "name": {
-                    "type": "string"
-                },
-                "sparkConf": {
+                "setOptions": {
+                  "type": "array",
+                  "items": {
                     "type": "object",
+                    "required": [
+                      "name",
+                      "value"
+                    ],
                     "properties": {
-                        "kryoClasses": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "setOptions": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "required": [
-                                    "name",
-                                    "value"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "stepPackages": {
-                    "type": "array",
-                    "items": {
+                      "name": {
                         "type": "string"
+                      }
                     }
-                },
-                "globals": {
-                    "type": "object"
-                },
-                "executions": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "required": [
-                            "id",
-                            "pipelines"
-                        ],
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "parents": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "pipelines": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "$ref": "pipelines.json#/definitions/pipelines"
-                                }
-                            }
-                        }
-                    }
+                  }
                 }
+              }
+            },
+            "stepPackages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "globals": {
+              "type": "object"
+            },
+            "applicationProperties": {
+              "type": "object"
+            },
+            "executions": {
+              "type": "array",
+              "items": {
+                "$ref": "applications.json#/definitions/Execution"
+              }
+            },
+            "requiredParameters": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
+          }
         }
+      ]
+    },
+    "ClassInfo": {
+      "type": "object",
+      "properties": {
+        "className": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    },
+    "Execution": {
+      "allOf": [
+        {
+          "$ref": "applications.json#/definitions/BaseApplicationConfig"
+        },
+        {
+          "required": [
+            "id"
+          ],
+          "anyOf": [
+            {
+              "required": [
+                "pipelines"
+              ]
+            },
+            {
+              "required": [
+                "pipelineIds"
+              ]
+            }
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "pipelineIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "initialPipelineId": {
+              "type": "string"
+            },
+            "mergeGlobals": {
+              "type": "boolean"
+            },
+            "globals": {
+              "type": "object"
+            },
+            "parents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "BaseApplicationConfig": {
+      "type": "object",
+      "properties": {
+        "pipelines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "pipelines.json#/definitions/pipelines"
+          }
+        },
+        "pipelineListener": {
+          "$ref": "applications.json#/definitions/ClassInfo"
+        },
+        "securityManager": {
+          "$ref": "applications.json#/definitions/ClassInfo"
+        },
+        "stepMapper": {
+          "$ref": "applications.json#/definitions/ClassInfo"
+        },
+        "pipelineParameters": {
+          "type": "array",
+          "items": {
+            "$ref": "pipelines.json#/definitions/PipelineParameter"
+          }
+        }
+      }
     }
+  }
 }

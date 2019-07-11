@@ -72,7 +72,7 @@ describe('Pipelines API File Tests', () => {
       .post('/api/v1/pipelines/')
       .send(badPipeline)
       .expect('Content-Type', /json/)
-      .expect(500);
+      .expect(422);
     const resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('errors').lengthOf(3);

@@ -55,7 +55,7 @@ describe('Package Objects API File Tests', () => {
       .post('/api/v1/package-objects/')
       .send({ name: '1'})
       .expect('Content-Type', /json/)
-      .expect(500);
+      .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('errors').lengthOf(1);

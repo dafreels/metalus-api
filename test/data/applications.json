@@ -1,0 +1,1473 @@
+[
+  {
+    "_id": "5cab8ed9091ac2c19329dcc1",
+    "name": "test",
+    "globals": {},
+    "executions": [
+      {
+        "id": "test a",
+        "pipelineIds": [
+          "b0318ed0-57d1-11e9-85d2-29bb75bc15e9"
+        ]
+      },
+      {
+        "id": "test b",
+        "pipelines": [
+          {
+            "_id": "5ca7ab6eab4f683c6849be6f",
+            "name": "test2",
+            "steps": [
+              {
+                "id": "test load",
+                "displayName": "Load DataFrame from HDFS path",
+                "description": "This step will read a dataFrame from the given HDFS path",
+                "type": "Pipeline",
+                "category": "InputOutput",
+                "params": [
+                  {
+                    "type": "text",
+                    "name": "path",
+                    "required": false,
+                    "value": "!inPath"
+                  },
+                  {
+                    "type": "object",
+                    "name": "options",
+                    "required": false,
+                    "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+                  }
+                ],
+                "engineMeta": {
+                  "spark": "HDFSSteps.readFromPath"
+                },
+                "stepId": "87db259d-606e-46eb-b723-82923349640f"
+              }
+            ],
+            "id": "6f399d30-57d8-11e9-85d2-29bb75bc15e9"
+          }
+        ],
+        "parents": [
+          "test a"
+        ]
+      }
+    ],
+    "pipelines": [
+      {
+        "_id": "5ca7a01cab4f68476b49be6e",
+        "name": "test",
+        "steps": [
+          {
+            "id": "load test",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "path",
+                "required": false,
+                "value": "!inFile"
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f"
+          }
+        ],
+        "id": "b0318ed0-57d1-11e9-85d2-29bb75bc15e9"
+      },
+      {
+        "_id": "5ca7ab6eab4f683c6849be6f",
+        "name": "test2",
+        "steps": [
+          {
+            "id": "test load",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "path",
+                "required": false,
+                "value": "!inPath"
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f"
+          }
+        ],
+        "id": "6f399d30-57d8-11e9-85d2-29bb75bc15e9"
+      }
+    ],
+    "id": "c03f6590-5a29-11e9-aa07-a58054497ebb"
+  },
+  {
+    "_id": "5cabb5fbb618a23f5c323cec",
+    "name": "test2",
+    "globals": {},
+    "executions": [
+      {
+        "id": "test a",
+        "pipelineIds": [
+          "b0318ed0-57d1-11e9-85d2-29bb75bc15e9"
+        ],
+        "pipelines": [],
+        "globals": {}
+      },
+      {
+        "id": "test b",
+        "pipelineIds": [
+          "6f399d30-57d8-11e9-85d2-29bb75bc15e9"
+        ],
+        "pipelines": [],
+        "parents": [
+          "test a"
+        ],
+        "globals": {}
+      },
+      {
+        "id": "test c",
+        "pipelineIds": [
+          "7fef3fb0-5d30-11e9-b761-a9a8d6eac9c4"
+        ],
+        "pipelines": [],
+        "parents": [
+          "test a"
+        ],
+        "globals": {}
+      }
+    ],
+    "pipelines": [
+      {
+        "_id": "5ca7a01cab4f68476b49be6e",
+        "name": "test",
+        "steps": [
+          {
+            "id": "load test",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "path",
+                "required": false,
+                "value": "!inFile"
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f"
+          }
+        ],
+        "id": "b0318ed0-57d1-11e9-85d2-29bb75bc15e9"
+      },
+      {
+        "_id": "5ca7ab6eab4f683c6849be6f",
+        "name": "test2",
+        "steps": [
+          {
+            "id": "test load",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "path",
+                "required": false,
+                "value": "!inPath"
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f"
+          }
+        ],
+        "id": "6f399d30-57d8-11e9-85d2-29bb75bc15e9"
+      },
+      {
+        "_id": "5cb0a2a9607415226feb6229",
+        "name": "Aggies",
+        "steps": [
+          {
+            "id": "Load",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "path",
+                "type": "text",
+                "value": "/landing/test.csv",
+                "required": false
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f",
+            "nextStepId": "Filter"
+          },
+          {
+            "id": "Filter",
+            "displayName": "Filter a DataFrame",
+            "description": "This step will filter a dataframe based on the where expression provided",
+            "type": "Pipeline",
+            "category": "Transforms",
+            "params": [
+              {
+                "type": "text",
+                "name": "dataFrame",
+                "required": false,
+                "value": "@Load"
+              },
+              {
+                "name": "expression",
+                "type": "text",
+                "value": "",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "TransformationSteps.applyFilter"
+            },
+            "stepId": "fa0fcabb-d000-4a5e-9144-692bca618ddb",
+            "nextStepId": "Write"
+          },
+          {
+            "id": "Write",
+            "displayName": "Write DataFrame to HDFS",
+            "description": "This step will write a dataFrame in a given format to HDFS",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "@Filter",
+                "required": false
+              },
+              {
+                "name": "path",
+                "type": "text",
+                "value": "/raw/my_parquet",
+                "required": false
+              },
+              {
+                "name": "options",
+                "type": "object",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameWriterOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.writeToPath"
+            },
+            "stepId": "0a296858-e8b7-43dd-9f55-88d00a7cd8fa"
+          }
+        ],
+        "id": "7fef3fb0-5d30-11e9-b761-a9a8d6eac9c4"
+      }
+    ],
+    "id": "1308aae0-5a41-11e9-b4e4-75b75d3f3fac"
+  },
+  {
+    "_id": "5ced8f787b60af34eb1ffd3e",
+    "name": "ebalog_download",
+    "globals": {},
+    "executions": [
+      {
+        "id": "parquet",
+        "pipelineIds": [
+          "0129ee10-8633-11e9-ac99-49159f6e60a9"
+        ],
+        "pipelines": [],
+        "globals": {}
+      }
+    ],
+    "pipelines": [
+      {
+        "_id": "5cf5703b8c5e443e54933eba",
+        "name": "ebalog_parquet",
+        "steps": [
+          {
+            "id": "SFTP_Manager",
+            "displayName": "Create SFTP FileManager",
+            "description": "Simple function to generate the SFTPFileManager for the remote SFTP file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "hostName",
+                "type": "text",
+                "value": "!sftp_host",
+                "required": false
+              },
+              {
+                "name": "username",
+                "type": "text",
+                "value": "!sftp_user",
+                "required": false
+              },
+              {
+                "name": "password",
+                "type": "text",
+                "value": "!sftp_pass",
+                "required": false
+              },
+              {
+                "name": "port",
+                "type": "integer",
+                "value": "!sftp_port",
+                "required": false
+              },
+              {
+                "name": "strictHostChecking",
+                "type": "boolean",
+                "value": "false",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "SFTPSteps.createFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "9d467cb0-8b3d-40a0-9ccd-9cf8c5b6cb38",
+            "nextStepId": "HDFS_Manager"
+          },
+          {
+            "id": "HDFS_Manager",
+            "displayName": "Create HDFS FileManager",
+            "description": "Simple function to generate the HDFSFileManager for the local HDFS file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [],
+            "engineMeta": {
+              "spark": "HDFSSteps.createFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "e4dad367-a506-5afd-86c0-82c2cf5cd15c",
+            "nextStepId": "Download"
+          },
+          {
+            "id": "Download",
+            "displayName": "Buffered file copy",
+            "description": "Copy the contents of the source path to the destination path using full buffer sizes. This function will call connect on both FileManagers.",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "srcFS",
+                "type": "text",
+                "value": "@SFTP_FileManager",
+                "required": false
+              },
+              {
+                "name": "srcPath",
+                "type": "text",
+                "value": "!sftp_input_path",
+                "required": false
+              },
+              {
+                "name": "destFS",
+                "type": "text",
+                "value": "@HDFS_FileManager",
+                "required": false
+              },
+              {
+                "name": "destPath",
+                "type": "text",
+                "value": "!landing_path",
+                "required": false
+              },
+              {
+                "type": "integer",
+                "name": "inputBufferSize",
+                "required": false,
+                "value": "!input_buffer_size"
+              },
+              {
+                "name": "outputBufferSize",
+                "type": "integer",
+                "value": "!output_buffer_size",
+                "required": false
+              },
+              {
+                "name": "copyBufferSize",
+                "type": "integer",
+                "value": "!read_buffer_size",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileManagerSteps.copy",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "f5a24db0-e91b-5c88-8e67-ab5cff09c883",
+            "nextStepId": "DisconnectSFTP"
+          },
+          {
+            "id": "DisconnectSFTP",
+            "displayName": "Disconnect a FileManager",
+            "description": "Disconnects a FileManager from the underlying file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "fileManager",
+                "type": "text",
+                "value": "@SFTP_FileManager",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileManagerSteps.disconnectFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "3d1e8519-690c-55f0-bd05-1e7b97fb6633",
+            "nextStepId": "LoadLandingFile"
+          },
+          {
+            "id": "LoadLandingFile",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "path",
+                "type": "text",
+                "value": "!landing_path",
+                "required": false
+              },
+              {
+                "name": "options",
+                "type": "object",
+                "value": {
+                  "format": "csv",
+                  "options": {
+                    "header": "true",
+                    "delimiter": "|"
+                  },
+                  "schema": {
+                    "attributes": []
+                  }
+                },
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f",
+            "executeIfEmpty": "",
+            "nextStepId": "SplitDataFrame"
+          },
+          {
+            "id": "SplitDataFrame",
+            "displayName": "Custom Step to Split Dataframe Based on Input Size",
+            "description": "This step re-splits dataframe based on file size to get close to 128M per split",
+            "type": "Pipeline",
+            "category": "EdsStuff",
+            "params": [
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "@LoadLandingFile",
+                "required": false
+              },
+              {
+                "name": "hdfsFM",
+                "type": "text",
+                "value": "@HDFSFileManager",
+                "required": false
+              },
+              {
+                "name": "path",
+                "type": "text",
+                "value": "!landing_path",
+                "required": false
+              },
+              {
+                "name": "splitMode",
+                "type": "text",
+                "value": "!split_mode",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "EdSteps.splitDataFrameOnFileSize",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "ea4ffd1e-0066-4bde-9c92-1e34db61b9b3",
+            "nextStepId": "WriteToParquet"
+          },
+          {
+            "id": "WriteToParquet",
+            "displayName": "Custom Write a DataFrame to Parquet DataStore with Metrics",
+            "description": "This step will write a dataFrame to a Parquet data store and return run time metrics",
+            "type": "Pipeline",
+            "category": "EdsStuff",
+            "params": [
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "@SplitDataFrame",
+                "required": false
+              },
+              {
+                "name": "hdfsFileManager",
+                "type": "text",
+                "value": "@HDFSFileManager",
+                "required": false
+              },
+              {
+                "name": "path",
+                "type": "text",
+                "value": "!parquet_path",
+                "required": false
+              },
+              {
+                "name": "splitMode",
+                "type": "text",
+                "value": "!split_mode",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "EdSteps.writeToParquet",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "6fefd9f0-4c20-47e7-a655-ad203683d9c3",
+            "nextStepId": "SaveResults"
+          },
+          {
+            "id": "SaveResults",
+            "displayName": "Custom Step to Compile Parquet Research Results",
+            "description": "This step compiles results from a copy step to be enhanced and written to disk",
+            "type": "Pipeline",
+            "category": "EdsStuff",
+            "params": [
+              {
+                "name": "results",
+                "type": "object",
+                "value": "@WriteToParquet",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.CopyResults"
+              },
+              {
+                "type": "object",
+                "name": "dlResults",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.CopyResults"
+              }
+            ],
+            "engineMeta": {
+              "spark": "EdSteps.writeParquetResultsToFile",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "fa4803a1-e705-4cc8-988e-ba981f4335cd",
+            "executeIfEmpty": ""
+          }
+        ],
+        "id": "0129ee10-8633-11e9-ac99-49159f6e60a9"
+      }
+    ],
+    "id": "ec273420-8180-11e9-8b4f-9b89e27b8b39",
+    "sparkConf": {
+      "kryoClasses": [
+        "org.apache.hadoop.io.LongWritable",
+        "org.apache.http.client.entity.UrlEncodedFormEntity"
+      ],
+      "setOptions": [
+        {
+          "name": "spark.hadoop.io.compression.codecs",
+          "value": "org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.DeflateCodec,org.apache.hadoop.io.compress.Lz4Codec,org.apache.hadoop.io.compress.SnappyCodec,org.apache.hadoop.io.compress.GzipCodec"
+        },
+        {
+          "name": "applicationConfigurationLoader",
+          "value": "com.acxiom.pipeline.fs.HDFSFileManager"
+        }
+      ]
+    },
+    "stepPackages": [
+      "com.acxiom.pipeline.steps",
+      "com.acxiom.pipeline"
+    ],
+    "requiredParameters": [
+      "sftp_input_path",
+      "landing_path",
+      "read_buffer_size",
+      "input_buffer_size",
+      "output_buffer_size"
+    ]
+  },
+  {
+    "_id": "5cf875ab7b60afb8f41ffd83",
+    "name": "Original Inbound",
+    "globals": {},
+    "executions": [
+      {
+        "id": "Ingest to Raw",
+        "pipelineIds": [
+          "ff8428d0-879c-11e9-8b4f-9b89e27b8b39"
+        ],
+        "pipelines": [],
+        "globals": {}
+      }
+    ],
+    "pipelines": [
+      {
+        "_id": "5cf7cf8e7b60aff13a1ffd82",
+        "name": "Ingest to Raw Zone",
+        "steps": [
+          {
+            "id": "SetStatusForDownload",
+            "displayName": "Update Status of an Existing DataCollection",
+            "description": "This step will update the status of a data collection by calling the data collection patch endpoint",
+            "type": "Pipeline",
+            "category": "ApiInteraction",
+            "params": [
+              {
+                "name": "status",
+                "type": "text",
+                "value": "\"Processing\"",
+                "required": false
+              },
+              {
+                "name": "detail",
+                "type": "text",
+                "value": "\"Begin Download from External Site\"",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataCollectionSteps.registerActivity",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "7f797630-753f-586d-8836-9b500b00c49f",
+            "nextStepId": "DownloadFile"
+          },
+          {
+            "id": "DownloadFile",
+            "displayName": "Downloads a File",
+            "description": "This step downloads a file using the provided data asset and data collection objects",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "dataAsset",
+                "required": false,
+                "value": "!landing_asset"
+              },
+              {
+                "name": "dataCollection",
+                "type": "text",
+                "value": "!dataCollection",
+                "required": false
+              },
+              {
+                "name": "encryptOnWrite",
+                "type": "text",
+                "value": "$encryptOnWrite || false",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileSteps.downloadFile",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "8d8e99b0-b2da-5f19-8e3d-78eefe614392",
+            "nextStepId": "SetStatusDecrypting"
+          },
+          {
+            "id": "SetStatusDecrypting",
+            "displayName": "Update Status of an Existing DataCollection",
+            "description": "This step will update the status of a data collection by calling the data collection patch endpoint",
+            "type": "Pipeline",
+            "category": "ApiInteraction",
+            "params": [
+              {
+                "name": "status",
+                "type": "text",
+                "value": "\"Processing\"",
+                "required": false
+              },
+              {
+                "name": "detail",
+                "type": "text",
+                "value": "\"Encryptioning/Decrypting Landing Asset\"",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataCollectionSteps.registerActivity",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "7f797630-753f-586d-8836-9b500b00c49f",
+            "nextStepId": "HandleEncryptionOnLandingFile"
+          },
+          {
+            "id": "HandleEncryptionOnLandingFile",
+            "displayName": "Decrypts DataAsset",
+            "description": "This step gets decrypted DataAsset and persists in on file system with encryption if not already encrypted",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataAsset",
+                "type": "text",
+                "value": "!landing_asset",
+                "required": false
+              },
+              {
+                "type": "text",
+                "name": "feed",
+                "required": false,
+                "value": "!feed"
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileSteps.decryptDataAsset",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "4d828bd2-d8fe-5574-a374-202a28e8554d",
+            "nextStepId": "StatusLoadingFile"
+          },
+          {
+            "id": "StatusLoadingFile",
+            "displayName": "Update Status of an Existing DataCollection",
+            "description": "This step will update the status of a data collection by calling the data collection patch endpoint",
+            "type": "Pipeline",
+            "category": "ApiInteraction",
+            "params": [
+              {
+                "name": "status",
+                "type": "text",
+                "value": "\"Processing\"",
+                "required": false
+              },
+              {
+                "name": "detail",
+                "type": "text",
+                "value": "\"Loading Landing File to Raw Zone\"",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataCollectionSteps.registerActivity",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "7f797630-753f-586d-8836-9b500b00c49f",
+            "nextStepId": "CheckForDuplicateCollections"
+          },
+          {
+            "id": "CheckForDuplicateCollections",
+            "displayName": "Check for Potential Duplicate Collections",
+            "description": "This step determines if the current data collection is a possible duplicate of another",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "encryptedDataAsset",
+                "type": "text",
+                "value": "#HandleEncryptionOnLandingFile.encryptedDataAsset",
+                "required": false
+              },
+              {
+                "name": "unencryptedDataAsset",
+                "type": "text",
+                "value": "@HandleEncryptionOnLandingFile",
+                "required": false
+              },
+              {
+                "name": "feed",
+                "type": "text",
+                "value": "!feed",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileSteps.checkDuplicateFile",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "1db3ae12-9b30-5d42-a596-cae8df3302a9",
+            "nextStepId": "ValidateMimeType"
+          },
+          {
+            "id": "ValidateMimeType",
+            "displayName": "Validate Mime Type of a File DataAsset",
+            "description": "This step validates the mime type of a file stored in a data asset",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataAsset",
+                "type": "text",
+                "value": "@HandleEncryptionOnLandingFile",
+                "required": false
+              },
+              {
+                "name": "supportedMimeTypes",
+                "type": "text",
+                "value": "Seq(\"text\")",
+                "language": "scala",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileSteps.validateSupportedMimeType",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "7663c5ce-a904-4d4f-aca5-5660317ec3af",
+            "nextStepId": "GenerateParsingOptions"
+          },
+          {
+            "id": "GenerateParsingOptions",
+            "displayName": "Generate File Parsing Options for a DataAsset",
+            "description": "This step evaluates data for a data asset to determine the file parsing options",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataAsset",
+                "type": "text",
+                "value": "@HandleEncryptionOnLandingFile",
+                "required": false
+              },
+              {
+                "name": "recordDelimiter",
+                "type": "text",
+                "value": "!feed.input.file.recordDelimiter",
+                "required": false
+              },
+              {
+                "type": "text",
+                "name": "fieldDelimiter",
+                "required": false,
+                "value": "!feed.input.file.fieldDelimiter"
+              },
+              {
+                "name": "fieldEnclosing",
+                "type": "text",
+                "value": "!feed.input.file.fieldEnclosing",
+                "required": false
+              },
+              {
+                "name": "characterSet",
+                "type": "text",
+                "value": "!feed.input.file.characterSet",
+                "required": false
+              },
+              {
+                "name": "skipRecords",
+                "type": "text",
+                "value": "!feed.input.file.skipRecords",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileSteps.generateFileParsingOptions",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "5433f741-1f48-498f-a497-c1218866b7e3",
+            "nextStepId": "LoadLandingAsset"
+          },
+          {
+            "id": "LoadLandingAsset",
+            "displayName": "Loads a DataAsset to a DataFrame Using FileParsingOptions",
+            "description": "This step loads a data asset to a data frame using file parsing options provided",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataAsset",
+                "type": "text",
+                "value": "@HandleEncryptionOnLandingFile",
+                "required": false
+              },
+              {
+                "name": "parsingOptions",
+                "type": "text",
+                "value": "@GenerateParsingOptions",
+                "required": false
+              },
+              {
+                "name": "schema",
+                "type": "text",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileSteps.loadInboundDataAsset",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "d7296207-2367-58b7-9b3e-c8ef373ab91f",
+            "executeIfEmpty": "",
+            "nextStepId": "AddDataCollectionId"
+          },
+          {
+            "id": "AddDataCollectionId",
+            "displayName": "Add a Column with a Static Value to All Rows in a DataFrame",
+            "description": "This step will add a column with a static value to all rows in the provided data frame",
+            "type": "Pipeline",
+            "category": "Utilities",
+            "params": [
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "@LoadLandingAsset",
+                "required": false
+              },
+              {
+                "name": "columnName",
+                "type": "text",
+                "value": "data_collection_id",
+                "required": false
+              },
+              {
+                "name": "columnValue",
+                "type": "text",
+                "value": "!dataCollectionId",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataSteps.addStaticColumn",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "37e10488-02c1-5c85-b47a-efecf681fdd4",
+            "nextStepId": "AddUniqueRecordId"
+          },
+          {
+            "id": "AddUniqueRecordId",
+            "displayName": "Adds a Unique Identifier to a DataFrame",
+            "description": "This step will add a new unique identifier to an existing data frame",
+            "type": "Pipeline",
+            "category": "Utilities",
+            "params": [
+              {
+                "name": "idColumnName",
+                "type": "text",
+                "value": "record_id",
+                "required": false
+              },
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "!AddDataCollectionId",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataSteps.prependUniqueId",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "9f7d84b0-ebab-57da-8b39-be4c47028242",
+            "nextStepId": "GetOrCreateRawDataAsset"
+          },
+          {
+            "id": "GetOrCreateRawDataAsset",
+            "displayName": "Get or Create a DataAsset using Attributes",
+            "description": "This step will get an asset by name and create a new one if it doesn\\'t exist, using individual attributes",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "assetName",
+                "type": "text",
+                "value": "!dataCollectionId",
+                "required": false
+              },
+              {
+                "name": "parentAsset",
+                "type": "text",
+                "value": "!rawZone",
+                "required": false
+              },
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "@AddUniqueRecordId",
+                "required": false
+              },
+              {
+                "name": "partitionKey",
+                "type": "text",
+                "required": false
+              },
+              {
+                "type": "text",
+                "name": "partitionStrategy",
+                "required": false
+              },
+              {
+                "name": "mergeStrategy",
+                "type": "text",
+                "value": "OVERWRITE",
+                "required": false
+              },
+              {
+                "name": "dataFormat",
+                "type": "text",
+                "value": "parquet",
+                "required": false
+              },
+              {
+                "name": "tempFlag",
+                "type": "text",
+                "value": "false",
+                "required": false
+              },
+              {
+                "type": "text",
+                "name": "existingSchema",
+                "required": false
+              },
+              {
+                "name": "useAssetIdForName",
+                "type": "text",
+                "value": "true",
+                "required": false
+              },
+              {
+                "name": "useAttributeIdsForColumnNames",
+                "type": "text",
+                "value": "false",
+                "required": false
+              },
+              {
+                "name": "update",
+                "type": "text",
+                "value": "true",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataAssetSteps.getOrCreateDataStoreAsset",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "ea28ebc8-09b3-4a89-a670-92915bb8a8f4",
+            "nextStepId": "WriateDataToRawZone"
+          },
+          {
+            "id": "WriateDataToRawZone",
+            "displayName": "Writes a DataFrame to an Existing DataAsset",
+            "description": "This step maps and writes a dataframe to an existing data asset",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataFrame",
+                "type": "text",
+                "value": "@AddUniqueRecordId",
+                "required": false
+              },
+              {
+                "type": "text",
+                "name": "dataAsset",
+                "required": false,
+                "value": "@GetOrCreateRawDataAsset"
+              },
+              {
+                "name": "feed",
+                "type": "text",
+                "value": "!feed",
+                "required": false
+              },
+              {
+                "name": "optimalSplitSizeMB",
+                "type": "text",
+                "value": "$optimalSplitSizeMB || 128",
+                "required": false
+              },
+              {
+                "name": "mergeStrategyOverride",
+                "type": "text",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataSteps.writeDataFrameToDataAsset",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "4c8cb4d9-51db-4b7f-b199-7b13559ecf8d",
+            "nextStepId": "TagRawDataAsset"
+          },
+          {
+            "id": "TagRawDataAsset",
+            "displayName": "Apply DataGroup Tags to an existing DataAsset",
+            "description": "This function will apply tags to the final asset.  Anything passed in will be added as \\'datagroup_$tag\\' with a value of 1",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "name": "dataAsset",
+                "type": "text",
+                "value": "@GetOrCreateRawAsset",
+                "required": false
+              },
+              {
+                "name": "datagroups",
+                "type": "text",
+                "value": "!feed.dataGroups",
+                "required": false
+              },
+              {
+                "name": "tagZone",
+                "type": "text",
+                "value": "true",
+                "required": false
+              }
+            ],
+            "engineMeta": {
+              "spark": "DataAssetSteps.tagDataAssetWithDataGroups",
+              "pkg": "com.acxiom.datalake.pipeline.steps"
+            },
+            "stepId": "04622d9c-7708-557e-b4c8-1268131d6f77"
+          }
+        ],
+        "id": "ff8428d0-879c-11e9-8b4f-9b89e27b8b39"
+      }
+    ],
+    "id": "027f8580-8800-11e9-8b4f-9b89e27b8b39",
+    "requiredParameters": [
+      "stsUrl",
+      "msApiUrl",
+      "ignoreSSL",
+      "apiKey",
+      "apiSecret",
+      "tenantId",
+      "coreId",
+      "servicesUrl",
+      "dataCollectionId"
+    ]
+  },
+  {
+    "_id": "5d09106b72578d23ebac03af",
+    "name": "avarho_test",
+    "globals": {},
+    "executions": [
+      {
+        "id": "Create Modified DataAsset",
+        "pipelineIds": [
+          "1f37f550-9146-11e9-ac99-49159f6e60a9"
+        ],
+        "pipelines": [],
+        "globals": {}
+      }
+    ],
+    "pipelines": [
+      {
+        "_id": "5d0804c48c5e44aa7f933ec5",
+        "name": "avarho Load Test",
+        "steps": [
+          {
+            "id": "SFTP FileManager",
+            "displayName": "Create SFTP FileManager",
+            "description": "Simple function to generate the SFTPFileManager for the remote SFTP file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "hostName",
+                "required": false,
+                "value": "!sftp_host"
+              },
+              {
+                "name": "username",
+                "type": "text",
+                "value": "!sftp_user",
+                "required": false
+              },
+              {
+                "name": "password",
+                "type": "text",
+                "value": "!sftp_pass",
+                "required": false
+              },
+              {
+                "name": "port",
+                "type": "integer",
+                "value": "!sftp_port",
+                "required": false
+              },
+              {
+                "type": "boolean",
+                "name": "strictHostChecking",
+                "required": false,
+                "value": "false"
+              }
+            ],
+            "engineMeta": {
+              "spark": "SFTPSteps.createFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "9d467cb0-8b3d-40a0-9ccd-9cf8c5b6cb38",
+            "executeIfEmpty": "",
+            "nextStepId": "HDFS FileManager"
+          },
+          {
+            "id": "HDFS FileManager",
+            "displayName": "Create HDFS FileManager",
+            "description": "Simple function to generate the HDFSFileManager for the local HDFS file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [],
+            "engineMeta": {
+              "spark": "HDFSSteps.createFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "e4dad367-a506-5afd-86c0-82c2cf5cd15c",
+            "nextStepId": "Download File"
+          },
+          {
+            "id": "Download File",
+            "displayName": "Buffered file copy",
+            "description": "Copy the contents of the source path to the destination path using full buffer sizes. This function will call connect on both FileManagers.",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "srcFS",
+                "required": false,
+                "value": "@SFTP FileManager"
+              },
+              {
+                "type": "text",
+                "name": "srcPath",
+                "required": false,
+                "value": "!sftp_input_path"
+              },
+              {
+                "type": "text",
+                "name": "destFS",
+                "required": false,
+                "value": "@HDFS FileManager"
+              },
+              {
+                "type": "text",
+                "name": "destPath",
+                "required": false,
+                "value": "!landing_path"
+              },
+              {
+                "type": "integer",
+                "name": "inputBufferSize",
+                "required": false,
+                "value": "!input_buffer_size"
+              },
+              {
+                "type": "integer",
+                "name": "outputBufferSize",
+                "required": false,
+                "value": "!output_buffer_size"
+              },
+              {
+                "type": "integer",
+                "name": "copyBufferSize",
+                "required": false,
+                "value": "!read_buffer_size"
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileManagerSteps.copy",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "f5a24db0-e91b-5c88-8e67-ab5cff09c883",
+            "nextStepId": "Disconnect SFTP FileManager"
+          },
+          {
+            "id": "Disconnect SFTP FileManager",
+            "displayName": "Disconnect a FileManager",
+            "description": "Disconnects a FileManager from the underlying file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "fileManager",
+                "required": false,
+                "value": "@SFTP FileManager"
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileManagerSteps.disconnectFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "3d1e8519-690c-55f0-bd05-1e7b97fb6633",
+            "nextStepId": "LoadDataframe"
+          },
+          {
+            "id": "LoadDataframe",
+            "displayName": "Load DataFrame from HDFS path",
+            "description": "This step will read a dataFrame from the given HDFS path",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "path",
+                "required": false,
+                "value": "!landing_path"
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameReaderOptions",
+                "value": {
+                  "format": "csv",
+                  "options": {
+                    "header": "true",
+                    "delimiter": ","
+                  },
+                  "schema": {
+                    "attributes": []
+                  }
+                }
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.readFromPath"
+            },
+            "stepId": "87db259d-606e-46eb-b723-82923349640f",
+            "nextStepId": "Write DataFrame to HDFS"
+          },
+          {
+            "id": "Write DataFrame to HDFS",
+            "displayName": "Write DataFrame to HDFS",
+            "description": "This step will write a dataFrame in a given format to HDFS",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "dataFrame",
+                "required": false,
+                "value": "@LoadDataFrame"
+              },
+              {
+                "type": "text",
+                "name": "path",
+                "required": false,
+                "value": "/raw/avarho_parquet"
+              },
+              {
+                "type": "object",
+                "name": "options",
+                "required": false,
+                "className": "com.acxiom.pipeline.steps.DataFrameWriterOptions"
+              }
+            ],
+            "engineMeta": {
+              "spark": "HDFSSteps.writeToPath"
+            },
+            "stepId": "0a296858-e8b7-43dd-9f55-88d00a7cd8fa",
+            "nextStepId": "Disconnect HDFS"
+          },
+          {
+            "id": "Disconnect HDFS",
+            "displayName": "Disconnect a FileManager",
+            "description": "Disconnects a FileManager from the underlying file system",
+            "type": "Pipeline",
+            "category": "InputOutput",
+            "params": [
+              {
+                "type": "text",
+                "name": "fileManager",
+                "required": false,
+                "value": "@HDFS FileManager"
+              }
+            ],
+            "engineMeta": {
+              "spark": "FileManagerSteps.disconnectFileManager",
+              "pkg": "com.acxiom.pipeline.steps"
+            },
+            "stepId": "3d1e8519-690c-55f0-bd05-1e7b97fb6633"
+          }
+        ],
+        "id": "1f37f550-9146-11e9-ac99-49159f6e60a9"
+      }
+    ],
+    "id": "a7511d00-91e5-11e9-a0f0-e1ddb30bb970",
+    "requiredParameters": [
+      "sftp_host",
+      "sftp_user",
+      "sftp_pass",
+      "sftp_port",
+      "sftp_input_path",
+      "landing_path",
+      "input_buffer_size",
+      "output_buffer_size",
+      "read_buffer_size",
+      "write_path"
+    ],
+    "sparkConf": {
+      "kryoClasses": [
+        "org.apache.hadoop.io.LongWritable",
+        "org.apacje.http.client.entity.UrlEncodedFormEntity"
+      ],
+      "setOptions": [
+        {
+          "name": "spark.hadoop.io.compression.codecs",
+          "value": "org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.DeflateCodec,org.apache.hadoop.io.compress.Lz4Codec,org.apache.hadoop.io.compress.SnappyCodec,org.apache.hadoop.io.compress.GzipCodec"
+        },
+        {
+          "name": "applicationConfigurationLoader",
+          "value": "com.acxiom.pipeline.fs.HDFSFileManager"
+        }
+      ]
+    },
+    "stepPackages": [
+      "com.acxiom.pipeline.steps",
+      "com.acxiom.pipeline"
+    ]
+  }
+]

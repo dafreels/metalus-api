@@ -50,6 +50,17 @@
           }
         }
       ]
+    },
+    "PipelineParameter": {
+      "type": "object",
+      "properties": {
+        "pipelineId": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
     }
   }
 }

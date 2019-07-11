@@ -6,6 +6,6 @@ module.exports = (grunt) => {
 
   grunt.registerTask('test:functional', [
     'clean:coverage',
-    'shell:api_tests'
+    'shell:file_tests'
   ]);
 };
