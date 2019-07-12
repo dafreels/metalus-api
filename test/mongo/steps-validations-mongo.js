@@ -4,11 +4,10 @@ const express = require('express');
 const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
-const rmdir = require('rimraf');
 const stepData = require('../data/steps');
+const MongoDb = require('../../lib/mongo');
 
-describe('Steps Validation File Tests', () => {
-  let dataDir;
+describe('Steps Validation Mongo Tests', () => {
   let app;
   let server;
   let mock;
@@ -23,20 +22,24 @@ describe('Steps Validation File Tests', () => {
     app.use(kraken({
       basedir: process.cwd(),
       onconfig: (config, next) => {
-        config.set('dataDir', 'testDataValidationStepTests');
-        dataDir = `./${config.get('dataDir') || 'data'}`;
+        config.set('storageType', 'mongodb');
+        config.set('databaseName', 'testDataStepsValidations');
         BaseModel.initialStorageParameters(config);
-        next(null, config);
+        MongoDb.init(config)
+          .then(() => {
+            next(null, config);
+          })
+          .catch(next);
       }
     }));
-    mock = server.listen(1304);
+    mock = server.listen(1309);
   });
 
   after((done) => {
-    rmdir(dataDir, () => {
-      app.removeListener('start', done);
-      mock.close(done);
-    });
+    app.removeListener('start', done);
+    MongoDb.getDatabase().dropDatabase();
+    MongoDb.disconnect();
+    mock.close(done);
   });
 
   it('Should fail insert on missing body', async () => {

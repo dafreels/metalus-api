@@ -4,11 +4,10 @@ const express = require('express');
 const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
-const rmdir = require('rimraf');
 const stepData = require('../data/steps');
+const MongoDb = require('../../lib/mongo');
 
-describe('Pipelines API File Tests', () => {
-  let dataDir;
+describe('Pipelines API Mongo Tests', () => {
   let app;
   let server;
   let mock;
@@ -37,20 +36,24 @@ describe('Pipelines API File Tests', () => {
     app.use(kraken({
       basedir: process.cwd(),
       onconfig: (config, next) => {
-        config.set('dataDir', 'testDataPipelines');
-        dataDir = `./${config.get('dataDir') || 'data'}`;
+        config.set('storageType', 'mongodb');
+        config.set('databaseName', 'testDataPipelines');
         BaseModel.initialStorageParameters(config);
-        next(null, config);
+        MongoDb.init(config)
+          .then(() => {
+            next(null, config);
+          })
+          .catch(next);
       }
     }));
-    mock = server.listen(1302);
+    mock = server.listen(1307);
   });
 
   after((done) => {
-    rmdir(dataDir, () => {
-      app.removeListener('start', done);
-      mock.close(done);
-    });
+    app.removeListener('start', done);
+    MongoDb.getDatabase().dropDatabase();
+    MongoDb.disconnect();
+    mock.close(done);
   });
 
   it('Should fail to insert pipeline', async () => {

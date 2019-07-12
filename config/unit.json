@@ -1,4 +1,7 @@
 {
   "storageType": "file",
-  "dataDir": "testData"
+  "dataDir": "testData",
+  "databaseServer": "localhost",
+  "databaseName": "unit_test",
+  "databaseSSL": false
 }
