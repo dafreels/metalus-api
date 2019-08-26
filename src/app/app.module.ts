@@ -1,22 +1,18 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
-import { AppComponent } from './app.component';
-import { PipelinesService } from "./pipelines/pipelines.service";
-import { StepsService} from "./steps/steps.service";
-import { LandingComponent } from './landing/landing.component';
-import { MatCardModule, MatGridListModule, MatToolbarModule } from "@angular/material";
-import { HttpClientModule } from '@angular/common/http';
+import {NgModule} from '@angular/core';
+import {AppComponent} from './app.component';
+import {PipelinesService} from "./pipelines/pipelines.service";
+import {LandingComponent} from './landing/landing.component';
 import {ApplicationssService} from "./applications/applications.service";
 import {PackageObjectsService} from "./packageObjects/package-objects.service";
+import { StepsModule } from "./steps/steps.module"
+import {SharedComponentsModule} from "./shared/shared.components";
+import {AppRoutingModule} from "./routes.component";
 
 @NgModule({
   imports: [
-    BrowserModule,
-    MatCardModule,
-    MatGridListModule,
-    MatToolbarModule,
-    HttpClientModule
+    SharedComponentsModule,
+    StepsModule,
+    AppRoutingModule
   ],
   declarations: [
     AppComponent,
@@ -25,9 +21,10 @@ import {PackageObjectsService} from "./packageObjects/package-objects.service";
   providers: [
     ApplicationssService,
     PackageObjectsService,
-    PipelinesService,
-    StepsService
+    PipelinesService
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+
+export class AppModule {
+}

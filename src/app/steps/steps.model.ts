@@ -3,10 +3,12 @@ export interface IStep {
   displayName: string,
   description: string,
   type: string,
+  category: string,
   params: IParam[],
   engineMeta?: {
     spark: string,
-    pkg: string
+    pkg: string,
+    stepResults: IStepResults[]
   }
 }
 
@@ -16,7 +18,13 @@ export interface IParam {
   required: boolean,
   defaultValue: string,
   language: string,
-  className: string
+  className: string,
+  parameterType: string
+}
+
+export interface IStepResults {
+  primaryType: string,
+  secondaryTypes?: {}
 }
 
 export interface IStepsResponse {
