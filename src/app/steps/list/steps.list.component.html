@@ -4,13 +4,15 @@
         <!-- TODO Add sort button here -->
         <mat-form-field><input matInput placeholder="Filter"></mat-form-field>
       </span>
-    <mat-list>
-      <mat-list-item class="step-list-item" *ngFor="let step of steps">
-        <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>
-        <span class="step-list-text" matTooltip="{{step.description}}" matTooltipPosition="right">
+    <div class="step-list-container">
+      <mat-list class="step-list">
+        <mat-list-item class="step-list-item" *ngFor="let step of steps" matTooltip="{{step.description}}" matTooltipPosition="right">
+          <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>
+          <span class="step-list-text">
             {{step.displayName}}
           </span>
-      </mat-list-item>
-    </mat-list>
+        </mat-list-item>
+      </mat-list>
+    </div>
   </mat-card-content>
 </mat-card>

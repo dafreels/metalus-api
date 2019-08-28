@@ -1,3 +1,8 @@
+.step-list-container {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .step-list-item {
   width: 100%;
   border: 1px solid #eeeeee;
@@ -8,4 +13,8 @@
   text-overflow: ellipsis;
   overflow: hidden;
   padding-left: 5px;
+}
+
+.step-list {
+  height: 350px;
 }
