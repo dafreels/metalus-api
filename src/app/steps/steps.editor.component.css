@@ -1,0 +1,12 @@
+.steps-editor-layout {
+  display: flex;
+}
+
+.steps-editor-sidebar {
+  width: 30%;
+  margin-right: 15px;
+}
+
+.steps-editor-content {
+  width: 70%;
+}

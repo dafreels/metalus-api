@@ -3,13 +3,15 @@ import {BrowserModule} from "@angular/platform-browser";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {
   MatCardModule,
-  MatGridListModule, MatIconModule,
+  MatGridListModule,
   MatInputModule,
+  MatListModule,
   MatRadioModule,
-  MatSlideToggleModule, MatTabsModule,
+  MatSlideToggleModule,
+  MatTabsModule,
   MatToolbarModule,
-  MatTreeModule,
-  MatListModule
+  MatTooltipModule,
+  MatTreeModule
 } from "@angular/material";
 import {HttpClientModule} from "@angular/common/http";
 
@@ -26,7 +28,8 @@ import {HttpClientModule} from "@angular/common/http";
     MatSlideToggleModule,
     MatTabsModule,
     MatTreeModule,
-    MatListModule
+    MatListModule,
+    MatTooltipModule
   ],
   exports: [
     BrowserModule,
@@ -40,7 +43,8 @@ import {HttpClientModule} from "@angular/common/http";
     MatSlideToggleModule,
     MatTabsModule,
     MatTreeModule,
-    MatListModule
+    MatListModule,
+    MatTooltipModule
   ]
 })
 

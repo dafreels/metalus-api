@@ -1,3 +1,26 @@
 .scroll-list {
-  overflow-y: auto
+  overflow: scroll;
+  height: 30%;
+}
+
+.step-list-component {
+  height: 90%;
+}
+
+.step-list-item {
+  /*margin: 2px 2px 2px 2px;*/
+  display: inline-flex;
+  width: 100%;
+}
+
+.step-list-text {
+  background-color: #EEEEEE;
+  border-radius: 4px;
+  padding-right: 4px;
+  padding-left: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 90%;
+  margin-left: 4px;
 }
