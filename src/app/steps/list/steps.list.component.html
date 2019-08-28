@@ -1,20 +1,16 @@
-<div class="step-list-component">
-  <div>
-    <!-- TODO Add sort button here -->
-    <mat-form-field><input matInput placeholder="Filter"></mat-form-field>
-  </div>
-  <div class="scroll-list">
+<mat-card>
+  <mat-card-content>
+        <span>
+        <!-- TODO Add sort button here -->
+        <mat-form-field><input matInput placeholder="Filter"></mat-form-field>
+      </span>
     <mat-list>
-      <mat-list-item *ngFor="let step of steps">
-        <div class="step-list-item">
-          <div>
-            <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>
-          </div>
-          <div class="step-list-text" matTooltip="{{step.description}}" matTooltipPosition="right">
+      <mat-list-item class="step-list-item" *ngFor="let step of steps">
+        <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>
+        <span class="step-list-text" matTooltip="{{step.description}}" matTooltipPosition="right">
             {{step.displayName}}
-          </div>
-        </div>
+          </span>
       </mat-list-item>
     </mat-list>
-  </div>
-</div>
+  </mat-card-content>
+</mat-card>
