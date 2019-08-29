@@ -5,14 +5,16 @@
         <mat-form-field><input matInput placeholder="Filter"></mat-form-field>
       </span>
     <div class="step-list-container">
-      <mat-list class="step-list">
-        <mat-list-item class="step-list-item" *ngFor="let step of steps" matTooltip="{{step.description}}" matTooltipPosition="right">
+      <mat-action-list class="step-list">
+        <mat-list-item class="step-list-item" *ngFor="let step of steps" matTooltip="{{step.description}}"
+                       matTooltipPosition="right"
+                       [routerLink]="['/steps-editor', 'steps-form', step.id]">
           <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>
           <span class="step-list-text">
             {{step.displayName}}
           </span>
         </mat-list-item>
-      </mat-list>
+      </mat-action-list>
     </div>
   </mat-card-content>
 </mat-card>
