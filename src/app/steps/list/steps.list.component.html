@@ -2,11 +2,11 @@
   <mat-card-content>
         <span>
         <!-- TODO Add sort button here -->
-        <mat-form-field><input matInput placeholder="Filter"></mat-form-field>
+        <mat-form-field><input #filter matInput placeholder="Filter" (input)="filterList(filter.value)"></mat-form-field>
       </span>
     <div class="step-list-container">
       <mat-action-list class="step-list">
-        <mat-list-item class="step-list-item" *ngFor="let step of steps" matTooltip="{{step.description}}"
+        <mat-list-item class="step-list-item" *ngFor="let step of filterSteps" matTooltip="{{step.description}}"
                        matTooltipPosition="right"
                        (click)="handleStepSelection(step)">
           <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>

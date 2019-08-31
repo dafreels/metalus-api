@@ -8,6 +8,7 @@
     "test": "jest",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "mongo-api": "NODE_ENV=mongo node server.js",
     "mongo": "ng build && NODE_ENV=mongo node server.js"
   },
   "private": true,

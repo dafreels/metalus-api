@@ -8,17 +8,27 @@ import {IStep} from "../steps.model";
 })
 export class StepsListComponent {
   steps: IStep[];
+  filterSteps: IStep[];
 
   @Output() stepItemSelection = new EventEmitter();
 
-  constructor() {}
+  constructor() {
+  }
 
   @Input()
   set stepList(steps: IStep[]) {
     this.steps = steps;
+    this.filterSteps = [];
+    if (this.steps) {
+      this.steps.forEach(s => this.filterSteps.push(s));
+    }
   }
 
   handleStepSelection(step) {
     this.stepItemSelection.emit(step);
+  }
+
+  filterList(filter: string) {
+    this.filterSteps = this.steps.filter(s => s.displayName.toLocaleLowerCase().indexOf(filter) !== -1);
   }
 }
