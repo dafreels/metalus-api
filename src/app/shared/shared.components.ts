@@ -14,6 +14,11 @@ import {
   MatTreeModule
 } from "@angular/material";
 import {HttpClientModule} from "@angular/common/http";
+import {FormsModule} from "@angular/forms";
+import {MatExpansionModule} from "@angular/material/expansion";
+import {MatSelectModule} from "@angular/material/select";
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from "@angular/material/icon";
 
 @NgModule({
   imports: [
@@ -29,7 +34,12 @@ import {HttpClientModule} from "@angular/common/http";
     MatTabsModule,
     MatTreeModule,
     MatListModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatExpansionModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    FormsModule
   ],
   exports: [
     BrowserModule,
@@ -44,7 +54,12 @@ import {HttpClientModule} from "@angular/common/http";
     MatTabsModule,
     MatTreeModule,
     MatListModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatExpansionModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    FormsModule
   ]
 })
 

@@ -1,10 +1,72 @@
-<div class="stepForm">
-  <!--  <mat-form-field><mat-label>fred</mat-label></mat-form-field>-->
-  <mat-form-field><input matInput placeholder="Name"></mat-form-field>
-  <mat-form-field><textarea matInput placeholder="Description"></textarea></mat-form-field>
-  <mat-form-field><input matInput placeholder="Category"></mat-form-field>
-  <mat-form-field><input matInput placeholder="Engine Meta Command"></mat-form-field>
-  <mat-form-field><input matInput placeholder="Engine Meta Package"></mat-form-field>
-  <mat-slide-toggle>Branch Step?</mat-slide-toggle>
-</div>
+<mat-card>
+  <mat-card-content>
+    <button mat-raised-button color="primary" (click)="saveStep()">Save</button>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-content>
+    <div class="stepForm">
+      <!--  <mat-form-field><mat-label>fred</mat-label></mat-form-field>-->
+      <mat-form-field><input matInput placeholder="Name" [(ngModel)]="selectedStep.displayName" name="displayName">
+      </mat-form-field>
+      <mat-form-field><textarea matInput placeholder="Description" [(ngModel)]="selectedStep.description"
+                                name="description"></textarea></mat-form-field>
+      <mat-form-field><input matInput placeholder="Category" [(ngModel)]="selectedStep.category" name="category">
+      </mat-form-field>
+      <mat-form-field><input matInput placeholder="Engine Meta Command" [(ngModel)]="selectedStep.engineMeta.spark"
+                             name="stepCommand"></mat-form-field>
+      <mat-form-field><input matInput placeholder="Engine Meta Package" [(ngModel)]="selectedStep.engineMeta.pkg"
+                             name="stepPackage"></mat-form-field>
+      <!-- TODO Hook up (ngModelChange)="" -->
+      <mat-slide-toggle [ngModel]="selectedStep.type === 'branch'">Branch Step?</mat-slide-toggle>
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let param of selectedStep.params">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <button mat-button color="primary" aria-label="Remove this parameter">Delete</button>
+            </mat-panel-title>
+            <mat-panel-description>
+              {{param.name}}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="stepForm">
+            <mat-form-field>
+              <mat-label>Type</mat-label>
+              <mat-select required [ngModel]="param.type">
+                <mat-option value="string">String</mat-option>
+                <mat-option value="integer">Integer</mat-option>
+                <mat-option value="list">List</mat-option>
+                <mat-option value="boolean">Boolean</mat-option>
+                <mat-option value="script">Script</mat-option>
+                <mat-option value="text">Text</mat-option>
+                <mat-option value="result">Result</mat-option>
+                <mat-option value="object">Object</mat-option>
+              </mat-select>
+            </mat-form-field>
 
+            <div>
+              <span style="display: inline-flex; width: 90%">
+                <mat-form-field style="width: 99%">
+                  <textarea matInput placeholder="Default Value" [(ngModel)]="param.defaultValue"
+                          name="defaultValue"></textarea>
+                </mat-form-field>
+              </span>
+              <span><button mat-raised-button color="primary" (click)="openEditor()">Editor</button></span>
+            </div>
+
+            <mat-form-field>
+              <input matInput placeholder="Class Name" [(ngModel)]="param.className" name="className">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput placeholder="Parameter Type" [(ngModel)]="param.parameterType" name="parameterType">
+            </mat-form-field>
+          </div>
+          <!--
+          required
+          language: should this be a type handled with additional script options?
+          -->
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </mat-card-content>
+</mat-card>

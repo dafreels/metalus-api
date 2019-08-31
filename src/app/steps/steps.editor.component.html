@@ -1,8 +1,8 @@
 <div class="steps-editor-layout">
   <div class="steps-editor-sidebar">
-    <steps-selector></steps-selector>
+    <steps-selector [steps]="steps" (stepItemSelection)="stepSelected($event)"></steps-selector>
   </div>
   <div class="steps-editor-content">
-    <router-outlet name="stepForm"></router-outlet>
+    <steps-form [step]="step"></steps-form>
   </div>
 </div>

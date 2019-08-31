@@ -1,20 +1,24 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {IStep} from "../steps.model";
-import {StepsService} from "../steps.service";
 
 @Component({
   selector: 'steps-list',
   templateUrl: './steps.list.component.html',
   styleUrls: ['./steps.list.component.css']
 })
-export class StepsListComponent implements OnInit {
+export class StepsListComponent {
   steps: IStep[];
 
-  constructor(private stepsService: StepsService) {}
+  @Output() stepItemSelection = new EventEmitter();
 
-  ngOnInit(): void {
-    this.stepsService.getSteps().subscribe((steps: IStep[]) => {
-      this.steps = steps;
-    });
+  constructor() {}
+
+  @Input()
+  set stepList(steps: IStep[]) {
+    this.steps = steps;
+  }
+
+  handleStepSelection(step) {
+    this.stepItemSelection.emit(step);
   }
 }
