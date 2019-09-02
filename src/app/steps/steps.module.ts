@@ -1,11 +1,11 @@
 import {NgModule} from "@angular/core";
 import {StepsEditorComponent} from './steps.editor.component';
 import {StepsFormComponent} from './form/steps.form.component';
-import {StepsSelectorComponent} from './steps.selector.component';
-import {StepsTreeComponent} from './tree/steps.tree.component';
+import {StepsSelectorComponent} from './selector/steps.selector.component';
+import {StepsTreeComponent} from './selector/tree/steps.tree.component';
 import {StepsService} from "./steps.service";
 import {SharedComponentsModule} from "../shared/shared.components"
-import {StepsListComponent} from "./list/steps.list.component";
+import {StepsListComponent} from "./selector/list/steps.list.component";
 
 @NgModule({
   imports: [

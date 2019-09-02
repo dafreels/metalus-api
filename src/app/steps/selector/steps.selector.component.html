@@ -1,8 +1,9 @@
 <mat-card>
   <mat-card-content>
     <mat-tab-group>
-      <!--  <mat-tab label="Tree"><steps-tree></steps-tree></mat-tab>-->
-      <mat-tab label="Tree"> Tree</mat-tab>
+      <mat-tab label="Tree">
+        <steps-tree [stepList]="stepList" (stepItemSelection)='stepSelected($event)'></steps-tree>
+      </mat-tab>
       <mat-tab label="List">
         <steps-list [stepList]="stepList" (stepItemSelection)='stepSelected($event)'></steps-list>
       </mat-tab>

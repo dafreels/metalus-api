@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {IStep} from "./steps.model";
+import {IStep} from "../steps.model";
 
 @Component({
   selector: 'steps-selector',
