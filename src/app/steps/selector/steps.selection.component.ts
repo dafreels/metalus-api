@@ -1,14 +1,12 @@
 import {EventEmitter, Input, Output} from "@angular/core";
 import {IStep} from "../steps.model";
 
-export class StepsSelectionComponent {
+export abstract class StepsSelectionComponent {
 
   steps: IStep[];
   filterSteps: IStep[];
 
   @Output() stepItemSelection = new EventEmitter();
-
-  constructor() {}
 
   @Input()
   set stepList(steps: IStep[]) {

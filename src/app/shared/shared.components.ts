@@ -19,7 +19,6 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {MatSelectModule} from "@angular/material/select";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
-import {CdkTreeModule} from "@angular/cdk/tree";
 
 @NgModule({
   imports: [
