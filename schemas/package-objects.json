@@ -15,7 +15,10 @@
                 },
                 "schema": {
                     "type": "string"
-                }
+                },
+              "layout": {
+                "type": "string"
+              }
             }
         }
     }

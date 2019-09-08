@@ -1,0 +1,22 @@
+<mat-card>
+  <mat-card-content>
+    <div class="code-language">
+      <mat-form-field>
+        <mat-label>Select Language: </mat-label>
+        <mat-select class="code-language" required [(ngModel)]="data.language">
+          <mat-option value="javascript">Javascript</mat-option>
+          <mat-option value="json">JSON</mat-option>
+          <mat-option value="scala">Scala</mat-option>
+          <mat-option value="sql">SQL</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-card-content>
+</mat-card>
+<div class="code-div">
+  <ace [mode]="data.language" [theme]="'solarized_light'" [(value)]="data.code"></ace>
+</div>
+<div mat-dialog-actions class="code-button-div">
+  <button mat-raised-button (click)="closeDialog()">Close</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="data">Ok</button>
+</div>

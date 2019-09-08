@@ -4,5 +4,6 @@ export interface IPackageObjectsResponse {
 
 export interface IPackageObject {
   id: string,
-  schema: string
+  schema: string,
+  layout: string
 }

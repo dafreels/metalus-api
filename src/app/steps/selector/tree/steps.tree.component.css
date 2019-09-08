@@ -1,3 +1,7 @@
 .step-tree-invisible {
   display: none;
 }
+
+.step-tree-item {
+  cursor: pointer;
+}

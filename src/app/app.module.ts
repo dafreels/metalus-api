@@ -7,12 +7,16 @@ import {PackageObjectsService} from "./packageObjects/package-objects.service";
 import { StepsModule } from "./steps/steps.module"
 import {SharedComponentsModule} from "./shared/shared.components";
 import {AppRoutingModule} from "./routes.component";
+import {CodeEditorModule} from "./code-editor/code.editor.module";
+import {ObjectEditorModule} from "./object-editor/object.editor.module";
 
 @NgModule({
   imports: [
     SharedComponentsModule,
     StepsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    CodeEditorModule,
+    ObjectEditorModule
   ],
   declarations: [
     AppComponent,

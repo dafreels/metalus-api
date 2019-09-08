@@ -1,0 +1,19 @@
+<mat-card class="object-select-card">
+  <mat-card-content>
+    <div class="object-language">
+      <mat-form-field class="object-select">
+        <mat-label>Select Object: </mat-label>
+        <mat-select required [(ngModel)]="data.schemaName" (selectionChange)="handleSchemaSelection($event.value)">
+          <mat-option *ngFor="let po of data.pkgObjs" [value]="po.id">{{po.id}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<json-schema-form
+  loadExternalAssets="true"
+  [schema]="data.schema"
+  [(data)]="data.userObject"
+  framework="material-design">
+</json-schema-form>

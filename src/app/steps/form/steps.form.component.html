@@ -44,6 +44,8 @@
               </mat-select>
             </mat-form-field>
 
+            <mat-slide-toggle [ngModel]="param.required">Required?</mat-slide-toggle>
+
             <div>
               <span style="display: inline-flex; width: 90%">
                 <mat-form-field style="width: 99%">
@@ -51,8 +53,18 @@
                           name="defaultValue"></textarea>
                 </mat-form-field>
               </span>
-              <span><button mat-raised-button color="primary" (click)="openEditor()">Editor</button></span>
+              <span><button mat-raised-button color="primary" (click)="openEditor(param)">Editor</button></span>
             </div>
+
+            <mat-form-field>
+              <mat-label>Script Language</mat-label>
+              <mat-select required [(ngModel)]="param.language">
+                <mat-option value="javascript">Javascript</mat-option>
+                <mat-option value="json">JSON</mat-option>
+                <mat-option value="scala">Scala</mat-option>
+                <mat-option value="sql">SQL</mat-option>
+              </mat-select>
+            </mat-form-field>
 
             <mat-form-field>
               <input matInput placeholder="Class Name" [(ngModel)]="param.className" name="className">
@@ -61,10 +73,6 @@
               <input matInput placeholder="Parameter Type" [(ngModel)]="param.parameterType" name="parameterType">
             </mat-form-field>
           </div>
-          <!--
-          required
-          language: should this be a type handled with additional script options?
-          -->
         </mat-expansion-panel>
       </mat-accordion>
     </div>

@@ -1,0 +1,14 @@
+.code-div {
+  width: 100%;
+  height: 70%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.code-button-div {
+  float: right;
+}
+
+.code-language {
+  width: 100%;
+}
