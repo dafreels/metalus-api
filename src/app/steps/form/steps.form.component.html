@@ -1,14 +1,15 @@
 <mat-card>
   <mat-card-content>
-    <button mat-raised-button color="primary" (click)="saveStep()">Save</button>
+    <button mat-raised-button color="primary" (click)="saveStep()" style="margin-right: 5px;">Save</button>
+    <button mat-raised-button color="primary" [disabled]="!stepChanged()" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="stepChanged()" (click)="newStep()">New</button>
   </mat-card-content>
 </mat-card>
 <mat-card>
   <mat-card-content>
     <div class="stepForm">
-      <!--  <mat-form-field><mat-label>fred</mat-label></mat-form-field>-->
-      <mat-form-field><input matInput placeholder="Name" [(ngModel)]="selectedStep.displayName" name="displayName">
-      </mat-form-field>
+      <mat-form-field><input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" disabled="true"></mat-form-field>
+      <mat-form-field><input matInput placeholder="Name" [(ngModel)]="selectedStep.displayName" name="displayName"></mat-form-field>
       <mat-form-field><textarea matInput placeholder="Description" [(ngModel)]="selectedStep.description"
                                 name="description"></textarea></mat-form-field>
       <mat-form-field><input matInput placeholder="Category" [(ngModel)]="selectedStep.category" name="category">
@@ -17,8 +18,7 @@
                              name="stepCommand"></mat-form-field>
       <mat-form-field><input matInput placeholder="Engine Meta Package" [(ngModel)]="selectedStep.engineMeta.pkg"
                              name="stepPackage"></mat-form-field>
-      <!-- TODO Hook up (ngModelChange)="" -->
-      <mat-slide-toggle [ngModel]="selectedStep.type === 'branch'">Branch Step?</mat-slide-toggle>
+      <mat-slide-toggle [ngModel]="selectedStep.type === 'branch'" (ngModelChange)="changeStepType($event)">Branch Step?</mat-slide-toggle>
       <mat-accordion>
         <mat-expansion-panel *ngFor="let param of selectedStep.params">
           <mat-expansion-panel-header>
@@ -49,11 +49,13 @@
             <div>
               <span style="display: inline-flex; width: 90%">
                 <mat-form-field style="width: 99%">
-                  <textarea matInput placeholder="Default Value" [(ngModel)]="param.defaultValue"
+                  <textarea matInput placeholder="Default Value"
+                            [(ngModel)]="param.defaultValue"
+                            [disabled]="(param.type === 'script' || param.type === 'object')"
                           name="defaultValue"></textarea>
                 </mat-form-field>
               </span>
-              <span><button mat-raised-button color="primary" (click)="openEditor(param)">Editor</button></span>
+              <span><button mat-raised-button color="primary" [disabled]="!(param.type === 'script' || param.type === 'object')" (click)="openEditor(param)">Editor</button></span>
             </div>
 
             <mat-form-field>

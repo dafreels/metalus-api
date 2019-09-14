@@ -24,7 +24,7 @@ export class StepsFormComponent {
       this.selectedStep = JSON.parse(JSON.stringify(step));
       this.originalStep = step;
     } else {
-      this.step = {
+      this.selectedStep = {
         category: '', description: '', displayName: '', id: '', params: [], type: '', engineMeta: {
           pkg: '',
           spark: '',
@@ -43,8 +43,30 @@ export class StepsFormComponent {
     }
   }
 
+  newStep() {
+    this.selectedStep = {
+      category: '', description: '', displayName: '', id: '', params: [], type: '', engineMeta: {
+        pkg: '',
+        spark: '',
+        stepResults: []
+      }
+    };
+  }
+
+  cancel() {
+    this.selectedStep = JSON.parse(JSON.stringify(this.originalStep));
+  }
+
+  stepChanged() {
+    return true;
+  }
+
   saveStep() {
     console.log(JSON.stringify(this.selectedStep, null, 4))
+  }
+
+  changeStepType(branch) {
+    this.selectedStep.type = branch ? 'branch' : 'pipeline';
   }
 
   // TODO optimize this code
