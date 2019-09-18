@@ -30,3 +30,7 @@ export interface IStepResults {
 export interface IStepsResponse {
   steps: IStep[]
 }
+
+export interface IStepResponse {
+  step: IStep
+}

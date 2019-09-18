@@ -1,4 +1,4 @@
-import {Component, Inject, Input} from "@angular/core";
+import {Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {IPackageObject} from "../packageObjects/package-objects.model";
 

@@ -10,3 +10,28 @@
 .steps-editor-content {
   width: 70%;
 }
+
+.stepForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepForm > * {
+  width: 100%;
+}
+
+.step-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.step-radio-button {
+  margin: 5px;
+}
+
+.step-parameter-add-div {
+  text-align: right;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
