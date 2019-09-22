@@ -19,6 +19,7 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {MatSelectModule} from "@angular/material/select";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
+import {MatMenuModule} from "@angular/material/menu";
 
 @NgModule({
   imports: [
@@ -36,6 +37,7 @@ import {MatIconModule} from "@angular/material/icon";
     MatListModule,
     MatTooltipModule,
     MatExpansionModule,
+    MatMenuModule,
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
@@ -59,6 +61,7 @@ import {MatIconModule} from "@angular/material/icon";
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     FormsModule
   ]
 })

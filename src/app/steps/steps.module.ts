@@ -5,9 +5,11 @@ import {StepsTreeComponent} from './selector/tree/steps.tree.component';
 import {StepsService} from "./steps.service";
 import {SharedComponentsModule} from "../shared/shared.components"
 import {StepsListComponent} from "./selector/list/steps.list.component";
+import {DesignerModule} from "../designer/designer.module";
 
 @NgModule({
   imports: [
+    DesignerModule,
     SharedComponentsModule
   ],
   declarations: [

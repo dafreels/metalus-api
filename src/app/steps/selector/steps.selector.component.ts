@@ -7,6 +7,7 @@ import {IStep} from "../steps.model";
 })
 export class StepsSelectorComponent {
   stepList: IStep[];
+  @Input() draggableSteps: boolean = false;
   @Output() stepItemSelection = new EventEmitter();
   constructor() {}
 

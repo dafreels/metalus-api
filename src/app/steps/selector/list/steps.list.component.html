@@ -8,7 +8,10 @@
       <mat-action-list class="step-list">
         <mat-list-item class="step-list-item" *ngFor="let step of filterSteps" matTooltip="{{step.description}}"
                        matTooltipPosition="right"
-                       (click)="handleStepSelection(step)">
+                       (click)="handleStepSelection(step)"
+                       [dndDraggable]="step"
+                       [dndDisableIf]="!draggableSteps"
+                       [dndEffectAllowed]="dropEffect">
           <img alt="" height="32px" width="32px" src="../../../assets/{{step.type || 'pipeline'}}.png"/>
           <span class="step-list-text">
             {{step.displayName}}

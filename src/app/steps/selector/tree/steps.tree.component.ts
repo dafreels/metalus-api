@@ -2,12 +2,14 @@ import {Component} from "@angular/core";
 import {StepsSelectionComponent} from "../steps.selection.component";
 import {NestedTreeControl} from "@angular/cdk/tree";
 import {MatTreeNestedDataSource} from "@angular/material/tree";
+import {IStep} from "../../steps.model";
 
 interface StepNode {
   name: string;
   id?: string;
   type: string;
   children?: StepNode[];
+  step?: IStep;
 }
 
 @Component({
@@ -42,7 +44,8 @@ export class StepsTreeComponent extends StepsSelectionComponent {
       currentCategory.children.push({
         name: step.displayName,
         id: step.id,
-        type: step.type
+        type: step.type,
+        step
       })
     });
     this.dataSource.data = stepNodes;

@@ -1,0 +1,24 @@
+.steps-editor-sidebar {
+  width: 30%;
+  margin-right: 15px;
+}
+
+.pipelines-editor-layout {
+  display: flex;
+}
+
+.designer-content {
+  width: 70%;
+}
+
+.pipeline-info {
+  height: 25%;
+}
+
+.pipeline-buttons {
+  height: 5%;
+}
+
+.pipeline-step-form {
+  height: 20%;
+}

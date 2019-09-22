@@ -1,10 +1,13 @@
 import {EventEmitter, Input, Output} from "@angular/core";
 import {IStep} from "../steps.model";
+import {DropEffect} from "ngx-drag-drop";
 
 export abstract class StepsSelectionComponent {
 
   steps: IStep[];
   filterSteps: IStep[];
+  @Input() draggableSteps: boolean = false;
+  dropEffect: DropEffect = 'copy';
 
   @Output() stepItemSelection = new EventEmitter();
 

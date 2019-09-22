@@ -2,10 +2,10 @@
   <mat-card-content>
     <mat-tab-group>
       <mat-tab label="Tree">
-        <steps-tree [stepList]="stepList" (stepItemSelection)='stepSelected($event)'></steps-tree>
+        <steps-tree [stepList]="stepList" (stepItemSelection)='stepSelected($event)' [draggableSteps]="draggableSteps"></steps-tree>
       </mat-tab>
       <mat-tab label="List">
-        <steps-list [stepList]="stepList" (stepItemSelection)='stepSelected($event)'></steps-list>
+        <steps-list [stepList]="stepList" (stepItemSelection)='stepSelected($event)' [draggableSteps]="draggableSteps"></steps-list>
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>
