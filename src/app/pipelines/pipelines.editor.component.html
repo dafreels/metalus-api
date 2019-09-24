@@ -1,18 +1,37 @@
 <div class="pipelines-editor-layout">
   <div class="steps-editor-sidebar">
-    <div class="pipeline-info">
-      pipeline info
+    <div class="pipeline-panel">
+      <mat-card>
+        <mat-card-content>
+          <div class="pipeline-form">
+            <mat-form-field>
+              <input matInput placeholder="Id" [(ngModel)]="selectedPipeline.id" name="id" disabled="true">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput placeholder="Name" [(ngModel)]="selectedPipeline.name" required name="name">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Type</mat-label>
+              <mat-select required [(ngModel)]="selectedPipeline.category">
+                <mat-option value="pipeline">Pipeline</mat-option>
+                <mat-option value="step-group">Step Group</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
     <steps-selector [steps]="steps" [draggableSteps]="true"></steps-selector>
   </div>
   <div class="designer-content">
-    <div class="pipeline-buttons">
+    <div class="pipeline-panel">
       <mat-card>
         <mat-card-content>
           <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
                   style="margin-right: 5px;">Load</button>
           <mat-menu #pipelineMenu="matMenu">
-            <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id">{{pipeline.name}}</button>
+            <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id"
+                    (click)="loadPipeline(pipeline.id)">{{pipeline.name}}</button>
           </mat-menu>
           <button mat-raised-button color="primary"
                   style="margin-right: 5px;">New</button>
@@ -22,7 +41,53 @@
         </mat-card-content>
       </mat-card>
     </div>
-    <div class="pipeline-step-form">step form</div>
-    <designer [addElementSubject]="dndSubject" (designerDropEvent)="addStep($event)"></designer>
+    <div class="pipeline-panel">
+      <mat-card>
+        <mat-card-content>
+          <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Information</mat-panel-title>
+                <mat-panel-description>{{selectedStep.displayName}}</mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="pipeline-form">
+                <mat-form-field>
+                  <input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" (change)="handleIdChange()">
+                </mat-form-field>
+                <mat-form-field>
+                  <input matInput placeholder="Step Id" [ngModel]="selectedStep.stepId" name="stepId" disabled="true">
+                </mat-form-field>
+                <mat-form-field><input matInput placeholder="Name" [ngModel]="selectedStep.displayName" disabled="true"
+                                       name="displayName">
+                </mat-form-field>
+                <mat-form-field><textarea matInput placeholder="Description" [ngModel]="selectedStep.description"
+                                          name="description" disabled="true"></textarea></mat-form-field>
+                <mat-form-field><input matInput placeholder="Category" required [ngModel]="selectedStep.category"
+                                       name="category" disabled="true">
+                </mat-form-field>
+                <mat-form-field *ngIf="selectedStep.engineMeta"><input matInput placeholder="Engine Meta Command"
+                                       [ngModel]="selectedStep.engineMeta.spark"
+                                       name="stepCommand" disabled="true"></mat-form-field>
+                <mat-form-field *ngIf="selectedStep.engineMeta"><input matInput placeholder="Engine Meta Package"
+                                       [(ngModel)]="selectedStep.engineMeta.pkg"
+                                       name="stepPackage" disabled="true"></mat-form-field>
+              </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Parameters</mat-panel-title>
+                <mat-panel-description>{{selectedStep.displayName}}</mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="pipeline-form">
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <designer [addElementSubject]="dndSubject"
+              (designerDropEvent)="addStep($event)"
+              (elementSelected)="stepSelected($event)"
+              [dataModel]="designerModel"></designer>
   </div>
 </div>

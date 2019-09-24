@@ -20,6 +20,13 @@
         "description": {
           "type": "string"
         },
+        "category": {
+          "type": "string",
+          "enum": [
+            "pipeline",
+            "step-group"
+          ]
+        },
         "steps": {
           "type": "array",
           "items": {

@@ -1,24 +1,29 @@
+.pipelines-editor-layout {
+  display: flex;
+}
+
+.pipeline-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Left side
+ */
 .steps-editor-sidebar {
   width: 30%;
   margin-right: 15px;
 }
 
-.pipelines-editor-layout {
-  display: flex;
+.pipeline-panel {
+  margin-bottom: 8px;
 }
+
+/*
+ * Right Side
+ */
 
 .designer-content {
   width: 70%;
 }
 
-.pipeline-info {
-  height: 25%;
-}
-
-.pipeline-buttons {
-  height: 5%;
-}
-
-.pipeline-step-form {
-  height: 20%;
-}

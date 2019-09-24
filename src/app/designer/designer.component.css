@@ -1,39 +1,9 @@
 @import url('../../../node_modules/jsplumb/css/jsplumbtoolkit-defaults.css');
 
 .designer-canvas {
+  min-height: 400px;
   height: 100%;
   margin-top: 15px;
-  border-style: solid;
-  border-width: 5px;
-  border-color: black
-}
-
-.designer-canvas .designer-node {
-  /*border: 1px solid #346789;*/
-  box-shadow: 2px 2px 19px #aaa;
-  -o-box-shadow: 2px 2px 19px #aaa;
-  -webkit-box-shadow: 2px 2px 19px #aaa;
-  -moz-box-shadow: 2px 2px 19px #aaa;
-  -moz-border-radius: 40px;
-  border-radius: 40px;
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-  width: 64px;
-  height: 64px;
-  line-height: 32px;
-  cursor: pointer;
-  text-align: center;
-  z-index: 20;
-  position: absolute;
-  background-color: #eeeeef;
-  color: black;
-  /*font-family: helvetica;*/
-  padding: 0.5em;
-  font-size: 0.9em;
-  -webkit-transition: -webkit-box-shadow 0.15s ease-in;
-  -moz-transition: -moz-box-shadow 0.15s ease-in;
-  -o-transition: -o-box-shadow 0.15s ease-in;
-  transition: box-shadow 0.15s ease-in;
 }
 
 .designer-canvas .window:hover {
