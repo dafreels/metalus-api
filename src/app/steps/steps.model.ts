@@ -34,3 +34,41 @@ export interface IStepsResponse {
 export interface IStepResponse {
   step: IStep
 }
+
+export class StaticSteps {
+  static FORK_STEP: IStep = {
+    id: 'fork',
+    type: 'fork',
+    displayName: 'Fork',
+    description: 'A fork type step allows running a set of steps against a list of data simulating looping behavior',
+    category: 'FlowControl',
+    params: [
+      {
+        name: 'forkByValues',
+        type: 'text',
+        required: true,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        name: 'forkMethod',
+        type: 'text',
+        required: true,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ]
+  };
+  static JOIN_STEP: IStep = {
+    id: 'join',
+    type: 'join',
+    displayName: 'Join',
+    description: 'A join type step is used to join the executions of the fork step to continue processing in a linear manner.',
+    category: 'FlowControl',
+    params: []
+  };
+}

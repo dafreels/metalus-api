@@ -52,9 +52,6 @@
               </mat-expansion-panel-header>
               <div class="pipeline-form">
                 <mat-form-field>
-                  <input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" (change)="handleIdChange()">
-                </mat-form-field>
-                <mat-form-field>
                   <input matInput placeholder="Step Id" [ngModel]="selectedStep.stepId" name="stepId" disabled="true">
                 </mat-form-field>
                 <mat-form-field><input matInput placeholder="Name" [ngModel]="selectedStep.displayName" disabled="true"
@@ -79,6 +76,9 @@
                 <mat-panel-description>{{selectedStep.displayName}}</mat-panel-description>
               </mat-expansion-panel-header>
               <div class="pipeline-form">
+                <mat-form-field>
+                  <input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" (change)="handleIdChange()">
+                </mat-form-field>
               </div>
             </mat-expansion-panel>
           </mat-accordion>

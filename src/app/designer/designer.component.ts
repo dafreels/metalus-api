@@ -54,6 +54,7 @@ export class DesignerComponent implements AfterViewInit {
     stroke: '7',
     strokeWidth: 4
   };
+  // http://jsplumb.github.io/jsplumb/connectors.html
   sourceEndpoint: EndpointOptions = {
     id: '',
     maxConnections: 1,
@@ -61,13 +62,12 @@ export class DesignerComponent implements AfterViewInit {
     reattachConnections: false,
     scope: '',
     type: '',
-    // endpoint: 'Dot',
     anchor: 'Bottom',
     isSource: true,
     isTarget: false,
     paintStyle: this.endPointStyle,
     hoverPaintStyle: this.endpointHoverStyle,
-    connector: [ 'Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ]
+    connector: [ 'Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ] //midpoint: 0.0001
   };
   targetEndpoint: EndpointOptions = {
     id: '',
@@ -75,7 +75,6 @@ export class DesignerComponent implements AfterViewInit {
     reattachConnections: false,
     scope: '',
     type: '',
-    // endpoint: 'Dot',
     anchor: 'Top',
     isSource: false,
     isTarget: true,
@@ -87,14 +86,20 @@ export class DesignerComponent implements AfterViewInit {
 
   jsPlumbInstance;
 
+  // TODO see if there is an angular way to handle this
+  viewReady: boolean = false;
+  modelPopulating: boolean = false;
+
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
   @Input()
   set dataModel(model: DesignerModel) {
     if (model) {
-      console.log(`Loading designer model: ${JSON.stringify(model, null, 4)}`)
       this.model = model;
-      this.populateFromModel(this.model);
+      if (this.viewReady) {
+        this.initializeDesigner();
+        this.populateFromModel();
+      }
     } else {
       this.model = DesignerComponent.newModel();
     }
@@ -104,43 +109,11 @@ export class DesignerComponent implements AfterViewInit {
     if (!this.model) {
       this.model = DesignerComponent.newModel();
     }
-    this.jsPlumbInstance = jsPlumb.getInstance();
-    this.jsPlumbInstance.setContainer(this.canvas.nativeElement);
-    this.jsPlumbInstance.bind('connection', (info) => {
-      let connection = this.model.connections[`${info.sourceId}::${info.targetId}`];
-      if (!connection) {
-        connection = {
-          sourceNodeId: info.sourceId,
-          targetNodeId: info.targetId,
-          endpoints: []
-        };
-        this.model.connections[`${info.sourceId}::${info.targetId}`] = connection;
-      }
-      const endpoint = connection.endpoints.find(ep => ep.sourceEndPoint === this.model.endpoints[info.sourceEndpoint.id].name);
-      if (!endpoint) {
-        connection.endpoints.push({
-          sourceEndPoint: this.model.endpoints[info.sourceEndpoint.id].name,
-          targetEndPoint: this.model.endpoints[info.targetEndpoint.id].name
-        });
-      }
-      this.broadCastModelChanges();
-    });
-    this.jsPlumbInstance.bind('connectionDetached', (info) => {
-      let connection = this.model.connections[`${info.sourceId}::${info.targetId}`];
-      if (connection) {
-        const endpoint = connection.endpoints.findIndex(ep => ep.sourceEndPoint === this.model.endpoints[info.sourceEndpoint.id].name);
-        if (endpoint !== -1) {
-          connection.endpoints.splice(endpoint, 1);
-        }
-        if (connection.endpoints.length === 0) {
-          delete this.model.connections[`${info.sourceId}::${info.targetId}`];
-        }
-        this.broadCastModelChanges();
-      }
-    });
+    this.initializeDesigner();
     // Listen for the add new element call back event
     this.addElementSubject.subscribe(element => this.addDesignerElement(element));
-    this.populateFromModel(this.model);
+    this.populateFromModel();
+    this.viewReady = true;
   }
 
   static newModel() {
@@ -177,22 +150,74 @@ export class DesignerComponent implements AfterViewInit {
     this.addNModelNode(nodeId, this.model.nodes[nodeId]);
   }
 
-  populateFromModel(model: DesignerModel) {
-    // TODO Clear the designer
-    // Iterate the nodes in the model
-    for(let key of Object.keys(model.nodes)) {
-      this.addNModelNode(key, model.nodes[key]);
+  initializeDesigner() {
+    if (this.jsPlumbInstance) {
+      this.jsPlumbInstance.deleteEveryConnection();
+      this.jsPlumbInstance.deleteEveryEndpoint();
     }
-    // TODO Add connections from model
-    // let connection;
-    // for (let key of Object.keys(model.connections)) {
-    //   connection = model.connections[key];
-    //   connection.endpoints.forEach(ep => {
-    //     ep.sourceEndPoint;
-    //     ep.targetEndPoint;
-    //     this.jsPlumbInstance.addConnection();
-    //   });
-    // }
+    this.jsPlumbInstance = jsPlumb.getInstance();
+    this.jsPlumbInstance.setContainer(this.canvas.nativeElement);
+    this.jsPlumbInstance.bind('connection', (info) => {
+      if (this.modelPopulating) {
+        return;
+      }
+      let connection = this.model.connections[`${info.sourceId}::${info.targetId}`];
+      if (!connection) {
+        connection = {
+          sourceNodeId: info.sourceId,
+          targetNodeId: info.targetId,
+          endpoints: []
+        };
+        this.model.connections[`${info.sourceId}::${info.targetId}`] = connection;
+      }
+      const endpoint = connection.endpoints.find(ep => ep.sourceEndPoint === this.model.endpoints[info.sourceEndpoint.id].name);
+      if (!endpoint) {
+        connection.endpoints.push({
+          sourceEndPoint: this.model.endpoints[info.sourceEndpoint.id].name,
+          targetEndPoint: this.model.endpoints[info.targetEndpoint.id].name
+        });
+      }
+      this.broadCastModelChanges();
+    });
+    this.jsPlumbInstance.bind('connectionDetached', (info) => {
+      let connection = this.model.connections[`${info.sourceId}::${info.targetId}`];
+      if (connection) {
+        const endpoint = connection.endpoints.findIndex(ep => ep.sourceEndPoint === this.model.endpoints[info.sourceEndpoint.id].name);
+        if (endpoint !== -1) {
+          connection.endpoints.splice(endpoint, 1);
+        }
+        if (connection.endpoints.length === 0) {
+          delete this.model.connections[`${info.sourceId}::${info.targetId}`];
+        }
+        this.broadCastModelChanges();
+      }
+    });
+    this.designerCanvas.viewContainerRef.clear();
+  }
+
+  populateFromModel() {
+    this.modelPopulating = true;
+    // Iterate the nodes in the model
+    for(let key of Object.keys(this.model.nodes)) {
+      this.addNModelNode(key, this.model.nodes[key]);
+    }
+    // Add connections from model
+    let connection;
+    const endpointEntries = Object.entries(this.model.endpoints);
+    for (let key of Object.keys(this.model.connections)) {
+      connection = this.model.connections[key];
+      connection.endpoints.forEach(ep => {
+        this.jsPlumbInstance.connect({
+          source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
+            e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
+            entry[1].nodeId === connection.sourceNodeId)[0]),
+          target: this.jsPlumbInstance.getEndpoints(connection.targetNodeId).find(e =>
+            e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
+            entry[1].nodeId === connection.targetNodeId)[0])
+        });
+      });
+    }
+    this.modelPopulating = false;
   }
 
   private addNModelNode(nodeId, nodeData) {

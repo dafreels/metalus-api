@@ -9,8 +9,7 @@ import {Subject} from "rxjs";
 import {NameDialogComponent} from "../name-dialog/name.dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {StepsService} from "../steps/steps.service";
-import {IStep} from "../steps/steps.model";
-
+import {IStep, StaticSteps} from "../steps/steps.model";
 
 @Component({
   selector: 'pipelines-editor',
@@ -36,6 +35,8 @@ export class PipelinesEditorComponent implements OnInit {
     this.newPipeline();
     this.newStep();
     this.stepsService.getSteps().subscribe((steps: IStep[]) => {
+      steps.push(StaticSteps.FORK_STEP);
+      steps.push(StaticSteps.JOIN_STEP);
       this.steps = steps;
     });
 
@@ -60,7 +61,6 @@ export class PipelinesEditorComponent implements OnInit {
   @Input()
   set step(step: IPipelineStep) {
     if (step) {
-      // TODO Should this be the step from the pipeline?
       this.selectedStep = step;
     } else {
       this.newStep();
@@ -153,7 +153,6 @@ export class PipelinesEditorComponent implements OnInit {
   loadPipeline(id: string) {
     this.selectedPipeline = this.pipelines.find(p => p.id === id);
     const model = DesignerComponent.newModel();
-    // TODO Create logic to position the elements based on connections if layout is missing
     let nodeId;
     const nodeLookup = {};
     this.selectedPipeline.steps.forEach(step => {
@@ -168,45 +167,79 @@ export class PipelinesEditorComponent implements OnInit {
           data: step,
           event: undefined
         },
-        x: this.selectedPipeline.layout && this.selectedPipeline.layout.x ? this.selectedPipeline.layout.x : 20,
-        y: this.selectedPipeline.layout && this.selectedPipeline.layout.y ? this.selectedPipeline.layout.y : 20
+        x: this.selectedPipeline.layout && this.selectedPipeline.layout[step.id].x ? this.selectedPipeline.layout[step.id].x : -1,
+        y: this.selectedPipeline.layout && this.selectedPipeline.layout[step.id].y ? this.selectedPipeline.layout[step.id].y : -1
       };
       nodeLookup[step.id] = nodeId;
     });
     // Add connections
+    let connectedNodes = [];
     this.selectedPipeline.steps.forEach(step => {
       if (step.type !== 'branch' && step.nextStepId) {
         model.connections[`${nodeLookup[step.id]}::${nodeLookup[step.nextStepId]}`] = {
           sourceNodeId: nodeLookup[step.id],
           targetNodeId: nodeLookup[step.nextStepId],
-          endpoints: [
-            {
+          endpoints: [{
               sourceEndPoint: 'output',
               targetEndPoint: 'input'
-            }
-          ]
+            }]
         };
+        connectedNodes.push(step.nextStepId);
       } else {
         let connection;
         step.params.filter(p => p.type.toLowerCase() === 'result').forEach(output => {
-          connection = model.connections[`${nodeLookup[step.id]}::${nodeLookup[output.value]}`];
-          if (!connection) {
-            connection = {
-              sourceNodeId: nodeLookup[step.id],
-              targetNodeId: nodeLookup[output.value],
-              endpoints: []
-            };
-          }
-          connection.endpoints.push(
-            {
-              sourceEndPoint: output.name,
-              targetEndPoint: 'input'
+          if (output.value) {
+            connectedNodes.push(output.value);
+            connection = model.connections[`${nodeLookup[step.id]}::${nodeLookup[output.value]}`];
+            if (!connection) {
+              connection = {
+                sourceNodeId: nodeLookup[step.id],
+                targetNodeId: nodeLookup[output.value],
+                endpoints: []
+              };
+              model.connections[`${nodeLookup[step.id]}::${nodeLookup[output.value]}`] = connection;
             }
-          );
+            connection.endpoints.push({
+                sourceEndPoint: output.name,
+                targetEndPoint: 'input'
+              });
+          }
         });
       }
     });
-
+    // See if automatic layout needs to be applied
+    if (!this.selectedPipeline.layout ||
+      Object.keys(this.selectedPipeline.layout).length === 0) {
+      this.performAutoLayout(nodeLookup, connectedNodes, model);
+    }
     this.designerModel = model;
+  }
+
+  // TODO This may need to be moved to the designer component
+  // TODO This is a basic layout algorithm, need to try to use a proper library like dagre
+  private performAutoLayout(nodeLookup, connectedNodes, model) {
+    let x = 300;
+    let y = 50;
+    const nodeId = nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]];
+    const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
+    this.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
+  }
+
+  private setNodeCoordinates(model, nodeLookup, parentNode, nodeId, x, y) {
+    if (parentNode.x === -1) {
+      parentNode.x = x;
+    }
+    parentNode.y = y;
+    const children = Object.keys(model.connections).filter(key => key.indexOf(nodeId) === 0);
+    const totalWidth = children.length * 80;
+    y += 125;
+    x = children.length === 1 ? x : x - (totalWidth / 2);
+    let childNode;
+    children.forEach(child => {
+      nodeId = model.connections[child].targetNodeId;
+      childNode = model.nodes[nodeId];
+      this.setNodeCoordinates(model, nodeLookup, childNode, nodeId, x, y);
+      x += 80;
+    });
   }
 }
