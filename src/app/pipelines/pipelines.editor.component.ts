@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {PackageObjectsService} from "../packageObjects/package-objects.service";
 import {IPackageObject} from "../packageObjects/package-objects.model";
-import {IPipeline, IPipelineStep} from "./pipelines.model";
+import {IPipeline, IPipelineStep, IPipelineStepParam} from "./pipelines.model";
 import {PipelinesService} from "./pipelines.service";
 import {DesignerComponent, DesignerElement, DesignerModel} from "../designer/designer.component";
 import {DndDropEvent} from "ngx-drag-drop";
@@ -106,6 +106,12 @@ export class PipelinesEditorComponent implements OnInit {
   handleIdChange() {
     if (this.selectedElement) {
       this.selectedElement.name = this.selectedStep.id;
+    }
+  }
+
+  handleParameterUpdate(name: string, parameter: IPipelineStepParam) {
+    if (name === 'executeIfEmpty') {
+      this.selectedStep.executeIfEmpty = parameter.value;
     }
   }
 

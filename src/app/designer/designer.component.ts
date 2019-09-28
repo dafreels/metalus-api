@@ -54,7 +54,6 @@ export class DesignerComponent implements AfterViewInit {
     stroke: '7',
     strokeWidth: 4
   };
-  // http://jsplumb.github.io/jsplumb/connectors.html
   sourceEndpoint: EndpointOptions = {
     id: '',
     maxConnections: 1,

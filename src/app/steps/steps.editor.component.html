@@ -35,14 +35,18 @@
           </mat-slide-toggle>
 
           <div class="step-parameter-add-div">
-            <button mat-raised-button color="primary" aria-label="Add a new parameter" (click)="addNewParameter()">Add</button>
+            <button mat-raised-button color="primary" (click)="addNewParameter()">
+              <mat-icon aria-label="Add a new parameter">add</mat-icon>
+            </button>
           </div>
           <!-- Parameters panel -->
           <mat-accordion>
             <mat-expansion-panel *ngFor="let param of selectedStep.params">
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                  <button mat-button color="primary" aria-label="Remove this parameter" (click)="deleteParameter(param)">Delete</button>
+                  <button mat-raised-button color="primary" (click)="deleteParameter(param)">
+                      <mat-icon aria-label="Remove this parameter">remove</mat-icon>
+                  </button>
                 </mat-panel-title>
                 <mat-panel-description>
                   {{param.name}}
@@ -74,9 +78,11 @@
                             name="defaultValue"></textarea>
                 </mat-form-field>
               </span>
-                  <span><button mat-raised-button color="primary"
-                                [disabled]="!(param.type === 'script' || param.type === 'object')"
-                                (click)="openEditor(param)">Editor</button></span>
+                  <span>
+                    <button mat-raised-button color="primary"
+                            [disabled]="!(param.type === 'script' || param.type === 'object')"
+                                (click)="openEditor(param)"><mat-icon aria-label="Open Editor">edit</mat-icon></button>
+                  </span>
                 </div>
 
                 <mat-form-field>

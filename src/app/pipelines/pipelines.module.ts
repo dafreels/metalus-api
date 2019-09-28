@@ -4,6 +4,7 @@ import {PipelinesEditorComponent} from "./pipelines.editor.component";
 import {StepsModule} from "../steps/steps.module";
 import {DesignerModule} from "../designer/designer.module";
 import {SharedComponentsModule} from "../shared/shared.components";
+import {PipelineParameterComponent} from "./parameters/pipeline.parameter.component";
 
 @NgModule({
   imports: [
@@ -12,7 +13,8 @@ import {SharedComponentsModule} from "../shared/shared.components";
     StepsModule
   ],
   declarations: [
-    PipelinesEditorComponent
+    PipelinesEditorComponent,
+    PipelineParameterComponent
   ],
   exports: [
     PipelinesEditorComponent

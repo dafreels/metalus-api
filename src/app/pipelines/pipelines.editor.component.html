@@ -79,6 +79,21 @@
                 <mat-form-field>
                   <input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" (change)="handleIdChange()">
                 </mat-form-field>
+                <mat-accordion>
+                  <pipelines-parameter
+                    [parameter]="{
+                    name: 'executeIfEmpty',
+                    value: selectedStep.executeIfEmpty || ' ',
+                    type: 'text',
+                    required: false,
+                    defaultValue: undefined,
+                    language: undefined,
+                    className: undefined,
+                    parameterType: undefined}"
+                  (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
+                  <pipelines-parameter *ngFor="let param of selectedStep.params"
+                                       [parameter]="param"></pipelines-parameter>
+                </mat-accordion>
               </div>
             </mat-expansion-panel>
           </mat-accordion>
