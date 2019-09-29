@@ -148,7 +148,7 @@ export class StepsEditorComponent implements OnInit {
       const dialogRef = this.dialog.open(CodeEditorComponent, {
         width: '75%',
         height: '90%',
-        data: {code: inputData.defaultValue, language: inputData.language}
+        data: {code: inputData.defaultValue, language: inputData.language, allowSave: true}
       });
       dialogRef.afterClosed().subscribe(result => {
         if(result) {

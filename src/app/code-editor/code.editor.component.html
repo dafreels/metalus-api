@@ -18,5 +18,5 @@
 </div>
 <div mat-dialog-actions class="code-button-div">
   <button mat-raised-button (click)="closeDialog()">Close</button>
-  <button mat-raised-button color="primary" [mat-dialog-close]="data">Ok</button>
+  <button *ngIf="data.allowSave" mat-raised-button color="primary" [mat-dialog-close]="data">Ok</button>
 </div>

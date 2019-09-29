@@ -10,6 +10,7 @@ import {NameDialogComponent} from "../name-dialog/name.dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {StepsService} from "../steps/steps.service";
 import {IStep, StaticSteps} from "../steps/steps.model";
+import {CodeEditorComponent} from "../code-editor/code.editor.component";
 
 @Component({
   selector: 'pipelines-editor',
@@ -219,6 +220,62 @@ export class PipelinesEditorComponent implements OnInit {
       this.performAutoLayout(nodeLookup, connectedNodes, model);
     }
     this.designerModel = model;
+  }
+
+  exportPipeline() {
+    this.dialog.open(CodeEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: {code: JSON.stringify(this.generatePipeline(), null, 4),
+        language: 'json',
+      allowSave: false}
+    });
+  }
+
+  generatePipeline(): IPipeline {
+    const targetIds = Object.values(this.designerModel.connections).map(conn => conn.targetNodeId);
+    const nodeIds = Object.keys(this.designerModel.nodes).filter(key => targetIds.indexOf(key) === -1);
+    const rootNode = this.designerModel.nodes[nodeIds[0]];
+    const pipeline = {
+      id: this.selectedPipeline.id,
+      name: this.selectedPipeline.name,
+      category: this.selectedPipeline.category,
+      layout: {},
+      steps: []
+    };
+    this.addNodeToPipeline(rootNode, pipeline);
+    return pipeline;
+  }
+
+  private addNodeToPipeline(node, pipeline) {
+    const nodeId = Object.keys(this.designerModel.nodes).find(key => this.designerModel.nodes[key].data.name === node.data.name);
+    const step = node.data.data;
+    pipeline.steps.push(step);
+    pipeline.layout[step.id] = {
+      x: node.x,
+      y: node.y
+    };
+    // TODO Should the result parameter be set when the connection is made (model change) or only when saving?
+    const children = Object.values(this.designerModel.connections).filter(conn => conn.sourceNodeId === nodeId);
+    if (children.length > 0) {
+      if (step.type === 'branch') {
+        let childNode;
+        delete step.nextStepId;
+        children.forEach(child => {
+          childNode = this.designerModel.nodes[child.targetNodeId];
+          child.endpoints.forEach(ep => {
+            step.params.find(p => p.name === ep.sourceEndPoint).value = childNode.data.name;
+            this.addNodeToPipeline(childNode, pipeline);
+          });
+        });
+      } else {
+        const childNode = this.designerModel.nodes[children[0].targetNodeId];
+        step.nextStepId = childNode.data.data.id;
+        this.addNodeToPipeline(childNode, pipeline);
+      }
+    } else {
+      delete step.nextStepId;
+    }
   }
 
   // TODO This may need to be moved to the designer component

@@ -31,6 +31,7 @@
         <mat-option value="sql">SQL</mat-option>
       </mat-select>
     </mat-form-field>
+    <!-- TODO Add the editor button and set disabled state -->
     <button *ngIf="param.id > 0" mat-raised-button color="primary" (click)="removeClause(param.id)">
       <mat-icon aria-label="Remove OR Clause">remove</mat-icon>
     </button>

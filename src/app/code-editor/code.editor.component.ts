@@ -10,6 +10,7 @@ import 'brace/theme/solarized_light';
 export interface CodeEditorDialogData {
   code: string;
   language: string;
+  allowSave: boolean;
 }
 
 @Component({
