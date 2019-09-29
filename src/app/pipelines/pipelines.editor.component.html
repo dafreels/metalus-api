@@ -35,7 +35,8 @@
           </mat-menu>
           <button mat-raised-button color="primary"
                   style="margin-right: 5px;">New</button>
-          <button mat-raised-button color="primary" style="margin-right: 5px;">Save</button>
+          <button mat-raised-button color="primary" style="margin-right: 5px;"
+          (click)="savePipeline()">Save</button>
           <button mat-raised-button color="primary" style="margin-right: 5px;">Clear</button>
           <button mat-raised-button color="primary" (click)="exportPipeline()">Export</button>
         </mat-card-content>

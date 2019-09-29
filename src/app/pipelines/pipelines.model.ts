@@ -24,3 +24,7 @@ export type PipelineCategory = 'pipeline' | 'step-group';
 export interface IPipelinesResponse {
   pipelines: IPipeline[]
 }
+
+export interface IPipelineResponse {
+  pipeline: IPipeline;
+}

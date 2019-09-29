@@ -11,6 +11,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {StepsService} from "../steps/steps.service";
 import {IStep, StaticSteps} from "../steps/steps.model";
 import {CodeEditorComponent} from "../code-editor/code.editor.component";
+import {WaitModalComponent} from "../wait-modal/wait.modal.component";
 
 @Component({
   selector: 'pipelines-editor',
@@ -22,6 +23,7 @@ export class PipelinesEditorComponent implements OnInit {
   pipelines: IPipeline[];
   steps: IStep[];
   selectedPipeline: IPipeline;
+  _pipeline: IPipeline;
   selectedStep: IPipelineStep;
   selectedElement: DesignerElement;
   designerModel: DesignerModel =  DesignerComponent.newModel();
@@ -53,7 +55,8 @@ export class PipelinesEditorComponent implements OnInit {
   @Input()
   set pipeline(pipeline: IPipeline) {
     if (pipeline) {
-      this.selectedPipeline = pipeline;
+      this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
+      this._pipeline = pipeline;
     } else {
       this.newPipeline();
     }
@@ -62,7 +65,12 @@ export class PipelinesEditorComponent implements OnInit {
   @Input()
   set step(step: IPipelineStep) {
     if (step) {
-      this.selectedStep = step;
+      let localStep = this.selectedPipeline.steps.find(s => s.id === step.id);
+      if (localStep) {
+        this.selectedStep = localStep;
+      } else {
+        this.newStep();
+      }
     } else {
       this.newStep();
     }
@@ -116,7 +124,6 @@ export class PipelinesEditorComponent implements OnInit {
     }
   }
 
-// TODO Add code to handle model changes
   addStep(event: DndDropEvent) {
     const dialogRef = this.dialog.open(NameDialogComponent, {
       width: '25%',
@@ -232,7 +239,34 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
-  generatePipeline(): IPipeline {
+  savePipeline() {
+    const dialogRef = this.dialog.open(WaitModalComponent, {
+      width: '25%',
+      height: '25%'
+    });
+    const newPipeline = this.generatePipeline();
+    let observable;
+    if (this.selectedPipeline.id) {
+      observable = this.pipelinesService.updatePipeline(newPipeline);
+    } else {
+      observable = this.pipelinesService.addPipeline(newPipeline);
+    }
+    observable.subscribe((pipeline: IPipeline) => {
+      this._pipeline = pipeline;
+      this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
+      const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
+      if (index === -1) {
+        this.pipelines.push(this.selectedPipeline);
+      } else {
+        this.pipelines[index] = this.selectedPipeline;
+      }
+      // Change the reference to force the selector to refresh
+      this.pipelines = [...this.pipelines];
+      dialogRef.close();
+    });
+  }
+
+  private generatePipeline(): IPipeline {
     const targetIds = Object.values(this.designerModel.connections).map(conn => conn.targetNodeId);
     const nodeIds = Object.keys(this.designerModel.nodes).filter(key => targetIds.indexOf(key) === -1);
     const rootNode = this.designerModel.nodes[nodeIds[0]];
@@ -250,6 +284,7 @@ export class PipelinesEditorComponent implements OnInit {
   private addNodeToPipeline(node, pipeline) {
     const nodeId = Object.keys(this.designerModel.nodes).find(key => this.designerModel.nodes[key].data.name === node.data.name);
     const step = node.data.data;
+    delete step._id;
     pipeline.steps.push(step);
     pipeline.layout[step.id] = {
       x: node.x,
