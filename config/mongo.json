@@ -1,6 +1,6 @@
 {
     "storageType": "mongodb",
     "databaseServer": "localhost",
-    "databaseName": "sparkApplicationComposer",
+    "databaseName": "metl",
     "databaseSSL": false
 }

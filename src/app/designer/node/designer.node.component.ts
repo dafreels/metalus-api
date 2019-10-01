@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Output, ViewEncapsulation} from "@angular/core";
+import {Component, EventEmitter, Output, ViewChild, ViewEncapsulation} from "@angular/core";
 import {DesignerElement} from "../designer.component";
+import {MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'designer-node',
@@ -10,9 +11,19 @@ import {DesignerElement} from "../designer.component";
 export class DesignerNodeComponent {
   data: DesignerElement;
   id: string;
+  @ViewChild(MatMenuTrigger, {static: true}) trigger: MatMenuTrigger;
   @Output() nodeSelected = new EventEmitter<DesignerElement>();
+  @Output() nodeRemoved = new EventEmitter<DesignerElement>();
 
-  nodeClicked() {
+  nodeClicked(event) {
     this.nodeSelected.emit(this.data);
+    if(event.shiftKey) {
+      this.trigger.openMenu();
+    }
+  }
+
+  removeNode() {
+    this.trigger.closeMenu();
+    this.nodeRemoved.emit(this.data);
   }
 }

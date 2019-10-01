@@ -35,8 +35,15 @@
     <button *ngIf="param.id > 0" mat-raised-button color="primary" (click)="removeClause(param.id)">
       <mat-icon aria-label="Remove OR Clause">remove</mat-icon>
     </button>
-    <button *ngIf="param.id === 0" mat-raised-button color="primary" (click)="addClause()">
+    <button *ngIf="param.id === 0" mat-raised-button color="primary"
+            (click)="addClause()"
+            [disabled]="param.type === 'object' || param.type === 'script'">
       <mat-icon aria-label="Add OR Clause">add</mat-icon>
+    </button>
+    <button *ngIf="param.id === 0" mat-raised-button color="primary"
+            (click)="openEditor()"
+            [disabled]="param.type !== 'object' && param.type !== 'script'">
+      <mat-icon aria-label="Open Editor">edit</mat-icon>
     </button>
   </div>
 </mat-expansion-panel>

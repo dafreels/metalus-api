@@ -8,11 +8,12 @@
               <input matInput placeholder="Id" [(ngModel)]="selectedPipeline.id" name="id" disabled="true">
             </mat-form-field>
             <mat-form-field>
-              <input matInput placeholder="Name" [(ngModel)]="selectedPipeline.name" required name="name">
+              <input matInput placeholder="Name" [(ngModel)]="selectedPipeline.name" required name="name"
+              (change)="handleModelChange()">
             </mat-form-field>
             <mat-form-field>
               <mat-label>Type</mat-label>
-              <mat-select required [(ngModel)]="selectedPipeline.category">
+              <mat-select required [(ngModel)]="selectedPipeline.category" (selectionChange)="handleModelChange()">
                 <mat-option value="pipeline">Pipeline</mat-option>
                 <mat-option value="step-group">Step Group</mat-option>
               </mat-select>
@@ -33,11 +34,12 @@
             <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id"
                     (click)="loadPipeline(pipeline.id)">{{pipeline.name}}</button>
           </mat-menu>
-          <button mat-raised-button color="primary"
-                  style="margin-right: 5px;">New</button>
+          <button mat-raised-button color="primary" style="margin-right: 5px;"
+                  (click)="newPipeline()">New</button>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
           (click)="savePipeline()">Save</button>
-          <button mat-raised-button color="primary" style="margin-right: 5px;">Clear</button>
+          <button mat-raised-button color="primary" style="margin-right: 5px;"
+          (click)="cancelPipelineChange()">Cancel</button>
           <button mat-raised-button color="primary" (click)="exportPipeline()">Export</button>
         </mat-card-content>
       </mat-card>
@@ -91,6 +93,7 @@
                     language: undefined,
                     className: undefined,
                     parameterType: undefined}"
+                    [packageObjects]="packageObjects"
                   (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
                   <pipelines-parameter *ngFor="let param of selectedStep.params"
                                        [parameter]="param"></pipelines-parameter>
@@ -104,6 +107,7 @@
     <designer [addElementSubject]="dndSubject"
               (designerDropEvent)="addStep($event)"
               (elementSelected)="stepSelected($event)"
-              [dataModel]="designerModel"></designer>
+              [dataModel]="designerModel"
+              (modelChanged)="handleModelChange()"></designer>
   </div>
 </div>

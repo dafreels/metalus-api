@@ -12,6 +12,7 @@ import {StepsService} from "../steps/steps.service";
 import {IStep, StaticSteps} from "../steps/steps.model";
 import {CodeEditorComponent} from "../code-editor/code.editor.component";
 import {WaitModalComponent} from "../wait-modal/wait.modal.component";
+import {diff} from "deep-object-diff";
 
 @Component({
   selector: 'pipelines-editor',
@@ -29,6 +30,10 @@ export class PipelinesEditorComponent implements OnInit {
   designerModel: DesignerModel =  DesignerComponent.newModel();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
 
+  // loading: boolean = false;
+  // changed: boolean = false;
+  // valid: boolean = true;
+
   constructor(private stepsService: StepsService,
               private pipelinesService: PipelinesService,
               private packageObjectsService: PackageObjectsService,
@@ -37,6 +42,8 @@ export class PipelinesEditorComponent implements OnInit {
   ngOnInit(): void {
     this.newPipeline();
     this.newStep();
+    // this.changed = false;
+    // this.valid = true;
     this.stepsService.getSteps().subscribe((steps: IStep[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
@@ -77,12 +84,15 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   newPipeline() {
-    this.selectedPipeline = {
+    this._pipeline = {
       name: "",
       steps: [],
       id: '',
       category: 'pipeline'
     };
+    this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
+    // this.changed = true;
+    // this.valid = true;
   }
 
   newStep() {
@@ -140,7 +150,7 @@ export class PipelinesEditorComponent implements OnInit {
         this.dndSubject.next({
           name: result,
           tooltip: step.description,
-          icon: `../assets/${step.type}.png`,
+          icon: `../assets/${step.type.toLocaleLowerCase()}.png`,
           input: true,
           outputs: this.generateOutputs(step),
           data: step,
@@ -165,7 +175,9 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   loadPipeline(id: string) {
-    this.selectedPipeline = this.pipelines.find(p => p.id === id);
+    // this.loading = true;
+    this._pipeline = this.pipelines.find(p => p.id === id);
+    this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
     const model = DesignerComponent.newModel();
     let nodeId;
     const nodeLookup = {};
@@ -175,7 +187,7 @@ export class PipelinesEditorComponent implements OnInit {
         data: {
           name: step.id,
           tooltip: step.description,
-          icon: `../assets/${step.type}.png`,
+          icon: `../assets/${step.type.toLocaleLowerCase()}.png`,
           input: true,
           outputs: this.generateOutputs(step),
           data: step,
@@ -227,6 +239,35 @@ export class PipelinesEditorComponent implements OnInit {
       this.performAutoLayout(nodeLookup, connectedNodes, model);
     }
     this.designerModel = model;
+    // this.loading = false;
+    // this.changed = false;
+    // this.valid = true;
+  }
+
+  // disableLoad() {
+  //   return this.changed;
+  // }
+  //
+  // disableNew() {
+  //   return this.changed;
+  // }
+  //
+  // disableSave() {
+  //   return !this.changed && !this.valid;
+  // }
+  //
+  // disableCancel() {
+  //   return !this.changed;
+  // }
+
+  cancelPipelineChange() {
+    if (this.selectedPipeline.id) {
+      this.loadPipeline(this.selectedPipeline.id);
+    } else {
+      this.newPipeline();
+      // this.changed = false;
+      // this.valid = true;
+    }
   }
 
   exportPipeline() {
@@ -266,6 +307,20 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
+  handleModelChange() {
+    /*
+     * TODO:
+     * Validate the pipeline
+     */
+    // if (!this.loading) {
+      const pipeline = this.generatePipeline();
+      const changes = diff(this._pipeline, pipeline);
+      // console.log(`Changes: ${JSON.stringify(changes, null, 4)}`);
+    //   this.changed = Object.keys(changes).length > 0;
+    //   this.valid = true;
+    // }
+  }
+
   private generatePipeline(): IPipeline {
     const targetIds = Object.values(this.designerModel.connections).map(conn => conn.targetNodeId);
     const nodeIds = Object.keys(this.designerModel.nodes).filter(key => targetIds.indexOf(key) === -1);
@@ -282,6 +337,9 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   private addNodeToPipeline(node, pipeline) {
+    if (!node) {
+      return;
+    }
     const nodeId = Object.keys(this.designerModel.nodes).find(key => this.designerModel.nodes[key].data.name === node.data.name);
     const step = node.data.data;
     delete step._id;

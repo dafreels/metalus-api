@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
-  Component, ComponentFactoryResolver,
+  Component,
+  ComponentFactoryResolver,
   ElementRef,
   EventEmitter,
   Input,
@@ -113,6 +114,10 @@ export class DesignerComponent implements AfterViewInit {
     this.addElementSubject.subscribe(element => this.addDesignerElement(element));
     this.populateFromModel();
     this.viewReady = true;
+  }
+
+  removeElement(data: DesignerElement) {
+    this.jsPlumbInstance.remove(Object.keys(this.model.nodes).find(key => this.model.nodes[key].data.name === data.name));
   }
 
   static newModel() {
@@ -283,6 +288,7 @@ export class DesignerComponent implements AfterViewInit {
     componentRef.instance.id = nodeId;
     // Handle selection events
     componentRef.instance.nodeSelected.subscribe(data => this.elementSelected.emit(data));
+    componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;
     node.setAttribute('id', nodeId);

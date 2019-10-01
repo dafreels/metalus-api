@@ -5,11 +5,13 @@ import {DesignerNodeComponent} from "./node/designer.node.component";
 import {DesignerNodeDirective} from "./node/designer.node.directive";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatCardModule} from "@angular/material/card";
+import {MatMenuModule} from "@angular/material/menu";
 
 @NgModule({
   imports: [
     DndModule,
     MatCardModule,
+    MatMenuModule,
     MatTooltipModule
   ],
   declarations: [

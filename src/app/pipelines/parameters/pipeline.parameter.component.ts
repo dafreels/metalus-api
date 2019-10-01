@@ -1,5 +1,9 @@
 import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {IPipelineStepParam} from "../pipelines.model";
+import {CodeEditorComponent} from "../../code-editor/code.editor.component";
+import {ObjectEditorComponent} from "../../object-editor/object.editor.component";
+import {MatDialog} from "@angular/material/dialog";
+import {IPackageObject} from "../../packageObjects/package-objects.model";
 
 export interface SplitParameter {
   id: number;
@@ -16,14 +20,16 @@ export interface SplitParameter {
 })
 export class PipelineParameterComponent {
 
+  @Input() packageObjects: IPackageObject[];
   @Output() parameterUpdate = new EventEmitter<IPipelineStepParam>();
-
   leadCharacters: string[] = ['@', '!', '#', '$'];
   parameterName: string;
   parameters: SplitParameter[];
   complexParameter: boolean = false;
   _parameter: IPipelineStepParam;
   private id: number = 0;
+
+  constructor(public dialog: MatDialog) {}
 
   @Input()
   set parameter(p: IPipelineStepParam) {
@@ -59,7 +65,13 @@ export class PipelineParameterComponent {
               };
             });
           } else {
-            this.parameters = [];
+            this.parameters = [
+              {
+                type: 'static',
+                value: '',
+                id: this.id++
+              }
+            ];
           }
       }
     }
@@ -70,9 +82,9 @@ export class PipelineParameterComponent {
     let count = 0;
     this.parameters.forEach((p) => {
       if (count === 0) {
-        parameterValue = this.getLeadCharacter(p.type) + p.value;
+        parameterValue = PipelineParameterComponent.getLeadCharacter(p.type) + p.value;
       } else {
-        parameterValue = `${parameterValue} || ${this.getLeadCharacter(p.type) + p.value}`;
+        parameterValue = `${parameterValue} || ${PipelineParameterComponent.getLeadCharacter(p.type) + p.value}`;
       }
       count += 1;
     });
@@ -98,6 +110,40 @@ export class PipelineParameterComponent {
     });
   }
 
+  openEditor() {
+    const inputData = this.parameters[0];
+    if (inputData.type === 'script') {
+      const dialogRef = this.dialog.open(CodeEditorComponent, {
+        width: '75%',
+        height: '90%',
+        data: {code: inputData.value, language: inputData.language, allowSave: true}
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if(result) {
+          this._parameter.value = result.code;
+          this._parameter.language = result.language;
+        }
+      });
+    } else if (inputData.type === 'object') {
+      const schema = this.packageObjects.find(p => p.id === inputData.className);
+      let pkgSchema;
+      if (schema) {
+        pkgSchema = JSON.parse(schema.schema);
+      }
+      const dialogRef = this.dialog.open(ObjectEditorComponent, {
+        width: '75%',
+        height: '90%',
+        data: {userObject: inputData.value, schema: pkgSchema, schemaName: inputData.className, pkgObjs: this.packageObjects }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if(result) {
+          this._parameter.value = result.userObject;
+          this._parameter.className = result.schemaName;
+        }
+      });
+    }
+  }
+
   private getType(value, defaultType) {
     let type = defaultType;
     if (value && this.leadCharacters.indexOf(value[0]) !== -1) {
@@ -120,7 +166,7 @@ export class PipelineParameterComponent {
     return type;
   }
 
-  private getLeadCharacter(type: string) {
+  private static getLeadCharacter(type: string) {
     let leadCharacter;
     switch(type) {
       case 'global':
