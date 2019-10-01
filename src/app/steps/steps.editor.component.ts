@@ -9,6 +9,7 @@ import {ObjectEditorComponent} from "../object-editor/object.editor.component";
 import {MatDialog} from "@angular/material/dialog";
 import {WaitModalComponent} from "../wait-modal/wait.modal.component";
 import {NameDialogComponent} from "../name-dialog/name.dialog.component";
+import {ErrorModalComponent} from "../error-modal/error.modal.component";
 
 @Component({
   selector: 'steps-editor',
@@ -96,6 +97,20 @@ export class StepsEditorComponent implements OnInit {
       // Change the reference to force the selector to refresh
       this.steps = [...this.steps];
       dialogRef.close();
+    }, (error) => {
+      let message;
+      if (error.error instanceof ErrorEvent) {
+        // A client-side or network error occurred. Handle it accordingly.
+        message = error.error.message;
+      } else {
+        message = error.message;
+      }
+      dialogRef.close();
+      this.dialog.open(ErrorModalComponent, {
+        width: '450px',
+        height: '250px',
+        data: { message }
+      });
     });
   }
 

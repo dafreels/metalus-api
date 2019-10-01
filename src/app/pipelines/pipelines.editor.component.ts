@@ -13,6 +13,7 @@ import {IStep, StaticSteps} from "../steps/steps.model";
 import {CodeEditorComponent} from "../code-editor/code.editor.component";
 import {WaitModalComponent} from "../wait-modal/wait.modal.component";
 import {diff} from "deep-object-diff";
+import {ErrorModalComponent} from "../error-modal/error.modal.component";
 
 @Component({
   selector: 'pipelines-editor',
@@ -304,6 +305,20 @@ export class PipelinesEditorComponent implements OnInit {
       // Change the reference to force the selector to refresh
       this.pipelines = [...this.pipelines];
       dialogRef.close();
+    }, (error) => {
+      let message;
+      if (error.error instanceof ErrorEvent) {
+        // A client-side or network error occurred. Handle it accordingly.
+        message = error.error.message;
+      } else {
+        message = error.message;
+      }
+      dialogRef.close();
+      this.dialog.open(ErrorModalComponent, {
+        width: '450px',
+        height: '250px',
+        data: { message }
+      });
     });
   }
 
@@ -375,7 +390,7 @@ export class PipelinesEditorComponent implements OnInit {
   // TODO This is a basic layout algorithm, need to try to use a proper library like dagre
   private performAutoLayout(nodeLookup, connectedNodes, model) {
     let x = 300;
-    let y = 50;
+    let y = 100;
     const nodeId = nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]];
     const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
     this.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
@@ -390,6 +405,9 @@ export class PipelinesEditorComponent implements OnInit {
     const totalWidth = children.length * 80;
     y += 125;
     x = children.length === 1 ? x : x - (totalWidth / 2);
+    if (x < 0) {
+      x = 100;
+    }
     let childNode;
     children.forEach(child => {
       nodeId = model.connections[child].targetNodeId;

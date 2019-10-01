@@ -6,10 +6,13 @@ import {StepsService} from "./steps.service";
 import {SharedComponentsModule} from "../shared/shared.components"
 import {StepsListComponent} from "./selector/list/steps.list.component";
 import {DesignerModule} from "../designer/designer.module";
+import {ErrorModalComponent} from "../error-modal/error.modal.component";
+import {ErrorModalModule} from "../error-modal/error.modal.module";
 
 @NgModule({
   imports: [
     DesignerModule,
+    ErrorModalModule,
     SharedComponentsModule
   ],
   declarations: [
