@@ -56,6 +56,27 @@ export class StepsEditorComponent implements OnInit {
     };
   }
 
+  bulkLoadSteps() {
+    const dialogRef = this.dialog.open(CodeEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: {
+        code: '[]',
+        language: 'json',
+        allowSave: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.code.trim().length > 0) {
+        const steps = JSON.parse(result.code);
+        this.stepsService.updateSteps(steps).subscribe((steps: IStep[]) => {
+            this.steps = steps;
+          }, error => this.handleError(error, dialogRef)
+        );
+      }
+    });
+  }
+
   cancel() {
     if (this.originalStep) {
       this.selectedStep = JSON.parse(JSON.stringify(this.originalStep));
@@ -97,20 +118,22 @@ export class StepsEditorComponent implements OnInit {
       // Change the reference to force the selector to refresh
       this.steps = [...this.steps];
       dialogRef.close();
-    }, (error) => {
-      let message;
-      if (error.error instanceof ErrorEvent) {
-        // A client-side or network error occurred. Handle it accordingly.
-        message = error.error.message;
-      } else {
-        message = error.message;
-      }
-      dialogRef.close();
-      this.dialog.open(ErrorModalComponent, {
-        width: '450px',
-        height: '250px',
-        data: { message }
-      });
+    }, error => this.handleError(error, dialogRef));
+  }
+
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '250px',
+      data: {message}
     });
   }
 

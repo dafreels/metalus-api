@@ -179,6 +179,13 @@ export class PipelinesEditorComponent implements OnInit {
     // this.loading = true;
     this._pipeline = this.pipelines.find(p => p.id === id);
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
+    this.loadPipelineToDesigner();
+    // this.loading = false;
+    // this.changed = false;
+    // this.valid = true;
+  }
+
+  private loadPipelineToDesigner() {
     const model = DesignerComponent.newModel();
     let nodeId;
     const nodeLookup = {};
@@ -207,9 +214,9 @@ export class PipelinesEditorComponent implements OnInit {
           sourceNodeId: nodeLookup[step.id],
           targetNodeId: nodeLookup[step.nextStepId],
           endpoints: [{
-              sourceEndPoint: 'output',
-              targetEndPoint: 'input'
-            }]
+            sourceEndPoint: 'output',
+            targetEndPoint: 'input'
+          }]
         };
         connectedNodes.push(step.nextStepId);
       } else {
@@ -227,9 +234,9 @@ export class PipelinesEditorComponent implements OnInit {
               model.connections[`${nodeLookup[step.id]}::${nodeLookup[output.value]}`] = connection;
             }
             connection.endpoints.push({
-                sourceEndPoint: output.name,
-                targetEndPoint: 'input'
-              });
+              sourceEndPoint: output.name,
+              targetEndPoint: 'input'
+            });
           }
         });
       }
@@ -240,12 +247,9 @@ export class PipelinesEditorComponent implements OnInit {
       this.performAutoLayout(nodeLookup, connectedNodes, model);
     }
     this.designerModel = model;
-    // this.loading = false;
-    // this.changed = false;
-    // this.valid = true;
   }
 
-  // disableLoad() {
+// disableLoad() {
   //   return this.changed;
   // }
   //
@@ -281,6 +285,25 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
+  importPipeline() {
+    const dialogRef = this.dialog.open(CodeEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: {code: '',
+        language: 'json',
+        allowSave: true}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.code.trim().length > 0) {
+        const pipeline = JSON.parse(result.code);
+        delete pipeline._id;
+        this._pipeline = pipeline;
+        this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
+        this.loadPipelineToDesigner();
+      }
+    });
+  }
+
   savePipeline() {
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
@@ -288,7 +311,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
     const newPipeline = this.generatePipeline();
     let observable;
-    if (this.selectedPipeline.id) {
+    if (this.selectedPipeline.id && this.pipelines.findIndex(p => p.id === this.selectedPipeline.id)) {
       observable = this.pipelinesService.updatePipeline(newPipeline);
     } else {
       observable = this.pipelinesService.addPipeline(newPipeline);

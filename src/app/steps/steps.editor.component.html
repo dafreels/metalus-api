@@ -9,7 +9,9 @@
                 style="margin-right: 5px;">Save</button>
         <button mat-raised-button color="primary" [disabled]="!stepChanged()" (click)="cancel()"
                 style="margin-right: 5px;">Cancel</button>
-        <button mat-raised-button color="primary" [disabled]="stepChanged()" (click)="newStep()">New</button>
+        <button mat-raised-button color="primary" [disabled]="stepChanged()" (click)="newStep()"
+                style="margin-right: 5px;">New</button>
+        <button mat-raised-button color="primary" (click)="bulkLoadSteps()">Bulk</button>
       </mat-card-content>
     </mat-card>
     <mat-card>
