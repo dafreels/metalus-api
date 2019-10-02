@@ -13,7 +13,7 @@
 
 <json-schema-form
   loadExternalAssets="true"
-  [schema]="data.schema"
-  [(data)]="data.userObject"
+  [form]="formData"
+  (onSubmit)="onSubmit($event)"
   framework="material-design">
 </json-schema-form>
