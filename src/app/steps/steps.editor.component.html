@@ -89,7 +89,7 @@
 
                 <mat-form-field>
                   <mat-label>Script Language</mat-label>
-                  <mat-select [required]="param.type === 'object'" [(ngModel)]="param.language">
+                  <mat-select [disabled]="param.type !== 'script'" [required]="param.type === 'script'" [(ngModel)]="param.language">
                     <mat-option value="javascript">Javascript</mat-option>
                     <mat-option value="json">JSON</mat-option>
                     <mat-option value="scala">Scala</mat-option>
@@ -98,7 +98,7 @@
                 </mat-form-field>
 
                 <mat-form-field>
-                  <input matInput placeholder="Class Name" [(ngModel)]="param.className" name="className">
+                  <input matInput placeholder="Class Name" [disabled]="param.type !== 'object'" [required]="param.type === 'object'" [(ngModel)]="param.className" name="className">
                 </mat-form-field>
                 <mat-form-field>
                   <input matInput placeholder="Parameter Type" [(ngModel)]="param.parameterType" name="parameterType">

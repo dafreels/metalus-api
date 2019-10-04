@@ -30,6 +30,8 @@ export class PipelinesEditorComponent implements OnInit {
   selectedElement: DesignerElement;
   designerModel: DesignerModel =  DesignerComponent.newModel();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  stepLookup = {};
+  typeAhead: string[] = [];
 
   // loading: boolean = false;
   // changed: boolean = false;
@@ -118,6 +120,29 @@ export class PipelinesEditorComponent implements OnInit {
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as IPipelineStep;
     this.selectedElement = data;
+    /*
+     * TODO:
+     *  Expose the result parameters for secondary to type ahead when a '.' is detected
+     */
+    this.typeAhead = [];
+    const nodeId = this.stepLookup[data.name];
+    if (nodeId) {
+      this.addNodeToTypeAhead(nodeId, this.typeAhead);
+    }
+  }
+
+  private addNodeToTypeAhead(nodeId, typeAhead) {
+    const parents = Object.values(this.designerModel.connections).filter(c => c.targetNodeId === nodeId);
+    if (parents && parents.length > 0) {
+      let stepId;
+      parents.forEach(p => {
+        stepId = this.designerModel.nodes[p.sourceNodeId].data.name;
+        if (typeAhead.indexOf(stepId) === -1) {
+          typeAhead.push(stepId);
+        }
+        this.addNodeToTypeAhead(p.sourceNodeId, typeAhead);
+      });
+    }
   }
 
   /**
@@ -125,6 +150,8 @@ export class PipelinesEditorComponent implements OnInit {
    */
   handleIdChange() {
     if (this.selectedElement) {
+      this.stepLookup[this.selectedStep.id] = this.stepLookup[this.selectedElement.name];
+      delete this.stepLookup[this.selectedElement.name];
       this.selectedElement.name = this.selectedStep.id;
     }
   }
@@ -188,7 +215,7 @@ export class PipelinesEditorComponent implements OnInit {
   private loadPipelineToDesigner() {
     const model = DesignerComponent.newModel();
     let nodeId;
-    const nodeLookup = {};
+    this.stepLookup = {};
     this.selectedPipeline.steps.forEach(step => {
       nodeId = `designer-node-${model.nodeSeq++}`;
       model.nodes[nodeId] = {
@@ -204,15 +231,15 @@ export class PipelinesEditorComponent implements OnInit {
         x: this.selectedPipeline.layout && this.selectedPipeline.layout[step.id].x ? this.selectedPipeline.layout[step.id].x : -1,
         y: this.selectedPipeline.layout && this.selectedPipeline.layout[step.id].y ? this.selectedPipeline.layout[step.id].y : -1
       };
-      nodeLookup[step.id] = nodeId;
+      this.stepLookup[step.id] = nodeId;
     });
     // Add connections
     let connectedNodes = [];
     this.selectedPipeline.steps.forEach(step => {
       if (step.type !== 'branch' && step.nextStepId) {
-        model.connections[`${nodeLookup[step.id]}::${nodeLookup[step.nextStepId]}`] = {
-          sourceNodeId: nodeLookup[step.id],
-          targetNodeId: nodeLookup[step.nextStepId],
+        model.connections[`${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepId]}`] = {
+          sourceNodeId: this.stepLookup[step.id],
+          targetNodeId: this.stepLookup[step.nextStepId],
           endpoints: [{
             sourceEndPoint: 'output',
             targetEndPoint: 'input'
@@ -224,14 +251,14 @@ export class PipelinesEditorComponent implements OnInit {
         step.params.filter(p => p.type.toLowerCase() === 'result').forEach(output => {
           if (output.value) {
             connectedNodes.push(output.value);
-            connection = model.connections[`${nodeLookup[step.id]}::${nodeLookup[output.value]}`];
+            connection = model.connections[`${this.stepLookup[step.id]}::${this.stepLookup[output.value]}`];
             if (!connection) {
               connection = {
-                sourceNodeId: nodeLookup[step.id],
-                targetNodeId: nodeLookup[output.value],
+                sourceNodeId: this.stepLookup[step.id],
+                targetNodeId: this.stepLookup[output.value],
                 endpoints: []
               };
-              model.connections[`${nodeLookup[step.id]}::${nodeLookup[output.value]}`] = connection;
+              model.connections[`${this.stepLookup[step.id]}::${this.stepLookup[output.value]}`] = connection;
             }
             connection.endpoints.push({
               sourceEndPoint: output.name,
@@ -244,7 +271,7 @@ export class PipelinesEditorComponent implements OnInit {
     // See if automatic layout needs to be applied
     if (!this.selectedPipeline.layout ||
       Object.keys(this.selectedPipeline.layout).length === 0) {
-      this.performAutoLayout(nodeLookup, connectedNodes, model);
+      this.performAutoLayout(this.stepLookup, connectedNodes, model);
     }
     this.designerModel = model;
   }

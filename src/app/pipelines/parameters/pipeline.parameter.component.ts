@@ -11,6 +11,7 @@ export interface SplitParameter {
   type: string;
   language?: string;
   className?: string;
+  suggestions?: string[];
 }
 
 @Component({
@@ -20,6 +21,7 @@ export interface SplitParameter {
 })
 export class PipelineParameterComponent {
 
+  @Input() stepSuggestions: string[] = [];
   @Input() packageObjects: IPackageObject[];
   @Output() parameterUpdate = new EventEmitter<IPipelineStepParam>();
   leadCharacters: string[] = ['@', '!', '#', '$'];
@@ -61,7 +63,8 @@ export class PipelineParameterComponent {
               return {
                 id: this.id++,
                 value,
-                type
+                type,
+                suggestions: this.stepSuggestions.map(s => s)
               };
             });
           } else {
@@ -69,7 +72,8 @@ export class PipelineParameterComponent {
               {
                 type: 'static',
                 value: '',
-                id: this.id++
+                id: this.id++,
+                suggestions: this.stepSuggestions.map(s => s)
               }
             ];
           }
@@ -77,7 +81,11 @@ export class PipelineParameterComponent {
     }
   }
 
-  handleChange() {
+  handleChange(id: number) {
+    const param = this.parameters.find(p => p.id === id);
+    if (param && (param.type === 'step' || param.type === 'secondary')) {
+      param.suggestions = this.stepSuggestions.filter(s => s.toLocaleLowerCase().indexOf(param.value) === 0);
+    }
     let parameterValue = '';
     let count = 0;
     this.parameters.forEach((p) => {
@@ -99,7 +107,7 @@ export class PipelineParameterComponent {
 
   removeClause(id: number) {
     this.parameters.splice(this.parameters.findIndex(p => p.id === id), 1);
-    this.handleChange();
+    this.handleChange(id);
   }
 
   addClause() {

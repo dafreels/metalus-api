@@ -96,6 +96,7 @@
                     className: undefined,
                     parameterType: undefined}"
                     [packageObjects]="packageObjects"
+                    [stepSuggestions]="typeAhead"
                   (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
                   <pipelines-parameter *ngFor="let param of selectedStep.params"
                                        [parameter]="param"></pipelines-parameter>
