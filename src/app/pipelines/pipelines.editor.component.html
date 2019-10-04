@@ -9,7 +9,7 @@
             </mat-form-field>
             <mat-form-field>
               <input matInput placeholder="Name" [(ngModel)]="selectedPipeline.name" required name="name"
-              (change)="handleModelChange()">
+                     (change)="handleModelChange()">
             </mat-form-field>
             <mat-form-field>
               <mat-label>Type</mat-label>
@@ -29,19 +29,24 @@
       <mat-card>
         <mat-card-content>
           <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
-                  style="margin-right: 5px;">Load</button>
+                  style="margin-right: 5px;">Load
+          </button>
           <mat-menu #pipelineMenu="matMenu">
             <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id"
                     (click)="loadPipeline(pipeline.id)">{{pipeline.name}}</button>
           </mat-menu>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
-                  (click)="newPipeline()">New</button>
+                  (click)="newPipeline()">New
+          </button>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
-          (click)="savePipeline()">Save</button>
+                  (click)="savePipeline()">Save
+          </button>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
-          (click)="cancelPipelineChange()">Cancel</button>
+                  (click)="cancelPipelineChange()">Cancel
+          </button>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
-                  (click)="exportPipeline()">Export</button>
+                  (click)="exportPipeline()">Export
+          </button>
           <button mat-raised-button color="primary" (click)="importPipeline()">Import</button>
         </mat-card-content>
       </mat-card>
@@ -68,11 +73,13 @@
                                        name="category" disabled="true">
                 </mat-form-field>
                 <mat-form-field *ngIf="selectedStep.engineMeta"><input matInput placeholder="Engine Meta Command"
-                                       [ngModel]="selectedStep.engineMeta.spark"
-                                       name="stepCommand" disabled="true"></mat-form-field>
+                                                                       [ngModel]="selectedStep.engineMeta.spark"
+                                                                       name="stepCommand" disabled="true">
+                </mat-form-field>
                 <mat-form-field *ngIf="selectedStep.engineMeta"><input matInput placeholder="Engine Meta Package"
-                                       [(ngModel)]="selectedStep.engineMeta.pkg"
-                                       name="stepPackage" disabled="true"></mat-form-field>
+                                                                       [(ngModel)]="selectedStep.engineMeta.pkg"
+                                                                       name="stepPackage" disabled="true">
+                </mat-form-field>
               </div>
             </mat-expansion-panel>
             <mat-expansion-panel>
@@ -97,9 +104,10 @@
                     parameterType: undefined}"
                     [packageObjects]="packageObjects"
                     [stepSuggestions]="typeAhead"
-                  (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
+                    (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
                   <pipelines-parameter *ngFor="let param of selectedStep.params"
-                                       [parameter]="param"></pipelines-parameter>
+                                       [parameter]="param"
+                                       [stepSuggestions]="typeAhead"></pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>

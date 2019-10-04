@@ -150,9 +150,10 @@ export class PipelinesEditorComponent implements OnInit {
    */
   handleIdChange() {
     if (this.selectedElement) {
-      this.stepLookup[this.selectedStep.id] = this.stepLookup[this.selectedElement.name];
+      const id = this.selectedStep.id.replace(' ', '_');
+      this.stepLookup[id] = this.stepLookup[this.selectedElement.name];
       delete this.stepLookup[this.selectedElement.name];
-      this.selectedElement.name = this.selectedStep.id;
+      this.selectedElement.name = id;
     }
   }
 
@@ -170,13 +171,14 @@ export class PipelinesEditorComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.trim().length > 0) {
+        const id = result as string;
         const step = JSON.parse(JSON.stringify(event.data));
         // Switch the id and stepId
         step.stepId = step.id;
-        step.id = result;
+        step.id = id.replace(' ', '_');
 
         this.dndSubject.next({
-          name: result,
+          name: step.id,
           tooltip: step.description,
           icon: `../assets/${step.type.toLocaleLowerCase()}.png`,
           input: true,

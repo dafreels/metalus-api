@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from "@angular/core";
+import {ChangeDetectorRef, Component, EventEmitter, Input, Output} from "@angular/core";
 import {IPipelineStepParam} from "../pipelines.model";
 import {CodeEditorComponent} from "../../code-editor/code.editor.component";
 import {ObjectEditorComponent} from "../../object-editor/object.editor.component";
@@ -20,7 +20,6 @@ export interface SplitParameter {
   styleUrls: ['./pipeline.parameter.component.css']
 })
 export class PipelineParameterComponent {
-
   @Input() stepSuggestions: string[] = [];
   @Input() packageObjects: IPackageObject[];
   @Output() parameterUpdate = new EventEmitter<IPipelineStepParam>();
@@ -31,7 +30,7 @@ export class PipelineParameterComponent {
   _parameter: IPipelineStepParam;
   private id: number = 0;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private chaneDetector: ChangeDetectorRef) {}
 
   @Input()
   set parameter(p: IPipelineStepParam) {
@@ -64,7 +63,7 @@ export class PipelineParameterComponent {
                 id: this.id++,
                 value,
                 type,
-                suggestions: this.stepSuggestions.map(s => s)
+                suggestions: (type === 'step' || type === 'secondary') ? this.stepSuggestions.map(s => s) : []
               };
             });
           } else {
@@ -73,7 +72,7 @@ export class PipelineParameterComponent {
                 type: 'static',
                 value: '',
                 id: this.id++,
-                suggestions: this.stepSuggestions.map(s => s)
+                suggestions: []
               }
             ];
           }
@@ -82,9 +81,15 @@ export class PipelineParameterComponent {
   }
 
   handleChange(id: number) {
-    const param = this.parameters.find(p => p.id === id);
-    if (param && (param.type === 'step' || param.type === 'secondary')) {
-      param.suggestions = this.stepSuggestions.filter(s => s.toLocaleLowerCase().indexOf(param.value) === 0);
+    const paramIndex = this.parameters.findIndex(p => p.id === id);
+    if (paramIndex !== -1) {
+      const param = this.parameters[paramIndex];
+      if (param.type === 'step' || param.type === 'secondary') {
+        param.suggestions = this.stepSuggestions;
+      } else {
+        param.suggestions = [];
+      }
+      this.parameters[paramIndex] = param;
     }
     let parameterValue = '';
     let count = 0;
@@ -102,6 +107,7 @@ export class PipelineParameterComponent {
     this._parameter.language = this.parameters[0].language;
     this._parameter.className = this.parameters[0].className;
 
+    this.chaneDetector.detectChanges();
     this.parameterUpdate.emit(this._parameter);
   }
 

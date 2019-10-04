@@ -28,3 +28,9 @@ designer-node {
   -o-transition: -o-box-shadow 0.15s ease-in;
   transition: box-shadow 0.15s ease-in;
 }
+
+.designer-node-selected {
+  border: 3px dotted green;
+  border-radius: 40px;
+  -moz-border-radius: 40px;
+}

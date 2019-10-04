@@ -83,6 +83,7 @@ export class DesignerComponent implements AfterViewInit {
     maxConnections: -1,
     dropOptions: { hoverClass: 'hover' }
   };
+  selectedComponent;
 
   jsPlumbInstance;
 
@@ -154,7 +155,7 @@ export class DesignerComponent implements AfterViewInit {
     this.addNModelNode(nodeId, this.model.nodes[nodeId]);
   }
 
-  initializeDesigner() {
+  private initializeDesigner() {
     if (this.jsPlumbInstance) {
       this.jsPlumbInstance.deleteEveryConnection();
       this.jsPlumbInstance.deleteEveryEndpoint();
@@ -286,8 +287,15 @@ export class DesignerComponent implements AfterViewInit {
     const componentRef = this.designerCanvas.viewContainerRef.createComponent(componentFactory);
     componentRef.instance.data = data;
     componentRef.instance.id = nodeId;
-    // Handle selection events
-    componentRef.instance.nodeSelected.subscribe(data => this.elementSelected.emit(data));
+    // Handle selection events TODO: Try to find an angular way to do this
+    componentRef.instance.nodeSelected.subscribe(data => {
+      if (this.selectedComponent) {
+        this.selectedComponent.location.nativeElement.className = this.selectedComponent.location.nativeElement.className.replace('designer-node-selected', '');
+      }
+      componentRef.location.nativeElement.className = `${componentRef.location.nativeElement.className} designer-node-selected`;
+      this.selectedComponent = componentRef;
+      this.elementSelected.emit(data)
+    });
     componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;
