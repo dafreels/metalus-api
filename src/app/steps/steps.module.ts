@@ -6,13 +6,15 @@ import {StepsService} from "./steps.service";
 import {SharedComponentsModule} from "../shared/shared.components"
 import {StepsListComponent} from "./selector/list/steps.list.component";
 import {DesignerModule} from "../designer/designer.module";
-import {ErrorModalComponent} from "../error-modal/error.modal.component";
 import {ErrorModalModule} from "../error-modal/error.modal.module";
+import {MatChipsModule} from "@angular/material/chips";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 @NgModule({
   imports: [
     DesignerModule,
     ErrorModalModule,
+    MatChipsModule,
     SharedComponentsModule
   ],
   declarations: [

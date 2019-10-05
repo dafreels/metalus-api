@@ -10,6 +10,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {WaitModalComponent} from "../wait-modal/wait.modal.component";
 import {NameDialogComponent} from "../name-dialog/name.dialog.component";
 import {ErrorModalComponent} from "../error-modal/error.modal.component";
+import {MatChipInputEvent} from "@angular/material/chips";
+import {FormControl} from "@angular/forms";
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'steps-editor',
@@ -21,6 +24,9 @@ export class StepsEditorComponent implements OnInit {
   steps: IStep[];
   selectedStep: IStep;
   originalStep: IStep;
+  tagCtrl = new FormControl();
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+
   constructor(private stepsService: StepsService,
               private packageObjectsService: PackageObjectsService,
               public dialog: MatDialog) {}
@@ -36,11 +42,39 @@ export class StepsEditorComponent implements OnInit {
     });
   }
 
+  addTag(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our tag
+    if ((value || '').trim()) {
+      this.selectedStep.tags.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.tagCtrl.setValue(null);
+  }
+
+  removeTag(tag) {
+    const index = this.selectedStep.tags.indexOf(tag);
+    if (index > -1) {
+      this.selectedStep.tags.splice(index, 1);
+    }
+  }
+
   stepSelected(step) {
     // TODO: Handle selecting a step when there are changes
     if (step) {
       this.originalStep = step;
-      this.selectedStep = JSON.parse(JSON.stringify(step));
+      const newStep = JSON.parse(JSON.stringify(step));
+      if (!newStep.tags) {
+        newStep.tags = [];
+      }
+      this.selectedStep = newStep;
     } else {
       this.newStep();
     }
@@ -52,7 +86,8 @@ export class StepsEditorComponent implements OnInit {
         pkg: '',
         spark: '',
         stepResults: []
-      }
+      },
+      tags: []
     };
   }
 

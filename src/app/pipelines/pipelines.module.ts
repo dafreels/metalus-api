@@ -7,14 +7,12 @@ import {SharedComponentsModule} from "../shared/shared.components";
 import {PipelineParameterComponent} from "./parameters/pipeline.parameter.component";
 import {ErrorModalModule} from "../error-modal/error.modal.module";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   imports: [
     DesignerModule,
     ErrorModalModule,
     MatAutocompleteModule,
-    ReactiveFormsModule,
     SharedComponentsModule,
     StepsModule
   ],

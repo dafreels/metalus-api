@@ -28,6 +28,25 @@
           <mat-form-field><input matInput placeholder="Category" required [(ngModel)]="selectedStep.category"
                                  name="category">
           </mat-form-field>
+          <mat-form-field>
+            <mat-chip-list #tagList>
+              <mat-chip *ngFor="let tag of selectedStep.tags"
+                        selectable="true"
+                        removable="true"
+                        (removed)="removeTag(tag)">
+                {{tag}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Tags"
+                #fruitInput
+                [matChipInputFor]="tagList"
+                [formControl]="tagCtrl"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="addTag($event)">
+            </mat-chip-list>
+          </mat-form-field>
           <mat-form-field><input matInput placeholder="Engine Meta Command" [(ngModel)]="selectedStep.engineMeta.spark"
                                  name="stepCommand" [required]="selectedStep.type !== 'branch'"></mat-form-field>
           <mat-form-field><input matInput placeholder="Engine Meta Package" [(ngModel)]="selectedStep.engineMeta.pkg"

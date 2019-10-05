@@ -2,7 +2,14 @@
   <mat-card-content>
         <span>
         <!-- TODO Add sort button here -->
-        <mat-form-field><input #filter matInput placeholder="Filter" (input)="filterList(filter.value)"></mat-form-field>
+        <mat-form-field><input #filter matInput placeholder="Filter"
+                               (input)="filterList(filter.value, tagSelect.value)"></mat-form-field>
+          <mat-form-field>
+            <mat-label>Tags</mat-label>
+            <mat-select #tagSelect multiple (selectionChange)="filterList(filter.value, tagSelect.value)">
+              <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
+            </mat-select>
+          </mat-form-field>
       </span>
     <div class="step-list-container">
       <mat-action-list class="step-list">
@@ -12,7 +19,8 @@
                        [dndDraggable]="step"
                        [dndDisableIf]="!draggableSteps"
                        [dndEffectAllowed]="dropEffect">
-          <img alt="" height="32px" width="32px" src="../../../assets/{{step.type ? step.type.toLocaleLowerCase() : 'pipeline'}}.png"/>
+          <img alt="" height="32px" width="32px"
+               src="../../../assets/{{step.type ? step.type.toLocaleLowerCase() : 'pipeline'}}.png"/>
           <span class="step-list-text">
             {{step.displayName}}
           </span>

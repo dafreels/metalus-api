@@ -14,7 +14,7 @@ import {
   MatTreeModule
 } from "@angular/material";
 import {HttpClientModule} from "@angular/common/http";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatSelectModule} from "@angular/material/select";
 import {MatButtonModule} from "@angular/material/button";
@@ -41,7 +41,8 @@ import {MatMenuModule} from "@angular/material/menu";
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   exports: [
     BrowserModule,
@@ -62,7 +63,8 @@ import {MatMenuModule} from "@angular/material/menu";
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 

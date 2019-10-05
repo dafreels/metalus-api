@@ -4,6 +4,7 @@ export interface IStep {
   description: string,
   type: string,
   category: string,
+  tags?: string[],
   params: IParam[],
   engineMeta?: {
     spark: string,
