@@ -38,4 +38,10 @@ export class StepsService {
       .pipe(response => this.getSteps(),
         catchError(err => throwError(err)));
   }
+
+  getStepSchema(): Observable<any> {
+    return this.http.get('/schemas/steps.json', { observe: 'response' })
+      .pipe(map(response => response.body),
+        catchError(err => throwError(err)));
+  }
 }

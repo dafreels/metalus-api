@@ -3,13 +3,11 @@
   <mat-card-content>
     <div class="error-message">
       <mat-form-field>
-        <textarea matInput placeholder="Description" name="Error Message" disabled="true">
-          {{data.message}}
-        </textarea>
+        <textarea matInput placeholder="Description" name="Error Message" disabled="true" rows="7">{{data.message}}</textarea>
       </mat-form-field>
     </div>
   </mat-card-content>
 </mat-card>
 <div mat-dialog-actions>
-  <button mat-raised-button (click)="closeDialog()">OK</button>
+  <button mat-raised-button color="warn" (click)="closeDialog()">OK</button>
 </div>

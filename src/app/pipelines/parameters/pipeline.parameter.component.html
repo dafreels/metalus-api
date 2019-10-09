@@ -20,7 +20,7 @@
     <mat-form-field>
       <mat-label>Type</mat-label>
       <mat-select required [(ngModel)]="param.type" (selectionChange)="handleChange(param.id)">
-        <mat-option value="static">Static</mat-option>
+        <mat-option value="text">Static</mat-option>
         <mat-option value="global">Global</mat-option>
         <mat-option value="step">Step Response</mat-option>
         <mat-option value="secondary">Secondary Step Response</mat-option>

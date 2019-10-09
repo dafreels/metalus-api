@@ -38,7 +38,7 @@ export interface IStepResponse {
 
 export class StaticSteps {
   static FORK_STEP: IStep = {
-    id: 'fork',
+    id: '3d8b5057-6c12-5d3d-80fc-fad3fa0e2191',
     type: 'fork',
     displayName: 'Fork',
     description: 'A fork type step allows running a set of steps against a list of data simulating looping behavior',
@@ -65,7 +65,7 @@ export class StaticSteps {
     ]
   };
   static JOIN_STEP: IStep = {
-    id: 'join',
+    id: '27d7dd1b-2ea2-5d5d-95ba-682d91f0587b',
     type: 'join',
     displayName: 'Join',
     description: 'A join type step is used to join the executions of the fork step to continue processing in a linear manner.',

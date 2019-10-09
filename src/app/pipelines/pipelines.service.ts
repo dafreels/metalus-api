@@ -28,4 +28,10 @@ export class PipelinesService {
         map(response => response.body.pipeline),
         catchError(err => throwError(err)));
   }
+
+  getPipelineSchema(): Observable<any> {
+    return this.http.get('/schemas/pipelines.json', { observe: 'response' })
+      .pipe(map(response => response.body),
+        catchError(err => throwError(err)));
+  }
 }

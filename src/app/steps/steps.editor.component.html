@@ -25,8 +25,7 @@
           </mat-form-field>
           <mat-form-field><textarea matInput placeholder="Description" [(ngModel)]="selectedStep.description"
                                     name="description" required></textarea></mat-form-field>
-          <mat-form-field><input matInput placeholder="Category" required [(ngModel)]="selectedStep.category"
-                                 name="category">
+          <mat-form-field><input matInput placeholder="Category" [(ngModel)]="selectedStep.category" name="category">
           </mat-form-field>
           <mat-form-field>
             <mat-chip-list #tagList>

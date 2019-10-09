@@ -13,6 +13,7 @@ import {ErrorModalComponent} from "../error-modal/error.modal.component";
 import {MatChipInputEvent} from "@angular/material/chips";
 import {FormControl} from "@angular/forms";
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import * as Ajv from 'ajv';
 
 @Component({
   selector: 'steps-editor',
@@ -26,6 +27,7 @@ export class StepsEditorComponent implements OnInit {
   originalStep: IStep;
   tagCtrl = new FormControl();
   separatorKeysCodes: number[] = [ENTER, COMMA];
+  stepValidator;
 
   constructor(private stepsService: StepsService,
               private packageObjectsService: PackageObjectsService,
@@ -39,6 +41,11 @@ export class StepsEditorComponent implements OnInit {
 
     this.packageObjectsService.getPackageObjects().subscribe((pkgObjs: IPackageObject[]) => {
       this.packageObjects = pkgObjs;
+    });
+
+    this.stepsService.getStepSchema().subscribe((schema) => {
+      const ajv = new Ajv({ allErrors: true });
+      this.stepValidator = ajv.addSchema(schema, "steps").compile(schema.definitions.BaseStep);
     });
   }
 
@@ -82,7 +89,7 @@ export class StepsEditorComponent implements OnInit {
 
   newStep() {
     this.selectedStep = {
-      category: '', description: '', displayName: '', id: '', params: [], type: '', engineMeta: {
+      category: '', description: '', displayName: '', id: '', params: [], type: 'pipeline', engineMeta: {
         pkg: '',
         spark: '',
         stepResults: []
@@ -120,40 +127,64 @@ export class StepsEditorComponent implements OnInit {
     }
   }
 
+  // TODO Replace this function with better validation
+  isValid() {
+    return !(this.selectedStep.type === 'branch' &&
+      (!this.selectedStep.params ||
+        this.selectedStep.params.length === 0 ||
+        !this.selectedStep.params.find(p => p.type === 'result')));
+
+  }
+
+  // TODO Replace this function with better validation
   stepChanged() {
     // TODO undefined is being replaced with an empty string if the user enters text and then deletes
     return Object.entries(diff(this.originalStep, this.selectedStep)).length !== 0;
   }
 
   saveStep() {
-    /* TODO:
-     * Validate (use form validation and custom validator)
-     * Once the steps are updated with the new step, how does the selector get updated?
-     */
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
       height: '25%'
     });
-    let observable;
-    if (this.selectedStep.id && this.selectedStep.id.trim() !== '') {
-      observable = this.stepsService.updateStep(this.selectedStep);
-    } else {
-      observable = this.stepsService.addStep(this.selectedStep);
-    }
 
-    observable.subscribe((step: IStep) => {
-      this.originalStep = step;
-      this.selectedStep = JSON.parse(JSON.stringify(step));
-      const index = this.steps.findIndex(s => s.id === this.selectedStep.id);
-      if (index === -1) {
-        this.steps.push(step);
-      } else {
-        this.steps[index] = step;
+    const validStep = this.stepValidator(this.selectedStep);
+    const validBranch = this.isValid();
+    if (!validStep || !validBranch) {
+      const error = {
+        message: ''
+      };
+      if (!validBranch) {
+        error.message = 'A branch step requires at least one result parameter!\n';
       }
-      // Change the reference to force the selector to refresh
-      this.steps = [...this.steps];
-      dialogRef.close();
-    }, error => this.handleError(error, dialogRef));
+      if (this.stepValidator.errors && this.stepValidator.errors.length > 0) {
+        this.stepValidator.errors.forEach(err => {
+          error.message = `${error.message}${err.dataPath.substring(1)} ${err.message}\n`;
+        });
+      }
+      this.handleError(error, dialogRef);
+    } else {
+      let observable;
+      if (this.selectedStep.id && this.selectedStep.id.trim() !== '') {
+        observable = this.stepsService.updateStep(this.selectedStep);
+      } else {
+        observable = this.stepsService.addStep(this.selectedStep);
+      }
+
+      observable.subscribe((step: IStep) => {
+        this.originalStep = step;
+        this.selectedStep = JSON.parse(JSON.stringify(step));
+        const index = this.steps.findIndex(s => s.id === this.selectedStep.id);
+        if (index === -1) {
+          this.steps.push(step);
+        } else {
+          this.steps[index] = step;
+        }
+        // Change the reference to force the selector to refresh
+        this.steps = [...this.steps];
+        dialogRef.close();
+      }, error => this.handleError(error, dialogRef));
+    }
   }
 
   private handleError(error, dialogRef) {
@@ -167,17 +198,9 @@ export class StepsEditorComponent implements OnInit {
     dialogRef.close();
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
-      height: '250px',
+      height: '300px',
       data: {message}
     });
-  }
-
-  isValid() {
-    return !(this.selectedStep.type === 'branch' &&
-      (!this.selectedStep.params ||
-        this.selectedStep.params.length === 0 ||
-        !this.selectedStep.params.find(p => p.type === 'result')));
-
   }
 
   changeStepType(branch) {

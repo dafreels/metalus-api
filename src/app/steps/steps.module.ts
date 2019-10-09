@@ -8,7 +8,6 @@ import {StepsListComponent} from "./selector/list/steps.list.component";
 import {DesignerModule} from "../designer/designer.module";
 import {ErrorModalModule} from "../error-modal/error.modal.module";
 import {MatChipsModule} from "@angular/material/chips";
-import {MatFormFieldModule} from "@angular/material/form-field";
 
 @NgModule({
   imports: [

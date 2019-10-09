@@ -1,13 +1,29 @@
 <div>
   <div>
-    <mat-toolbar color="primary">
-      <mat-toolbar-row>
-        <span class="spacer"><a [routerLink]="['/']" routerLinkActive="active">Home</a></span>
-        <span class="spacer">Application Editor</span>
-        <span class="spacer"><a [routerLink]="['/pipelines-editor']" routerLinkActive="active">Pipeline Editor</a></span>
-        <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>
-      </mat-toolbar-row>
-    </mat-toolbar>
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Navigation">
+      <mat-icon>list</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>
+        <div>
+          <img class="menu-img" height="32px" width="32px" alt="Steps" src="../../assets/favicon.ico">
+          <span class="spacer"><a [routerLink]="['/']" routerLinkActive="active">Home</a></span>
+        </div>
+      </button>
+      <button mat-menu-item>
+        <div>
+          <img class="menu-img" height="32px" width="32px" alt="Pipelines" src="../../assets/pipeline.png">
+          <span class="spacer"><a [routerLink]="['/pipelines-editor']"
+                                  routerLinkActive="active">Pipeline Editor</a></span>
+        </div>
+      </button>
+      <button mat-menu-item>
+        <div>
+          <img class="menu-img" height="32px" width="32px" alt="Steps" src="../../assets/step.png">
+          <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>
+        </div>
+      </button>
+    </mat-menu>
   </div>
   <div>
     <router-outlet></router-outlet>

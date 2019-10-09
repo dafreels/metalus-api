@@ -4,21 +4,36 @@
   "$ref": "#/definitions/pipelines",
   "definitions": {
     "pipelines": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "steps"
-      ],
-      "properties": {
-        "id": {
-          "type": "string"
+      "allOf": [
+        {
+          "$ref": "pipelines.json#/definitions/BasePipeline"
         },
+        {
+          "required": [
+            "id",
+            "name",
+            "steps"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36
+            }
+          }
+        }
+      ]
+    },
+    "BasePipeline": {
+      "type": "object",
+      "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "minLength": 3
         },
         "description": {
-          "type": "string"
+          "type": "string",
+          "minLength": 5
         },
         "category": {
           "type": "string",
@@ -38,15 +53,22 @@
     "pipeline-steps": {
       "allOf": [
         {
-          "$ref": "steps.json#/definitions/steps"
+          "$ref": "steps.json#/definitions/BaseStep"
         },
         {
           "required": [
+            "id",
             "stepId"
           ],
           "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 3
+            },
             "stepId": {
-              "type": "string"
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 36
             },
             "nextStepId": {
               "type": "string"

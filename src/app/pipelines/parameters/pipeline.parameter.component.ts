@@ -55,7 +55,7 @@ export class PipelineParameterComponent {
             let type;
             this.parameters = p.value.split('||').map((e) => {
               value = e.trim();
-              type = this.getType(value, 'static');
+              type = this.getType(value, 'text');
               if (value && (type === 'global' || type === 'step' || type === 'secondary' || type === 'runtime')) {
                 value = value.substring(1);
               }
@@ -69,7 +69,7 @@ export class PipelineParameterComponent {
           } else {
             this.parameters = [
               {
-                type: 'static',
+                type: 'text',
                 value: '',
                 id: this.id++,
                 suggestions: []
@@ -120,7 +120,7 @@ export class PipelineParameterComponent {
     this.parameters.push({
       id: this.id++,
       value: '',
-      type: 'static'
+      type: 'text'
     });
   }
 

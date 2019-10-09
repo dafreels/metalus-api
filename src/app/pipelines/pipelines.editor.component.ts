@@ -14,6 +14,7 @@ import {CodeEditorComponent} from "../code-editor/code.editor.component";
 import {WaitModalComponent} from "../wait-modal/wait.modal.component";
 import {diff} from "deep-object-diff";
 import {ErrorModalComponent} from "../error-modal/error.modal.component";
+import * as Ajv from 'ajv';
 
 @Component({
   selector: 'pipelines-editor',
@@ -32,10 +33,7 @@ export class PipelinesEditorComponent implements OnInit {
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
   stepLookup = {};
   typeAhead: string[] = [];
-
-  // loading: boolean = false;
-  // changed: boolean = false;
-  // valid: boolean = true;
+  pipelineValidator;
 
   constructor(private stepsService: StepsService,
               private pipelinesService: PipelinesService,
@@ -45,8 +43,6 @@ export class PipelinesEditorComponent implements OnInit {
   ngOnInit(): void {
     this.newPipeline();
     this.newStep();
-    // this.changed = false;
-    // this.valid = true;
     this.stepsService.getSteps().subscribe((steps: IStep[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
@@ -59,6 +55,13 @@ export class PipelinesEditorComponent implements OnInit {
 
     this.packageObjectsService.getPackageObjects().subscribe((pkgObjs: IPackageObject[]) => {
       this.packageObjects = pkgObjs;
+    });
+
+    this.pipelinesService.getPipelineSchema().subscribe((schema) => {
+      const ajv = new Ajv({ allErrors: true });
+      this.stepsService.getStepSchema().subscribe((stepSchema) => {
+        this.pipelineValidator = ajv.addSchema(stepSchema, 'stepSchema').addSchema(schema).compile(schema.definitions.BasePipeline);
+      })
     });
   }
 
@@ -278,22 +281,6 @@ export class PipelinesEditorComponent implements OnInit {
     this.designerModel = model;
   }
 
-// disableLoad() {
-  //   return this.changed;
-  // }
-  //
-  // disableNew() {
-  //   return this.changed;
-  // }
-  //
-  // disableSave() {
-  //   return !this.changed && !this.valid;
-  // }
-  //
-  // disableCancel() {
-  //   return !this.changed;
-  // }
-
   cancelPipelineChange() {
     if (this.selectedPipeline.id) {
       this.loadPipeline(this.selectedPipeline.id);
@@ -339,38 +326,71 @@ export class PipelinesEditorComponent implements OnInit {
       height: '25%'
     });
     const newPipeline = this.generatePipeline();
-    let observable;
-    if (this.selectedPipeline.id && this.pipelines.findIndex(p => p.id === this.selectedPipeline.id)) {
-      observable = this.pipelinesService.updatePipeline(newPipeline);
+    const stepValidations = this.validatePipelineSteps(newPipeline);
+    if (!this.pipelineValidator(newPipeline) || stepValidations.length > 0) {
+      const error = {
+        message: ''
+      };
+      stepValidations.forEach(e => error.message = `${error.message}${e}\n`);
+      if (this.pipelineValidator.errors && this.pipelineValidator.errors.length > 0) {
+        this.pipelineValidator.errors.forEach(err => {
+          error.message = `${error.message}${err.dataPath.substring(1)} ${err.message}\n`;
+        });
+      }
+      this.handleError(error, dialogRef);
     } else {
-      observable = this.pipelinesService.addPipeline(newPipeline);
+      let observable;
+      if (this.selectedPipeline.id && this.pipelines.findIndex(p => p.id === this.selectedPipeline.id)) {
+        observable = this.pipelinesService.updatePipeline(newPipeline);
+      } else {
+        observable = this.pipelinesService.addPipeline(newPipeline);
+      }
+      observable.subscribe((pipeline: IPipeline) => {
+        this._pipeline = pipeline;
+        this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
+        const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
+        if (index === -1) {
+          this.pipelines.push(this.selectedPipeline);
+        } else {
+          this.pipelines[index] = this.selectedPipeline;
+        }
+        // Change the reference to force the selector to refresh
+        this.pipelines = [...this.pipelines];
+        dialogRef.close();
+      }, (error) => this.handleError(error, dialogRef));
     }
-    observable.subscribe((pipeline: IPipeline) => {
-      this._pipeline = pipeline;
-      this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
-      const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
-      if (index === -1) {
-        this.pipelines.push(this.selectedPipeline);
-      } else {
-        this.pipelines[index] = this.selectedPipeline;
-      }
-      // Change the reference to force the selector to refresh
-      this.pipelines = [...this.pipelines];
-      dialogRef.close();
-    }, (error) => {
-      let message;
-      if (error.error instanceof ErrorEvent) {
-        // A client-side or network error occurred. Handle it accordingly.
-        message = error.error.message;
-      } else {
-        message = error.message;
-      }
-      dialogRef.close();
-      this.dialog.open(ErrorModalComponent, {
-        width: '450px',
-        height: '250px',
-        data: { message }
+  }
+
+  private validatePipelineSteps(pipeline: IPipeline): String[] {
+    const errors = [];
+    if (pipeline.steps.length > 0) {
+      pipeline.steps.forEach(step => {
+        if (step.params && step.params.length > 0) {
+          step.params.forEach(param => {
+            if (param.required && (!param.value ||
+              (param.type !== 'object' && param.value.trim().length === 0))) {
+              errors.push(`Step ${step.id} has a required parameter ${param.name} that is missing a value`);
+            }
+          });
+        }
       });
+    }
+    return errors;
+  }
+
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: {message}
     });
   }
 
@@ -380,8 +400,8 @@ export class PipelinesEditorComponent implements OnInit {
      * Validate the pipeline
      */
     // if (!this.loading) {
-      const pipeline = this.generatePipeline();
-      const changes = diff(this._pipeline, pipeline);
+    //   const pipeline = this.generatePipeline();
+    //   const changes = diff(this._pipeline, pipeline);
       // console.log(`Changes: ${JSON.stringify(changes, null, 4)}`);
     //   this.changed = Object.keys(changes).length > 0;
     //   this.valid = true;
