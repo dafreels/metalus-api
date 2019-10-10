@@ -20,11 +20,15 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatMenuModule} from "@angular/material/menu";
+import {ErrorModalModule} from "../error-modal/error.modal.module";
+import {ConfirmationModalModule} from "../confirmation/confirmation.modal.module";
 
 @NgModule({
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    ConfirmationModalModule,
+    ErrorModalModule,
     MatCardModule,
     MatGridListModule,
     MatToolbarModule,
@@ -47,6 +51,8 @@ import {MatMenuModule} from "@angular/material/menu";
   exports: [
     BrowserModule,
     BrowserAnimationsModule,
+    ConfirmationModalModule,
+    ErrorModalModule,
     MatCardModule,
     MatGridListModule,
     MatToolbarModule,

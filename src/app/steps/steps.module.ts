@@ -12,7 +12,6 @@ import {MatChipsModule} from "@angular/material/chips";
 @NgModule({
   imports: [
     DesignerModule,
-    ErrorModalModule,
     MatChipsModule,
     SharedComponentsModule
   ],

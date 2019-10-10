@@ -15,6 +15,7 @@ import {WaitModalComponent} from "../wait-modal/wait.modal.component";
 import {diff} from "deep-object-diff";
 import {ErrorModalComponent} from "../error-modal/error.modal.component";
 import * as Ajv from 'ajv';
+import {ConfirmationModalComponent} from "../confirmation/confirmation.modal.component";
 
 @Component({
   selector: 'pipelines-editor',
@@ -66,16 +67,6 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   @Input()
-  set pipeline(pipeline: IPipeline) {
-    if (pipeline) {
-      this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
-      this._pipeline = pipeline;
-    } else {
-      this.newPipeline();
-    }
-  }
-
-  @Input()
   set step(step: IPipelineStep) {
     if (step) {
       let localStep = this.selectedPipeline.steps.find(s => s.id === step.id);
@@ -97,8 +88,6 @@ export class PipelinesEditorComponent implements OnInit {
       category: 'pipeline'
     };
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
-    // this.changed = true;
-    // this.valid = true;
   }
 
   newStep() {
@@ -208,13 +197,44 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   loadPipeline(id: string) {
-    // this.loading = true;
+    if (id === this.selectedPipeline.id) {
+      return;
+    }
+    const newPipeline = this.generatePipeline();
+    // Cannot diff the pipeline since step orders could have changed
+    let changed = this._pipeline.steps.length !== newPipeline.steps.length;
+    let originalStep;
+    newPipeline.steps.forEach(step => {
+      originalStep = this._pipeline.steps.find(s => s.id === step.id);
+      if (!originalStep) {
+        changed = true;
+      } else {
+        if (Object.entries(diff(originalStep, step)).length !== 0) {
+          changed = true;
+        }
+      }
+    });
+    if (this._pipeline.name !== newPipeline.name || changed || this._pipeline.category !== newPipeline.category) {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        width: '450px',
+        height: '200px',
+        data: { message: 'You have unsaved changes to the current pipeline. Would you like to continue?' }
+      });
+
+      dialogRef.afterClosed().subscribe(confirmation => {
+        if (confirmation) {
+          this.handleLoadPipeline(id);
+        }
+      });
+    } else {
+      this.handleLoadPipeline(id);
+    }
+  }
+
+  private handleLoadPipeline(id: string) {
     this._pipeline = this.pipelines.find(p => p.id === id);
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
     this.loadPipelineToDesigner();
-    // this.loading = false;
-    // this.changed = false;
-    // this.valid = true;
   }
 
   private loadPipelineToDesigner() {
@@ -419,6 +439,10 @@ export class PipelinesEditorComponent implements OnInit {
       layout: {},
       steps: []
     };
+    if (this.selectedPipeline.id) {
+      pipeline['creationDate'] = this.selectedPipeline['creationDate'];
+      pipeline['modifiedDate'] = this.selectedPipeline['modifiedDate'];
+    }
     this.addNodeToPipeline(rootNode, pipeline);
     return pipeline;
   }
@@ -430,31 +454,33 @@ export class PipelinesEditorComponent implements OnInit {
     const nodeId = Object.keys(this.designerModel.nodes).find(key => this.designerModel.nodes[key].data.name === node.data.name);
     const step = node.data.data;
     delete step._id;
-    pipeline.steps.push(step);
-    pipeline.layout[step.id] = {
-      x: node.x,
-      y: node.y
-    };
-    // TODO Should the result parameter be set when the connection is made (model change) or only when saving?
-    const children = Object.values(this.designerModel.connections).filter(conn => conn.sourceNodeId === nodeId);
-    if (children.length > 0) {
-      if (step.type === 'branch') {
-        let childNode;
-        delete step.nextStepId;
-        children.forEach(child => {
-          childNode = this.designerModel.nodes[child.targetNodeId];
-          child.endpoints.forEach(ep => {
-            step.params.find(p => p.name === ep.sourceEndPoint).value = childNode.data.name;
-            this.addNodeToPipeline(childNode, pipeline);
+    if (pipeline.steps.findIndex(s => s.id === step.id) === -1) {
+      pipeline.steps.push(step);
+      pipeline.layout[step.id] = {
+        x: node.x,
+        y: node.y
+      };
+      // TODO Should the result parameter be set when the connection is made (model change) or only when saving?
+      const children = Object.values(this.designerModel.connections).filter(conn => conn.sourceNodeId === nodeId);
+      if (children.length > 0) {
+        if (step.type === 'branch') {
+          let childNode;
+          delete step.nextStepId;
+          children.forEach(child => {
+            childNode = this.designerModel.nodes[child.targetNodeId];
+            child.endpoints.forEach(ep => {
+              step.params.find(p => p.name === ep.sourceEndPoint).value = childNode.data.name;
+              this.addNodeToPipeline(childNode, pipeline);
+            });
           });
-        });
+        } else {
+          const childNode = this.designerModel.nodes[children[0].targetNodeId];
+          step.nextStepId = childNode.data.data.id;
+          this.addNodeToPipeline(childNode, pipeline);
+        }
       } else {
-        const childNode = this.designerModel.nodes[children[0].targetNodeId];
-        step.nextStepId = childNode.data.data.id;
-        this.addNodeToPipeline(childNode, pipeline);
+        delete step.nextStepId;
       }
-    } else {
-      delete step.nextStepId;
     }
   }
 

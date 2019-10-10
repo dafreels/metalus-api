@@ -11,7 +11,10 @@ export class PipelinesService {
   getPipelines(): Observable<IPipeline[]> {
     return this.http.get<IPipelinesResponse>(`/api/v1/pipelines`, { observe: 'response' })
       .pipe(
-        map(response => response.body.pipelines),
+        map(response => response.body.pipelines.map(p => {
+          delete p['_id'];
+          return p;
+        })),
         catchError(err => throwError(err)));
   }
 

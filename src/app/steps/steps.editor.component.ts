@@ -14,6 +14,7 @@ import {MatChipInputEvent} from "@angular/material/chips";
 import {FormControl} from "@angular/forms";
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import * as Ajv from 'ajv';
+import {ConfirmationModalComponent} from "../confirmation/confirmation.modal.component";
 
 @Component({
   selector: 'steps-editor',
@@ -55,6 +56,9 @@ export class StepsEditorComponent implements OnInit {
 
     // Add our tag
     if ((value || '').trim()) {
+      if (!this.selectedStep.tags) {
+        this.selectedStep.tags = [];
+      }
       this.selectedStep.tags.push(value.trim());
     }
 
@@ -71,17 +75,37 @@ export class StepsEditorComponent implements OnInit {
     if (index > -1) {
       this.selectedStep.tags.splice(index, 1);
     }
+
+    if (this.selectedStep.tags && this.selectedStep.tags.length === 0) {
+      delete this.selectedStep.tags;
+    }
   }
 
   stepSelected(step) {
-    // TODO: Handle selecting a step when there are changes
+    if (step && this.selectedStep && this.selectedStep.id === step.id) {
+      return;
+    }
+    if (this.stepChanged()) {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        width: '450px',
+        height: '200px',
+        data: { message: 'You have unsaved changes to the current step. Would you like to continue?' }
+      });
+
+      dialogRef.afterClosed().subscribe(confirmation => {
+        if (confirmation) {
+          this.setSelectedStep(step);
+        }
+      });
+    } else {
+      this.setSelectedStep(step);
+    }
+  }
+
+  private setSelectedStep(step) {
     if (step) {
       this.originalStep = step;
-      const newStep = JSON.parse(JSON.stringify(step));
-      if (!newStep.tags) {
-        newStep.tags = [];
-      }
-      this.selectedStep = newStep;
+      this.selectedStep = JSON.parse(JSON.stringify(step));
     } else {
       this.newStep();
     }
@@ -96,6 +120,7 @@ export class StepsEditorComponent implements OnInit {
       },
       tags: []
     };
+    this.originalStep = JSON.parse(JSON.stringify(this.selectedStep));
   }
 
   bulkLoadSteps() {
@@ -136,7 +161,7 @@ export class StepsEditorComponent implements OnInit {
 
   }
 
-  // TODO Replace this function with better validation
+  // TODO Stop allowing the UI to call this
   stepChanged() {
     // TODO undefined is being replaced with an empty string if the user enters text and then deletes
     return Object.entries(diff(this.originalStep, this.selectedStep)).length !== 0;
