@@ -67,8 +67,9 @@ export class DesignerComponent implements AfterViewInit {
     isTarget: false,
     paintStyle: this.endPointStyle,
     hoverPaintStyle: this.endpointHoverStyle,
-    connector: [ 'Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ] //midpoint: 0.0001
+    connector:[ 'Straight', { } ]
   };
+  // connector: [ 'Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ] //midpoint: 0.0001
   targetEndpoint: EndpointOptions = {
     id: '',
     parameters: undefined,

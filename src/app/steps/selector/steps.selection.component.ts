@@ -41,7 +41,7 @@ export abstract class StepsSelectionComponent {
     this.setSteps(this.steps.filter(s => {
       stepTags = s.tags || [];
       return s.displayName.toLocaleLowerCase().indexOf(filter) !== -1 &&
-        (tags.length === 0 || stepTags.findIndex(t => tags.indexOf(t) > -1) > -1);
+        (!tags || tags.length === 0 || stepTags.findIndex(t => tags.indexOf(t) > -1) > -1);
     }));
   }
 

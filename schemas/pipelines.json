@@ -66,9 +66,7 @@
               "minLength": 3
             },
             "stepId": {
-              "type": "string",
-              "minLength": 36,
-              "maxLength": 36
+              "type": "string"
             },
             "nextStepId": {
               "type": "string"
