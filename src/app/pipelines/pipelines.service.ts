@@ -32,6 +32,12 @@ export class PipelinesService {
         catchError(err => throwError(err)));
   }
 
+  deletePipeline(pipeline: IPipeline): Observable<boolean> {
+    return this.http.delete(`/api/v1/pipelines/${pipeline.id}`, {observe: 'response'})
+      .pipe(map(response => true),
+        catchError(err => throwError(err)));
+  }
+
   getPipelineSchema(): Observable<any> {
     return this.http.get('/schemas/pipelines.json', { observe: 'response' })
       .pipe(map(response => response.body),

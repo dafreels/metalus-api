@@ -39,6 +39,12 @@ export class StepsService {
         catchError(err => throwError(err)));
   }
 
+  deleteStep(step: IStep): Observable<boolean> {
+    return this.http.delete(`/api/v1/steps/${step.id}`, {observe: 'response'})
+      .pipe(map(response => true),
+        catchError(err => throwError(err)));
+  }
+
   getStepSchema(): Observable<any> {
     return this.http.get('/schemas/steps.json', { observe: 'response' })
       .pipe(map(response => response.body),

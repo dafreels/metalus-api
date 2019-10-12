@@ -112,15 +112,14 @@ export class StepsEditorComponent implements OnInit {
   }
 
   newStep() {
-    this.selectedStep = {
+    this.stepSelected({
       category: '', description: '', displayName: '', id: '', params: [], type: 'pipeline', engineMeta: {
         pkg: '',
         spark: '',
         stepResults: []
       },
       tags: []
-    };
-    this.originalStep = JSON.parse(JSON.stringify(this.selectedStep));
+    });
   }
 
   bulkLoadSteps() {
@@ -297,5 +296,30 @@ export class StepsEditorComponent implements OnInit {
         }
       });
     }
+  }
+
+  deleteStep() {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '450px',
+      height: '200px',
+      data: { message: 'Are you sure you wish to delete the current step? This will not remove the step from any existing pipelines. Would you like to continue?' }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        this.stepsService.deleteStep(this.selectedStep)
+          .subscribe(result => {
+            if (result) {
+              const index = this.steps.findIndex(s => s.id === this.selectedStep.id);
+              if (index > -1) {
+                this.steps.splice(index, 1);
+                // Change the reference to force the selector to refresh
+                this.steps = [...this.steps];
+              }
+              this.newStep();
+            }
+          }, error => this.handleError(error, dialogRef));
+      }
+    });
   }
 }

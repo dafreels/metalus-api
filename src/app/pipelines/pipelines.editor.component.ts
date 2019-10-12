@@ -88,6 +88,7 @@ export class PipelinesEditorComponent implements OnInit {
       category: 'pipeline'
     };
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
+    this.loadPipelineToDesigner();
   }
 
   newStep() {
@@ -202,19 +203,7 @@ export class PipelinesEditorComponent implements OnInit {
     }
     const newPipeline = this.generatePipeline();
     // Cannot diff the pipeline since step orders could have changed
-    let changed = this._pipeline.steps.length !== newPipeline.steps.length;
-    let originalStep;
-    newPipeline.steps.forEach(step => {
-      originalStep = this._pipeline.steps.find(s => s.id === step.id);
-      if (!originalStep) {
-        changed = true;
-      } else {
-        if (Object.entries(diff(originalStep, step)).length !== 0) {
-          changed = true;
-        }
-      }
-    });
-    if (this._pipeline.name !== newPipeline.name || changed || this._pipeline.category !== newPipeline.category) {
+    if (this.hasPipelineChanged(newPipeline)) {
       const dialogRef = this.dialog.open(ConfirmationModalComponent, {
         width: '450px',
         height: '200px',
@@ -229,6 +218,22 @@ export class PipelinesEditorComponent implements OnInit {
     } else {
       this.handleLoadPipeline(id);
     }
+  }
+
+  private hasPipelineChanged(newPipeline) {
+    let changed = this._pipeline.steps.length !== newPipeline.steps.length;
+    let originalStep;
+    newPipeline.steps.forEach(step => {
+      originalStep = this._pipeline.steps.find(s => s.id === step.id);
+      if (!originalStep) {
+        changed = true;
+      } else {
+        if (Object.entries(diff(originalStep, step)).length !== 0) {
+          changed = true;
+        }
+      }
+    });
+    return this._pipeline.name !== newPipeline.name || changed || this._pipeline.category !== newPipeline.category;
   }
 
   private handleLoadPipeline(id: string) {
@@ -490,8 +495,10 @@ export class PipelinesEditorComponent implements OnInit {
     let x = 300;
     let y = 100;
     const nodeId = nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]];
-    const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
-    this.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
+    if (nodeId) {
+      const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
+      this.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
+    }
   }
 
   private setNodeCoordinates(model, nodeLookup, parentNode, nodeId, x, y) {
@@ -513,5 +520,29 @@ export class PipelinesEditorComponent implements OnInit {
       this.setNodeCoordinates(model, nodeLookup, childNode, nodeId, x, y);
       x += 80;
     });
+  }
+
+  deletePipeline() {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '450px',
+      height: '200px',
+      data: { message: 'Are you sure you wish to permanently delete this pipeline?' }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        this.pipelinesService.deletePipeline(this.selectedPipeline).subscribe(result => {
+          if (result) {
+            const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
+            if (index > -1) {
+              this.pipelines.splice(index, 1);
+              this.newPipeline();
+              // Change the reference to force the selector to refresh
+              this.pipelines = [...this.pipelines];
+            }
+          }
+        });
+      }
+    }, (error) => this.handleError(error, dialogRef));
   }
 }

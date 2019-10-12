@@ -11,6 +11,8 @@
                 style="margin-right: 5px;">Cancel</button>
         <button mat-raised-button color="primary" [disabled]="stepChanged()" (click)="newStep()"
                 style="margin-right: 5px;">New</button>
+        <button mat-raised-button color="primary" [disabled]="selectedStep.id === 'undefined' || selectedStep.id.trim().length === 0"
+                (click)="deleteStep()" style="margin-right: 5px;">Delete</button>
         <button mat-raised-button color="primary" (click)="bulkLoadSteps()">Bulk</button>
       </mat-card-content>
     </mat-card>

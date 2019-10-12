@@ -1,7 +1,6 @@
 import {EventEmitter, Input, Output} from "@angular/core";
 import {IStep} from "../steps.model";
 import {DropEffect} from "ngx-drag-drop";
-import {FormControl} from "@angular/forms";
 
 export abstract class StepsSelectionComponent {
   steps: IStep[];

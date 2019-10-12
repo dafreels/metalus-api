@@ -45,6 +45,10 @@
                   (click)="cancelPipelineChange()">Cancel
           </button>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
+                  (click)="deletePipeline()"
+                  [disabled]="!this.selectedPipeline.id  || this.selectedPipeline.id.trim().length === 0">Delete
+          </button>
+          <button mat-raised-button color="primary" style="margin-right: 5px;"
                   (click)="exportPipeline()">Export
           </button>
           <button mat-raised-button color="primary" (click)="importPipeline()">Import</button>
