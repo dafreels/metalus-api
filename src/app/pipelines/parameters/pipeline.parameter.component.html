@@ -1,9 +1,14 @@
 <mat-expansion-panel>
   <mat-expansion-panel-header>
-    <mat-panel-title>
-      {{parameterName}}
-    </mat-panel-title>
+    <mat-panel-title>{{parameterName}}</mat-panel-title>
   </mat-expansion-panel-header>
+  <div class="add-button">
+    <button mat-raised-button color="primary"
+            (click)="addClause()"
+            [disabled]="_parameter.type === 'object' || _parameter.type === 'script'">
+      <mat-icon aria-label="Add OR Clause">add</mat-icon>
+    </button>
+  </div>
   <div *ngFor="let param of parameters">
     <mat-form-field>
       <input *ngIf="!complexParameter" matInput required
@@ -42,11 +47,6 @@
     <!-- TODO Add the editor button and set disabled state -->
     <button *ngIf="param.id > 0" mat-raised-button color="primary" (click)="removeClause(param.id)">
       <mat-icon aria-label="Remove OR Clause">remove</mat-icon>
-    </button>
-    <button *ngIf="param.id === 0" mat-raised-button color="primary"
-            (click)="addClause()"
-            [disabled]="param.type === 'object' || param.type === 'script'">
-      <mat-icon aria-label="Add OR Clause">add</mat-icon>
     </button>
     <button *ngIf="param.id === 0" mat-raised-button color="primary"
             (click)="openEditor()"
