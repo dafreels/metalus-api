@@ -72,4 +72,40 @@ export class StaticSteps {
     category: 'FlowControl',
     params: []
   };
+  static STEP_GROUP: IStep = {
+    id: 'f09b3b9c-82ac-56de-8dc8-f57c063dd4aa',
+    type: 'step-group',
+    displayName: 'Step Group',
+    description: 'Allows pipelines to be executed as a single step within a parent pipeline.',
+    category: 'FlowControl',
+    params: [
+      {
+        name: 'pipelineId',
+        type: 'text',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        name: 'pipeline',
+        type: 'text',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        name: 'pipelineMappings',
+        type: 'object',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ]
+  };
 }

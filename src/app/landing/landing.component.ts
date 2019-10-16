@@ -3,7 +3,7 @@ import {StepsService} from "../steps/steps.service";
 import {IStep} from "../steps/steps.model";
 import {PipelinesService} from "../pipelines/pipelines.service";
 import {IPipeline} from "../pipelines/pipelines.model";
-import {ApplicationssService} from "../applications/applications.service";
+import {ApplicationsService} from "../applications/applications.service";
 import {IApplication} from "../applications/applications.model";
 import {PackageObjectsService} from "../packageObjects/package-objects.service";
 import {IPackageObject} from "../packageObjects/package-objects.model";
@@ -18,7 +18,7 @@ export class LandingComponent implements OnInit {
   packageObjectCount: number = 0;
   stepCount: number = 0;
 
-  constructor(private applicationService: ApplicationssService,
+  constructor(private applicationService: ApplicationsService,
               private packageObjectsService: PackageObjectsService,
               private pipelinesService: PipelinesService,
               private stepsService: StepsService) {}

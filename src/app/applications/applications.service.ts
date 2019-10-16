@@ -5,7 +5,7 @@ import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
 
 @Injectable()
-export class ApplicationssService {
+export class ApplicationsService {
   constructor(private http: HttpClient) {}
 
   getApplications(): Observable<IApplication[]> {

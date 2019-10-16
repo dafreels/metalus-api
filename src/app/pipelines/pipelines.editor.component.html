@@ -27,7 +27,7 @@
   <div class="designer-content">
     <div class="pipeline-panel">
       <mat-card>
-        <mat-card-content>
+        <mat-card-content class="button-content">
           <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
                   style="margin-right: 5px;">Load
           </button>
@@ -47,6 +47,9 @@
           <button mat-raised-button color="primary" style="margin-right: 5px;"
                   (click)="deletePipeline()"
                   [disabled]="!this.selectedPipeline.id  || this.selectedPipeline.id.trim().length === 0">Delete
+          </button>
+          <button mat-raised-button color="primary" style="margin-right: 5px;"
+                  (click)="copyPipeline()" [disabled]="!this.selectedPipeline.id  || this.selectedPipeline.id.trim().length === 0">Copy
           </button>
           <button mat-raised-button color="primary" style="margin-right: 5px;"
                   (click)="exportPipeline()">Export
@@ -111,6 +114,7 @@
                     (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
                   <pipelines-parameter *ngFor="let param of selectedStep.params"
                                        [parameter]="param"
+                                       [packageObjects]="packageObjects"
                                        [stepSuggestions]="typeAhead"></pipelines-parameter>
                 </mat-accordion>
               </div>

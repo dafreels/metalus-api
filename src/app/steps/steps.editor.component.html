@@ -4,7 +4,7 @@
   </div>
   <div class="steps-editor-content">
     <mat-card>
-      <mat-card-content>
+      <mat-card-content class="button-content">
         <button mat-raised-button color="primary" [disabled]="!isValid() || !stepChanged()" (click)="saveStep()"
                 style="margin-right: 5px;">Save</button>
         <button mat-raised-button color="primary" [disabled]="!stepChanged()" (click)="cancel()"

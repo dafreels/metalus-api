@@ -35,3 +35,8 @@
   margin-bottom: 5px;
   margin-top: 5px;
 }
+
+.button-content {
+  display: block;
+  text-align: right;
+}

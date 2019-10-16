@@ -25,6 +25,7 @@ import {ConfirmationModalComponent} from "../confirmation/confirmation.modal.com
 export class PipelinesEditorComponent implements OnInit {
   packageObjects: IPackageObject[];
   pipelines: IPipeline[];
+  stepGroups: IPipeline[];
   steps: IStep[];
   selectedPipeline: IPipeline;
   _pipeline: IPipeline;
@@ -47,11 +48,18 @@ export class PipelinesEditorComponent implements OnInit {
     this.stepsService.getSteps().subscribe((steps: IStep[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
+      // steps.push(StaticSteps.STEP_GROUP);
       this.steps = steps;
     });
 
     this.pipelinesService.getPipelines().subscribe((pipelines: IPipeline[]) => {
-      this.pipelines = pipelines;
+      if (pipelines) {
+        this.pipelines = pipelines;
+        this.stepGroups = pipelines.filter(p => p.category === 'step-group');
+      } else {
+        this.pipelines = [];
+        this.stepGroups = [];
+      }
     });
 
     this.packageObjectsService.getPackageObjects().subscribe((pkgObjs: IPackageObject[]) => {
@@ -113,10 +121,6 @@ export class PipelinesEditorComponent implements OnInit {
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as IPipelineStep;
     this.selectedElement = data;
-    /*
-     * TODO:
-     *  Expose the result parameters for secondary to type ahead when a '.' is detected
-     */
     this.typeAhead = [];
     const nodeId = this.stepLookup[data.name];
     if (nodeId) {
@@ -311,8 +315,6 @@ export class PipelinesEditorComponent implements OnInit {
       this.loadPipeline(this.selectedPipeline.id);
     } else {
       this.newPipeline();
-      // this.changed = false;
-      // this.valid = true;
     }
   }
 
@@ -373,17 +375,92 @@ export class PipelinesEditorComponent implements OnInit {
       observable.subscribe((pipeline: IPipeline) => {
         this._pipeline = pipeline;
         this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
-        const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
+        let index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
         if (index === -1) {
           this.pipelines.push(this.selectedPipeline);
         } else {
           this.pipelines[index] = this.selectedPipeline;
         }
+        if (pipeline.category === 'step-group') {
+          index = this.stepGroups.findIndex(s => s.id === this.selectedPipeline.id);
+          if (index === -1) {
+            this.stepGroups.push(this.selectedPipeline);
+          } else {
+            this.stepGroups[index] = this.selectedPipeline;
+          }
+        }
         // Change the reference to force the selector to refresh
         this.pipelines = [...this.pipelines];
+        this.stepGroups = [...this.stepGroups];
         dialogRef.close();
       }, (error) => this.handleError(error, dialogRef));
     }
+  }
+
+  deletePipeline() {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '450px',
+      height: '200px',
+      data: { message: 'Are you sure you wish to permanently delete this pipeline?' }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        this.pipelinesService.deletePipeline(this.selectedPipeline).subscribe(result => {
+          if (result) {
+            const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
+            if (index > -1) {
+              this.pipelines.splice(index, 1);
+              this.newPipeline();
+              // Change the reference to force the selector to refresh
+              this.pipelines = [...this.pipelines];
+            }
+          }
+        });
+      }
+    }, (error) => this.handleError(error, dialogRef));
+  }
+
+  copyPipeline() {
+    if (this.hasPipelineChanged(this.selectedPipeline)) {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        width: '450px',
+        height: '200px',
+        data: { message: 'You have unsaved changes to the current pipeline. Would you like to continue?' }
+      });
+
+      dialogRef.afterClosed().subscribe(confirmation => {
+        if (confirmation) {
+          this.handleCopyPipeline();
+        }
+      });
+    } else {
+      this.handleCopyPipeline();
+    }
+  }
+
+  private handleCopyPipeline() {
+    const dialogRef = this.dialog.open(NameDialogComponent, {
+      width: '25%',
+      height: '25%',
+      data: {name: `Copy of ${this.selectedPipeline.name}`}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.trim().length > 0) {
+        const newpipeline = JSON.parse(JSON.stringify(this.selectedPipeline));
+        delete newpipeline['_id'];
+        delete newpipeline.id;
+        newpipeline.name = result as string;
+        this.selectedPipeline = newpipeline;
+        this._pipeline = {
+          name: "",
+          steps: [],
+          id: '',
+          category: 'pipeline'
+        };
+        this.loadPipelineToDesigner();
+      }
+    });
   }
 
   private validatePipelineSteps(pipeline: IPipeline): String[] {
@@ -520,29 +597,5 @@ export class PipelinesEditorComponent implements OnInit {
       this.setNodeCoordinates(model, nodeLookup, childNode, nodeId, x, y);
       x += 80;
     });
-  }
-
-  deletePipeline() {
-    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
-      width: '450px',
-      height: '200px',
-      data: { message: 'Are you sure you wish to permanently delete this pipeline?' }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmation => {
-      if (confirmation) {
-        this.pipelinesService.deletePipeline(this.selectedPipeline).subscribe(result => {
-          if (result) {
-            const index = this.pipelines.findIndex(s => s.id === this.selectedPipeline.id);
-            if (index > -1) {
-              this.pipelines.splice(index, 1);
-              this.newPipeline();
-              // Change the reference to force the selector to refresh
-              this.pipelines = [...this.pipelines];
-            }
-          }
-        });
-      }
-    }, (error) => this.handleError(error, dialogRef));
   }
 }

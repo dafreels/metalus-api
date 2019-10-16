@@ -7,6 +7,11 @@
   flex-direction: column;
 }
 
+.button-content {
+  display: block;
+  text-align: right;
+}
+
 /*
  * Left side
  */
