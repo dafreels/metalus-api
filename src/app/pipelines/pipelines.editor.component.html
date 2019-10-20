@@ -111,11 +111,15 @@
                     parameterType: undefined}"
                     [packageObjects]="packageObjects"
                     [stepSuggestions]="typeAhead"
+                    [pipelines]="stepGroups"
                     (parameterUpdate)="handleParameterUpdate('executeIfEmpty', $event)"></pipelines-parameter>
                   <pipelines-parameter *ngFor="let param of selectedStep.params"
                                        [parameter]="param"
+                                       [stepGroup]="stepGroup"
                                        [packageObjects]="packageObjects"
-                                       [stepSuggestions]="typeAhead"></pipelines-parameter>
+                                       [stepSuggestions]="typeAhead"
+                                       [pipelines]="stepGroups"
+                                       (parameterUpdate)="handleParameterUpdate(param.name, $event)"></pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>

@@ -1,0 +1,34 @@
+<div class="menu">
+  <button mat-raised-button color="primary" [matMenuTriggerFor]="globalMenu">
+    <mat-icon aria-label="Add Global">add</mat-icon>
+  </button>
+  <mat-menu #globalMenu="matMenu">
+    <button mat-menu-item (click)="addParameter('string')">String</button>
+    <button mat-menu-item (click)="addParameter('boolean')">Boolean</button>
+    <button mat-menu-item (click)="addParameter('number')">Number</button>
+    <button mat-menu-item (click)="addParameter('object')">Object</button>
+    <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('step')">Step Response</button>
+    <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('secondary')">Secondary Step Response</button>
+    <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('global')">Global</button>
+    <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('runtime')">Runtime Parameter</button>
+  </mat-menu>
+</div>
+<mat-card *ngFor="let global of globalParameters">
+  <mat-card-content>
+    <mat-form-field><input matInput required placeholder="Name" [(ngModel)]="global.name" (change)="generateGlobalsObject()"></mat-form-field>
+    <mat-form-field *ngIf="['string', 'number', 'object'].indexOf(global.type) > -1">
+      <input *ngIf="global.type === 'string'" placeholder="Value" matInput required
+                           [(ngModel)]="global.value" (change)="generateGlobalsObject()">
+      <input *ngIf="global.type === 'number'" placeholder="Value" matInput type="number" required
+             [(ngModel)]="global.value" (change)="generateGlobalsObject()">
+      <textarea *ngIf="global.type === 'object'" matInput placeholder="Value" [ngModel]="global.value" disabled></textarea>
+    </mat-form-field>
+    <mat-slide-toggle *ngIf="global.type === 'boolean'" [(ngModel)]="global.value" (change)="generateGlobalsObject()"></mat-slide-toggle>
+    <button mat-raised-button color="primary" (click)="removeParameter(global.id)">
+      <mat-icon aria-label="Remove Global">remove</mat-icon>
+    </button>
+    <button *ngIf="global.type === 'object'" mat-raised-button color="primary" (click)="openEditor(global.id)">
+      <mat-icon aria-label="Open Editor">edit</mat-icon>
+    </button>
+  </mat-card-content>
+</mat-card>

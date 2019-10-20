@@ -1,0 +1,7 @@
+<globals-editor [packageObjects]="data.packageObjects"
+                [globals]="data.global"
+                [allowSpecialParameters]="data.allowSpecialParameters"
+                (globalObject)="setGlobalObject($event)"></globals-editor>
+<div mat-dialog-actions class="ok-button-div">
+  <button mat-raised-button (click)="closeDialog()">OK</button>
+</div>

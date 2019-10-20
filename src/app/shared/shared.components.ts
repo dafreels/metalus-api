@@ -22,6 +22,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatMenuModule} from "@angular/material/menu";
 import {ErrorModalModule} from "../error-modal/error.modal.module";
 import {ConfirmationModalModule} from "../confirmation/confirmation.modal.module";
+import {GlobalsEditorModule} from "../globals-editor/globals.editor.module";
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import {ConfirmationModalModule} from "../confirmation/confirmation.modal.module
     BrowserAnimationsModule,
     ConfirmationModalModule,
     ErrorModalModule,
+    GlobalsEditorModule,
     MatCardModule,
     MatGridListModule,
     MatToolbarModule,
@@ -53,6 +55,7 @@ import {ConfirmationModalModule} from "../confirmation/confirmation.modal.module
     BrowserAnimationsModule,
     ConfirmationModalModule,
     ErrorModalModule,
+    GlobalsEditorModule,
     MatCardModule,
     MatGridListModule,
     MatToolbarModule,

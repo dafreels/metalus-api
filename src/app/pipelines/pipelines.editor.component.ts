@@ -16,6 +16,8 @@ import {diff} from "deep-object-diff";
 import {ErrorModalComponent} from "../error-modal/error.modal.component";
 import * as Ajv from 'ajv';
 import {ConfirmationModalComponent} from "../confirmation/confirmation.modal.component";
+import {StepGroupProperty} from "./parameters/pipeline.parameter.component";
+import {SharedFunctions} from "../shared/SharedFunctions";
 
 @Component({
   selector: 'pipelines-editor',
@@ -36,6 +38,7 @@ export class PipelinesEditorComponent implements OnInit {
   stepLookup = {};
   typeAhead: string[] = [];
   pipelineValidator;
+  stepGroup: StepGroupProperty = { enabled: false };
 
   constructor(private stepsService: StepsService,
               private pipelinesService: PipelinesService,
@@ -48,7 +51,7 @@ export class PipelinesEditorComponent implements OnInit {
     this.stepsService.getSteps().subscribe((steps: IStep[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
-      // steps.push(StaticSteps.STEP_GROUP);
+      steps.push(StaticSteps.STEP_GROUP);
       this.steps = steps;
     });
 
@@ -121,6 +124,7 @@ export class PipelinesEditorComponent implements OnInit {
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as IPipelineStep;
     this.selectedElement = data;
+    this.configureStepGroup();
     this.typeAhead = [];
     const nodeId = this.stepLookup[data.name];
     if (nodeId) {
@@ -157,6 +161,56 @@ export class PipelinesEditorComponent implements OnInit {
   handleParameterUpdate(name: string, parameter: IPipelineStepParam) {
     if (name === 'executeIfEmpty') {
       this.selectedStep.executeIfEmpty = parameter.value;
+    }
+    this.configureStepGroup();
+  }
+
+  private configureStepGroup() {
+    if (this.selectedStep.type === 'step-group') {
+      let pipelineId;
+      let pipeline;
+      let param = this.selectedStep.params.find(p => p.name === 'pipelineId');
+      let value = SharedFunctions.getParameterValue(param);
+      if (value) {
+        pipelineId = PipelinesEditorComponent.getPipelineId(value);
+      }
+
+      if (!pipelineId || pipelineId.trim().length === 0) {
+        param = this.selectedStep.params.find(p => p.name === 'pipeline');
+        if (param) {
+          value = SharedFunctions.getParameterValue(param);
+          switch (typeof value) {
+            case 'object':
+              if (param.className) {
+                pipeline = value;
+                pipelineId = null;
+              }
+              break;
+            case 'string':
+              const p = value.split('||').filter(v => v.trim().indexOf('&') === 0)[0];
+              pipelineId = PipelinesEditorComponent.getPipelineId(p);
+              break;
+          }
+        }
+      }
+
+      pipeline = this.pipelines.find(p => p.id === pipelineId);
+      this.stepGroup = {
+        enabled: true,
+        pipeline: pipeline
+      };
+    } else {
+      this.stepGroup = {
+        enabled: false
+      };
+    }
+  }
+
+  private static getPipelineId(value: string) {
+    if (SharedFunctions.getType(value, '') === 'pipeline') {
+      return value.substring(1);
+    } else {
+      return value;
     }
   }
 
@@ -536,13 +590,13 @@ export class PipelinesEditorComponent implements OnInit {
     const nodeId = Object.keys(this.designerModel.nodes).find(key => this.designerModel.nodes[key].data.name === node.data.name);
     const step = node.data.data;
     delete step._id;
+    this.adjustStepParameterType(step);
     if (pipeline.steps.findIndex(s => s.id === step.id) === -1) {
       pipeline.steps.push(step);
       pipeline.layout[step.id] = {
         x: node.x,
         y: node.y
       };
-      // TODO Should the result parameter be set when the connection is made (model change) or only when saving?
       const children = Object.values(this.designerModel.connections).filter(conn => conn.sourceNodeId === nodeId);
       if (children.length > 0) {
         if (step.type === 'branch') {
@@ -563,6 +617,23 @@ export class PipelinesEditorComponent implements OnInit {
       } else {
         delete step.nextStepId;
       }
+    }
+  }
+
+  private adjustStepParameterType(step: IPipelineStep) {
+    if (step.params) {
+      step.params.forEach(param => {
+        switch(param.type) {
+          case 'global':
+          case 'runtime':
+          case 'pipeline':
+          case 'step':
+          case 'secondary':
+            param.type = 'text';
+            break;
+          default:
+        }
+      });
     }
   }
 
