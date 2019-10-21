@@ -1,6 +1,7 @@
 import {EventEmitter, Input, Output} from "@angular/core";
 import {IStep} from "../steps.model";
 import {DropEffect} from "ngx-drag-drop";
+import {SharedFunctions} from "../../shared/SharedFunctions";
 
 export abstract class StepsSelectionComponent {
   steps: IStep[];
@@ -46,5 +47,9 @@ export abstract class StepsSelectionComponent {
 
   setSteps(steps) {
     this.filterSteps = steps;
+  }
+
+  getStepIcon(step) {
+    return SharedFunctions.getMaterialIconName(step.type);
   }
 }

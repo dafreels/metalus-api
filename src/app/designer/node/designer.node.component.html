@@ -3,11 +3,12 @@
      matTooltipPosition="right">
   <div class="node-label">{{data.name}}</div>
   <div>
-    <img src="{{data.icon}}" width="32px" height="32px"/>
+    <mat-icon color="primary">{{data.icon}}</mat-icon>
   </div>
 </div>
 <div [matMenuTriggerFor]="nodeMenu">
   <mat-menu #nodeMenu="matMenu">
     <button mat-menu-item (click)="removeNode()">Remove</button>
+    <button *ngFor="let action of data.actions" mat-menu-item (click)="handleAction(action.action)" [disabled]="action.enableFunction()">{{action.displayName}}</button>
   </mat-menu>
 </div>

@@ -6,20 +6,20 @@
     <mat-menu #menu="matMenu">
       <button mat-menu-item>
         <div>
-          <img class="menu-img" height="32px" width="32px" alt="Steps" src="../../assets/favicon.ico">
+          <mat-icon color="primary">home</mat-icon>
           <span class="spacer"><a [routerLink]="['/']" routerLinkActive="active">Home</a></span>
         </div>
       </button>
       <button mat-menu-item>
         <div>
-          <img class="menu-img" height="32px" width="32px" alt="Pipelines" src="../../assets/pipeline.png">
+          <mat-icon color="primary">more_vert</mat-icon>
           <span class="spacer"><a [routerLink]="['/pipelines-editor']"
                                   routerLinkActive="active">Pipeline Editor</a></span>
         </div>
       </button>
       <button mat-menu-item>
         <div>
-          <img class="menu-img" height="32px" width="32px" alt="Steps" src="../../assets/step.png">
+          <mat-icon color="primary">apps</mat-icon>
           <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>
         </div>
       </button>
@@ -33,4 +33,5 @@
 <!-- Helpful links
 Icons: https://material.io/resources/icons/?style=baseline
 JSPlumb connectors parameters: http://jsplumb.github.io/jsplumb/connectors.html
+Semantic JSON diff: https://github.com/benjamine/jsondiffpatch
 -->

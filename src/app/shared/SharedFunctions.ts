@@ -62,4 +62,20 @@ export class SharedFunctions {
     }
     return null;
   }
+
+  static getMaterialIconName(stepType) {
+    const value = stepType || '';
+    switch(value.toLocaleLowerCase()) {
+      case 'step-group':
+        return 'more_vert';
+      case 'branch':
+        return 'device_hub';
+      case 'fork':
+        return 'call_split';
+      case 'join':
+        return 'call_merge';
+      default:
+        return 'extension'
+    }
+  }
 }

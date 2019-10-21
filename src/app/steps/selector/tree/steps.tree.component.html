@@ -15,8 +15,7 @@
           [dndDraggable]="node.step"
           [dndDisableIf]="!draggableSteps"
           [dndEffectAllowed]="dropEffect">
-        <img alt="" height="32px" width="32px"
-             src="../../../assets/{{node.type ? node.type.toLocaleLowerCase() : 'pipeline'}}.png"/>
+        <mat-icon color="primary">{{getStepIcon(node.step)}}</mat-icon>
         {{node.name}}
       </li>
     </mat-tree-node>

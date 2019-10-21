@@ -19,8 +19,7 @@
                        [dndDraggable]="step"
                        [dndDisableIf]="!draggableSteps"
                        [dndEffectAllowed]="dropEffect">
-          <img alt="" height="32px" width="32px"
-               src="../../../assets/{{step.type ? step.type.toLocaleLowerCase() : 'pipeline'}}.png"/>
+          <mat-icon color="primary">{{getStepIcon(step)}}</mat-icon>
           <span class="step-list-text">
             {{step.displayName}}
           </span>

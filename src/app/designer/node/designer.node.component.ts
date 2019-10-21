@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Output, ViewChild, ViewEncapsulation} from "@angular/core";
-import {DesignerElement} from "../designer.component";
+import {DesignerElement, DesignerElementAction} from "../designer.component";
 import {MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
@@ -14,6 +14,7 @@ export class DesignerNodeComponent {
   @ViewChild(MatMenuTrigger, {static: true}) trigger: MatMenuTrigger;
   @Output() nodeSelected = new EventEmitter<DesignerElement>();
   @Output() nodeRemoved = new EventEmitter<DesignerElement>();
+  @Output() nodeAction = new EventEmitter<DesignerElementAction>();
 
   nodeClicked(event) {
     this.nodeSelected.emit(this.data);
@@ -25,5 +26,12 @@ export class DesignerNodeComponent {
   removeNode() {
     this.trigger.closeMenu();
     this.nodeRemoved.emit(this.data);
+  }
+
+  handleAction(action: string) {
+    this.nodeAction.emit({
+      action,
+      element: this.data
+    })
   }
 }

@@ -23,6 +23,14 @@ export interface DesignerElement {
   icon: string;
   event: DndDropEvent;
   data: {};
+  style?: string;
+  actions?: DesignerAction[];
+}
+
+export interface DesignerAction {
+  displayName: string;
+  action: string;
+  enableFunction;
 }
 
 export interface DesignerModel {
@@ -30,6 +38,11 @@ export interface DesignerModel {
   nodes: object,
   endpoints: object,
   connections: object
+}
+
+export interface DesignerElementAction {
+  action: string;
+  element: DesignerElement;
 }
 
 @Component({
@@ -46,6 +59,7 @@ export class DesignerComponent implements AfterViewInit {
   @Output() designerDropEvent = new EventEmitter<DndDropEvent>();
   @Output() modelChanged = new EventEmitter();
   @Output() elementSelected = new EventEmitter<DesignerElement>();
+  @Output() elementAction = new EventEmitter<DesignerElementAction>();
   endPointStyle: PaintStyle = {
     fill: '#7AB02C',
     stroke: '7'
@@ -113,7 +127,9 @@ export class DesignerComponent implements AfterViewInit {
     }
     this.initializeDesigner();
     // Listen for the add new element call back event
-    this.addElementSubject.subscribe(element => this.addDesignerElement(element));
+    if (this.addElementSubject) {
+      this.addElementSubject.subscribe(element => this.addDesignerElement(element));
+    }
     this.populateFromModel();
     this.viewReady = true;
   }
@@ -288,6 +304,7 @@ export class DesignerComponent implements AfterViewInit {
     const componentRef = this.designerCanvas.viewContainerRef.createComponent(componentFactory);
     componentRef.instance.data = data;
     componentRef.instance.id = nodeId;
+    componentRef.location.nativeElement.className = data.style;
     // Handle selection events TODO: Try to find an angular way to do this
     componentRef.instance.nodeSelected.subscribe(data => {
       if (this.selectedComponent) {
@@ -297,6 +314,7 @@ export class DesignerComponent implements AfterViewInit {
       this.selectedComponent = componentRef;
       this.elementSelected.emit(data)
     });
+    componentRef.instance.nodeAction.subscribe(data => this.elementAction.emit(data));
     componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;

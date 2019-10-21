@@ -130,6 +130,7 @@
     <designer [addElementSubject]="dndSubject"
               (designerDropEvent)="addStep($event)"
               (elementSelected)="stepSelected($event)"
+              (elementAction)="handleElementAction($event)"
               [dataModel]="designerModel"
               (modelChanged)="handleModelChange()"></designer>
   </div>
