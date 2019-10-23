@@ -177,7 +177,7 @@ export class PipelineParameterComponent {
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
             inputData.value = result;
-            this.stepGroup.pipeline = this.pipelines.find(p => p.id = result);
+            this.stepGroup.pipeline = this.pipelines.find(p => p.id === result);
             this.handleChange(id);
           }
         });
@@ -223,7 +223,7 @@ export class PipelineParameterComponent {
       if (step.params && step.params.length > 0) {
         step.params.forEach(param => {
           const value = param.value || param.defaultValue;
-          if (value && value.indexOf('!') > -1) {
+          if (value && typeof value === 'string' && value.indexOf('!') > -1) {
             values = value.split('||').map(s => s.trim());
             values.forEach(v => {
               if (v.indexOf('!') === 0) {

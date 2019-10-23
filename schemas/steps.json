@@ -56,7 +56,8 @@
             "pipeline",
             "branch",
             "fork",
-            "join"
+            "join",
+            "step-group"
           ]
         },
         "params": {

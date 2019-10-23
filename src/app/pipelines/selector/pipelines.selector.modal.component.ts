@@ -1,6 +1,5 @@
 import {Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ErrorDialogData} from "../../error-modal/error.modal.component";
 import {IPipeline} from "../pipelines.model";
 
 @Component({
