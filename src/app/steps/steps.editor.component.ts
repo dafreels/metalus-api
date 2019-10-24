@@ -134,11 +134,22 @@ export class StepsEditorComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.code.trim().length > 0) {
-        const steps = JSON.parse(result.code);
+        const bulkLoad = JSON.parse(result.code);
+        let steps = [];
+        if (Array.isArray(bulkLoad)) {
+          steps = bulkLoad;
+        } else if (typeof bulkLoad === 'object') {
+          steps = bulkLoad['steps'];
+          const pkgObjs = bulkLoad['pkgObjs'];
+          if (pkgObjs && pkgObjs.length > 0) {
+            this.packageObjectsService.updatePackageObjects(pkgObjs).subscribe((packageObjects: IPackageObject[]) => {
+              this.packageObjects = packageObjects;
+            }, error => this.handleError(error, null));
+          }
+        }
         this.stepsService.updateSteps(steps).subscribe((steps: IStep[]) => {
             this.steps = steps;
-          }, error => this.handleError(error, dialogRef)
-        );
+          }, error => this.handleError(error, null));
       }
     });
   }
@@ -219,7 +230,9 @@ export class StepsEditorComponent implements OnInit {
     } else {
       message = error.message;
     }
-    dialogRef.close();
+    if (dialogRef) {
+      dialogRef.close();
+    }
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',

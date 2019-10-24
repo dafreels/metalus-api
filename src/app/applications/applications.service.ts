@@ -11,6 +11,11 @@ export class ApplicationsService {
   getApplications(): Observable<IApplication[]> {
     return this.http.get<IApplicationsResponse>(`/api/v1/applications`, { observe: 'response' })
       .pipe(
-        map(response => response.body.applications));
+        map(response => {
+          if (response && response.body) {
+            return response.body.applications;
+          }
+          return [];
+        }));
   }
 }

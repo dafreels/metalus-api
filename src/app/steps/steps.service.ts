@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, throwError} from "rxjs";
 import {IStep, IStepResponse, IStepsResponse} from "./steps.model";
-import {catchError, map} from "rxjs/operators";
+import {catchError, map, mergeMap} from "rxjs/operators";
 
 @Injectable()
 export class StepsService {
@@ -11,7 +11,12 @@ export class StepsService {
   getSteps(): Observable<IStep[]> {
     return this.http.get<IStepsResponse>('/api/v1/steps', {observe: 'response'})
       .pipe(
-        map(response => response.body.steps),
+        map(response => {
+          if (response && response.body) {
+            return response.body.steps;
+          }
+          return [];
+        }),
         catchError(err => throwError(err)));
   }
 
@@ -35,7 +40,7 @@ export class StepsService {
       return s;
     });
     return this.http.post<IStepsResponse>('/api/v1/steps', bulkSteps, {observe: 'response'})
-      .pipe(response => this.getSteps(),
+      .pipe(mergeMap(response => this.getSteps()),
         catchError(err => throwError(err)));
   }
 

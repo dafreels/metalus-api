@@ -7,3 +7,7 @@ export interface IPackageObject {
   schema: string,
   layout: string
 }
+
+export interface IPackageObjectResponse {
+  pkgObjs: IPackageObject[];
+}

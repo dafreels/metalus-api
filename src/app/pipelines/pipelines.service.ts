@@ -9,13 +9,17 @@ export class PipelinesService {
   constructor(private http: HttpClient) {}
 
   getPipelines(): Observable<IPipeline[]> {
-    return this.http.get<IPipelinesResponse>(`/api/v1/pipelines`, { observe: 'response' })
+    return this.http.get<IPipelinesResponse>(`/api/v1/pipelines`, {observe: 'response'})
       .pipe(
-        map(response => response.body.pipelines.map(p => {
-          delete p['_id'];
-          return p;
-        })),
-        catchError(err => throwError(err)));
+        map(response => {
+          if (response && response.body) {
+            return response.body.pipelines.map(p => {
+              delete p['_id'];
+              return p;
+            });
+          }
+          return [];
+        }), catchError(err => throwError(err)));
   }
 
   addPipeline(pipeline: IPipeline): Observable<IPipeline> {
