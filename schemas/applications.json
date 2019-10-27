@@ -54,9 +54,6 @@
                 "type": "string"
               }
             },
-            "globals": {
-              "type": "object"
-            },
             "applicationProperties": {
               "type": "object"
             },
@@ -71,6 +68,9 @@
               "items": {
                 "type": "string"
               }
+            },
+            "pipelineManager": {
+              "$ref": "applications.json#/definitions/ClassInfo"
             }
           }
         }
@@ -124,9 +124,6 @@
             "mergeGlobals": {
               "type": "boolean"
             },
-            "globals": {
-              "type": "object"
-            },
             "parents": {
               "type": "array",
               "items": {
@@ -146,6 +143,9 @@
             "type": "object",
             "$ref": "pipelines.json#/definitions/pipelines"
           }
+        },
+        "globals": {
+          "type": "object"
         },
         "pipelineListener": {
           "$ref": "applications.json#/definitions/ClassInfo"

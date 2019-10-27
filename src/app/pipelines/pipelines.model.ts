@@ -28,3 +28,8 @@ export interface IPipelinesResponse {
 export interface IPipelineResponse {
   pipeline: IPipeline;
 }
+
+export interface PipelineParameter {
+  pipelineId: string;
+  parameters: object;
+}

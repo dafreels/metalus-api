@@ -1,0 +1,27 @@
+<div>
+  <div class="button-div">
+    <mat-card>
+      <mat-card-content>
+        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newApplication()">New</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <div class="form-layout">
+          <mat-form-field>
+            <input matInput placeholder="Id" [(ngModel)]="selectedApplication.id" name="id" disabled="true">
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Name" [(ngModel)]="selectedApplication.name" required name="name">
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div>
+    <designer [dataModel]="designerModel"></designer>
+  </div>
+</div>
+

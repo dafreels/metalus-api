@@ -13,6 +13,13 @@
       <button mat-menu-item>
         <div>
           <mat-icon color="primary">more_vert</mat-icon>
+          <span class="spacer"><a [routerLink]="['/applications-editor']"
+                                  routerLinkActive="active">Application Editor</a></span>
+        </div>
+      </button>
+      <button mat-menu-item>
+        <div>
+          <mat-icon color="primary">more_vert</mat-icon>
           <span class="spacer"><a [routerLink]="['/pipelines-editor']"
                                   routerLinkActive="active">Pipeline Editor</a></span>
         </div>
