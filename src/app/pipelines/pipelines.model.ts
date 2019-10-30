@@ -5,7 +5,7 @@ export interface IPipeline {
   name: string,
   steps: IPipelineStep[],
   category?: PipelineCategory;
-  layout?: {}
+  layout?: object;
 }
 
 export interface IPipelineStep extends IStep {

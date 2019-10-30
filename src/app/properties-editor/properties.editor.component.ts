@@ -13,10 +13,10 @@ export interface GlobalParameter {
 
 @Component({
   selector: 'globals-editor',
-  templateUrl: './globals.editor.component.html',
-  styleUrls: ['./globals.editor.component.css']
+  templateUrl: './properties.editor.component.html',
+  styleUrls: ['./properties.editor.component.css']
 })
-export class GlobalsEditorComponent {
+export class PropertiesEditorComponent {
   @Input() allowSpecialParameters: boolean = false;
   @Input() packageObjects: IPackageObject[];
   @Output() globalObject = new EventEmitter<object>();

@@ -12,7 +12,7 @@
             </mat-form-field>
             <mat-form-field>
               <mat-label>Type</mat-label>
-              <mat-select required [(ngModel)]="selectedPipeline.category" (selectionChange)="handleModelChange()">
+              <mat-select required [(ngModel)]="selectedPipeline.category">
                 <mat-option value="pipeline">Pipeline</mat-option>
                 <mat-option value="step-group">Step Group</mat-option>
               </mat-select>
@@ -130,7 +130,6 @@
               (designerDropEvent)="addStep($event)"
               (elementSelected)="stepSelected($event)"
               (elementAction)="handleElementAction($event)"
-              [dataModel]="designerModel"
-              (modelChanged)="handleModelChange()"></designer>
+              [dataModel]="designerModel"></designer>
   </div>
 </div>

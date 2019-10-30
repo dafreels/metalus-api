@@ -1,5 +1,5 @@
 import {NgModule} from "@angular/core";
-import {GlobalsEditorComponent} from "./globals.editor.component";
+import {PropertiesEditorComponent} from "./properties.editor.component";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatCardModule} from "@angular/material/card";
 import {FormsModule} from "@angular/forms";
@@ -8,7 +8,7 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {CommonModule} from "@angular/common";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
-import {GlobalsEditorModalComponent} from "./modal/globals.editor.modal.component";
+import {PropertiesEditorModalComponent} from "./modal/properties.editor.modal.component";
 import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
@@ -24,16 +24,16 @@ import {MatDialogModule} from "@angular/material/dialog";
     MatSlideToggleModule
   ],
   declarations: [
-    GlobalsEditorComponent,
-    GlobalsEditorModalComponent
+    PropertiesEditorComponent,
+    PropertiesEditorModalComponent
   ],
   entryComponents: [
-    GlobalsEditorModalComponent
+    PropertiesEditorModalComponent
   ],
   exports: [
-    GlobalsEditorComponent,
-    GlobalsEditorModalComponent
+    PropertiesEditorComponent,
+    PropertiesEditorModalComponent
   ]
 })
 
-export class GlobalsEditorModule {}
+export class PropertiesEditorModule {}

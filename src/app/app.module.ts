@@ -11,7 +11,7 @@ import {PackageObjectsModule} from "./packageObjects/package-objects.module";
 import {WaitModalModule} from "./wait-modal/wait.modal.module";
 import {NameDialogModule} from "./name-dialog/name.dialog.module";
 import {ApplicationsModule} from "./applications/applications.module";
-import {GlobalsEditorModule} from "./globals-editor/globals.editor.module";
+import {PropertiesEditorModule} from "./properties-editor/properties.editor.module";
 
 @NgModule({
   imports: [
@@ -20,7 +20,7 @@ import {GlobalsEditorModule} from "./globals-editor/globals.editor.module";
     StepsModule,
     AppRoutingModule,
     CodeEditorModule,
-    GlobalsEditorModule,
+    PropertiesEditorModule,
     NameDialogModule,
     ObjectEditorModule,
     PackageObjectsModule,

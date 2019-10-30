@@ -336,4 +336,36 @@ export class DesignerComponent implements AfterViewInit {
     }
     return endPoint;
   }
+
+  // TODO This is a basic layout algorithm, need to try to use a proper library like dagre
+  static performAutoLayout(nodeLookup, connectedNodes, model) {
+    let x = 300;
+    let y = 100;
+    const nodeId = nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]];
+    if (nodeId) {
+      const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
+      DesignerComponent.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
+    }
+  }
+
+  private static setNodeCoordinates(model, nodeLookup, parentNode, nodeId, x, y) {
+    if (parentNode.x === -1) {
+      parentNode.x = x;
+    }
+    parentNode.y = y;
+    const children = Object.keys(model.connections).filter(key => key.indexOf(nodeId) === 0);
+    const totalWidth = children.length * 80;
+    y += 125;
+    x = children.length === 1 ? x : x - (totalWidth / 2);
+    if (x < 0) {
+      x = 100;
+    }
+    let childNode;
+    children.forEach(child => {
+      nodeId = model.connections[child].targetNodeId;
+      childNode = model.nodes[nodeId];
+      DesignerComponent.setNodeCoordinates(model, nodeLookup, childNode, nodeId, x, y);
+      x += 80;
+    });
+  }
 }

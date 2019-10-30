@@ -2,6 +2,13 @@
   <div class="button-div">
     <mat-card>
       <mat-card-content>
+        <button mat-raised-button color="primary" [matMenuTriggerFor]="applicationMenu"
+                style="margin-right: 5px;">Load
+        </button>
+        <mat-menu #applicationMenu="matMenu">
+          <button mat-menu-item *ngFor="let application of applications" [id]="application.id"
+                  (click)="loadApplication(application.id)">{{application.name}}</button>
+        </mat-menu>
         <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newApplication()">New</button>
       </mat-card-content>
     </mat-card>
@@ -21,7 +28,8 @@
     </mat-card>
   </div>
   <div>
-    <designer [dataModel]="designerModel"></designer>
+    <designer [dataModel]="designerModel"
+    (elementAction)="handleElementAction($event)"></designer>
   </div>
 </div>
 

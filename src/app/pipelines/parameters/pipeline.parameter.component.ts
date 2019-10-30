@@ -5,7 +5,7 @@ import {ObjectEditorComponent} from "../../object-editor/object.editor.component
 import {MatDialog} from "@angular/material/dialog";
 import {IPackageObject} from "../../packageObjects/package-objects.model";
 import {SharedFunctions} from "../../shared/SharedFunctions";
-import {GlobalsEditorModalComponent} from "../../globals-editor/modal/globals.editor.modal.component";
+import {PropertiesEditorModalComponent} from "../../properties-editor/modal/properties.editor.modal.component";
 import {PipelinesSelectorModalComponent} from "../selector/pipelines.selector.modal.component";
 
 export interface SplitParameter {
@@ -156,7 +156,7 @@ export class PipelineParameterComponent {
         const pipelineMappings = this.generatePipelineMappings(this.stepGroup.pipeline);
         mappings = Object.assign({}, pipelineMappings, mappings);
       }
-      const dialogRef = this.dialog.open(GlobalsEditorModalComponent, {
+      const dialogRef = this.dialog.open(PropertiesEditorModalComponent, {
         width: '75%',
         height: '90%',
         data: { global: mappings, allowSpecialParameters: true, packageObjects: this.packageObjects }

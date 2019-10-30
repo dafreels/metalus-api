@@ -10,10 +10,10 @@ export interface GlobalEditorData {
 
 @Component({
   selector: 'globals-editor-modal',
-  templateUrl: './globals.editor.modal.component.html',
-  styleUrls: ['./globals.editor.modal.component.css']
+  templateUrl: './properties.editor.modal.component.html',
+  styleUrls: ['./properties.editor.modal.component.css']
 })
-export class GlobalsEditorModalComponent {
+export class PropertiesEditorModalComponent {
   constructor(public dialogRef: MatDialogRef<GlobalEditorData>,
               @Inject(MAT_DIALOG_DATA) public data: GlobalEditorData) {}
 

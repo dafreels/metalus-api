@@ -13,6 +13,7 @@ export interface IApplication extends BaseApplicationProperties {
   executions: IExecution[];
   requiredParameters: string[];
   pipelineManager: ClassInfo;
+  layout?: object;
 }
 
 export interface ISparkConf {

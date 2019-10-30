@@ -342,20 +342,6 @@ export class PipelinesEditorComponent implements OnInit {
     }
   }
 
-  handleModelChange() {
-    /*
-     * TODO:
-     * Validate the pipeline
-     */
-    // if (!this.loading) {
-    //   const pipeline = this.generatePipeline();
-    //   const changes = diff(this._pipeline, pipeline);
-    // console.log(`Changes: ${JSON.stringify(changes, null, 4)}`);
-    //   this.changed = Object.keys(changes).length > 0;
-    //   this.valid = true;
-    // }
-  }
-
   private createDesignerElement(step: IPipelineStep, event) {
     let actions = [];
     if ( step.type === 'step-group') {
@@ -539,7 +525,7 @@ export class PipelinesEditorComponent implements OnInit {
     // See if automatic layout needs to be applied
     if (!pipeline.layout ||
       Object.keys(pipeline.layout).length === 0) {
-      this.performAutoLayout(this.stepLookup, connectedNodes, model);
+      DesignerComponent.performAutoLayout(this.stepLookup, connectedNodes, model);
     }
     return model;
   }
@@ -627,7 +613,7 @@ export class PipelinesEditorComponent implements OnInit {
     const nodeId = Object.keys(this.designerModel.nodes).find(key => this.designerModel.nodes[key].data.name === node.data.name);
     const step = node.data.data;
     delete step._id;
-    this.adjustStepParameterType(step);
+    PipelinesEditorComponent.adjustStepParameterType(step);
     if (pipeline.steps.findIndex(s => s.id === step.id) === -1) {
       pipeline.steps.push(step);
       pipeline.layout[step.id] = {
@@ -657,7 +643,7 @@ export class PipelinesEditorComponent implements OnInit {
     }
   }
 
-  private adjustStepParameterType(step: IPipelineStep) {
+  private static adjustStepParameterType(step: IPipelineStep) {
     if (step.params) {
       step.params.forEach(param => {
         switch(param.type) {
@@ -672,38 +658,5 @@ export class PipelinesEditorComponent implements OnInit {
         }
       });
     }
-  }
-
-  // TODO This may need to be moved to the designer component
-  // TODO This is a basic layout algorithm, need to try to use a proper library like dagre
-  private performAutoLayout(nodeLookup, connectedNodes, model) {
-    let x = 300;
-    let y = 100;
-    const nodeId = nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]];
-    if (nodeId) {
-      const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
-      this.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
-    }
-  }
-
-  private setNodeCoordinates(model, nodeLookup, parentNode, nodeId, x, y) {
-    if (parentNode.x === -1) {
-      parentNode.x = x;
-    }
-    parentNode.y = y;
-    const children = Object.keys(model.connections).filter(key => key.indexOf(nodeId) === 0);
-    const totalWidth = children.length * 80;
-    y += 125;
-    x = children.length === 1 ? x : x - (totalWidth / 2);
-    if (x < 0) {
-      x = 100;
-    }
-    let childNode;
-    children.forEach(child => {
-      nodeId = model.connections[child].targetNodeId;
-      childNode = model.nodes[nodeId];
-      this.setNodeCoordinates(model, nodeLookup, childNode, nodeId, x, y);
-      x += 80;
-    });
   }
 }

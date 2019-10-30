@@ -74,6 +74,8 @@ export class SharedFunctions {
         return 'call_split';
       case 'join':
         return 'call_merge';
+      case 'execution':
+        return 'transform';
       default:
         return 'extension'
     }
