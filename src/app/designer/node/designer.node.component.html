@@ -9,6 +9,6 @@
 <div [matMenuTriggerFor]="nodeMenu">
   <mat-menu #nodeMenu="matMenu">
     <button mat-menu-item (click)="removeNode()">Remove</button>
-    <button *ngFor="let action of data.actions" mat-menu-item (click)="handleAction(action.action)" [disabled]="action.enableFunction()">{{action.displayName}}</button>
+    <button *ngFor="let action of data.actions" mat-menu-item (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
   </mat-menu>
 </div>

@@ -60,7 +60,7 @@
             </mat-chip-list>
           </mat-form-field>
           <div class="button-div">
-            <button mat-raised-button color="primary" style="margin-right: 5px;">
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newExecution()">
               <mat-icon aria-label="Add a new execution">add</mat-icon>
             </button>
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openSparkConfEditor()">Spark Conf</button>
@@ -73,9 +73,10 @@
       </mat-card-content>
     </mat-card>
   </div>
-  <div>
+  <div #canvas>
     <designer [dataModel]="designerModel"
-    (elementAction)="handleElementAction($event)"></designer>
+    (elementAction)="handleElementAction($event)"
+    [addElementSubject]="addExecutionSubject"></designer>
   </div>
 </div>
 

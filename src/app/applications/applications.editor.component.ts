@@ -1,6 +1,6 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {IApplication, IExecution} from "./applications.model";
-import {DesignerComponent, DesignerElementAction, DesignerModel} from "../designer/designer.component";
+import {DesignerComponent, DesignerElement, DesignerElementAction, DesignerModel} from "../designer/designer.component";
 import {ApplicationsService} from "./applications.service";
 import {IPipeline} from "../pipelines/pipelines.model";
 import {PipelinesService} from "../pipelines/pipelines.service";
@@ -8,9 +8,9 @@ import {SharedFunctions} from "../shared/SharedFunctions";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {FormControl} from "@angular/forms";
 import {MatChipInputEvent} from "@angular/material/chips";
-import {DesignerPreviewComponent} from "../designer/preview/designer.preview.component";
 import {SparkConfEditorComponent} from "./spark-conf-editor/spark.conf.editor.component";
 import {MatDialog} from "@angular/material/dialog";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'applications-editor',
@@ -18,12 +18,14 @@ import {MatDialog} from "@angular/material/dialog";
   styleUrls: ['./applications.editor.component.css']
 })
 export class ApplicationsEditorComponent implements OnInit {
+  @ViewChild('canvas', {static: false}) canvas: ElementRef;
   originalApplication: IApplication;
   selectedApplication: IApplication;
   designerModel: DesignerModel = DesignerComponent.newModel();
   applications: IApplication[];
   pipelines: IPipeline[];
   executionLookup = {};
+  addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
 
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -97,18 +99,13 @@ export class ApplicationsEditorComponent implements OnInit {
     this.selectedApplication = JSON.parse(JSON.stringify(this.originalApplication));
     // Create the model from the executions
     const model = DesignerComponent.newModel();
-    let nodeId;
+    // let nodeId;
     this.executionLookup = {};
-    const executions = {};
+    // const executions = {};
     this.selectedApplication.executions.forEach(execution => {
-      nodeId = `designer-node-${model.nodeSeq++}`;
-      model.nodes[nodeId] = {
-        data: this.createDesignerElement(execution, this.selectedApplication.executions),
-        x: this.selectedApplication.layout && this.selectedApplication.layout[execution.id].x ? this.selectedApplication.layout[execution.id].x : -1,
-        y: this.selectedApplication.layout && this.selectedApplication.layout[execution.id].y ? this.selectedApplication.layout[execution.id].y : -1
-      };
-      this.executionLookup[execution.id] = nodeId;
-      executions[execution.id] = execution;
+      this.createModelNode(model, execution, -1, -1);
+      // nodeId = `designer-node-${model.nodeSeq++}`;
+      // executions[execution.id] = execution;
     });
     // Create connections
     const connectedNodes = [];
@@ -147,6 +144,9 @@ export class ApplicationsEditorComponent implements OnInit {
     switch(action.action) {
       case 'editExecution':
         // TODO Implement edit application
+        break;
+      case 'addOutput':
+        // TODO Implement add output
     }
   }
 
@@ -220,7 +220,47 @@ export class ApplicationsEditorComponent implements OnInit {
     });
   }
 
-  private createDesignerElement(execution: IExecution, executions: IExecution[]) {
+  newExecution() {
+    const execution: IExecution = {
+      globals: {},
+      id: "New_Execution",
+      initialPipelineId: "",
+      mergeGlobals: false,
+      parents: [],
+      pipelineListener: {
+        className: 'com.acxiom.pipeline.DefaultPipelineListener',
+        parameters: {}
+      },
+      pipelineParameters: [],
+      securityManager: {
+        className: 'com.acxiom.pipeline.DefaultPipelineSecurityManager',
+        parameters: {}
+      },
+      stepMapper: {
+        className: 'com.acxiom.pipeline.DefaultPipelineStepMapper',
+        parameters: {}
+      }
+    };
+    let element = this.createDesignerElement(execution, this.selectedApplication.executions);
+    const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
+    element.layout = {
+      x: 100 + canvasRect.x,
+      y: 150 + canvasRect.y
+    };
+    this.addExecutionSubject.next(element);
+  }
+
+  private createModelNode(model, execution, x = -1, y = -1) {
+    const nodeId = `designer-node-${model.nodeSeq++}`;
+    model.nodes[nodeId] = {
+      data: this.createDesignerElement(execution, this.selectedApplication.executions),
+      x: this.selectedApplication.layout && this.selectedApplication.layout[execution.id].x ? this.selectedApplication.layout[execution.id].x : x,
+      y: this.selectedApplication.layout && this.selectedApplication.layout[execution.id].y ? this.selectedApplication.layout[execution.id].y : y
+    };
+    this.executionLookup[execution.id] = nodeId;
+  }
+
+  private createDesignerElement(execution: IExecution, executions: IExecution[]): DesignerElement {
     return {
       name: execution.id,
       tooltip: execution.id,
@@ -230,11 +270,17 @@ export class ApplicationsEditorComponent implements OnInit {
       data: execution,
       event: null,
       style: null,
-      actions: [{
-        displayName: 'Edit',
-        action: 'editExecution',
-        enableFunction: () => true
-      }]
+      actions: [
+        {
+          displayName: 'Edit',
+          action: 'editExecution',
+          enableFunction: () => true
+        },
+        {
+          displayName: 'Add Output',
+          action: 'addOutput',
+          enableFunction: () => true
+        }]
     };
   }
 

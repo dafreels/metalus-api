@@ -349,7 +349,7 @@ export class PipelinesEditorComponent implements OnInit {
         displayName: 'Show pipeline',
         action: 'showPipeline',
         enableFunction: () => {
-          return !this.getPipeline(step);
+          return this.getPipeline(step);
         }
       });
     }

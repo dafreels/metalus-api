@@ -21,10 +21,14 @@ export interface DesignerElement {
   outputs: Array<string>;
   tooltip: string;
   icon: string;
-  event: DndDropEvent;
   data: {};
+  event?: DndDropEvent;
   style?: string;
   actions?: DesignerAction[];
+  layout?: {
+    x: number;
+    y: number;
+  }
 }
 
 export interface DesignerAction {
@@ -164,12 +168,39 @@ export class DesignerComponent implements AfterViewInit {
     let nodeId = `designer-node-${this.model.nodeSeq++}`;
     const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
     // Register the data with the model
+    const x = data.event ? data.event.event.x : data.layout.x;
+    const y = data.event ? data.event.event.y : data.layout.y;
     this.model.nodes[nodeId] = {
       data,
-      x: data.event.event.x - canvasRect.x,
-      y: data.event.event.y - canvasRect.y
+      x: x - canvasRect.x,
+      y: y - canvasRect.y
     };
     this.addNModelNode(nodeId, this.model.nodes[nodeId]);
+  }
+
+  populateFromModel() {
+    this.modelPopulating = true;
+    // Iterate the nodes in the model
+    for(let key of Object.keys(this.model.nodes)) {
+      this.addNModelNode(key, this.model.nodes[key]);
+    }
+    // Add connections from model
+    let connection;
+    const endpointEntries = Object.entries(this.model.endpoints);
+    for (let key of Object.keys(this.model.connections)) {
+      connection = this.model.connections[key];
+      connection.endpoints.forEach(ep => {
+        this.jsPlumbInstance.connect({
+          source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
+            e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
+            entry[1].nodeId === connection.sourceNodeId)[0]),
+          target: this.jsPlumbInstance.getEndpoints(connection.targetNodeId).find(e =>
+            e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
+            entry[1].nodeId === connection.targetNodeId)[0])
+        });
+      });
+    }
+    this.modelPopulating = false;
   }
 
   private initializeDesigner() {
@@ -215,31 +246,6 @@ export class DesignerComponent implements AfterViewInit {
       }
     });
     this.designerCanvas.viewContainerRef.clear();
-  }
-
-  populateFromModel() {
-    this.modelPopulating = true;
-    // Iterate the nodes in the model
-    for(let key of Object.keys(this.model.nodes)) {
-      this.addNModelNode(key, this.model.nodes[key]);
-    }
-    // Add connections from model
-    let connection;
-    const endpointEntries = Object.entries(this.model.endpoints);
-    for (let key of Object.keys(this.model.connections)) {
-      connection = this.model.connections[key];
-      connection.endpoints.forEach(ep => {
-        this.jsPlumbInstance.connect({
-          source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
-            e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
-            entry[1].nodeId === connection.sourceNodeId)[0]),
-          target: this.jsPlumbInstance.getEndpoints(connection.targetNodeId).find(e =>
-            e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
-            entry[1].nodeId === connection.targetNodeId)[0])
-        });
-      });
-    }
-    this.modelPopulating = false;
   }
 
   private addNModelNode(nodeId, nodeData) {
