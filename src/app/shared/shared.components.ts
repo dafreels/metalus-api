@@ -23,6 +23,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {ErrorModalModule} from "../error-modal/error.modal.module";
 import {ConfirmationModalModule} from "../confirmation/confirmation.modal.module";
 import {PropertiesEditorModule} from "../properties-editor/properties.editor.module";
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   imports: [
@@ -32,6 +33,7 @@ import {PropertiesEditorModule} from "../properties-editor/properties.editor.mod
     ErrorModalModule,
     PropertiesEditorModule,
     MatCardModule,
+    MatDialogModule,
     MatGridListModule,
     MatToolbarModule,
     HttpClientModule,
@@ -57,6 +59,7 @@ import {PropertiesEditorModule} from "../properties-editor/properties.editor.mod
     ErrorModalModule,
     PropertiesEditorModule,
     MatCardModule,
+    MatDialogModule,
     MatGridListModule,
     MatToolbarModule,
     HttpClientModule,

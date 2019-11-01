@@ -18,7 +18,7 @@
     </mat-card>
     <mat-card>
       <mat-card-content>
-        <div class="stepForm">
+        <div class="form-layout">
           <mat-form-field>
             <input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" disabled="true">
           </mat-form-field>
@@ -73,7 +73,7 @@
                   {{param.name}}
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <div class="stepForm">
+              <div class="form-layout">
                 <mat-form-field>
                   <mat-label>Type</mat-label>
                   <mat-select required [(ngModel)]="param.type">

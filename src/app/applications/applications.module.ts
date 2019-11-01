@@ -16,6 +16,9 @@ import {SparkConfEditorComponent} from "./spark-conf-editor/spark.conf.editor.co
     ApplicationsEditorComponent,
     SparkConfEditorComponent
   ],
+  entryComponents: [
+    SparkConfEditorComponent
+  ],
   exports: [
     ApplicationsEditorComponent
   ],

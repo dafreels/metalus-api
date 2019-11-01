@@ -8,6 +8,9 @@ import {SharedFunctions} from "../shared/SharedFunctions";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {FormControl} from "@angular/forms";
 import {MatChipInputEvent} from "@angular/material/chips";
+import {DesignerPreviewComponent} from "../designer/preview/designer.preview.component";
+import {SparkConfEditorComponent} from "./spark-conf-editor/spark.conf.editor.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'applications-editor',
@@ -28,7 +31,8 @@ export class ApplicationsEditorComponent implements OnInit {
   requiredParametersCtrl = new FormControl();
 
   constructor(private applicationsService: ApplicationsService,
-              private pipelinesService: PipelinesService) {}
+              private pipelinesService: PipelinesService,
+              public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.newApplication();
@@ -146,34 +150,6 @@ export class ApplicationsEditorComponent implements OnInit {
     }
   }
 
-  private createDesignerElement(execution: IExecution, executions: IExecution[]) {
-    return {
-      name: execution.id,
-      tooltip: execution.id,
-      icon: SharedFunctions.getMaterialIconName('execution'),
-      input: true,
-      outputs: this.generateOutputs(execution, executions),
-      data: execution,
-      event: null,
-      style: null,
-      actions: [{
-        displayName: 'Edit',
-        action: 'editExecution',
-        enableFunction: () => true
-      }]
-    };
-  }
-
-  private generateOutputs(execution: IExecution, executions: IExecution[]) {
-    const outputs = [];
-    executions.forEach(exec => {
-      if (exec.parents && exec.parents.indexOf(execution.id) !== -1) {
-        outputs.push(exec.id);
-      }
-    });
-    return outputs;
-  }
-
   removeStepPackage(pkg: string) {
     const index = this.selectedApplication.stepPackages.indexOf(pkg);
     if (index > -1) {
@@ -234,5 +210,41 @@ export class ApplicationsEditorComponent implements OnInit {
     }
 
     this.requiredParametersCtrl.setValue(null);
+  }
+
+  openSparkConfEditor() {
+    this.dialog.open(SparkConfEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: this.selectedApplication
+    });
+  }
+
+  private createDesignerElement(execution: IExecution, executions: IExecution[]) {
+    return {
+      name: execution.id,
+      tooltip: execution.id,
+      icon: SharedFunctions.getMaterialIconName('execution'),
+      input: true,
+      outputs: this.generateOutputs(execution, executions),
+      data: execution,
+      event: null,
+      style: null,
+      actions: [{
+        displayName: 'Edit',
+        action: 'editExecution',
+        enableFunction: () => true
+      }]
+    };
+  }
+
+  private generateOutputs(execution: IExecution, executions: IExecution[]) {
+    const outputs = [];
+    executions.forEach(exec => {
+      if (exec.parents && exec.parents.indexOf(execution.id) !== -1) {
+        outputs.push(exec.id);
+      }
+    });
+    return outputs;
   }
 }
