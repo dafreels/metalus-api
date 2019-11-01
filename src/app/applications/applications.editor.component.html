@@ -23,6 +23,52 @@
           <mat-form-field>
             <input matInput placeholder="Name" [(ngModel)]="selectedApplication.name" required name="name">
           </mat-form-field>
+          <mat-form-field>
+            <mat-chip-list #stepPackagesList>
+              <mat-chip *ngFor="let pkg of selectedApplication.stepPackages"
+                        selectable="true"
+                        removable="true"
+                        (removed)="removeStepPackage(pkg)">
+                {{pkg}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Step Packages"
+                [matChipInputFor]="stepPackagesList"
+                [formControl]="stepPackageCtrl"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="addStepPackage($event)">
+            </mat-chip-list>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-chip-list #requiredParametersList>
+              <mat-chip *ngFor="let param of selectedApplication.requiredParameters"
+                        selectable="true"
+                        removable="true"
+                        (removed)="removeRequiredParameter(param)">
+                {{param}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Required Parameters"
+                [matChipInputFor]="requiredParametersList"
+                [formControl]="requiredParametersCtrl"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="addRequiredParameter($event)">
+            </mat-chip-list>
+          </mat-form-field>
+          <div class="button-div">
+            <button mat-raised-button color="primary" style="margin-right: 5px;">
+              <mat-icon aria-label="Add a new execution">add</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;">Spark Conf</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;">Globals</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;">Application Properties</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;">Classes</button>
+            <button mat-raised-button color="primary">Pipeline Parameters</button>
+          </div>
         </div>
       </mat-card-content>
     </mat-card>

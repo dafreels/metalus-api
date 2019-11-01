@@ -5,6 +5,9 @@ import {ApplicationsService} from "./applications.service";
 import {IPipeline} from "../pipelines/pipelines.model";
 import {PipelinesService} from "../pipelines/pipelines.service";
 import {SharedFunctions} from "../shared/SharedFunctions";
+import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {FormControl} from "@angular/forms";
+import {MatChipInputEvent} from "@angular/material/chips";
 
 @Component({
   selector: 'applications-editor',
@@ -18,6 +21,11 @@ export class ApplicationsEditorComponent implements OnInit {
   applications: IApplication[];
   pipelines: IPipeline[];
   executionLookup = {};
+
+  // Chip fields
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  stepPackageCtrl = new FormControl();
+  requiredParametersCtrl = new FormControl();
 
   constructor(private applicationsService: ApplicationsService,
               private pipelinesService: PipelinesService) {}
@@ -164,5 +172,67 @@ export class ApplicationsEditorComponent implements OnInit {
       }
     });
     return outputs;
+  }
+
+  removeStepPackage(pkg: string) {
+    const index = this.selectedApplication.stepPackages.indexOf(pkg);
+    if (index > -1) {
+      this.selectedApplication.stepPackages.splice(index, 1);
+    }
+
+    if (this.selectedApplication.stepPackages && this.selectedApplication.stepPackages.length === 0) {
+      delete this.selectedApplication.stepPackages;
+    }
+  }
+
+  addStepPackage(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our package
+    if ((value || '').trim()) {
+      if (!this.selectedApplication.stepPackages) {
+        this.selectedApplication.stepPackages = [];
+      }
+      this.selectedApplication.stepPackages.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.stepPackageCtrl.setValue(null);
+  }
+
+  removeRequiredParameter(param: string) {
+    const index = this.selectedApplication.requiredParameters.indexOf(param);
+    if (index > -1) {
+      this.selectedApplication.requiredParameters.splice(index, 1);
+    }
+
+    if (this.selectedApplication.requiredParameters && this.selectedApplication.requiredParameters.length === 0) {
+      delete this.selectedApplication.requiredParameters;
+    }
+  }
+
+  addRequiredParameter(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our package
+    if ((value || '').trim()) {
+      if (!this.selectedApplication.requiredParameters) {
+        this.selectedApplication.requiredParameters = [];
+      }
+      this.selectedApplication.requiredParameters.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.requiredParametersCtrl.setValue(null);
   }
 }

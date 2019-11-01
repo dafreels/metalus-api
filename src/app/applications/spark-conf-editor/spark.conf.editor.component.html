@@ -1,0 +1,27 @@
+<div>
+  <mat-card>
+    <mat-card-content>
+      <div class="form-layout">
+        <mat-form-field>
+          <mat-chip-list #kryoClassesList>
+            <mat-chip *ngFor="let clazz of selectedApplication?.sparkConf.kryoClasses"
+                      selectable="true"
+                      removable="true"
+                      (removed)="removeKryoClass(clazz)">
+              {{clazz}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Kryo Classes"
+              [matChipInputFor]="kryoClassesList"
+              [formControl]="kryoClassesCtrl"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+              (matChipInputTokenEnd)="addKryoClass($event)">
+          </mat-chip-list>
+        </mat-form-field>
+        <!-- TODO Add property builder here -->
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
