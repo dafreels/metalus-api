@@ -11,6 +11,10 @@ import {MatChipInputEvent} from "@angular/material/chips";
 import {SparkConfEditorComponent} from "./spark-conf-editor/spark.conf.editor.component";
 import {MatDialog} from "@angular/material/dialog";
 import {Subject} from "rxjs";
+import {PropertiesEditorModalComponent} from "../properties-editor/modal/properties.editor.modal.component";
+import {PackageObjectsService} from "../packageObjects/package-objects.service";
+import {IPackageObject} from "../packageObjects/package-objects.model";
+import {CodeEditorComponent} from "../code-editor/code.editor.component";
 
 @Component({
   selector: 'applications-editor',
@@ -24,6 +28,7 @@ export class ApplicationsEditorComponent implements OnInit {
   designerModel: DesignerModel = DesignerComponent.newModel();
   applications: IApplication[];
   pipelines: IPipeline[];
+  packageObjects: IPackageObject[];
   executionLookup = {};
   addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
 
@@ -34,6 +39,7 @@ export class ApplicationsEditorComponent implements OnInit {
 
   constructor(private applicationsService: ApplicationsService,
               private pipelinesService: PipelinesService,
+              private packageObjectsService: PackageObjectsService,
               public dialog: MatDialog) {}
 
   ngOnInit(): void {
@@ -45,12 +51,18 @@ export class ApplicationsEditorComponent implements OnInit {
         this.pipelines = [];
       }
     });
-
     this.applicationsService.getApplications().subscribe((applications: IApplication[]) => {
       if (applications) {
         this.applications = applications
       } else {
         this.applications = [];
+      }
+    });
+    this.packageObjectsService.getPackageObjects().subscribe((pkgObjs: IPackageObject[]) => {
+      if (pkgObjs) {
+        this.packageObjects = pkgObjs
+      } else {
+        this.packageObjects = [];
       }
     });
   }
@@ -220,6 +232,28 @@ export class ApplicationsEditorComponent implements OnInit {
     });
   }
 
+  openPropertiesEditor(mode:string) {
+    this.dialog.open(PropertiesEditorModalComponent, {
+      width: '75%',
+      height: '90%',
+      data: {
+        allowSpecialParameters: false,
+        packageObjects: this.packageObjects,
+        propertiesObject: mode === 'globals' ? this.selectedApplication.globals : this.selectedApplication.applicationProperties
+      }
+    });
+  }
+
+  exportApplication() {
+    this.dialog.open(CodeEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: {code: JSON.stringify(this.generateApplication(), null, 4),
+        language: 'json',
+        allowSave: false}
+    });
+  }
+
   newExecution() {
     const execution: IExecution = {
       globals: {},
@@ -248,6 +282,11 @@ export class ApplicationsEditorComponent implements OnInit {
       y: 150 + canvasRect.y
     };
     this.addExecutionSubject.next(element);
+  }
+
+  private generateApplication() {
+    // TODO Handle generating the executions
+    return this.selectedApplication;
   }
 
   private createModelNode(model, execution, x = -1, y = -1) {

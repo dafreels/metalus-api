@@ -5,6 +5,7 @@ import {SharedComponentsModule} from "../shared/shared.components";
 import {DesignerModule} from "../designer/designer.module";
 import {MatChipsModule} from "@angular/material/chips";
 import {SparkConfEditorComponent} from "./spark-conf-editor/spark.conf.editor.component";
+import {ComponentsEditorComponent} from "./components-editor/components.editor.component";
 
 @NgModule({
   imports: [
@@ -14,10 +15,12 @@ import {SparkConfEditorComponent} from "./spark-conf-editor/spark.conf.editor.co
   ],
   declarations: [
     ApplicationsEditorComponent,
+    ComponentsEditorComponent,
     SparkConfEditorComponent
   ],
   entryComponents: [
-    SparkConfEditorComponent
+    SparkConfEditorComponent,
+    ComponentsEditorComponent
   ],
   exports: [
     ApplicationsEditorComponent

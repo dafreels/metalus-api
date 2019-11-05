@@ -10,6 +10,7 @@
                   (click)="loadApplication(application.id)">{{application.name}}</button>
         </mat-menu>
         <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newApplication()">New</button>
+        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="exportApplication()">Export</button>
       </mat-card-content>
     </mat-card>
   </div>
@@ -64,9 +65,9 @@
               <mat-icon aria-label="Add a new execution">add</mat-icon>
             </button>
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openSparkConfEditor()">Spark Conf</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;">Globals</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;">Application Properties</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;">Application Components</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('globals')">Globals</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('appProperties')">Application Properties</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;">Components</button>
             <button mat-raised-button color="primary">Pipeline Parameters</button>
           </div>
         </div>

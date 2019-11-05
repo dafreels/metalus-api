@@ -153,7 +153,7 @@ export class PipelineParameterComponent {
     if (this.stepGroup && this._parameter.name == 'pipelineMappings') {
       let mappings = this._parameter.value || {};
       if (this.stepGroup.pipeline) {
-        const pipelineMappings = this.generatePipelineMappings(this.stepGroup.pipeline);
+        const pipelineMappings = SharedFunctions.generatePipelineMappings(this.stepGroup.pipeline);
         mappings = Object.assign({}, pipelineMappings, mappings);
       }
       const dialogRef = this.dialog.open(PropertiesEditorModalComponent, {
@@ -214,27 +214,5 @@ export class PipelineParameterComponent {
         }
       });
     }
-  }
-
-  generatePipelineMappings(pipeline: IPipeline): object {
-    const globals = {};
-    let values;
-    pipeline.steps.forEach(step => {
-      if (step.params && step.params.length > 0) {
-        step.params.forEach(param => {
-          const value = param.value || param.defaultValue;
-          if (value && typeof value === 'string' && value.indexOf('!') > -1) {
-            values = value.split('||').map(s => s.trim());
-            values.forEach(v => {
-              if (v.indexOf('!') === 0) {
-                globals[v.replace(/[!{}]/g, '')] = '';
-              }
-            })
-          }
-        })
-      }
-    });
-
-    return globals;
   }
 }

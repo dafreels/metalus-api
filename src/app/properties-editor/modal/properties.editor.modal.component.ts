@@ -2,9 +2,9 @@ import {Component, Inject, Input} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {IPackageObject} from "../../packageObjects/package-objects.model";
 
-export interface GlobalEditorData {
+export interface PropertiesEditorData {
   allowSpecialParameters: boolean;
-  global: object;
+  propertiesObject: object;
   packageObjects: IPackageObject[];
 }
 
@@ -14,16 +14,16 @@ export interface GlobalEditorData {
   styleUrls: ['./properties.editor.modal.component.css']
 })
 export class PropertiesEditorModalComponent {
-  constructor(public dialogRef: MatDialogRef<GlobalEditorData>,
-              @Inject(MAT_DIALOG_DATA) public data: GlobalEditorData) {}
+  constructor(public dialogRef: MatDialogRef<PropertiesEditorData>,
+              @Inject(MAT_DIALOG_DATA) public data: PropertiesEditorData) {}
 
   closeDialog(): void {
     this.dialogRef.close({
-      value: this.data.global
+      value: this.data.propertiesObject
     });
   }
 
   setGlobalObject(g: object) {
-    this.data.global = g;
+    this.data.propertiesObject = g;
   }
 }

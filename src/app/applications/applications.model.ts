@@ -38,6 +38,13 @@ export interface BaseApplicationProperties {
   pipelineParameters: PipelineParameter[];
 }
 
+export interface ClassComponentProperties {
+  pipelineListener: ClassInfo;
+  securityManager: ClassInfo;
+  stepMapper: ClassInfo;
+  pipelineManager?: ClassInfo;
+}
+
 export interface ClassInfo {
   className: string;
   parameters: object;

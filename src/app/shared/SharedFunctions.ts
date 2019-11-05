@@ -1,4 +1,4 @@
-import {IPipelineStepParam} from "../pipelines/pipelines.model";
+import {IPipeline, IPipelineStepParam} from "../pipelines/pipelines.model";
 
 export class SharedFunctions {
   private static leadCharacters: string[] = ['@', '!', '#', '$'];
@@ -79,5 +79,32 @@ export class SharedFunctions {
       default:
         return 'extension'
     }
+  }
+
+  /**
+   * Given a pipeline, this function will create an object that contains all of the attributes referenced
+   * as globals. Each attribute will be an empty string.
+   * @param pipeline The pipeline to parse
+   */
+  static generatePipelineMappings(pipeline: IPipeline): object {
+    const globals = {};
+    let values;
+    pipeline.steps.forEach(step => {
+      if (step.params && step.params.length > 0) {
+        step.params.forEach(param => {
+          const value = param.value || param.defaultValue;
+          if (value && typeof value === 'string' && value.indexOf('!') > -1) {
+            values = value.split('||').map(s => s.trim());
+            values.forEach(v => {
+              if (v.indexOf('!') === 0) {
+                globals[v.replace(/[!{}]/g, '')] = '';
+              }
+            })
+          }
+        })
+      }
+    });
+
+    return globals;
   }
 }
