@@ -50,9 +50,12 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   after((done) => {
-    app.removeListener('start', done);
+    process.removeAllListeners('uncaughtException');
+    process.removeAllListeners('SIGINT');
+    process.removeAllListeners('SIGTERM');
     MongoDb.getDatabase().dropDatabase();
     MongoDb.disconnect();
+    app.removeListener('start', done);
     mock.close(done);
   });
 
@@ -78,11 +81,12 @@ describe('Pipelines API Mongo Tests', () => {
       .expect(422);
     const resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp).to.have.property('errors').lengthOf(3);
+    expect(resp).to.have.property('errors').lengthOf(4);
     expect(resp).to.have.property('body');
     const errors = resp.errors;
-    expect(errors.find(err => err.params.missingProperty === 'stepId')).to.exist
-    expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist
+    expect(errors.find(err => err.params.missingProperty === 'stepId')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'stepId')).to.exist;
     expect(errors.find(err => err.dataPath === '.steps[0].type')).to.have.property('message').eq('should be equal to one of the allowed values');
     await request(mock).get('/api/v1/pipelines').expect(204);
   });
@@ -168,9 +172,9 @@ describe('Pipelines API Mongo Tests', () => {
 
   it('Should insert multiple pipelines', async () => {
     const pipeline1 = JSON.parse(JSON.stringify(pipeline));
-    pipeline1.id = 'pipeline1';
+    pipeline1.id = 'b9fa820c-eda7-5c9c-91c9-13b2693ede10';
     const pipeline2 = JSON.parse(JSON.stringify(pipeline));
-    pipeline2.id = 'pipeline2';
+    pipeline2.id = 'a5ac7870-e4f8-57b1-84a2-f0e0ceaf0720';
     const data = [
       pipeline1,
       pipeline2

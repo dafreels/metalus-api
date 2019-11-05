@@ -1,36 +1,26 @@
-import {NgModule} from "@angular/core";
-import {StepsEditorComponent} from './steps.editor.component';
-import {StepsSelectorComponent} from './selector/steps.selector.component';
-import {StepsTreeComponent} from './selector/tree/steps.tree.component';
-import {StepsService} from "./steps.service";
-import {SharedComponentsModule} from "../shared/shared.components"
-import {StepsListComponent} from "./selector/list/steps.list.component";
-import {DesignerModule} from "../designer/designer.module";
-import {ErrorModalModule} from "../error-modal/error.modal.module";
-import {MatChipsModule} from "@angular/material/chips";
-import {MatFormFieldModule} from "@angular/material/form-field";
+import { NgModule } from '@angular/core';
+import { StepsEditorComponent } from './components/steps-editor/steps-editor.component';
+import { StepsSelectorComponent } from './components/selector/steps-selector/steps-selector.component';
+import { StepsTreeComponent } from './components/selector/steps-tree/steps-tree.component';
+import { StepsListComponent } from './components/selector/steps-list/steps-list.component';
+import { DesignerModule } from '../designer/designer.module';
+import { SharedModule } from '../shared/shared.module';
+import { CodeEditorModule } from '../code-editor/code-editor.module';
 
 @NgModule({
   imports: [
+    SharedModule,
     DesignerModule,
-    ErrorModalModule,
-    MatChipsModule,
-    SharedComponentsModule
+    CodeEditorModule,
   ],
   declarations: [
     StepsEditorComponent,
     StepsSelectorComponent,
     StepsTreeComponent,
-    StepsListComponent
+    StepsListComponent,
   ],
   exports: [
-    StepsEditorComponent,
     StepsSelectorComponent,
-    StepsTreeComponent,
-    StepsListComponent
-  ],
-  providers: [
-    StepsService
   ]
 })
 

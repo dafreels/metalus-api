@@ -1,0 +1,9 @@
+<mat-form-field>
+  <mat-label>Select Pipeline</mat-label>
+  <mat-select [(ngModel)]="selectedPipelineId">
+    <mat-option *ngFor="let pipeline of data" value="{{pipeline.id}}">{{pipeline.name}}</mat-option>
+  </mat-select>
+</mat-form-field>
+<div mat-dialog-actions class="ok-button-div">
+  <button mat-raised-button (click)="closeDialog()">OK</button>
+</div>

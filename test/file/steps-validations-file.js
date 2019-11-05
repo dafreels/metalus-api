@@ -58,11 +58,12 @@ describe('Steps Validation File Tests', () => {
       .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').lengthOf(2);
+    expect(stepResponse).to.have.property('errors').lengthOf(3);
     expect(stepResponse).to.have.property('body');
     const errors = stepResponse.errors;
-    expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist
-    expect(errors.find(err => err.params.missingProperty === 'type')).to.exist
+    expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'type')).to.exist;
+    expect(errors.find(err => err.dataPath === '.id')).to.exist;
     await request(mock).get('/api/v1/steps').expect(204);
   });
 
@@ -76,10 +77,11 @@ describe('Steps Validation File Tests', () => {
       .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').lengthOf(1);
+    expect(stepResponse).to.have.property('errors').lengthOf(2);
     expect(stepResponse).to.have.property('body');
     const errors = stepResponse.errors;
-    expect(errors.find(err => err.dataPath === '.type')).to.exist
+    expect(errors.find(err => err.dataPath === '.type')).to.exist;
+    expect(errors.find(err => err.dataPath === '.id')).to.exist;
     await request(mock).get('/api/v1/steps').expect(204);
   });
 

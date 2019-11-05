@@ -1,0 +1,53 @@
+<div>
+  <mat-card>
+    <mat-card-content>
+      <div class="form-layout">
+        <mat-form-field>
+          <mat-chip-list #kryoClassesList>
+            <mat-chip *ngFor="let clazz of data?.sparkConf.kryoClasses"
+                      selectable="true"
+                      removable="true"
+                      (removed)="removeKryoClass(clazz)">
+              {{clazz}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Kryo Classes"
+              [matChipInputFor]="kryoClassesList"
+              [formControl]="kryoClassesCtrl"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+              (matChipInputTokenEnd)="addKryoClass($event)">
+          </mat-chip-list>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-content>
+      <div class="button-div">
+        <button mat-raised-button color="primary" (click)="addOption()">
+          <mat-icon aria-label="Add Option">add</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card *ngFor="let opt of properties">
+    <mat-card-content>
+      <div>
+        <mat-form-field style="width: 30%;">
+          <input matInput required placeholder="Name" [(ngModel)]="opt.name"  (change)="generateOptions()"/>
+        </mat-form-field>
+        <mat-form-field style="width: 60%;">
+          <input matInput required placeholder="Value" [(ngModel)]="opt.value"  (change)="generateOptions()"/>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="removeOption(opt.id)" style="margin-left: 8px;">
+          <mat-icon aria-label="Remove Option">remove</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <div mat-dialog-actions class="button-div">
+    <button mat-raised-button (click)="closeDialog()">Close</button>
+  </div>
+</div>

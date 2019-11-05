@@ -38,7 +38,7 @@ export interface IStepResponse {
 
 export class StaticSteps {
   static FORK_STEP: IStep = {
-    id: 'fork',
+    id: '3d8b5057-6c12-5d3d-80fc-fad3fa0e2191',
     type: 'fork',
     displayName: 'Fork',
     description: 'A fork type step allows running a set of steps against a list of data simulating looping behavior',
@@ -65,11 +65,47 @@ export class StaticSteps {
     ]
   };
   static JOIN_STEP: IStep = {
-    id: 'join',
+    id: '27d7dd1b-2ea2-5d5d-95ba-682d91f0587b',
     type: 'join',
     displayName: 'Join',
     description: 'A join type step is used to join the executions of the fork step to continue processing in a linear manner.',
     category: 'FlowControl',
     params: []
+  };
+  static STEP_GROUP: IStep = {
+    id: 'f09b3b9c-82ac-56de-8dc8-f57c063dd4aa',
+    type: 'step-group',
+    displayName: 'Step Group',
+    description: 'Allows pipelines to be executed as a single step within a parent pipeline.',
+    category: 'FlowControl',
+    params: [
+      {
+        name: 'pipelineId',
+        type: 'text',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        name: 'pipeline',
+        type: 'text',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        name: 'pipelineMappings',
+        type: 'object',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ]
   };
 }

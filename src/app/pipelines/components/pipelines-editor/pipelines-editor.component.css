@@ -1,0 +1,34 @@
+.pipelines-editor-layout {
+  display: flex;
+}
+
+.pipeline-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-content {
+  display: block;
+  text-align: right;
+}
+
+/*
+ * Left side
+ */
+.steps-editor-sidebar {
+  width: 30%;
+  margin-right: 15px;
+}
+
+.pipeline-panel {
+  margin-bottom: 8px;
+}
+
+/*
+ * Right Side
+ */
+
+.designer-content {
+  width: 70%;
+}
+

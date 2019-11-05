@@ -1,0 +1,12 @@
+<mat-card>
+  <mat-card-content>
+    <mat-tab-group>
+      <mat-tab label="Tree">
+        <app-steps-tree [stepList]="steps" (stepItemSelection)='stepSelected($event)' [draggableSteps]="draggableSteps"></app-steps-tree>
+      </mat-tab>
+      <mat-tab label="List">
+        <app-steps-list [stepList]="steps" (stepItemSelection)='stepSelected($event)' [draggableSteps]="draggableSteps"></app-steps-list>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>

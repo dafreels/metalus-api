@@ -1,0 +1,12 @@
+.menu {
+  display: block;
+  text-align: right;
+}
+
+mat-form-field {
+  margin-right: 5px;
+}
+
+mat-card-content.button {
+  margin-right: 5px;
+}

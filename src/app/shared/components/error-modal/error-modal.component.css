@@ -1,0 +1,6 @@
+.error-message {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  min-height: 140px;
+}

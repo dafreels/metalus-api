@@ -1,0 +1,33 @@
+.steps-editor-layout {
+  display: flex;
+}
+
+.steps-editor-sidebar {
+  width: 30%;
+  margin-right: 15px;
+}
+
+.steps-editor-content {
+  width: 70%;
+}
+
+.step-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.step-radio-button {
+  margin: 5px;
+}
+
+.step-parameter-add-div {
+  text-align: right;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.button-content {
+  display: block;
+  text-align: right;
+}

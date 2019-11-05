@@ -1,11 +1,11 @@
-import {IParam, IStep} from "../steps/steps.model";
+import { IParam, IStep } from '../steps/steps.model';
 
 export interface IPipeline {
   id: string,
   name: string,
   steps: IPipelineStep[],
   category?: PipelineCategory;
-  layout?: {}
+  layout?: object;
 }
 
 export interface IPipelineStep extends IStep {
@@ -27,4 +27,9 @@ export interface IPipelinesResponse {
 
 export interface IPipelineResponse {
   pipeline: IPipeline;
+}
+
+export interface PipelineParameter {
+  pipelineId: string;
+  parameters: object;
 }

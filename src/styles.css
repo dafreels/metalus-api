@@ -1,2 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+.designer-node-step-group {
+  background-color: #bebebe;
+}
+
+.button-div {
+  display: block;
+  text-align: right;
+}
+
+.form-layout {
+  display: flex;
+  flex-direction: column;
+}

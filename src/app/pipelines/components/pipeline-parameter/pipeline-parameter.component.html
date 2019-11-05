@@ -1,0 +1,61 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>{{parameterName}}</mat-panel-title>
+  </mat-expansion-panel-header>
+  <div class="add-button">
+    <button *ngIf="!stepGroup.enabled && _parameter.name !== 'pipelineMappings'" mat-raised-button color="primary"
+            (click)="addClause()"
+            [disabled]="_parameter.type === 'object' || _parameter.type === 'script'">
+      <mat-icon aria-label="Add OR Clause">add</mat-icon>
+    </button>
+  </div>
+  <div *ngFor="let param of parameters">
+    <mat-form-field>
+      <input *ngIf="!complexParameter" matInput required
+             [matAutocomplete]="auto"
+             [(ngModel)]="param.value"
+             (change)="handleChange(param.id)"
+             matTooltip="{{stepGroup.pipeline?.name}}"
+             matTooltipPosition="right">
+      <textarea *ngIf="complexParameter" matInput required [ngModel]="param.value" disabled="true"></textarea>
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let stepName of param.suggestions" [value]="stepName">
+          <span>{{stepName}}</span>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Type</mat-label>
+      <mat-select required [(ngModel)]="param.type" (selectionChange)="handleChange(param.id)">
+        <mat-option value="text">Static</mat-option>
+        <mat-option value="global">Global</mat-option>
+        <mat-option value="step">Step Response</mat-option>
+        <mat-option value="secondary">Secondary Step Response</mat-option>
+        <mat-option value="runtime">Runtime</mat-option>
+        <mat-option *ngIf="!stepGroup.enabled" value="script">Script</mat-option>
+        <mat-option *ngIf="!stepGroup.enabled" value="result">Result</mat-option>
+        <mat-option value="object">Object</mat-option>
+        <mat-option *ngIf="!stepGroup.enabled || (stepGroup.enabled && ['pipelineMappings', 'pipelineId'].indexOf(_parameter.name) === -1)"
+                    value="pipeline">Pipeline</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="!stepGroup.enabled">
+      <mat-label>Script Language</mat-label>
+      <mat-select [(ngModel)]="param.language" [disabled]="param.type !== 'script'"
+                  (selectionChange)="handleChange(param.id)">
+        <mat-option value="javascript">Javascript</mat-option>
+        <mat-option value="json">JSON</mat-option>
+        <mat-option value="scala">Scala</mat-option>
+        <mat-option value="sql">SQL</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button *ngIf="param.id > 0" mat-raised-button color="primary" (click)="removeClause(param.id)">
+      <mat-icon aria-label="Remove OR Clause">remove</mat-icon>
+    </button>
+    <button *ngIf="param.id === 0 || stepGroup.enabled" mat-raised-button color="primary"
+            (click)="openEditor(param.id)"
+            [disabled]="disableEditorButton(param)">
+      <mat-icon aria-label="Open Editor">edit</mat-icon>
+    </button>
+  </div>
+</mat-expansion-panel>

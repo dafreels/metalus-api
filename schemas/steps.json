@@ -4,18 +4,37 @@
   "$ref": "#/definitions/steps",
   "definitions": {
     "steps": {
+      "allOf": [
+        {
+          "$ref": "steps.json#/definitions/BaseStep"
+        },
+        {
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "unique": true,
+              "minLength": 36,
+              "maxLength": 36
+            }
+          }
+        }
+      ]
+    },
+    "BaseStep": {
+      "type": "object",
       "required": [
-        "id",
         "displayName",
-        "type"
+        "description",
+        "type",
+        "params"
       ],
       "properties": {
-        "id": {
-          "type": "string",
-          "unique": true
-        },
         "displayName": {
-          "type": "string"
+          "type": "string",
+          "minLength": 4
         },
         "category": {
           "type": "string"
@@ -27,7 +46,8 @@
           }
         },
         "description": {
-          "type": "string"
+          "type": "string",
+          "minLength": 5
         },
         "type": {
           "type": "string",
@@ -36,7 +56,8 @@
             "pipeline",
             "branch",
             "fork",
-            "join"
+            "join",
+            "step-group"
           ]
         },
         "params": {
@@ -63,7 +84,8 @@
                 ]
               },
               "name": {
-                "type": "string"
+                "type": "string",
+                "minLength": 2
               },
               "required": {
                 "type": "boolean"

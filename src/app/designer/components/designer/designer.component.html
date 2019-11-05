@@ -1,0 +1,10 @@
+<mat-card>
+  <mat-card-content>
+    <div #canvas id="canvas" class="designer-canvas canvas canvas-wide jtk-surface jtk-surface-nopan"
+         [dndDropzone]
+         (dndDrop)="addNewElement($event)">
+      <ng-template appDesignerNode></ng-template>
+    </div>
+  </mat-card-content>
+</mat-card>
+

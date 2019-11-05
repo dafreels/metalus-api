@@ -15,39 +15,37 @@
         ]
       }
     },
-    "static-schema": {
-      "enabled": true,
-      "priority": 11,
-      "route": "/schemas",
-      "module": {
-        "name": "serve-static",
-        "arguments": [
-          "path:./schemas",
-          {
-            "extensions": [
-              "json"
-            ]
-          }
-        ]
-      }
-    },
-    "static": {
-      "enabled": true,
-      "priority": 10,
-      "route": "/",
-      "module": {
-        "name": "serve-static",
-        "arguments": [
-          "path:./dist/metl"
-        ]
-      }
-    },
     "router": {
       "module": {
         "arguments": [
           {
             "directory": "path:./controllers"
           }
+        ]
+      }
+    },
+    "static-schema": {
+      "enabled": true,
+      "priority": 10,
+      "route": "/schemas",
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./schemas",
+          {
+            "extensions": ["json"]
+          }
+        ]
+      }
+    },
+    "static-app": {
+      "enabled": true,
+      "priority": 11,
+      "route": "/",
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./dist/metl"
         ]
       }
     },

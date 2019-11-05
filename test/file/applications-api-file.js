@@ -64,8 +64,8 @@ describe('Applications API File Tests', () => {
     expect(resp).to.have.property('errors').lengthOf(2);
     expect(resp).to.have.property('body');
     const errors = resp.errors;
-    expect(errors.find(err => err.params.missingProperty === 'executions')).to.exist
-    expect(errors.find(err => err.params.missingProperty === 'name')).to.exist
+    expect(errors.find(err => err.params.missingProperty === 'executions')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'name')).to.exist;
     await request(mock).get('/api/v1/applications').expect(204);
   });
 
