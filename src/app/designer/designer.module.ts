@@ -1,27 +1,15 @@
-import {NgModule} from "@angular/core";
-import {DndModule} from 'ngx-drag-drop';
-import {DesignerComponent} from "./designer.component";
-import {DesignerNodeComponent} from "./node/designer.node.component";
-import {DesignerNodeDirective} from "./node/designer.node.directive";
-import {MatTooltipModule} from "@angular/material/tooltip";
-import {MatCardModule} from "@angular/material/card";
-import {MatMenuModule} from "@angular/material/menu";
-import {DesignerPreviewComponent} from "./preview/designer.preview.component";
-import {MatDialogModule} from "@angular/material/dialog";
-import {MatButtonModule} from "@angular/material/button";
-import {CommonModule} from "@angular/common";
-import {MatIconModule} from "@angular/material/icon";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DesignerComponent } from './components/designer/designer.component';
+import { DesignerNodeComponent } from './components/designer-node/designer-node.component';
+import { DesignerNodeDirective } from './directives/designer-node.directive';
+import { DesignerPreviewComponent } from './components/designer-preview/designer-preview.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
-    DndModule,
-    MatButtonModule,
-    MatCardModule,
-    MatDialogModule,
-    MatIconModule,
-    MatMenuModule,
-    MatTooltipModule
+    SharedModule,
   ],
   declarations: [
     DesignerComponent,
@@ -30,7 +18,6 @@ import {MatIconModule} from "@angular/material/icon";
     DesignerPreviewComponent
   ],
   exports: [
-    DndModule,
     DesignerComponent
   ],
   entryComponents: [

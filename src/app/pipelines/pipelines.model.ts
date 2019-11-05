@@ -1,4 +1,4 @@
-import {IParam, IStep} from "../steps/steps.model";
+import { IParam, IStep } from '../steps/steps.model';
 
 export interface IPipeline {
   id: string,

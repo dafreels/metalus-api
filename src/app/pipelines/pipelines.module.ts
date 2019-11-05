@@ -1,23 +1,18 @@
-import {NgModule} from "@angular/core";
-import {PipelinesService} from "./pipelines.service";
-import {PipelinesEditorComponent} from "./pipelines.editor.component";
-import {StepsModule} from "../steps/steps.module";
-import {DesignerModule} from "../designer/designer.module";
-import {SharedComponentsModule} from "../shared/shared.components";
-import {PipelineParameterComponent} from "./parameters/pipeline.parameter.component";
-import {ErrorModalModule} from "../error-modal/error.modal.module";
-import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {PipelinesSelectorModalComponent} from "./selector/pipelines.selector.modal.component";
-import {MatDialogModule} from "@angular/material/dialog";
+import { NgModule } from '@angular/core';
+import { PipelinesEditorComponent } from './components/pipelines-editor/pipelines-editor.component';
+import { DesignerModule } from '../designer/designer.module';
+import { PipelineParameterComponent } from './components/pipeline-parameter/pipeline-parameter.component';
+import { PipelinesSelectorModalComponent } from './components/pipelines-selector-modal/pipelines-selector-modal.component';
+import { SharedModule } from '../shared/shared.module';
+import { StepsModule } from '../steps/steps.module';
+import { CodeEditorModule } from '../code-editor/code-editor.module';
 
 @NgModule({
   imports: [
+    SharedModule,
+    StepsModule,
     DesignerModule,
-    ErrorModalModule,
-    MatAutocompleteModule,
-    MatDialogModule,
-    SharedComponentsModule,
-    StepsModule
+    CodeEditorModule,
   ],
   declarations: [
     PipelinesEditorComponent,
@@ -26,12 +21,6 @@ import {MatDialogModule} from "@angular/material/dialog";
   ],
   entryComponents: [
     PipelinesSelectorModalComponent
-  ],
-  exports: [
-    PipelinesEditorComponent
-  ],
-  providers: [
-    PipelinesService
   ]
 })
 

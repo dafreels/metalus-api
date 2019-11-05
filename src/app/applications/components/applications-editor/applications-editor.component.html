@@ -1,0 +1,83 @@
+<div>
+  <div class="button-div">
+    <mat-card>
+      <mat-card-content>
+        <button mat-raised-button color="primary" [matMenuTriggerFor]="applicationMenu"
+                style="margin-right: 5px;">Load
+        </button>
+        <mat-menu #applicationMenu="matMenu">
+          <button mat-menu-item *ngFor="let application of applications" [id]="application.id"
+                  (click)="loadApplication(application.id)">{{application.name}}</button>
+        </mat-menu>
+        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newApplication()">New</button>
+        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="exportApplication()">Export</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <div class="form-layout">
+          <mat-form-field>
+            <input matInput placeholder="Id" [(ngModel)]="selectedApplication.id" name="id" disabled="true">
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Name" [(ngModel)]="selectedApplication.name" required name="name">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-chip-list #stepPackagesList>
+              <mat-chip *ngFor="let pkg of selectedApplication.stepPackages"
+                        selectable="true"
+                        removable="true"
+                        (removed)="removeStepPackage(pkg)">
+                {{pkg}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Step Packages"
+                [matChipInputFor]="stepPackagesList"
+                [formControl]="stepPackageCtrl"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="addStepPackage($event)">
+            </mat-chip-list>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-chip-list #requiredParametersList>
+              <mat-chip *ngFor="let param of selectedApplication.requiredParameters"
+                        selectable="true"
+                        removable="true"
+                        (removed)="removeRequiredParameter(param)">
+                {{param}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Required Parameters"
+                [matChipInputFor]="requiredParametersList"
+                [formControl]="requiredParametersCtrl"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="addRequiredParameter($event)">
+            </mat-chip-list>
+          </mat-form-field>
+          <div class="button-div">
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newExecution()">
+              <mat-icon aria-label="Add a new execution">add</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openSparkConfEditor()">Spark Conf</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('globals')">Globals</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('appProperties')">Application Properties</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;">Components</button>
+            <button mat-raised-button color="primary">Pipeline Parameters</button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div #canvas>
+    <app-designer [dataModel]="designerModel"
+    (elementAction)="handleElementAction($event)"
+    [addElementSubject]="addExecutionSubject"></app-designer>
+  </div>
+</div>
+

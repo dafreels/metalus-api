@@ -1,10 +1,12 @@
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {Observable, throwError} from "rxjs";
-import {IPipeline, IPipelineResponse, IPipelinesResponse} from "./pipelines.model";
-import {catchError, map} from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { IPipeline, IPipelineResponse, IPipelinesResponse } from './pipelines.model';
+import { catchError, map } from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class PipelinesService {
   constructor(private http: HttpClient) {}
 
