@@ -35,7 +35,7 @@ for demos and getting started. Mongo is the preferred choice for long term usage
 A set of preloaded files are provided under the *common_steps_preloaded_data/file* directory. Copy these files under the *data* directory to make them accessible.
 Run the following command to start the server: **npm run file**
 
-## Mongo
+### Mongo
 A set of mongo export files are provided under the *common_steps_preloaded_data/mongo* directory. Import these file using the following commands:
 
 * mongoimport --db=metl --collection=steps --file=steps.json
