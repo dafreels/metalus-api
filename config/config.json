@@ -15,40 +15,6 @@
         ]
       }
     },
-    "router": {
-      "module": {
-        "arguments": [
-          {
-            "directory": "path:./controllers"
-          }
-        ]
-      }
-    },
-    "static-schema": {
-      "enabled": true,
-      "priority": 10,
-      "route": "/schemas",
-      "module": {
-        "name": "serve-static",
-        "arguments": [
-          "path:./schemas",
-          {
-            "extensions": ["json"]
-          }
-        ]
-      }
-    },
-    "static-app": {
-      "enabled": true,
-      "priority": 11,
-      "route": "/",
-      "module": {
-        "name": "serve-static",
-        "arguments": [
-          "path:./dist/metl"
-        ]
-      }
-    },
     "appsec": {
       "priority": 110,
       "module": {
@@ -60,6 +26,49 @@
             "p3p": false,
             "csp": false
           }
+        ]
+      }
+    },
+    "router": {
+      "module": {
+        "arguments": [
+          {
+            "directory": "path:./controllers"
+          }
+        ]
+      }
+    },
+    "static-schema": {
+      "enabled": true,
+      "priority": 121,
+      "route": "/schemas",
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./schemas",
+          {
+            "extensions": ["json"]
+          }
+        ]
+      }
+    },
+    "public-static-files": {
+      "_desc": "unknown routes not matched yet will be tried to serve as static files",
+      "priority": 122,
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./dist/metl"
+        ]
+      }
+    },
+    "public-unmatched-as-ui-index": {
+      "_desc": "unknown routes not matched yet will return index.html, i.e. Angular start page",
+      "priority": 123,
+      "module": {
+        "name": "path:./lib/serve-single-file",
+        "arguments": [
+          "path:./dist/metl/index.html"
         ]
       }
     }
