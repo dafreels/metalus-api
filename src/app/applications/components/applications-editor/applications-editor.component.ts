@@ -15,6 +15,7 @@ import { PropertiesEditorModalComponent } from '../../../shared/components/prope
 import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
 import { IPackageObject } from '../../../core/package-objects/package-objects.model';
 import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
+import {ComponentsEditorComponent} from "../components-editor/components-editor.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -240,6 +241,17 @@ export class ApplicationsEditorComponent implements OnInit {
         allowSpecialParameters: false,
         packageObjects: this.packageObjects,
         propertiesObject: mode === 'globals' ? this.selectedApplication.globals : this.selectedApplication.applicationProperties
+      }
+    });
+  }
+
+  openComponentsEditor() {
+    this.dialog.open(ComponentsEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: {
+        properties: this.selectedApplication,
+        packageObjects: this.packageObjects
       }
     });
   }
