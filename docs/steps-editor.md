@@ -40,9 +40,9 @@ This defines the base category for the step. The tree view of the [Step Selector
 This is a list of tags to provide additional context and filtering for the step.
 ## Branch type
 Determines if this is a branch step or a normal step.
-## Engine meta command
+## Engine Meta Command
 This is the actual step function that will be called by the Spark Pipeline Driver.
-## Engine meta pkg 
+## Engine Meta Package 
 This is the package for the executable code.
 ## Add Parameter
 The Add Parameter button allows the user to add a new parameter form.
