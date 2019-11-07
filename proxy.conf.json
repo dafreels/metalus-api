@@ -3,5 +3,10 @@
     "target": "http://localhost:8000",
     "secure": false,
     "autoRewrite": true
+  },
+  "/schemas": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "autoRewrite": true
   }
 }
