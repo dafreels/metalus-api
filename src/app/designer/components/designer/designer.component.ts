@@ -49,6 +49,11 @@ export interface DesignerElementAction {
   element: DesignerElement;
 }
 
+export interface DesignerElementAddOutput {
+  element: DesignerElement;
+  output: string;
+}
+
 @Component({
   selector: 'app-designer',
   templateUrl: './designer.component.html',
@@ -59,6 +64,7 @@ export class DesignerComponent implements AfterViewInit {
   @ViewChild(DesignerNodeDirective, {static: true}) designerCanvas: DesignerNodeDirective;
   @ViewChild('canvas', {static: false}) canvas: ElementRef;
   @Input() addElementSubject: Subject<DesignerElement>;
+  @Input() addElementOutput: Subject<DesignerElementAddOutput>;
   model: DesignerModel;
   @Output() designerDropEvent = new EventEmitter<DndDropEvent>();
   @Output() modelChanged = new EventEmitter();
@@ -110,6 +116,8 @@ export class DesignerComponent implements AfterViewInit {
   viewReady: boolean = false;
   modelPopulating: boolean = false;
 
+  htmlNodeLookup:object = {};
+
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
   @Input()
@@ -133,6 +141,21 @@ export class DesignerComponent implements AfterViewInit {
     // Listen for the add new element call back event
     if (this.addElementSubject) {
       this.addElementSubject.subscribe(element => this.addDesignerElement(element));
+    }
+    // Listen for add output events for an element
+    if (this.addElementOutput) {
+      this.addElementOutput.subscribe(request => {
+        const nodeId = Object.keys(this.model.nodes).find(node => {
+          return this.model.nodes[node].data['name'] === request.element.name;
+        });
+        console.log(`Adding output for nodeId: ${nodeId}`)
+        const endpoint =
+          this.jsPlumbInstance.addEndpoint(this.htmlNodeLookup[nodeId], this.getSourceEndpointOptions(null, 0));
+        this.model.endpoints[endpoint.id] = {
+          name: request.output,
+          nodeId
+        }
+      });
     }
     this.populateFromModel();
     this.viewReady = true;
@@ -254,6 +277,8 @@ export class DesignerComponent implements AfterViewInit {
     const node = this.addDynamicNode(nodeId, data);
     node.style.left = `${this.model.nodes[nodeId].x - 32}px`;
     node.style.top = `${this.model.nodes[nodeId].y - 32}px`;
+
+    this.htmlNodeLookup[nodeId] = node;
 
     // Add the input connector
     if (data.input) {

@@ -1,0 +1,58 @@
+<mat-card>
+  <mat-card-content>
+    <div class="form-layout">
+      <mat-form-field>
+        <input matInput placeholder="Id" [(ngModel)]="data.execution.id" name="id">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Initial Pipeline Id" [(ngModel)]="data.execution.initialPipelineId" name="id">
+      </mat-form-field>
+      <mat-slide-toggle [(ngModel)]="data.execution.mergeGlobals">Merge Globals?</mat-slide-toggle>
+      <!--
+      -- Should initialPipelineId use the pipelines selector? populated based on selected pipelines
+      -- Add the buttons to edit globals and components
+      -->
+      <div>
+        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor(data.execution.globals)">Globals</button>
+        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openComponentsEditor()">Components</button>
+      </div>
+    </div>
+    <div>
+      <div class="pipeline-container">
+        <h2>Available Pipelines</h2>
+        <div
+          cdkDropList
+          #availableList="cdkDropList"
+          [cdkDropListData]="availablePipelines"
+          [cdkDropListConnectedTo]="[selectedList]"
+          class="pipeline-list"
+          (cdkDropListDropped)="drop($event)">
+          <div class="pipeline-box" *ngFor="let pipeline of availablePipelines" cdkDrag>{{pipeline.name}}</div>
+        </div>
+      </div>
+
+      <div class="pipeline-container">
+        <h2>Selected Pipelines</h2>
+        <div
+          cdkDropList
+          #selectedList="cdkDropList"
+          [cdkDropListData]="selectedPipelines"
+          [cdkDropListConnectedTo]="[availableList]"
+          class="pipeline-list"
+          (cdkDropListDropped)="drop($event)">
+          <div class="pipeline-box" *ngFor="let pipeline of selectedPipelines" cdkDrag>
+            {{pipeline.name}}
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPipelinePropertiesEditor(pipeline.id)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </mat-card-content>
+</mat-card>
+<div mat-dialog-actions class="button-div">
+  <button mat-raised-button color="warn" (click)="closeDialog()">OK</button>
+</div>
