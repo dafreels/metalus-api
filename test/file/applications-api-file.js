@@ -4,8 +4,9 @@ const express = require('express');
 const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
-const rmdir = require('rimraf');
+const rmdir = require('rimraf-promise');
 const applicationData = require('../data/applications');
+const util = require('util');
 
 describe('Applications API File Tests', () => {
   let dataDir;
@@ -32,11 +33,10 @@ describe('Applications API File Tests', () => {
     mock = server.listen(1300);
   });
 
-  after((done) => {
-    rmdir(dataDir, () => {
-      app.removeListener('start', done);
-      mock.close(done);
-    });
+  after(async () => {
+    app.removeAllListeners('start');
+    await rmdir(dataDir);
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should fail insert on missing body', async () => {

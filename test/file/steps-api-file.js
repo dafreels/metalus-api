@@ -4,8 +4,9 @@ const express = require('express');
 const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
-const rmdir = require('rimraf');
+const rmdir = require('rimraf-promise');
 const stepData = require('../data/steps');
+const util = require('util');
 
 describe('Steps API File Tests', () => {
   let dataDir;
@@ -32,11 +33,10 @@ describe('Steps API File Tests', () => {
     mock = server.listen(1303);
   });
 
-  after((done) => {
-    rmdir(dataDir, () => {
-      app.removeListener('start', done);
-      mock.close(done);
-    });
+  after(async () => {
+    app.removeAllListeners('start');
+    await rmdir(dataDir);
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should insert a single step', async () => {

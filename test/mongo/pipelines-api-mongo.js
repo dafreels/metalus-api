@@ -6,6 +6,7 @@ const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const stepData = require('../data/steps');
 const MongoDb = require('../../lib/mongo');
+const util = require('util');
 
 describe('Pipelines API Mongo Tests', () => {
   let app;
@@ -38,9 +39,11 @@ describe('Pipelines API Mongo Tests', () => {
       onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataPipelines');
+        config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
+            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -49,14 +52,14 @@ describe('Pipelines API Mongo Tests', () => {
     mock = server.listen(1307);
   });
 
-  after((done) => {
+  after(async () => {
     process.removeAllListeners('uncaughtException');
     process.removeAllListeners('SIGINT');
     process.removeAllListeners('SIGTERM');
-    MongoDb.getDatabase().dropDatabase();
-    MongoDb.disconnect();
-    app.removeListener('start', done);
-    mock.close(done);
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
+    app.removeAllListeners('start');
+    await util.promisify(mock.close.bind(mock));
   });
 
   it('Should fail to insert pipeline', async () => {

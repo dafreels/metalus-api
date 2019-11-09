@@ -6,6 +6,7 @@ const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const packageObjectData = require('../data/package-objects');
 const MongoDb = require('../../lib/mongo');
+const util = require('util');
 
 describe('Package Objects API Mongo Tests', () => {
   let app;
@@ -24,9 +25,11 @@ describe('Package Objects API Mongo Tests', () => {
       onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataPackageObjects');
+        config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
+            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -35,11 +38,11 @@ describe('Package Objects API Mongo Tests', () => {
     mock = server.listen(1306);
   });
 
-  after((done) => {
-    app.removeListener('start', done);
-    MongoDb.getDatabase().dropDatabase();
-    MongoDb.disconnect();
-    mock.close(done);
+  after(async () => {
+    app.removeAllListeners('start');
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
+    await util.promisify(mock.close.bind(mock));
   });
 
   it('Should fail insert on missing body', async () => {

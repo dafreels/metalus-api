@@ -6,6 +6,7 @@ const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const stepData = require('../data/steps');
 const MongoDb = require('../../lib/mongo');
+const util = require('util');
 
 describe('Steps Validation Mongo Tests', () => {
   let app;
@@ -24,9 +25,11 @@ describe('Steps Validation Mongo Tests', () => {
       onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataStepsValidations');
+        config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
+            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -35,11 +38,11 @@ describe('Steps Validation Mongo Tests', () => {
     mock = server.listen(1309);
   });
 
-  after((done) => {
-    app.removeListener('start', done);
-    MongoDb.getDatabase().dropDatabase();
-    MongoDb.disconnect();
-    mock.close(done);
+  after(async () => {
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
+    app.removeAllListeners('start');
+    await util.promisify(mock.close.bind(mock));
   });
 
   it('Should fail insert on missing body', async () => {
@@ -61,11 +64,12 @@ describe('Steps Validation Mongo Tests', () => {
       .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').lengthOf(2);
+    expect(stepResponse).to.have.property('errors').lengthOf(3);
     expect(stepResponse).to.have.property('body');
     const errors = stepResponse.errors;
-    expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist
-    expect(errors.find(err => err.params.missingProperty === 'type')).to.exist
+    expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'type')).to.exist;
+    expect(errors.find(err => err.params.limit === 36)).to.exist;
     await request(mock).get('/api/v1/steps').expect(204);
   });
 
@@ -79,10 +83,11 @@ describe('Steps Validation Mongo Tests', () => {
       .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').lengthOf(1);
+    expect(stepResponse).to.have.property('errors').lengthOf(2);
     expect(stepResponse).to.have.property('body');
     const errors = stepResponse.errors;
-    expect(errors.find(err => err.dataPath === '.type')).to.exist
+    expect(errors.find(err => err.dataPath === '.type')).to.exist;
+    expect(errors.find(err => err.params.limit === 36)).to.exist;
     await request(mock).get('/api/v1/steps').expect(204);
   });
 
@@ -98,11 +103,11 @@ describe('Steps Validation Mongo Tests', () => {
   it('Should fail update when missing record', async () => {
     const response = await request(mock)
       .put('/api/v1/steps/bad-id')
-      .send(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa'))
+      .send(stepData[0])
       .expect('Content-Type', /json/)
       .expect(500);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').eq('update failed: id from object(0a296858-e8b7-43dd-9f55-88d00a7cd8fa) does not match id from url(bad-id)');
+    expect(stepResponse).to.have.property('errors').eq(`update failed: id from object(${stepData[0].id}) does not match id from url(bad-id)`);
   });
 });

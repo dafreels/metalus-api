@@ -6,6 +6,7 @@ const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const stepData = require('../data/steps');
 const MongoDb = require('../../lib/mongo');
+const util = require('util');
 
 describe('Steps API Mongo Tests', () => {
   let app;
@@ -24,9 +25,11 @@ describe('Steps API Mongo Tests', () => {
       onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataSteps');
+        config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
+            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -35,11 +38,11 @@ describe('Steps API Mongo Tests', () => {
     mock = server.listen(1308);
   });
 
-  after((done) => {
-    app.removeListener('start', done);
-    MongoDb.getDatabase().dropDatabase();
-    MongoDb.disconnect();
-    mock.close(done);
+  after(async () => {
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
+    app.removeAllListeners('start');
+    await util.promisify(mock.close.bind(mock));
   });
 
   it('Should insert a single step', async () => {
@@ -127,6 +130,7 @@ describe('Steps API Mongo Tests', () => {
   it('Should insert multiple steps', async () => {
     const stepIds = ['8daea683-ecde-44ce-988e-41630d251cb8', '0a296858-e8b7-43dd-9f55-88d00a7cd8fa', 'e4dad367-a506-5afd-86c0-82c2cf5cd15c'];
     const data = stepData.filter(step => stepIds.indexOf(step.id) !== -1);
+    console.log(`data: ${JSON.stringify(data)}`);
     let response = await request(mock)
       .post('/api/v1/steps/')
       .send(data)
