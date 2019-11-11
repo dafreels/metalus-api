@@ -12,7 +12,7 @@ describe('Applications API Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  const body = applicationData.find(application => application.id === 'c03f6590-5a29-11e9-aa07-a58054497ebb');
+  const body = JSON.parse(JSON.stringify(applicationData.find(application => application.id === 'c03f6590-5a29-11e9-aa07-a58054497ebb')));
 
   before((done) => {
     app = express();
@@ -175,7 +175,7 @@ describe('Applications API Mongo Tests', () => {
   });
 
   it('Should insert multiple applications', async () => {
-    const data = applicationData.filter(application => application.id !== 'c03f6590-5a29-11e9-aa07-a58054497ebb');
+    const data = JSON.parse(JSON.stringify(applicationData.filter(application => application.id !== 'c03f6590-5a29-11e9-aa07-a58054497ebb')));
     let response = await request(mock)
       .post('/api/v1/applications/')
       .send(data)

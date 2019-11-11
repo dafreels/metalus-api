@@ -12,7 +12,7 @@ describe('Steps API Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  const body = stepData.find(step => step.id === '87db259d-606e-46eb-b723-82923349640f');
+  const body = JSON.parse(JSON.stringify(stepData.find(step => step.id === '87db259d-606e-46eb-b723-82923349640f')));
 
   before((done) => {
     app = express();
@@ -129,7 +129,7 @@ describe('Steps API Mongo Tests', () => {
 
   it('Should insert multiple steps', async () => {
     const stepIds = ['8daea683-ecde-44ce-988e-41630d251cb8', '0a296858-e8b7-43dd-9f55-88d00a7cd8fa', 'e4dad367-a506-5afd-86c0-82c2cf5cd15c'];
-    const data = stepData.filter(step => stepIds.indexOf(step.id) !== -1);
+    const data = JSON.parse(JSON.stringify(stepData.filter(step => stepIds.indexOf(step.id) !== -1)));
     console.log(`data: ${JSON.stringify(data)}`);
     let response = await request(mock)
       .post('/api/v1/steps/')

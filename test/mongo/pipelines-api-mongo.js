@@ -12,11 +12,11 @@ describe('Pipelines API Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  const step1 = stepData.find(step => step.id === '8daea683-ecde-44ce-988e-41630d251cb8');
+  const step1 = JSON.parse(JSON.stringify(stepData.find(step => step.id === '8daea683-ecde-44ce-988e-41630d251cb8')));
   step1.stepId = step1.id;
   step1.id = 'Load';
   step1.nextStepId = 'Write';
-  const step2 = stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa');
+  const step2 = JSON.parse(JSON.stringify(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa')));
   step2.stepId = step2.id;
   step2.id = 'Write';
   const pipeline = {

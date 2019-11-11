@@ -12,7 +12,7 @@ describe('Steps Validation Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  const badBody = stepData.find(step => step.id === 'bad_step_data');
+  const badBody = JSON.parse(JSON.stringify(stepData.find(step => step.id === 'bad_step_data')));
 
   before((done) => {
     app = express();
@@ -101,13 +101,14 @@ describe('Steps Validation Mongo Tests', () => {
   });
 
   it('Should fail update when missing record', async () => {
+    const testStep = JSON.parse(JSON.stringify(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa')));
     const response = await request(mock)
       .put('/api/v1/steps/bad-id')
-      .send(stepData[0])
+      .send(testStep)
       .expect('Content-Type', /json/)
       .expect(500);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').eq(`update failed: id from object(${stepData[0].id}) does not match id from url(bad-id)`);
+    expect(stepResponse).to.have.property('errors').eq(`update failed: id from object(${testStep.id}) does not match id from url(bad-id)`);
   });
 });
