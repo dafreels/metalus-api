@@ -1,6 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IApplication, IExecution } from '../../applications.model';
-import { DesignerComponent, DesignerElement, DesignerElementAction, DesignerModel } from '../../../designer/components/designer/designer.component';
+import {
+  DesignerComponent,
+  DesignerElement,
+  DesignerElementAction,
+  DesignerElementAddOutput,
+  DesignerModel
+} from '../../../designer/components/designer/designer.component';
 import { ApplicationsService } from '../../applications.service';
 import { IPipeline } from '../../../pipelines/pipelines.model';
 import { PipelinesService } from '../../../pipelines/pipelines.service';
@@ -15,6 +21,8 @@ import { PropertiesEditorModalComponent } from '../../../shared/components/prope
 import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
 import { IPackageObject } from '../../../core/package-objects/package-objects.model';
 import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
+import {ComponentsEditorComponent} from "../components-editor/components-editor.component";
+import {ExecutionEditorComponent} from "../execution-editor/execution-editor.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -31,6 +39,7 @@ export class ApplicationsEditorComponent implements OnInit {
   packageObjects: IPackageObject[];
   executionLookup = {};
   addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
 
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -155,10 +164,27 @@ export class ApplicationsEditorComponent implements OnInit {
   handleElementAction(action: DesignerElementAction) {
     switch(action.action) {
       case 'editExecution':
-        // TODO Implement edit application
+        const originalId = action.element.data['id'];
+        const dialogRef = this.dialog.open(ExecutionEditorComponent, {
+          width: '75%',
+          height: '90%',
+          data: {
+            packageObjects: this.packageObjects,
+            pipelines: this.pipelines,
+            execution: action.element.data
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result && result.id !== originalId) {
+            action.element.name = result.id;
+          }
+        });
         break;
       case 'addOutput':
-        // TODO Implement add output
+        this.addExecutionOutput.next({
+          element: action.element,
+          output: `output-${new Date().getTime()}`
+        });
     }
   }
 
@@ -244,6 +270,17 @@ export class ApplicationsEditorComponent implements OnInit {
     });
   }
 
+  openComponentsEditor() {
+    this.dialog.open(ComponentsEditorComponent, {
+      width: '75%',
+      height: '90%',
+      data: {
+        properties: this.selectedApplication,
+        packageObjects: this.packageObjects
+      }
+    });
+  }
+
   exportApplication() {
     this.dialog.open(CodeEditorComponent, {
       width: '75%',
@@ -285,8 +322,70 @@ export class ApplicationsEditorComponent implements OnInit {
   }
 
   private generateApplication() {
-    // TODO Handle generating the executions
+    const pipelines = [];
+    const pipelineIds = [];
+    const executions = [];
+    const layout = {};
+    const connectionKeys = Object.keys(this.designerModel.connections);
+    let execution;
+    let pipeline;
+    let stepGroup;
+    let stepParameter;
+    let connection;
+    Object.keys(this.designerModel.nodes).forEach(key => {
+      execution = this.designerModel.nodes[key].data.data;
+      layout[execution.id] = {
+        x: this.designerModel.nodes[key].x,
+        y: this.designerModel.nodes[key].y
+      };
+      executions.push(execution);
+      execution.parents = [];
+      connectionKeys.forEach(connectionKey => {
+        connection = this.designerModel.connections[connectionKey];
+        if (connection.targetNodeId === key) {
+          execution.parents.push(this.designerModel.nodes[connection.sourceNodeId].data['name']);
+        }
+      });
+      if (execution.pipelineIds) {
+        execution.pipelineIds.forEach(id => {
+          if (pipelineIds.indexOf(id) === -1) {
+            pipeline = this.pipelines.find(pipeline => pipeline.id === id);
+            pipelines.push(pipeline);
+            pipelineIds.push(id);
+            pipeline.steps.forEach(step => {
+              if (step.type === 'step-group') {
+                stepParameter = step.params.find(p => p.name === 'pipelineId');
+                if (stepParameter && stepParameter.value && stepParameter.value.trim().length > 0) {
+                  this.setGlobalPipeline(stepParameter.value, pipelineIds, pipelines);
+                } else {
+                  stepParameter = step.params.find(p => p.name === 'pipeline');
+                  if (stepParameter && stepParameter.type === 'pipeline' &&
+                    stepParameter.value && stepParameter.value.trim().length > 0) {
+                    this.setGlobalPipeline(stepParameter.value.substring(0), pipelineIds, pipelines);
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+    this.selectedApplication.pipelines = pipelines;
+    this.selectedApplication.executions = executions;
+    this.selectedApplication.layout = layout;
     return this.selectedApplication;
+  }
+
+  private setGlobalPipeline(id: string, pipelineIds: string[], pipelines: IPipeline[]) {
+    if (!id) {
+      return;
+    }
+    const pipelineId = id.trim();
+    if (pipelineIds.indexOf(pipelineId) === -1) {
+      const pipeline = this.pipelines.find(pipeline => pipeline.id === pipelineId);
+      pipelines.push(pipeline);
+      pipelineIds.push(pipelineId);
+    }
   }
 
   private createModelNode(model, execution, x = -1, y = -1) {

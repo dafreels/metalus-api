@@ -12,7 +12,7 @@ describe('Package Objects API Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  const body = JSON.parse(JSON.stringify(packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions')));
+  const body = packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions');
 
   before((done) => {
     app = express();
@@ -28,7 +28,6 @@ describe('Package Objects API Mongo Tests', () => {
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
-            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -41,7 +40,7 @@ describe('Package Objects API Mongo Tests', () => {
     app.removeAllListeners('start');
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
-    await util.promisify(mock.close.bind(mock));
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should fail insert on missing body', async () => {
@@ -127,7 +126,7 @@ describe('Package Objects API Mongo Tests', () => {
   });
 
   it('Should upsert a single package-object', async () => {
-    body.schema = JSON.parse(JSON.stringify(packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions'))).schema;
+    body.schema = packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions').schema;
     const response = await request(mock)
       .put(`/api/v1/package-objects/${body.id}`)
       .send(body)
@@ -153,7 +152,7 @@ describe('Package Objects API Mongo Tests', () => {
   });
 
   it('Should insert multiple package-objects', async () => {
-    const data = JSON.parse(JSON.stringify(packageObjectData.filter(po => po.id !== 'com.acxiom.pipeline.steps.DataFrameReaderOptions')));
+    const data = packageObjectData.filter(po => po.id !== 'com.acxiom.pipeline.steps.DataFrameReaderOptions');
     let response = await request(mock)
       .post('/api/v1/package-objects/')
       .send(data)

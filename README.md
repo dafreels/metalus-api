@@ -54,3 +54,15 @@ The file *config/mongo.json* contains all of the settings required to connect wi
 
 Run the following command to start the server: **npm run mongo**
 
+### Development
+When developing, two services need to be started:
+
+* **API**: npm run mongo-api
+* **UI**: npm start
+
+The API will be running here: **http://localhost:8000/**
+
+The UI will be running here: **http://localhost:4200/**
+
+Any UI changes will automatically get deployed.
+

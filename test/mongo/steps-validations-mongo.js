@@ -28,7 +28,6 @@ describe('Steps Validation Mongo Tests', () => {
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
-            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -38,10 +37,10 @@ describe('Steps Validation Mongo Tests', () => {
   });
 
   after(async () => {
+    app.removeAllListeners('start');
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
-    app.removeAllListeners('start');
-    await util.promisify(mock.close.bind(mock));
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should fail insert on missing body', async () => {
@@ -68,7 +67,7 @@ describe('Steps Validation Mongo Tests', () => {
     const errors = stepResponse.errors;
     expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist;
     expect(errors.find(err => err.params.missingProperty === 'type')).to.exist;
-    expect(errors.find(err => err.params.limit === 36)).to.exist;
+    expect(errors.find(err => err.dataPath === '.id')).to.exist;
     await request(mock).get('/api/v1/steps').expect(204);
   });
 
@@ -86,7 +85,7 @@ describe('Steps Validation Mongo Tests', () => {
     expect(stepResponse).to.have.property('body');
     const errors = stepResponse.errors;
     expect(errors.find(err => err.dataPath === '.type')).to.exist;
-    expect(errors.find(err => err.params.limit === 36)).to.exist;
+    expect(errors.find(err => err.dataPath === '.id')).to.exist;
     await request(mock).get('/api/v1/steps').expect(204);
   });
 
@@ -100,14 +99,13 @@ describe('Steps Validation Mongo Tests', () => {
   });
 
   it('Should fail update when missing record', async () => {
-    const testStep = JSON.parse(JSON.stringify(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa')));
     const response = await request(mock)
       .put('/api/v1/steps/bad-id')
-      .send(testStep)
+      .send(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa'))
       .expect('Content-Type', /json/)
       .expect(500);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').eq(`update failed: id from object(${testStep.id}) does not match id from url(bad-id)`);
+    expect(stepResponse).to.have.property('errors').eq('update failed: id from object(0a296858-e8b7-43dd-9f55-88d00a7cd8fa) does not match id from url(bad-id)');
   });
 });

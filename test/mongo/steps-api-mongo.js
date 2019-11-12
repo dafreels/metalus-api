@@ -28,7 +28,6 @@ describe('Steps API Mongo Tests', () => {
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
-            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -38,10 +37,10 @@ describe('Steps API Mongo Tests', () => {
   });
 
   after(async () => {
+    app.removeAllListeners('start');
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
-    app.removeAllListeners('start');
-    await util.promisify(mock.close.bind(mock));
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should insert a single step', async () => {
@@ -129,7 +128,6 @@ describe('Steps API Mongo Tests', () => {
   it('Should insert multiple steps', async () => {
     const stepIds = ['8daea683-ecde-44ce-988e-41630d251cb8', '0a296858-e8b7-43dd-9f55-88d00a7cd8fa', 'e4dad367-a506-5afd-86c0-82c2cf5cd15c'];
     const data = JSON.parse(JSON.stringify(stepData.filter(step => stepIds.indexOf(step.id) !== -1)));
-    console.log(`data: ${JSON.stringify(data)}`);
     let response = await request(mock)
       .post('/api/v1/steps/')
       .send(data)

@@ -67,8 +67,7 @@
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openSparkConfEditor()">Spark Conf</button>
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('globals')">Globals</button>
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('appProperties')">Application Properties</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;">Components</button>
-            <button mat-raised-button color="primary">Pipeline Parameters</button>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openComponentsEditor()">Components</button>
           </div>
         </div>
       </mat-card-content>
@@ -77,7 +76,8 @@
   <div #canvas>
     <app-designer [dataModel]="designerModel"
     (elementAction)="handleElementAction($event)"
-    [addElementSubject]="addExecutionSubject"></app-designer>
+    [addElementSubject]="addExecutionSubject"
+    [addElementOutput]="addExecutionOutput"></app-designer>
   </div>
 </div>
 

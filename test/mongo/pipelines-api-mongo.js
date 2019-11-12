@@ -42,7 +42,6 @@ describe('Pipelines API Mongo Tests', () => {
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
-            MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -52,13 +51,10 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   after(async () => {
-    process.removeAllListeners('uncaughtException');
-    process.removeAllListeners('SIGINT');
-    process.removeAllListeners('SIGTERM');
+    app.removeAllListeners('start');
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
-    app.removeAllListeners('start');
-    await util.promisify(mock.close.bind(mock));
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should fail to insert pipeline', async () => {

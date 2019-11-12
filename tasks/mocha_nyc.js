@@ -18,8 +18,8 @@ module.exports = function nyc(grunt) {
         reportFormats: ['lcov', 'text'],
       }
     },
-    api: {
-      src: ['test/**/**/*.js'],
+    all_tests: {
+      src: ['test/file/**/*.js','test/mongo/**/*.js'],
       options: {
         timeout: 30000,
         'check-leaks': true,
