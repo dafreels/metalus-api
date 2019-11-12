@@ -11,17 +11,19 @@ module.exports = (grunt) => {
 
   grunt.registerTask('test:file1', [
     'clean:coverage',
+    'env:unit_test',
     'mocha_nyc:file'
+  ]);
+
+  grunt.registerTask('test:mongo1', [
+    'clean:coverage',
+    'env:unit_test',
+    'mocha_nyc:mongo'
   ]);
 
   grunt.registerTask('test:mongo', [
     'clean:coverage',
     'shell:mongo_tests'
-  ]);
-
-  grunt.registerTask('test:mongo1', [
-    'clean:coverage',
-    'mocha_nyc:mongo'
   ]);
 
   grunt.registerTask('test:api', [
@@ -31,6 +33,7 @@ module.exports = (grunt) => {
 
   grunt.registerTask('test:api1', [
     'clean:coverage',
+    'env:unit_test',
     'mocha_nyc:api'
   ]);
 };

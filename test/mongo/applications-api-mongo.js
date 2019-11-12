@@ -25,7 +25,6 @@ describe('Applications API Mongo Tests', () => {
       onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataApplications');
-        config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
         next(null, config);
         MongoDb.init(config)

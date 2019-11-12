@@ -39,7 +39,6 @@ describe('Pipelines API Mongo Tests', () => {
       onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataPipelines');
-        config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
