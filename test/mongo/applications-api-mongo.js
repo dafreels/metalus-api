@@ -27,9 +27,10 @@ describe('Applications API Mongo Tests', () => {
         config.set('databaseName', 'testDataApplications');
         config.set('databaseServer', 'localhost');
         BaseModel.initialStorageParameters(config);
+        next(null, config);
         MongoDb.init(config)
-          .then(() => {
-            MongoDb.getDatabase().dropDatabase();
+          .then(async () => {
+            await MongoDb.getDatabase().dropDatabase();
             next(null, config);
           })
           .catch(next);
@@ -42,7 +43,7 @@ describe('Applications API Mongo Tests', () => {
     app.removeAllListeners('start');
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
-    await util.promisify(mock.close.bind(mock));
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should fail insert on missing body', async () => {
@@ -70,8 +71,8 @@ describe('Applications API Mongo Tests', () => {
     expect(resp).to.have.property('errors').lengthOf(2);
     expect(resp).to.have.property('body');
     const errors = resp.errors;
-    expect(errors.find(err => err.params.missingProperty === 'executions')).to.exist
-    expect(errors.find(err => err.params.missingProperty === 'name')).to.exist
+    expect(errors.find(err => err.params.missingProperty === 'executions')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'name')).to.exist;
     await request(mock).get('/api/v1/applications').expect(204);
   });
 
