@@ -6,16 +6,17 @@ const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const stepData = require('../data/steps');
 const MongoDb = require('../../lib/mongo');
+const util = require('util');
 
 describe('Pipelines API Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  const step1 = stepData.find(step => step.id === '8daea683-ecde-44ce-988e-41630d251cb8');
+  const step1 = JSON.parse(JSON.stringify(stepData.find(step => step.id === '8daea683-ecde-44ce-988e-41630d251cb8')));
   step1.stepId = step1.id;
   step1.id = 'Load';
   step1.nextStepId = 'Write';
-  const step2 = stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa');
+  const step2 = JSON.parse(JSON.stringify(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa')));
   step2.stepId = step2.id;
   step2.id = 'Write';
   const pipeline = {
@@ -49,14 +50,11 @@ describe('Pipelines API Mongo Tests', () => {
     mock = server.listen(1307);
   });
 
-  after((done) => {
-    process.removeAllListeners('uncaughtException');
-    process.removeAllListeners('SIGINT');
-    process.removeAllListeners('SIGTERM');
-    MongoDb.getDatabase().dropDatabase();
-    MongoDb.disconnect();
-    app.removeListener('start', done);
-    mock.close(done);
+  after(async () => {
+    app.removeAllListeners('start');
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
+    await util.promisify(mock.close.bind(mock))();
   });
 
   it('Should fail to insert pipeline', async () => {
