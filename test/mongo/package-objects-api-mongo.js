@@ -5,13 +5,14 @@ const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const packageObjectData = require('../data/package-objects');
-const MongoDb = require('../../lib/mongo');
+const MongoDbModel = require('../../lib/mongodb-storage-model');
 const util = require('util');
 
 describe('Package Objects API Mongo Tests', () => {
   let app;
   let server;
   let mock;
+  let mongoStorage;
   const body = packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions');
 
   before((done) => {
@@ -22,15 +23,12 @@ describe('Package Objects API Mongo Tests', () => {
     });
     app.use(kraken({
       basedir: process.cwd(),
-      onconfig: (config, next) => {
+      onconfig: async (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataPackageObjects');
-        BaseModel.initialStorageParameters(config);
-        MongoDb.init(config)
-          .then(() => {
-            next(null, config);
-          })
-          .catch(next);
+        BaseModel.initialStorageParameters(config);mongoStorage = new MongoDbModel("application", config);
+        await mongoStorage.dropDatabase();
+        next(null, config);
       }
     }));
     mock = server.listen(1306);
@@ -38,8 +36,7 @@ describe('Package Objects API Mongo Tests', () => {
 
   after(async () => {
     app.removeAllListeners('start');
-    await MongoDb.getDatabase().dropDatabase();
-    await MongoDb.disconnect();
+    await mongoStorage.dropDatabase();
     await util.promisify(mock.close.bind(mock))();
   });
 

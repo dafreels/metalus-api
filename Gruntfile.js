@@ -38,6 +38,6 @@ module.exports = (grunt) => {
   grunt.registerTask('test:api1', [
     'clean:coverage',
     'env:unit_test',
-    'mocha_nyc:api'
+    'mocha_nyc:all_tests'
   ]);
 };

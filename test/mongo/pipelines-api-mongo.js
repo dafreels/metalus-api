@@ -5,13 +5,14 @@ const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const stepData = require('../data/steps');
-const MongoDb = require('../../lib/mongo');
+const MongoDbModel = require('../../lib/mongodb-storage-model');
 const util = require('util');
 
 describe('Pipelines API Mongo Tests', () => {
   let app;
   let server;
   let mock;
+  let mongoStorage;
   const step1 = JSON.parse(JSON.stringify(stepData.find(step => step.id === '8daea683-ecde-44ce-988e-41630d251cb8')));
   step1.stepId = step1.id;
   step1.id = 'Load';
@@ -36,15 +37,13 @@ describe('Pipelines API Mongo Tests', () => {
     });
     app.use(kraken({
       basedir: process.cwd(),
-      onconfig: (config, next) => {
+      onconfig: async (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataPipelines');
         BaseModel.initialStorageParameters(config);
-        MongoDb.init(config)
-          .then(() => {
-            next(null, config);
-          })
-          .catch(next);
+        mongoStorage = new MongoDbModel("application", config);
+        await mongoStorage.dropDatabase();
+        next(null, config);
       }
     }));
     mock = server.listen(1307);
@@ -52,8 +51,7 @@ describe('Pipelines API Mongo Tests', () => {
 
   after(async () => {
     app.removeAllListeners('start');
-    await MongoDb.getDatabase().dropDatabase();
-    await MongoDb.disconnect();
+    await mongoStorage.dropDatabase();
     await util.promisify(mock.close.bind(mock))();
   });
 
