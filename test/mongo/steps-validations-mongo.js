@@ -5,14 +5,13 @@ const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const stepData = require('../data/steps');
-const MongoDbModel = require('../../lib/mongodb-storage-model');
+const MongoDb = require('../../lib/mongo');
 const util = require('util');
 
 describe('Steps Validation Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  let mongoStorage;
   const badBody = JSON.parse(JSON.stringify(stepData.find(step => step.id === 'bad_step_data')));
 
   before((done) => {
@@ -23,13 +22,15 @@ describe('Steps Validation Mongo Tests', () => {
     });
     app.use(kraken({
       basedir: process.cwd(),
-      onconfig: async (config, next) => {
+      onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataStepsValidations');
         BaseModel.initialStorageParameters(config);
-        mongoStorage = new MongoDbModel("application", config);
-        await mongoStorage.dropDatabase();
-        next(null, config);
+        MongoDb.init(config)
+          .then(() => {
+            next(null, config);
+          })
+          .catch(next);
       }
     }));
     mock = server.listen(1309);
@@ -37,7 +38,8 @@ describe('Steps Validation Mongo Tests', () => {
 
   after(async () => {
     app.removeAllListeners('start');
-    await mongoStorage.dropDatabase();
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
     await util.promisify(mock.close.bind(mock))();
   });
 

@@ -5,16 +5,14 @@ const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
 const applicationData = require('../data/applications');
-const MongoDbModel = require('../../lib/mongodb-storage-model');
+const MongoDb = require('../../lib/mongo');
 const util = require('util');
 
 describe('Applications API Mongo Tests', () => {
   let app;
   let server;
   let mock;
-  let mongoStorage;
-
-  const body = JSON.parse(JSON.stringify(applicationData.find(application => application.id === 'c03f6590-5a29-11e9-aa07-a58054497ebb')));
+  const body = applicationData.find(application => application.id === 'c03f6590-5a29-11e9-aa07-a58054497ebb');
 
   before((done) => {
     app = express();
@@ -24,13 +22,15 @@ describe('Applications API Mongo Tests', () => {
     });
     app.use(kraken({
       basedir: process.cwd(),
-      onconfig: async (config, next) => {
+      onconfig: (config, next) => {
         config.set('storageType', 'mongodb');
         config.set('databaseName', 'testDataApplications');
         BaseModel.initialStorageParameters(config);
-        mongoStorage = new MongoDbModel("application", config);
-        await mongoStorage.dropDatabase();
-        next(null, config);
+        MongoDb.init(config)
+          .then(() => {
+            next(null, config);
+          })
+          .catch(next);
       }
     }));
     mock = server.listen(1305);
@@ -38,8 +38,8 @@ describe('Applications API Mongo Tests', () => {
 
   after(async () => {
     app.removeAllListeners('start');
-    await mongoStorage.dropDatabase();
-    // await MongoDb.disconnect();
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
     await util.promisify(mock.close.bind(mock))();
   });
 
@@ -68,8 +68,8 @@ describe('Applications API Mongo Tests', () => {
     expect(resp).to.have.property('errors').lengthOf(2);
     expect(resp).to.have.property('body');
     const errors = resp.errors;
-    expect(errors.find(err => err.params.missingProperty === 'executions')).to.exist;
-    expect(errors.find(err => err.params.missingProperty === 'name')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'executions')).to.exist
+    expect(errors.find(err => err.params.missingProperty === 'name')).to.exist
     await request(mock).get('/api/v1/applications').expect(204);
   });
 
@@ -173,12 +173,12 @@ describe('Applications API Mongo Tests', () => {
   });
 
   it('Should insert multiple applications', async () => {
-    const data = JSON.parse(JSON.stringify(applicationData.filter(application => application.id !== 'c03f6590-5a29-11e9-aa07-a58054497ebb')));
+    const data = applicationData.filter(application => application.id !== 'c03f6590-5a29-11e9-aa07-a58054497ebb');
     let response = await request(mock)
       .post('/api/v1/applications/')
       .send(data)
       .expect('Content-Type', /json/)
-      // .expect(201);
+    // .expect(201);
     let resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('applications').lengthOf(4);
