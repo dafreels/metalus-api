@@ -28,7 +28,6 @@
     "acorn": "^7.0.0",
     "ajv": "^6.10.2",
     "angular6-json-schema-form": "^7.3.0",
-    "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "core-js": "^2.5.4",
     "deep-object-diff": "^1.1.0",

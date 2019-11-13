@@ -84,10 +84,10 @@ describe('Applications API File Tests', () => {
     expect(resp).to.have.property('errors').lengthOf(4);
     expect(resp).to.have.property('body');
     const errors = resp.errors;
-    expect(errors.find(err => err.dataPath === '.executions[0]' && err.message === 'should have required property \'id\'')).to.exist
-    expect(errors.find(err => err.dataPath === '.executions[1]' && err.message === 'should have required property \'pipelineIds\'')).to.exist
-    expect(errors.find(err => err.dataPath === '.executions[1]' && err.message === 'should have required property \'pipelines\'')).to.exist
-    expect(errors.find(err => err.dataPath === '.executions[1]' && err.message === 'should match some schema in anyOf')).to.exist
+    expect(errors.find(err => err.dataPath === '.executions[0]' && err.message === 'should have required property \'id\'')).to.exist;
+    expect(errors.find(err => err.dataPath === '.executions[1]' && err.message === 'should have required property \'pipelineIds\'')).to.exist;
+    expect(errors.find(err => err.dataPath === '.executions[1]' && err.message === 'should have required property \'pipelines\'')).to.exist;
+    expect(errors.find(err => err.dataPath === '.executions[1]' && err.message === 'should match some schema in anyOf')).to.exist;
     await request(mock).get('/api/v1/applications').expect(204);
   });
 
@@ -174,7 +174,7 @@ describe('Applications API File Tests', () => {
       .post('/api/v1/applications/')
       .send(data)
       .expect('Content-Type', /json/)
-      // .expect(201);
+      .expect(201);
     let resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('applications').lengthOf(4);
