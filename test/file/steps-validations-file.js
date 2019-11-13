@@ -13,7 +13,7 @@ describe('Steps Validation File Tests', () => {
   let app;
   let server;
   let mock;
-  const badBody = stepData.find(step => step.id === 'bad_step_data');
+  const badBody = JSON.parse(JSON.stringify(stepData.find(step => step.id === 'bad_step_data')));
 
   before((done) => {
     app = express();

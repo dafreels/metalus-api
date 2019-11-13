@@ -13,7 +13,7 @@ describe('Applications API File Tests', () => {
   let app;
   let server;
   let mock;
-  const body = applicationData.find(application => application.id === 'c03f6590-5a29-11e9-aa07-a58054497ebb');
+  const body = JSON.parse(JSON.stringify(applicationData.find(application => application.id === 'c03f6590-5a29-11e9-aa07-a58054497ebb')));
 
   before((done) => {
     app = express();

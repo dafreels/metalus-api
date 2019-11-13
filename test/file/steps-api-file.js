@@ -13,7 +13,7 @@ describe('Steps API File Tests', () => {
   let app;
   let server;
   let mock;
-  const body = stepData.find(step => step.id === '87db259d-606e-46eb-b723-82923349640f');
+  const body = JSON.parse(JSON.stringify(stepData.find(step => step.id === '87db259d-606e-46eb-b723-82923349640f')));
 
   before((done) => {
     app = express();

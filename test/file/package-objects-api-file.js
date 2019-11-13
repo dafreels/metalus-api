@@ -13,7 +13,7 @@ describe('Package Objects API File Tests', () => {
   let app;
   let server;
   let mock;
-  const body = packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions');
+  const body = JSON.parse(JSON.stringify(packageObjectData.find(po => po.id === 'com.acxiom.pipeline.steps.DataFrameReaderOptions')));
 
   before((done) => {
     app = express();

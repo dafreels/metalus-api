@@ -16,7 +16,6 @@ module.exports = (grunt) => {
     'mocha_nyc:mongo'
   ]);
 
-
   grunt.registerTask('test:api', [
     'clean:coverage',
     'env:unit_test',

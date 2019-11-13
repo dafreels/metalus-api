@@ -1,7 +1,6 @@
 module.exports = function nyc(grunt) {
   // Load task
   grunt.loadNpmTasks('grunt-mocha-nyc');
-
   return {
     file: {
       src: ['test/file/**/*.js'],

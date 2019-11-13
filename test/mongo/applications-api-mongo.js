@@ -178,7 +178,7 @@ describe('Applications API Mongo Tests', () => {
       .post('/api/v1/applications/')
       .send(data)
       .expect('Content-Type', /json/)
-      // .expect(201);
+    // .expect(201);
     let resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('applications').lengthOf(4);
