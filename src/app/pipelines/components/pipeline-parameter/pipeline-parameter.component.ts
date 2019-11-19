@@ -159,7 +159,7 @@ export class PipelineParameterComponent {
       const dialogRef = this.dialog.open(PropertiesEditorModalComponent, {
         width: '75%',
         height: '90%',
-        data: { global: mappings, allowSpecialParameters: true, packageObjects: this.packageObjects }
+        data: { propertiesObject: mappings, allowSpecialParameters: true, packageObjects: this.packageObjects }
       });
       dialogRef.afterClosed().subscribe(result => {
         if(result) {
