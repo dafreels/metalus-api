@@ -58,7 +58,7 @@
       "module": {
         "name": "serve-static",
         "arguments": [
-          "path:./dist/metl"
+          "path:./dist/metalus"
         ]
       }
     },
@@ -68,7 +68,7 @@
       "module": {
         "name": "path:./lib/serve-single-file",
         "arguments": [
-          "path:./dist/metl/index.html"
+          "path:./dist/metalus/index.html"
         ]
       }
     }

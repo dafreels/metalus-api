@@ -1,5 +1,5 @@
 {
-  "name": "metl",
+  "name": "metalus",
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
@@ -9,6 +9,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "mongo-api": "NODE_ENV=mongo node server.js",
+    "file-api": "node server.js",
     "mongo": "ng build && NODE_ENV=mongo node server.js",
     "file": "ng build && node server.js"
   },

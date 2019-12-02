@@ -1,4 +1,4 @@
-# Metl (Managed ETL)
+# Metalus (Managed ETL)
 Provides a web interface for managing projects built using the [Spark Pipeline Driver](https://github.com/Acxiom/spark-pipeline-driver) project.
 
 A set of APIs are provided that manage the metadata for:
@@ -38,8 +38,8 @@ Run the following command to start the server: **npm run file**
 ### Mongo
 A set of mongo export files are provided under the *common_steps_preloaded_data/mongo* directory. Import these file using the following commands:
 
-* mongoimport --db=metl --collection=steps --file=steps.json
-* mongoimport --db=metl --collection=package-objects --file=package-objects.json
+* mongoimport --db=metalus --collection=steps --file=steps.json
+* mongoimport --db=metalus --collection=package-objects --file=package-objects.json
 
 The file *config/mongo.json* contains all of the settings required to connect with the Mongo database.
 
@@ -47,7 +47,7 @@ The file *config/mongo.json* contains all of the settings required to connect wi
 |----------------|-------------|
 |storageType     |mongodb      |
 |databaseServer  |localhost    |
-|databaseName    |metl         |
+|databaseName    |metalus         |
 |databaseSSL     |false        |
 |databaseUser    |<not set>    |
 |databasePassword|<not set>    |
@@ -57,7 +57,9 @@ Run the following command to start the server: **npm run mongo**
 ### Development
 When developing, two services need to be started:
 
-* **API**: npm run mongo-api
+* **API**:
+    * **Mongo**: npm run mongo-api
+    * **File**: npm run file-api
 * **UI**: npm start
 
 The API will be running here: **http://localhost:8000/**

@@ -1,19 +1,19 @@
 FROM alpine:latest as build
 
-WORKDIR /opt/metl
+WORKDIR /opt/metalus
 
-COPY config /opt/metl/config
-COPY controllers /opt/metl/controllers
-COPY lib /opt/metl/lib
-COPY models /opt/metl/models
-COPY schemas /opt/metl/schemas
-COPY src /opt/metl/src
-COPY index.js /opt/metl/
-COPY package.json /opt/metl/
-COPY package-lock.json /opt/metl/
-COPY server.js /opt/metl/
-COPY angular.json /opt/metl/
-COPY tsconfig.json /opt/metl/
+COPY config /opt/metalus/config
+COPY controllers /opt/metalus/controllers
+COPY lib /opt/metalus/lib
+COPY models /opt/metalus/models
+COPY schemas /opt/metalus/schemas
+COPY src /opt/metalus/src
+COPY index.js /opt/metalus/
+COPY package.json /opt/metalus/
+COPY package-lock.json /opt/metalus/
+COPY server.js /opt/metalus/
+COPY angular.json /opt/metalus/
+COPY tsconfig.json /opt/metalus/
 
 ENV NODE_ENV development
 
@@ -28,15 +28,15 @@ RUN apk --no-cache add \
 # Build the release image
 FROM alpine:latest as release
 
-WORKDIR /opt/metl
+WORKDIR /opt/metalus
 
 RUN apk --no-cache add \
     nodejs \
     npm
 
-COPY --from=build /opt/metl/ /opt/metl/
+COPY --from=build /opt/metalus/ /opt/metalus/
 
-RUN echo `date` > /opt/metl/dist/metl/build.txt
+RUN echo `date` > /opt/metalus/dist/metalus/build.txt
 
 EXPOSE 8000
 ENV PORT 8000
