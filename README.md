@@ -1,5 +1,5 @@
 # Metalus (Managed ETL)
-Provides a web interface for managing projects built using the [Spark Pipeline Driver](https://github.com/Acxiom/spark-pipeline-driver) project.
+Provides a web interface for managing projects built using the [Metalus Pipeline Library](https://github.com/Acxiom/metalus).
 
 A set of APIs are provided that manage the metadata for:
 
