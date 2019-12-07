@@ -98,6 +98,8 @@ export class PipelineParameterComponent {
       } else {
         param.suggestions = [];
       }
+
+      this.complexParameter = param.type === 'object' || param.type === 'script';
       this.parameters[paramIndex] = param;
     }
     let parameterValue = '';
