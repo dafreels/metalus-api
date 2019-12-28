@@ -13,15 +13,13 @@ jobs:
       before_script:
         - npm install -g grunt-cli
         - npm install
-      script: grunt test:api
+      script: grunt build
     - name: Metalus API OSX Build
       os: osx
       osx_image: xcode9.3
       node_js:
         - "10"
-      services:
-        - mongodb
       before_script:
         - npm install -g grunt-cli
         - npm install
-      script: grunt test:api
+      script: grunt test:file

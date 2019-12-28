@@ -1,3 +1,8 @@
+|Branch|Build|Coverage|
+-------|-----|---------|
+|Master|[![Master Status](https://travis-ci.com/dafreels/metalus-api.svg?branch=master)](https://travis-ci.com/dafreels/metalus-api?branch=master)|[![Master Coverage](https://img.shields.io/coveralls/github/dafreels/metalus-api/master.svg)](https://coveralls.io/github/dafreels/metalus-api?branch=master)|
+
+
 # Metalus (Managed ETL)
 Provides a web interface for managing projects built using the [Metalus Pipeline Library](https://github.com/Acxiom/metalus).
 

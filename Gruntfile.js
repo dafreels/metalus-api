@@ -21,4 +21,9 @@ module.exports = (grunt) => {
     'env:unit_test',
     'mocha_nyc:all_tests'
   ]);
+
+  grunt.registerTask('build', [
+    'test:api',
+    'coveralls:report'
+  ])
 };

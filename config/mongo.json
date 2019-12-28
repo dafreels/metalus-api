@@ -1,6 +1,6 @@
 {
     "storageType": "mongodb",
     "databaseServer": "localhost",
-    "databaseName": "metalus",
+    "databaseName": "metl",
     "databaseSSL": false
 }
