@@ -1,0 +1,27 @@
+language: node_js
+
+jobs:
+  include:
+    - stage: Build
+      name: Metalus API Linux Build
+      os: linux
+      dist: trusty
+      node_js:
+        - "10"
+      services:
+        - mongodb
+      before_script:
+        - npm install -g grunt-cli
+        - npm install
+      script: grunt test:api
+    - name: Metalus API OSX Build
+      os: osx
+      osx_image: xcode9.3
+      node_js:
+        - "10"
+      services:
+        - mongodb
+      before_script:
+        - npm install -g grunt-cli
+        - npm install
+      script: grunt test:api
