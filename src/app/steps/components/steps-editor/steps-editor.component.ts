@@ -162,7 +162,6 @@ export class StepsEditorComponent implements OnInit {
     }
   }
 
-  // TODO Replace this function with better validation
   isValid() {
     return !(this.selectedStep.type === 'branch' &&
       (!this.selectedStep.params ||
