@@ -5,7 +5,7 @@ import { DesignerModel } from '../designer/designer.component';
 @Component({
   selector: 'app-designer-preview',
   templateUrl: './designer-preview.component.html',
-  styleUrls: ['designer-preview.component.css']
+  styleUrls: ['designer-preview.component.scss']
 })
 export class DesignerPreviewComponent {
 
