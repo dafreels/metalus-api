@@ -16,7 +16,7 @@ export interface ExecutionEditorData {
 @Component({
   selector: 'app-execution-editor',
   templateUrl: './execution-editor.component.html',
-  styleUrls: ['./execution-editor.component.css']
+  styleUrls: ['./execution-editor.component.scss']
 })
 export class ExecutionEditorComponent {
   availablePipelines: IPipeline[] = [];

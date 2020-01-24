@@ -19,7 +19,7 @@ import { ConfirmationModalComponent } from '../../../shared/components/confirmat
 @Component({
   selector: 'app-steps-editor',
   templateUrl: './steps-editor.component.html',
-  styleUrls: ['./steps-editor.component.css']
+  styleUrls: ['./steps-editor.component.scss']
 })
 export class StepsEditorComponent implements OnInit {
   packageObjects: IPackageObject[];

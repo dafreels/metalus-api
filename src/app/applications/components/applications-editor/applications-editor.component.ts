@@ -27,7 +27,7 @@ import {ExecutionEditorComponent} from "../execution-editor/execution-editor.com
 @Component({
   selector: 'app-applications-editor',
   templateUrl: './applications-editor.component.html',
-  styleUrls: ['./applications-editor.component.css']
+  styleUrls: ['./applications-editor.component.scss']
 })
 export class ApplicationsEditorComponent implements OnInit {
   @ViewChild('canvas', {static: false}) canvas: ElementRef;

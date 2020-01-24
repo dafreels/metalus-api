@@ -15,7 +15,7 @@ interface StepNode {
 @Component({
   selector: 'app-steps-tree',
   templateUrl: './steps-tree.component.html',
-  styleUrls: ['./steps-tree.component.css']
+  styleUrls: ['./steps-tree.component.scss']
 })
 export class StepsTreeComponent extends StepsSelectorBase {
   treeControl = new NestedTreeControl<StepNode>(node => node.children);

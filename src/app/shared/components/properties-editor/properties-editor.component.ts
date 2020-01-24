@@ -14,7 +14,7 @@ export interface GlobalParameter {
 @Component({
   selector: 'app-properties-editor',
   templateUrl: './properties-editor.component.html',
-  styleUrls: ['./properties-editor.component.css']
+  styleUrls: ['./properties-editor.component.scss']
 })
 export class PropertiesEditorComponent {
   @Input() allowSpecialParameters: boolean = false;
