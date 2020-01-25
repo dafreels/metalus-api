@@ -1,4 +1,4 @@
-import { IParam, IStep } from '../../steps/steps.model';
+import { Param, Step } from '../../steps/steps.model';
 
 export interface Pipeline {
   id: string;
@@ -8,14 +8,14 @@ export interface Pipeline {
   layout?: object;
 }
 
-export interface PipelineStep extends IStep {
+export interface PipelineStep extends Step {
   stepId: string;
   params: PipelineStepParam[];
   nextStepId?: string;
   executeIfEmpty?: string;
 }
 
-export interface PipelineStepParam extends IParam {
+export interface PipelineStepParam extends Param {
   value: string;
 }
 
