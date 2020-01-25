@@ -1,25 +1,25 @@
-import {EventEmitter, Input, Output} from "@angular/core";
-import {IStep} from "../../steps.model";
-import {DropEffect} from "ngx-drag-drop";
-import {SharedFunctions} from "../../../shared/utils/shared-functions";
+import { EventEmitter, Input, Output } from '@angular/core';
+import { Step } from '../../steps.model';
+import { DropEffect } from 'ngx-drag-drop';
+import { SharedFunctions } from '../../../shared/utils/shared-functions';
 
 export abstract class StepsSelectorBase {
-  steps: IStep[];
-  filterSteps: IStep[];
+  steps: Step[];
+  filterSteps: Step[];
   tags: string[] = [];
   dropEffect: DropEffect = 'copy';
-  @Input() draggableSteps: boolean = false;
+  @Input() draggableSteps = false;
 
   @Output() stepItemSelection = new EventEmitter();
 
   @Input()
-  set stepList(steps: IStep[]) {
+  set stepList(steps: Step[]) {
     this.steps = steps;
     const updatedSteps = [];
     if (this.steps) {
-      this.steps.forEach(s => {
+      this.steps.forEach((s) => {
         if (s.tags) {
-          s.tags.forEach(t => {
+          s.tags.forEach((t) => {
             if (this.tags.indexOf(t) === -1) {
               this.tags.push(t);
             }
@@ -38,11 +38,17 @@ export abstract class StepsSelectorBase {
 
   filterList(filter: string, tags) {
     let stepTags;
-    this.setSteps(this.steps.filter(s => {
-      stepTags = s.tags || [];
-      return s.displayName.toLocaleLowerCase().indexOf(filter) !== -1 &&
-        (!tags || tags.length === 0 || stepTags.findIndex(t => tags.indexOf(t) > -1) > -1);
-    }));
+    this.setSteps(
+      this.steps.filter((s) => {
+        stepTags = s.tags || [];
+        return (
+          s.displayName.toLocaleLowerCase().indexOf(filter) !== -1 &&
+          (!tags ||
+            tags.length === 0 ||
+            stepTags.findIndex((t) => tags.indexOf(t) > -1) > -1)
+        );
+      })
+    );
   }
 
   setSteps(steps) {

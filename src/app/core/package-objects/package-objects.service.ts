@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
-import { IPackageObject, IPackageObjectResponse, IPackageObjectsResponse } from './package-objects.model';
+import { PackageObject, PackageObjectResponse, PackageObjectsResponse } from './package-objects.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +10,8 @@ import { IPackageObject, IPackageObjectResponse, IPackageObjectsResponse } from 
 export class PackageObjectsService {
   constructor(private http: HttpClient) {}
 
-  getPackageObjects(): Observable<IPackageObject[]> {
-    return this.http.get<IPackageObjectsResponse>(`/api/v1/package-objects`, { observe: 'response' })
+  getPackageObjects(): Observable<PackageObject[]> {
+    return this.http.get<PackageObjectsResponse>(`/api/v1/package-objects`, { observe: 'response' })
       .pipe(
         map(response => {
           if (response && response.body) {
@@ -21,12 +21,12 @@ export class PackageObjectsService {
         }));
   }
 
-  updatePackageObjects(pkgObjs: IPackageObject[]): Observable<IPackageObject[]> {
+  updatePackageObjects(pkgObjs: PackageObject[]): Observable<PackageObject[]> {
     const bulkPackageObjects = pkgObjs.map(s => {
       delete s['_id'];
       return s;
     });
-    return this.http.post<IPackageObjectResponse>('/api/v1/package-objects', bulkPackageObjects, {observe: 'response'})
+    return this.http.post<PackageObjectResponse>('/api/v1/package-objects', bulkPackageObjects, {observe: 'response'})
       .pipe(mergeMap(response => this.getPackageObjects()), catchError(err => throwError(err)));
   }
 }

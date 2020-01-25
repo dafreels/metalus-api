@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { IStep } from '../../steps.model';
+import { Step } from '../../steps.model';
 import { StepsService } from '../../steps.service';
 import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
-import { IPackageObject } from '../../../core/package-objects/package-objects.model';
+import { PackageObject } from '../../../core/package-objects/package-objects.model';
 import { diff } from 'deep-object-diff';
 import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
 import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
@@ -22,10 +22,10 @@ import { ConfirmationModalComponent } from '../../../shared/components/confirmat
   styleUrls: ['./steps-editor.component.css']
 })
 export class StepsEditorComponent implements OnInit {
-  packageObjects: IPackageObject[];
-  steps: IStep[];
-  selectedStep: IStep;
-  originalStep: IStep;
+  packageObjects: PackageObject[];
+  steps: Step[];
+  selectedStep: Step;
+  originalStep: Step;
   tagCtrl = new FormControl();
   separatorKeysCodes: number[] = [ENTER, COMMA];
   stepValidator;
@@ -36,11 +36,11 @@ export class StepsEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.newStep();
-    this.stepsService.getSteps().subscribe((steps: IStep[]) => {
+    this.stepsService.getSteps().subscribe((steps: Step[]) => {
       this.steps = steps;
     });
 
-    this.packageObjectsService.getPackageObjects().subscribe((pkgObjs: IPackageObject[]) => {
+    this.packageObjectsService.getPackageObjects().subscribe((pkgObjs: PackageObject[]) => {
       this.packageObjects = pkgObjs;
     });
 
@@ -142,12 +142,12 @@ export class StepsEditorComponent implements OnInit {
           steps = bulkLoad['steps'];
           const pkgObjs = bulkLoad['pkgObjs'];
           if (pkgObjs && pkgObjs.length > 0) {
-            this.packageObjectsService.updatePackageObjects(pkgObjs).subscribe((packageObjects: IPackageObject[]) => {
+            this.packageObjectsService.updatePackageObjects(pkgObjs).subscribe((packageObjects: PackageObject[]) => {
               this.packageObjects = packageObjects;
             }, error => this.handleError(error, null));
           }
         }
-        this.stepsService.updateSteps(steps).subscribe((steps: IStep[]) => {
+        this.stepsService.updateSteps(steps).subscribe((steps: Step[]) => {
             this.steps = steps;
           }, error => this.handleError(error, null));
       }
@@ -206,7 +206,7 @@ export class StepsEditorComponent implements OnInit {
         observable = this.stepsService.addStep(this.selectedStep);
       }
 
-      observable.subscribe((step: IStep) => {
+      observable.subscribe((step: Step) => {
         this.originalStep = step;
         this.selectedStep = JSON.parse(JSON.stringify(step));
         const index = this.steps.findIndex(s => s.id === this.selectedStep.id);

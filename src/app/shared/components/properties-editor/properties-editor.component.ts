@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SharedFunctions } from '../../utils/shared-functions';
 import { ObjectEditorComponent } from '../object-editor/object-editor.component';
 import { MatDialog } from '@angular/material/dialog';
-import { IPackageObject } from '../../../core/package-objects/package-objects.model';
+import { PackageObject } from '../../../core/package-objects/package-objects.model';
 
 export interface GlobalParameter {
   id: number;
@@ -14,34 +14,34 @@ export interface GlobalParameter {
 @Component({
   selector: 'app-properties-editor',
   templateUrl: './properties-editor.component.html',
-  styleUrls: ['./properties-editor.component.css']
+  styleUrls: ['./properties-editor.component.css'],
 })
 export class PropertiesEditorComponent {
-  @Input() allowSpecialParameters: boolean = false;
-  @Input() packageObjects: IPackageObject[];
+  @Input() allowSpecialParameters = false;
+  @Input() packageObjects: PackageObject[];
   @Output() globalObject = new EventEmitter<object>();
   globalParameters: GlobalParameter[] = [];
-  id: number = 0;
+  id = 0;
 
   constructor(private dialog: MatDialog) {}
 
   @Input()
   set globals(global: any) {
     const globalArray: GlobalParameter[] = [];
-    Object.keys(global).forEach(key => {
+    Object.keys(global).forEach((key) => {
       globalArray.push({
         id: this.id++,
         name: key,
         value: global[key],
-        type: typeof global[key]
+        type: typeof global[key],
       });
     });
     this.globalParameters = globalArray;
-  };
+  }
 
   addParameter(type: string) {
     let value;
-    switch(type) {
+    switch (type) {
       case 'step':
       case 'secondary':
       case 'global':
@@ -63,12 +63,12 @@ export class PropertiesEditorComponent {
       id: this.id++,
       name: '',
       value,
-      type
+      type,
     });
   }
 
   removeParameter(id: number) {
-    const index = this.globalParameters.findIndex(p => p.id === id);
+    const index = this.globalParameters.findIndex((p) => p.id === id);
     if (index > -1) {
       this.globalParameters.splice(index, 1);
       this.generateGlobalsObject();
@@ -76,14 +76,14 @@ export class PropertiesEditorComponent {
   }
 
   openEditor(id: number) {
-    const inputData = this.globalParameters.find(p => p.id === id);
+    const inputData = this.globalParameters.find((p) => p.id === id);
     const dialogRef = this.dialog.open(ObjectEditorComponent, {
       width: '75%',
       height: '90%',
-      data: {userObject: inputData.value, pkgObjs: this.packageObjects }
+      data: { userObject: inputData.value, pkgObjs: this.packageObjects },
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if(result) {
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
         inputData.value = result.userObject;
         this.globalParameters = [...this.globalParameters];
         this.generateGlobalsObject();
@@ -94,7 +94,7 @@ export class PropertiesEditorComponent {
   private generateGlobalsObject() {
     const g = {};
     let leadCharacter;
-    this.globalParameters.forEach(param => {
+    this.globalParameters.forEach((param) => {
       if (param.name && param.name.trim().length > 0) {
         leadCharacter = SharedFunctions.getLeadCharacter(param.type);
         if (leadCharacter !== '') {
