@@ -5,7 +5,7 @@ import { IPipeline } from '../../pipelines.model';
 @Component({
   selector: 'app-pipelines-selector-modal',
   templateUrl: './pipelines-selector-modal.component.html',
-  styleUrls: ['./pipelines-selector-modal.component.css']
+  styleUrls: ['./pipelines-selector-modal.component.scss']
 })
 export class PipelinesSelectorModalComponent {
   selectedPipelineId: string;

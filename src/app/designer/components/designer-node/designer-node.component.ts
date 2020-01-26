@@ -5,7 +5,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 @Component({
   selector: 'app-designer-node',
   templateUrl: './designer-node.component.html',
-  styleUrls: ['./designer-node.component.css'],
+  styleUrls: ['./designer-node.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class DesignerNodeComponent {

@@ -25,7 +25,7 @@ export interface StepGroupProperty {
 @Component({
   selector: 'app-pipelines-parameter',
   templateUrl: './pipeline-parameter.component.html',
-  styleUrls: ['./pipeline-parameter.component.css']
+  styleUrls: ['./pipeline-parameter.component.scss']
 })
 export class PipelineParameterComponent {
   @Input() stepSuggestions: string[] = [];

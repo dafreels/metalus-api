@@ -8,7 +8,7 @@ export interface ErrorDialogData {
 @Component({
   selector: 'app-error-modal',
   templateUrl: './error-modal.component.html',
-  styleUrls: ['error-modal.component.css']
+  styleUrls: ['error-modal.component.scss']
 })
 export class ErrorModalComponent {
   constructor(public dialogRef: MatDialogRef<ErrorDialogData>,

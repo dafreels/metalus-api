@@ -12,7 +12,7 @@ export interface ObjectEditorDialogData {
 @Component({
   selector: 'app-object-editor',
   templateUrl: './object-editor.component.html',
-  styleUrls: ['./object-editor.component.css']
+  styleUrls: ['./object-editor.component.scss']
 })
 export class ObjectEditorComponent {
   formData;
