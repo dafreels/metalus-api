@@ -11,7 +11,7 @@ export interface PropertiesEditorData {
 @Component({
   selector: 'app-properties-editor-modal',
   templateUrl: './properties-editor-modal.component.html',
-  styleUrls: ['./properties-editor-modal.component.css']
+  styleUrls: ['./properties-editor-modal.component.scss']
 })
 export class PropertiesEditorModalComponent {
   constructor(public dialogRef: MatDialogRef<PropertiesEditorData>,
