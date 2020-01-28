@@ -12,6 +12,7 @@ import { PropertiesEditorComponent } from './components/properties-editor/proper
 import { PropertiesEditorModalComponent } from './components/properties-editor/modal/properties-editor-modal.component';
 import { WaitModalComponent } from './components/wait-modal/wait-modal.component';
 import { ObjectEditorComponent } from './components/object-editor/object-editor.component';
+import { CloseDialogButtonComponent } from './components/close-dialog-button/close-dialog-button.component';
 
 const commonModules = [
   FormsModule,
@@ -23,10 +24,7 @@ const commonModules = [
 ];
 
 @NgModule({
-  imports: [
-    ...commonModules,
-    ...materialDesignModules,
-  ],
+  imports: [...commonModules, ...materialDesignModules],
   declarations: [
     NameDialogComponent,
     ConfirmationModalComponent,
@@ -35,10 +33,12 @@ const commonModules = [
     PropertiesEditorModalComponent,
     WaitModalComponent,
     ObjectEditorComponent,
+    CloseDialogButtonComponent,
   ],
   exports: [
     ...commonModules,
     ...materialDesignModules,
+    CloseDialogButtonComponent,
   ],
   entryComponents: [
     NameDialogComponent,
@@ -47,7 +47,6 @@ const commonModules = [
     PropertiesEditorModalComponent,
     WaitModalComponent,
     ObjectEditorComponent,
-  ]
+  ],
 })
-
 export class SharedModule {}

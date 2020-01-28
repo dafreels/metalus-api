@@ -2,37 +2,38 @@ import { Component, Inject } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { IApplication, INameValuePair } from '../../applications.model';
+import { Application, NameValuePair } from '../../applications.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-export interface ConfParameter extends INameValuePair {
+export interface ConfParameter extends NameValuePair {
   id: number;
 }
 
 @Component({
   selector: 'app-spark-conf-editor',
-  templateUrl: './spark-conf-editor.component.html'
+  templateUrl: './spark-conf-editor.component.html',
 })
 export class SparkConfEditorComponent {
-
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
   kryoClassesCtrl = new FormControl();
 
   // Properties
-  id: number = 0;
+  id = 0;
   properties: ConfParameter[];
 
-  constructor(public dialogRef: MatDialogRef<SparkConfEditorComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: IApplication) {
+  constructor(
+    public dialogRef: MatDialogRef<SparkConfEditorComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: Application
+  ) {
     if (data.sparkConf.setOptions) {
-      this.properties = data.sparkConf.setOptions.map(opt => {
+      this.properties = data.sparkConf.setOptions.map((opt) => {
         return {
           id: this.id++,
           name: opt.name,
-          value: opt.value
+          value: opt.value,
         };
-      })
+      });
     }
   }
 
@@ -46,7 +47,10 @@ export class SparkConfEditorComponent {
       this.data.requiredParameters.splice(index, 1);
     }
 
-    if (this.data.requiredParameters && this.data.requiredParameters.length === 0) {
+    if (
+      this.data.requiredParameters &&
+      this.data.requiredParameters.length === 0
+    ) {
       delete this.data.requiredParameters;
     }
   }
@@ -73,11 +77,11 @@ export class SparkConfEditorComponent {
 
   generateOptions() {
     const options = [];
-    this.properties.forEach(prop => {
+    this.properties.forEach((prop) => {
       if (prop.name.trim().length > 0) {
         options.push({
           name: prop.name,
-          value: prop.value
+          value: prop.value,
         });
       }
     });
@@ -88,12 +92,12 @@ export class SparkConfEditorComponent {
     this.properties.push({
       id: this.id++,
       name: '',
-      value: ''
+      value: '',
     });
   }
 
   removeOption(id: number) {
-    const index = this.properties.findIndex(p => p.id === id);
+    const index = this.properties.findIndex((p) => p.id === id);
     if (index > -1) {
       this.properties.splice(index, 1);
       this.generateOptions();

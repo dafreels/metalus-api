@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { IStep, IStepResponse, IStepsResponse } from './steps.model';
+import { Step, StepResponse, StepsResponse } from './steps.model';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 
 @Injectable({
@@ -10,8 +10,8 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 export class StepsService {
   constructor(private http: HttpClient) {}
 
-  getSteps(): Observable<IStep[]> {
-    return this.http.get<IStepsResponse>('/api/v1/steps', {observe: 'response'})
+  getSteps(): Observable<Step[]> {
+    return this.http.get<StepsResponse>('/api/v1/steps', {observe: 'response'})
       .pipe(
         map(response => {
           if (response && response.body) {
@@ -22,31 +22,31 @@ export class StepsService {
         catchError(err => throwError(err)));
   }
 
-  addStep(step: IStep): Observable<IStep> {
-    return this.http.post<IStepResponse>('/api/v1/steps', step, {observe: 'response'})
+  addStep(step: Step): Observable<Step> {
+    return this.http.post<StepResponse>('/api/v1/steps', step, {observe: 'response'})
       .pipe(
         map(response => response.body.step),
         catchError(err => throwError(err)));
   }
 
-  updateStep(step: IStep): Observable<IStep> {
-    return this.http.put<IStepResponse>(`/api/v1/steps/${step.id}`, step, {observe: 'response'})
+  updateStep(step: Step): Observable<Step> {
+    return this.http.put<StepResponse>(`/api/v1/steps/${step.id}`, step, {observe: 'response'})
       .pipe(
         map(response => response.body.step),
         catchError(err => throwError(err)));
   }
 
-  updateSteps(steps: IStep[]): Observable<IStep[]> {
+  updateSteps(steps: Step[]): Observable<Step[]> {
     const bulkSteps = steps.map(s => {
       delete s['_id'];
       return s;
     });
-    return this.http.post<IStepsResponse>('/api/v1/steps', bulkSteps, {observe: 'response'})
+    return this.http.post<StepsResponse>('/api/v1/steps', bulkSteps, {observe: 'response'})
       .pipe(mergeMap(response => this.getSteps()),
         catchError(err => throwError(err)));
   }
 
-  deleteStep(step: IStep): Observable<boolean> {
+  deleteStep(step: Step): Observable<boolean> {
     return this.http.delete(`/api/v1/steps/${step.id}`, {observe: 'response'})
       .pipe(map(response => true),
         catchError(err => throwError(err)));

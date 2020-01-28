@@ -1,19 +1,19 @@
-export interface IStep {
+export interface Step {
   id: string,
   displayName: string,
   description: string,
   type: string,
   category: string,
   tags?: string[],
-  params: IParam[],
+  params: Param[],
   engineMeta?: {
     spark: string,
     pkg: string,
-    stepResults: IStepResults[]
+    stepResults: StepResults[]
   }
 }
 
-export interface IParam {
+export interface Param {
   type: string,
   name: string,
   required: boolean,
@@ -23,21 +23,21 @@ export interface IParam {
   parameterType: string
 }
 
-export interface IStepResults {
+export interface StepResults {
   primaryType: string,
   secondaryTypes?: {}
 }
 
-export interface IStepsResponse {
-  steps: IStep[]
+export interface StepsResponse {
+  steps: Step[]
 }
 
-export interface IStepResponse {
-  step: IStep
+export interface StepResponse {
+  step: Step
 }
 
 export class StaticSteps {
-  static FORK_STEP: IStep = {
+  static FORK_STEP: Step = {
     id: '3d8b5057-6c12-5d3d-80fc-fad3fa0e2191',
     type: 'fork',
     displayName: 'Fork',
@@ -64,7 +64,7 @@ export class StaticSteps {
       }
     ]
   };
-  static JOIN_STEP: IStep = {
+  static JOIN_STEP: Step = {
     id: '27d7dd1b-2ea2-5d5d-95ba-682d91f0587b',
     type: 'join',
     displayName: 'Join',
@@ -72,7 +72,7 @@ export class StaticSteps {
     category: 'FlowControl',
     params: []
   };
-  static STEP_GROUP: IStep = {
+  static STEP_GROUP: Step = {
     id: 'f09b3b9c-82ac-56de-8dc8-f57c063dd4aa',
     type: 'step-group',
     displayName: 'Step Group',

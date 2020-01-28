@@ -1,28 +1,31 @@
-import {IPipeline, PipelineParameter} from "../pipelines/pipelines.model";
+import {
+  Pipeline,
+  PipelineParameter,
+} from '../pipelines/models/pipelines.model';
 
-export interface IApplicationsResponse {
-  applications: IApplication[]
+export interface ApplicationsResponse {
+  applications: Application[];
 }
 
-export interface IApplication extends BaseApplicationProperties {
-  id: string,
-  name: string,
-  sparkConf: ISparkConf,
-  stepPackages: string[],
+export interface Application extends BaseApplicationProperties {
+  id: string;
+  name: string;
+  sparkConf: SparkConf;
+  stepPackages: string[];
   applicationProperties: object;
-  executions: IExecution[];
+  executions: Execution[];
   requiredParameters: string[];
   pipelineManager: ClassInfo;
   layout?: object;
 }
 
-export interface ISparkConf {
-  kryoClasses: string[],
-  setOptions: INameValuePair[]
+export interface SparkConf {
+  kryoClasses: string[];
+  setOptions: NameValuePair[];
 }
 
-export interface IExecution extends BaseApplicationProperties {
-  id: string,
+export interface Execution extends BaseApplicationProperties {
+  id: string;
   parents: string[];
   pipelineIds?: string[];
   initialPipelineId: string;
@@ -30,7 +33,7 @@ export interface IExecution extends BaseApplicationProperties {
 }
 
 export interface BaseApplicationProperties {
-  pipelines?: IPipeline[];
+  pipelines?: Pipeline[];
   globals: object;
   pipelineListener: ClassInfo;
   securityManager: ClassInfo;
@@ -50,7 +53,7 @@ export interface ClassInfo {
   parameters: object;
 }
 
-export interface INameValuePair {
-  name: string,
-  value: string
+export interface NameValuePair {
+  name: string;
+  value: string;
 }

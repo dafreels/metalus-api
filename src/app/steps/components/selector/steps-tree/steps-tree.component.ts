@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { IStep } from '../../../steps.model';
+import { Step } from '../../../steps.model';
 import { StepsSelectorBase } from '../steps-selector-base';
 
 interface StepNode {
@@ -9,7 +9,7 @@ interface StepNode {
   id?: string;
   type: string;
   children?: StepNode[];
-  step?: IStep;
+  step?: Step;
 }
 
 @Component({
