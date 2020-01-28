@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IApplication, IApplicationsResponse } from './applications.model';
+import { Application, ApplicationsResponse } from './applications.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -10,14 +10,18 @@ import { map } from 'rxjs/operators';
 export class ApplicationsService {
   constructor(private http: HttpClient) {}
 
-  getApplications(): Observable<IApplication[]> {
-    return this.http.get<IApplicationsResponse>(`/api/v1/applications`, { observe: 'response' })
+  getApplications(): Observable<Application[]> {
+    return this.http
+      .get<ApplicationsResponse>(`/api/v1/applications`, {
+        observe: 'response',
+      })
       .pipe(
-        map(response => {
+        map((response) => {
           if (response && response.body) {
             return response.body.applications;
           }
           return [];
-        }));
+        })
+      );
   }
 }

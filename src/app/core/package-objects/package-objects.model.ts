@@ -1,13 +1,13 @@
-export interface IPackageObjectsResponse {
-  'package-objects': IPackageObject[];
+export interface PackageObjectsResponse {
+  'package-objects': PackageObject[];
 }
 
-export interface IPackageObject {
+export interface PackageObject {
   id: string;
   schema: string;
   layout: string;
 }
 
-export interface IPackageObjectResponse {
-  pkgObjs: IPackageObject[];
+export interface PackageObjectResponse {
+  pkgObjs: PackageObject[];
 }

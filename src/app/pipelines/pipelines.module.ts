@@ -1,3 +1,4 @@
+import { ObjectEditorComponent } from './../shared/components/object-editor/object-editor.component';
 import { NgModule } from '@angular/core';
 import { PipelinesEditorComponent } from './components/pipelines-editor/pipelines-editor.component';
 import { DesignerModule } from '../designer/designer.module';
@@ -20,7 +21,7 @@ import { CodeEditorModule } from '../code-editor/code-editor.module';
     PipelinesSelectorModalComponent
   ],
   entryComponents: [
-    PipelinesSelectorModalComponent
+    PipelinesSelectorModalComponent,
   ]
 })
 

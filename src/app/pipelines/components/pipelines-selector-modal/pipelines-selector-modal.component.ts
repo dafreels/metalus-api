@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { IPipeline } from '../../pipelines.model';
+import { Pipeline } from '../../models/pipelines.model';
 
 @Component({
   selector: 'app-pipelines-selector-modal',
@@ -9,8 +9,10 @@ import { IPipeline } from '../../pipelines.model';
 })
 export class PipelinesSelectorModalComponent {
   selectedPipelineId: string;
-  constructor(public dialogRef: MatDialogRef<IPipeline[]>,
-              @Inject(MAT_DIALOG_DATA) public data: IPipeline[]) {}
+  constructor(
+    public dialogRef: MatDialogRef<Pipeline[]>,
+    @Inject(MAT_DIALOG_DATA) public data: Pipeline[]
+  ) {}
 
   closeDialog(): void {
     this.dialogRef.close(this.selectedPipelineId);
