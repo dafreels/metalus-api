@@ -71,7 +71,7 @@
         >
       </mat-select>
     </mat-form-field>
-    <mat-form-field *ngIf="!stepGroup.enabled">
+    <mat-form-field *ngIf="!stepGroup.enabled && param.type === 'script'">
       <mat-label>Script Language</mat-label>
       <mat-select
         [(ngModel)]="param.language"
