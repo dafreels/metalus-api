@@ -59,7 +59,9 @@
         <mat-option *ngIf="!stepGroup.enabled" value="result"
           >Result</mat-option
         >
-        <mat-option value="object">Object</mat-option>
+        <mat-option *ngIf="parameter.className" value="object"
+          >Object</mat-option
+        >
         <mat-option
           *ngIf="
             !stepGroup.enabled ||
