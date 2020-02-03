@@ -14,6 +14,10 @@ import { PackageObject } from '../../../core/package-objects/package-objects.mod
 import { SharedFunctions } from '../../../shared/utils/shared-functions';
 import { PropertiesEditorModalComponent } from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
 import { PipelinesSelectorModalComponent } from '../pipelines-selector-modal/pipelines-selector-modal.component';
+import {
+  generalDialogDimensions,
+  DialogDimensions,
+} from 'src/app/shared/models/custom-dialog.model';
 
 export interface SplitParameter {
   id: number;
@@ -195,8 +199,7 @@ export class PipelineParameterComponent {
           };
           const scriptDialogResponse = this.displayDialogService.openDialog(
             CodeEditorComponent,
-            '75%',
-            '90%',
+            generalDialogDimensions,
             scriptDialogData
           );
           scriptDialogResponse.afterClosed().subscribe((result) => {
@@ -223,8 +226,7 @@ export class PipelineParameterComponent {
           };
           const objectDialogResponse = this.displayDialogService.openDialog(
             ObjectEditorComponent,
-            '75%',
-            '90%',
+            generalDialogDimensions,
             objectDialogData
           );
           objectDialogResponse.afterClosed().subscribe((result) => {
@@ -251,8 +253,7 @@ export class PipelineParameterComponent {
       };
       const propertiesDialogResponse = this.displayDialogService.openDialog(
         PropertiesEditorModalComponent,
-        '75%',
-        '90%',
+        generalDialogDimensions,
         propertiesDialogData
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {
@@ -266,10 +267,13 @@ export class PipelineParameterComponent {
         this.parameter.name === 'pipelineId' ||
         (this.parameter.name === 'pipeline' && inputData.type === 'pipeline')
       ) {
+        const dialogDimensions: DialogDimensions = {
+          width: '50%',
+          heigh: '25%',
+        };
         const pipelineSelectorDialogResponse = this.displayDialogService.openDialog(
           PipelinesSelectorModalComponent,
-          '50%',
-          '25%',
+          dialogDimensions,
           this.pipelines
         );
         pipelineSelectorDialogResponse.afterClosed().subscribe((result) => {
