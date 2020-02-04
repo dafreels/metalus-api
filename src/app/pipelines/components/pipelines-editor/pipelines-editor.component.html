@@ -223,17 +223,20 @@
                     [packageObjects]="packageObjects"
                     [stepSuggestions]="typeAhead"
                     [pipelines]="stepGroups"
+                    [pipelinesData]="pipelinesData"
                     (parameterUpdate)="
                       handleParameterUpdate('executeIfEmpty', $event)
                     "
                   ></app-pipelines-parameter>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep.params"
+                    [stepType]="selectedStep.type"
                     [stepParameters]="param"
                     [stepGroup]="stepGroup"
                     [packageObjects]="packageObjects"
                     [stepSuggestions]="typeAhead"
                     [pipelines]="stepGroups"
+                    [pipelinesData]="pipelinesData"
                     (parameterUpdate)="
                       handleParameterUpdate(param.name, $event)
                     "
