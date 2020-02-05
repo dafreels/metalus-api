@@ -1,3 +1,4 @@
+import { StepGroupProperty } from './../pipeline-parameter/pipeline-parameter.component';
 import { PipelinesService } from './../../services/pipelines.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
@@ -6,6 +7,7 @@ import {
   Pipeline,
   PipelineStep,
   PipelineStepParam,
+  PipelineData,
 } from '../../models/pipelines.model';
 
 import {
@@ -26,7 +28,7 @@ import { diff } from 'deep-object-diff';
 import { ErrorModalComponent } from '../../../shared/components/error-modal/error-modal.component';
 import * as Ajv from 'ajv';
 import { ConfirmationModalComponent } from '../../../shared/components/confirmation/confirmation-modal.component';
-import { StepGroupProperty } from '../pipeline-parameter/pipeline-parameter.component';
+
 import { SharedFunctions } from '../../../shared/utils/shared-functions';
 import { DesignerPreviewComponent } from '../../../designer/components/designer-preview/designer-preview.component';
 
@@ -36,6 +38,7 @@ import { DesignerPreviewComponent } from '../../../designer/components/designer-
   styleUrls: ['./pipelines-editor.component.scss'],
 })
 export class PipelinesEditorComponent implements OnInit {
+  pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
   pipelines: Pipeline[];
   stepGroups: Pipeline[];
@@ -76,6 +79,14 @@ export class PipelinesEditorComponent implements OnInit {
         this.pipelines = [];
         this.stepGroups = [];
       }
+
+      pipelines.forEach((element: PipelineData) => {
+        const pipeline: PipelineData = {
+          id: element.id,
+          name: element.name,
+        };
+        this.pipelinesData.push(pipeline);
+      });
     });
 
     this.packageObjectsService

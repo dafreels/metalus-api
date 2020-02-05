@@ -8,6 +8,11 @@ export interface Pipeline {
   layout?: object;
 }
 
+export interface PipelineData {
+  id: string;
+  name: string;
+}
+
 export interface PipelineStep extends Step {
   stepId: string;
   params: PipelineStepParam[];

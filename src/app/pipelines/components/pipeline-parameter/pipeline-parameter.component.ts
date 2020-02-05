@@ -6,7 +6,11 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Pipeline, PipelineStepParam } from '../../models/pipelines.model';
+import {
+  Pipeline,
+  PipelineStepParam,
+  PipelineData,
+} from '../../models/pipelines.model';
 import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
 import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +18,10 @@ import { PackageObject } from '../../../core/package-objects/package-objects.mod
 import { SharedFunctions } from '../../../shared/utils/shared-functions';
 import { PropertiesEditorModalComponent } from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
 import { PipelinesSelectorModalComponent } from '../pipelines-selector-modal/pipelines-selector-modal.component';
+import {
+  generalDialogDimensions,
+  DialogDimensions,
+} from 'src/app/shared/models/custom-dialog.model';
 
 export interface SplitParameter {
   id: number;
@@ -35,6 +43,8 @@ export interface StepGroupProperty {
   styleUrls: ['./pipeline-parameter.component.scss'],
 })
 export class PipelineParameterComponent {
+  @Input() pipelinesData: PipelineData[];
+  @Input() stepType: string;
   @Input() stepSuggestions: string[] = [];
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
@@ -71,13 +81,22 @@ export class PipelineParameterComponent {
             },
           ];
           break;
+
         default:
           if (stepParameter.value) {
             let value;
             let type;
             this.parameters = stepParameter.value.split('||').map((e) => {
-              value = e.trim();
-              type = SharedFunctions.getType(value, 'text');
+              const isAPipeline = this.pipelinesData.find(
+                (pipeline) => `&${pipeline.id}` === e
+              );
+              if (isAPipeline) {
+                value = isAPipeline.name;
+                type = 'pipeline';
+              } else {
+                value = e.trim();
+                type = SharedFunctions.getType(value, 'text');
+              }
               if (
                 value &&
                 (type === 'global' ||
@@ -111,8 +130,14 @@ export class PipelineParameterComponent {
     }
   }
 
-  handleChange(id: number) {
+  handleChange(id: number, param?: SplitParameter) {
+    if (param) {
+      if (param.value !== '' && param.type !== 'pipeline') {
+        param.value = '';
+      }
+    }
     const paramIndex = this.parameters.findIndex((p) => p.id === id);
+
     if (paramIndex !== -1) {
       const param = this.parameters[paramIndex];
       if (param.type === 'step' || param.type === 'secondary') {
@@ -195,8 +220,7 @@ export class PipelineParameterComponent {
           };
           const scriptDialogResponse = this.displayDialogService.openDialog(
             CodeEditorComponent,
-            '75%',
-            '90%',
+            generalDialogDimensions,
             scriptDialogData
           );
           scriptDialogResponse.afterClosed().subscribe((result) => {
@@ -223,8 +247,7 @@ export class PipelineParameterComponent {
           };
           const objectDialogResponse = this.displayDialogService.openDialog(
             ObjectEditorComponent,
-            '75%',
-            '90%',
+            generalDialogDimensions,
             objectDialogData
           );
           objectDialogResponse.afterClosed().subscribe((result) => {
@@ -251,8 +274,7 @@ export class PipelineParameterComponent {
       };
       const propertiesDialogResponse = this.displayDialogService.openDialog(
         PropertiesEditorModalComponent,
-        '75%',
-        '90%',
+        generalDialogDimensions,
         propertiesDialogData
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {
@@ -266,21 +288,27 @@ export class PipelineParameterComponent {
         this.parameter.name === 'pipelineId' ||
         (this.parameter.name === 'pipeline' && inputData.type === 'pipeline')
       ) {
+        const dialogDimensions: DialogDimensions = {
+          width: '50%',
+          heigh: '25%',
+        };
         const pipelineSelectorDialogResponse = this.displayDialogService.openDialog(
           PipelinesSelectorModalComponent,
-          '50%',
-          '25%',
+          dialogDimensions,
           this.pipelines
         );
-        pipelineSelectorDialogResponse.afterClosed().subscribe((result) => {
-          if (result) {
-            inputData.value = result;
-            this.stepGroup.pipeline = this.pipelines.find(
-              (p) => p.id === result
-            );
-            this.handleChange(id);
-          }
-        });
+        pipelineSelectorDialogResponse
+          .afterClosed()
+          .subscribe((result: string) => {
+            if (result) {
+              inputData.value = result;
+              this.stepGroup.pipeline = this.pipelines.find(
+                (p) => p.id === result
+              );
+              this.handleChange(id);
+              this.parameters[0].value = this.stepGroup.pipeline.name;
+            }
+          });
       }
     }
   }
