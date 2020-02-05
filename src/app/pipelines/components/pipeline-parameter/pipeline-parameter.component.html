@@ -57,13 +57,21 @@
         <mat-option value="step">Step Response</mat-option>
         <mat-option value="secondary">Secondary Step Response</mat-option>
         <mat-option value="runtime">Runtime</mat-option>
-        <mat-option *ngIf="!stepGroup.enabled && param.language" value="script"
+        <mat-option
+          *ngIf="
+            !stepGroup.enabled && param.language && parameters.length === 1
+          "
+          value="script"
           >Script</mat-option
         >
-        <mat-option *ngIf="!stepGroup.enabled" value="result"
+        <mat-option
+          *ngIf="!stepGroup.enabled && parameters.length === 1"
+          value="result"
           >Result</mat-option
         >
-        <mat-option *ngIf="parameter.className" value="object"
+        <mat-option
+          *ngIf="parameter.className && parameters.length === 1"
+          value="object"
           >Object</mat-option
         >
         <mat-option
