@@ -8,7 +8,11 @@
       mat-raised-button
       color="primary"
       (click)="addClause()"
-      [disabled]="parameter.type === 'object' || parameter.type === 'script'"
+      [disabled]="
+        parameter.type === 'object' ||
+        parameter.type === 'script' ||
+        parameter.type === 'result'
+      "
     >
       <mat-icon aria-label="Add OR Clause">add</mat-icon>
     </button>
