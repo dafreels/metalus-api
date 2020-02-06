@@ -29,7 +29,7 @@ import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.mod
 @Component({
   selector: 'app-applications-editor',
   templateUrl: './applications-editor.component.html',
-  styleUrls: ['./applications-editor.component.scss']
+  styleUrls: ['./applications-editor.component.scss'],
 })
 export class ApplicationsEditorComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
