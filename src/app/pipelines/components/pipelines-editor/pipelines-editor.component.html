@@ -230,6 +230,7 @@
                   ></app-pipelines-parameter>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep.params"
+                    [isParentNode]="isParentNode"
                     [stepType]="selectedStep.type"
                     [stepParameters]="param"
                     [stepGroup]="stepGroup"

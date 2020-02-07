@@ -53,6 +53,7 @@ export class PipelinesEditorComponent implements OnInit {
   typeAhead: string[] = [];
   pipelineValidator;
   stepGroup: StepGroupProperty = { enabled: false };
+  isParentNode: boolean;
 
   constructor(
     private stepsService: StepsService,
@@ -152,6 +153,9 @@ export class PipelinesEditorComponent implements OnInit {
 
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as PipelineStep;
+    this.selectedPipeline.steps[0].stepId === this.selectedStep.stepId
+      ? (this.isParentNode = true)
+      : (this.isParentNode = false);
     this.selectedElement = data;
     this.configureStepGroup();
     this.typeAhead = [];
