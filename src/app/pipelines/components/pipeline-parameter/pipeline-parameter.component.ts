@@ -1,3 +1,4 @@
+import { PipelineStep } from './../../models/pipelines.model';
 import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
 import {
   ChangeDetectorRef,
@@ -13,7 +14,6 @@ import {
 } from '../../models/pipelines.model';
 import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
 import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
-import { MatDialog } from '@angular/material/dialog';
 import { PackageObject } from '../../../core/package-objects/package-objects.model';
 import { SharedFunctions } from '../../../shared/utils/shared-functions';
 import { PropertiesEditorModalComponent } from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
@@ -49,6 +49,7 @@ export class PipelineParameterComponent {
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
   @Input() stepGroup: StepGroupProperty = { enabled: false };
+  @Input() isParentNode = false;
   @Output() parameterUpdate = new EventEmitter<PipelineStepParam>();
   parameterName: string;
   parameters: SplitParameter[];
@@ -57,7 +58,6 @@ export class PipelineParameterComponent {
   private id = 0;
 
   constructor(
-    private dialog: MatDialog,
     private chaneDetector: ChangeDetectorRef,
     private displayDialogService: DisplayDialogService
   ) {}
