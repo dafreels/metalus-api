@@ -1,5 +1,6 @@
+import { Param } from './../../steps.model';
 import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Step } from '../../steps.model';
 import { StepsService } from '../../steps.service';
 import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
@@ -59,6 +60,16 @@ export class StepsEditorComponent implements OnInit {
         .addSchema(schema, 'steps')
         .compile(schema.definitions.BaseStep);
     });
+  }
+
+  changeParameterType(param: Param) {
+    if (param.type !== 'script' && param.language !== 'undefined') {
+      param.language = undefined;
+    }
+
+    if (param.type !== 'object' && param.className !== 'undefined') {
+      param.className = undefined;
+    }
   }
 
   addTag(event: MatChipInputEvent): void {
