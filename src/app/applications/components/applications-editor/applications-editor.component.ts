@@ -1,3 +1,4 @@
+import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
 import { PipelinesService } from './../../../pipelines/services/pipelines.service';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Application, Execution } from '../../applications.model';
@@ -23,11 +24,12 @@ import { PackageObject } from '../../../core/package-objects/package-objects.mod
 import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
 import { ComponentsEditorComponent } from '../components-editor/components-editor.component';
 import { ExecutionEditorComponent } from '../execution-editor/execution-editor.component';
+import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
 
 @Component({
   selector: 'app-applications-editor',
   templateUrl: './applications-editor.component.html',
-  styleUrls: ['./applications-editor.component.scss']
+  styleUrls: ['./applications-editor.component.scss'],
 })
 export class ApplicationsEditorComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
@@ -54,7 +56,7 @@ export class ApplicationsEditorComponent implements OnInit {
     private applicationsService: ApplicationsService,
     private pipelinesService: PipelinesService,
     private packageObjectsService: PackageObjectsService,
-    public dialog: MatDialog
+    private displayDialogService: DisplayDialogService
   ) {}
 
   ngOnInit(): void {
@@ -193,16 +195,18 @@ export class ApplicationsEditorComponent implements OnInit {
     switch (action.action) {
       case 'editExecution':
         const originalId = action.element.data['id'];
-        const dialogRef = this.dialog.open(ExecutionEditorComponent, {
-          width: '75%',
-          height: '90%',
-          data: {
-            packageObjects: this.packageObjects,
-            pipelines: this.pipelines,
-            execution: action.element.data,
-          },
-        });
-        dialogRef.afterClosed().subscribe((result) => {
+        const elementActionDialogData = {
+          packageObjects: this.packageObjects,
+          pipelines: this.pipelines,
+          execution: action.element.data,
+        };
+        const elementActionDialog = this.displayDialogService.openDialog(
+          ExecutionEditorComponent,
+          generalDialogDimensions,
+          elementActionDialogData
+        );
+
+        elementActionDialog.afterClosed().subscribe((result) => {
           if (result && result.id !== originalId) {
             action.element.name = result.id;
           }
@@ -285,49 +289,52 @@ export class ApplicationsEditorComponent implements OnInit {
   }
 
   openSparkConfEditor() {
-    this.dialog.open(SparkConfEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: this.selectedApplication,
-    });
+    const sparkConfEditorDialog = this.displayDialogService.openDialog(
+      SparkConfEditorComponent,
+      generalDialogDimensions,
+      this.selectedApplication
+    );
   }
 
   openPropertiesEditor(mode: string) {
-    this.dialog.open(PropertiesEditorModalComponent, {
-      width: '75%',
-      height: '90%',
-      data: {
-        allowSpecialParameters: false,
-        packageObjects: this.packageObjects,
-        propertiesObject:
-          mode === 'globals'
-            ? this.selectedApplication.globals
-            : this.selectedApplication.applicationProperties,
-      },
-    });
+    const propertiesEditorDialogData = {
+      allowSpecialParameters: false,
+      packageObjects: this.packageObjects,
+      propertiesObject:
+        mode === 'globals'
+          ? this.selectedApplication.globals
+          : this.selectedApplication.applicationProperties,
+    };
+    const propertiesEditorDialog = this.displayDialogService.openDialog(
+      PropertiesEditorModalComponent,
+      generalDialogDimensions,
+      propertiesEditorDialogData
+    );
   }
 
   openComponentsEditor() {
-    this.dialog.open(ComponentsEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: {
-        properties: this.selectedApplication,
-        packageObjects: this.packageObjects,
-      },
-    });
+    const componentEditorDialogData = {
+      properties: this.selectedApplication,
+      packageObjects: this.packageObjects,
+    };
+    const componentsEditorDialog = this.displayDialogService.openDialog(
+      ComponentsEditorComponent,
+      generalDialogDimensions,
+      componentEditorDialogData
+    );
   }
 
   exportApplication() {
-    this.dialog.open(CodeEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: {
-        code: JSON.stringify(this.generateApplication(), null, 4),
-        language: 'json',
-        allowSave: false,
-      },
-    });
+    const exportApplicationDialogData = {
+      code: JSON.stringify(this.generateApplication(), null, 4),
+      language: 'json',
+      allowSave: false,
+    };
+    const exportApplicationDialog = this.displayDialogService.openDialog(
+      CodeEditorComponent,
+      generalDialogDimensions,
+      exportApplicationDialogData
+    );
   }
 
   newExecution() {
