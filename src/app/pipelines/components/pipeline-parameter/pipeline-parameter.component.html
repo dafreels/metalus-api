@@ -14,33 +14,67 @@
     </button>
   </div>
   <div *ngFor="let param of parameters">
-    <mat-form-field>
-      <input
-        *ngIf="!complexParameter"
-        matInput
-        required
-        [matAutocomplete]="auto"
-        [(ngModel)]="param.value"
-        (change)="handleChange(param.id, param)"
-        matTooltip="{{ stepGroup.pipeline?.name }}"
-        matTooltipPosition="right"
-      />
+    <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
+      <ng-container
+        *ngIf="
+          param.type === 'step' || param.type === 'secondary';
+          else isNotTypeResponse
+        "
+      >
+        <mat-form-field>
+          <mat-select
+            [formControl]="stepResponseControl"
+            placeholder="Select Step Response"
+            #singleSelect
+          >
+            <app-mat-select-search
+              [formControl]="stepResponseFilterCtrl"
+            ></app-mat-select-search>
+            <mat-option
+              *ngFor="let step of filteredStepResponse | async"
+              [value]="step"
+            >
+              {{ step }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-template #isNotTypeResponse>
+        <mat-form-field>
+          <input
+            matInput
+            *ngIf="param.type !== 'step' || param.type !== 'secondary'"
+            [(ngModel)]="param.value"
+          />
+        </mat-form-field>
+      </ng-template>
+    </ng-container>
+    <ng-template #isAcomplexParameter>
       <textarea
-        *ngIf="complexParameter"
+        *ngIf="
+          complexParameter &&
+          (param.type !== 'step' || param.type !== 'secondary')
+        "
         matInput
         required
         [ngModel]="param.value"
         disabled="true"
       ></textarea>
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option
-          *ngFor="let stepName of param.suggestions"
-          [value]="stepName"
-        >
-          <span>{{ stepName }}</span>
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+    </ng-template>
+
+    <!--     <mat-form-field>
+             <input
+        *ngIf="
+          !complexParameter &&
+          (param.type !== 'step' || param.type !== 'secondary')
+        "
+        matInput
+        required
+        (change)="handleChange(param.id, param)"
+        matTooltip="{{ stepGroup.pipeline?.name }}"
+        matTooltipPosition="right"
+      />
+    </mat-form-field> -->
     <mat-form-field>
       <mat-label>Type</mat-label>
       <mat-select

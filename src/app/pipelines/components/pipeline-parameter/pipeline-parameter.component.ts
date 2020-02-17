@@ -1,4 +1,3 @@
-import { PipelineStep } from './../../models/pipelines.model';
 import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
 import {
   ChangeDetectorRef,
@@ -6,6 +5,8 @@ import {
   EventEmitter,
   Input,
   Output,
+  ViewChild,
+  OnInit,
 } from '@angular/core';
 import {
   Pipeline,
@@ -22,6 +23,9 @@ import {
   generalDialogDimensions,
   DialogDimensions,
 } from 'src/app/shared/models/custom-dialog.model';
+import { BehaviorSubject } from 'rxjs';
+import { MatSelect } from '@angular/material';
+import { FormControl } from '@angular/forms';
 
 export interface SplitParameter {
   id: number;
@@ -42,10 +46,10 @@ export interface StepGroupProperty {
   templateUrl: './pipeline-parameter.component.html',
   styleUrls: ['./pipeline-parameter.component.scss'],
 })
-export class PipelineParameterComponent {
+export class PipelineParameterComponent implements OnInit {
   @Input() pipelinesData: PipelineData[];
   @Input() stepType: string;
-  @Input() stepSuggestions: string[] = [];
+  @Input() stepSuggestions;
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
   @Input() stepGroup: StepGroupProperty = { enabled: false };
@@ -57,10 +61,45 @@ export class PipelineParameterComponent {
   parameter: PipelineStepParam;
   private id = 0;
 
+  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<
+    string[]
+  >(null);
+  @ViewChild('singleSelect', { static: false }) singleSelect: MatSelect;
+  public stepResponseControl: FormControl = new FormControl();
+  public stepResponseFilterCtrl: FormControl = new FormControl();
+
   constructor(
     private chaneDetector: ChangeDetectorRef,
     private displayDialogService: DisplayDialogService
   ) {}
+
+  ngOnInit(): void {
+    this.stepResponseControl.setValue(this.stepSuggestions);
+    this.filteredStepResponse.next(this.stepSuggestions);
+
+    // listen for search field value changes
+    this.stepResponseFilterCtrl.valueChanges.subscribe(() => {
+      this.filterStepResponse();
+    });
+  }
+
+  private filterStepResponse() {
+    if (!this.stepSuggestions) {
+      return;
+    }
+    let search = this.stepResponseFilterCtrl.value;
+    if (!search) {
+      this.filteredStepResponse.next(this.stepSuggestions);
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    this.filteredStepResponse.next(
+      this.stepSuggestions.filter(
+        (response) => response.toLowerCase().indexOf(search) > -1
+      )
+    );
+  }
 
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
@@ -130,10 +169,13 @@ export class PipelineParameterComponent {
     }
   }
 
-  handleChange(id: number, param?: SplitParameter) {
-    if (param) {
-      if (param.value !== '' && param.type !== 'pipeline') {
-        param.value = '';
+  handleChange(id: number, selectedparameter?: SplitParameter) {
+    if (selectedparameter) {
+      if (
+        selectedparameter.value !== '' &&
+        selectedparameter.type !== 'pipeline'
+      ) {
+        selectedparameter.value = '';
       }
     }
     const paramIndex = this.parameters.findIndex((p) => p.id === id);
