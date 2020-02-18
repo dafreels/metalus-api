@@ -63,13 +63,10 @@ export class StepsEditorComponent implements OnInit {
   }
 
   changeParameterType(param: Param) {
-    if (param.type !== 'script' && param.language !== 'undefined') {
-      param.language = undefined;
-    }
-
-    if (param.type !== 'object' && param.className !== 'undefined') {
-      param.className = undefined;
-    }
+    param.language = undefined;
+    param.className = undefined;
+    param.defaultValue = undefined;
+    param.parameterType = undefined;
   }
 
   addTag(event: MatChipInputEvent): void {
