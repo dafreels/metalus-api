@@ -17,7 +17,8 @@
     <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
       <ng-container
         *ngIf="
-          param.type === 'step' || param.type === 'secondary';
+          (param.type === 'step' || param.type === 'secondary') &&
+            !isParentNode;
           else isNotTypeResponse
         "
       >
