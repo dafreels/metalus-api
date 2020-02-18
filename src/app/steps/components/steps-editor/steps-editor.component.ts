@@ -1,6 +1,6 @@
 import { Param } from './../../steps.model';
 import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Step } from '../../steps.model';
 import { StepsService } from '../../steps.service';
 import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
@@ -67,6 +67,7 @@ export class StepsEditorComponent implements OnInit {
     param.className = undefined;
     param.defaultValue = undefined;
     param.parameterType = undefined;
+    param.required = undefined;
   }
 
   addTag(event: MatChipInputEvent): void {
