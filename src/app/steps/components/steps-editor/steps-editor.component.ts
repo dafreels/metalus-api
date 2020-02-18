@@ -1,3 +1,4 @@
+import { Param } from './../../steps.model';
 import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
 import { Component, OnInit } from '@angular/core';
 import { Step } from '../../steps.model';
@@ -59,6 +60,13 @@ export class StepsEditorComponent implements OnInit {
         .addSchema(schema, 'steps')
         .compile(schema.definitions.BaseStep);
     });
+  }
+
+  changeParameterType(param: Param) {
+    param.language = undefined;
+    param.className = undefined;
+    param.defaultValue = undefined;
+    param.parameterType = undefined;
   }
 
   addTag(event: MatChipInputEvent): void {
