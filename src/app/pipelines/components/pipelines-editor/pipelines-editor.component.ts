@@ -153,6 +153,9 @@ export class PipelinesEditorComponent implements OnInit {
 
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as PipelineStep;
+    if (this.selectedStep.params[0].name === 'executeIfEmpty') {
+      this.selectedStep.params.shift();
+    }
     this.selectedPipeline.steps[0].stepId === this.selectedStep.stepId
       ? (this.isParentNode = true)
       : (this.isParentNode = false);
@@ -163,6 +166,19 @@ export class PipelinesEditorComponent implements OnInit {
     if (nodeId) {
       this.addNodeToTypeAhead(nodeId, this.typeAhead);
     }
+
+    const executeIfEmpty = {
+      name: 'executeIfEmpty',
+      value: this.selectedStep.executeIfEmpty || ' ',
+      type: 'text',
+      required: false,
+      defaultValue: undefined,
+      language: undefined,
+      className: undefined,
+      parameterType: undefined,
+    };
+    this.selectedStep.params.unshift(executeIfEmpty);
+    console.log(this.selectedStep);
   }
 
   /**
