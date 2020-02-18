@@ -67,6 +67,7 @@ export class StepsEditorComponent implements OnInit {
     param.className = undefined;
     param.defaultValue = undefined;
     param.parameterType = undefined;
+    param.required = undefined;
   }
 
   addTag(event: MatChipInputEvent): void {
