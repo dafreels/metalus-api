@@ -668,6 +668,16 @@ export class PipelinesEditorComponent implements OnInit {
     if (pipeline.steps.length > 0) {
       pipeline.steps.forEach((step) => {
         if (step.params && step.params.length > 0) {
+          if (step.type === 'branch') {
+            const hasResultParameter = step.params.find(
+              (param) => param.type === 'result'
+            );
+            if (!hasResultParameter) {
+              errors.push(
+                `Step ${step.id} is a branch step and needs at least one result.`
+              );
+            }
+          }
           step.params.forEach((param) => {
             if (
               param.required &&
@@ -675,7 +685,7 @@ export class PipelinesEditorComponent implements OnInit {
                 (param.type !== 'object' && param.value.trim().length === 0))
             ) {
               errors.push(
-                `Step ${step.id} has a required parameter ${param.name} that is missing a value`
+                `Step ${step.id} has a required parameter ${param.name} that is missing a value.`
               );
             }
           });
