@@ -53,7 +53,7 @@ export class PipelineParameterComponent implements OnInit {
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
   @Input() stepGroup: StepGroupProperty = { enabled: false };
-  @Input() isParentNode = false;
+  isAScriptParameter: string;
   @Output() parameterUpdate = new EventEmitter<PipelineStepParam>();
   parameterName: string;
   parameters: SplitParameter[];
@@ -103,6 +103,7 @@ export class PipelineParameterComponent implements OnInit {
 
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
+    this.isAScriptParameter = stepParameter.language;
     if (stepParameter) {
       this.parameter = stepParameter;
       this.parameterName = stepParameter.name;
@@ -212,7 +213,6 @@ export class PipelineParameterComponent implements OnInit {
     // Only used for object or script meaning there should be only 1 parameter
     this.parameter.language = this.parameters[0].language;
     this.parameter.className = this.parameters[0].className;
-
     this.chaneDetector.detectChanges();
     this.parameterUpdate.emit(this.parameter);
   }
