@@ -97,7 +97,9 @@
         >
         <mat-option value="runtime">Runtime</mat-option>
         <mat-option
-          *ngIf="!stepGroup.enabled && isAScriptParameter"
+          *ngIf="
+            !stepGroup.enabled && isAScriptParameter && parameters.length === 1
+          "
           value="script"
           >Script</mat-option
         >
@@ -106,7 +108,9 @@
           value="result"
           >Result</mat-option
         >
-        <mat-option *ngIf="isAnObjectParameter" value="object"
+        <mat-option
+          *ngIf="isAnObjectParameter && parameters.length === 1; s"
+          value="object"
           >Object</mat-option
         >
         <mat-option
