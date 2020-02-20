@@ -8,7 +8,11 @@
       mat-raised-button
       color="primary"
       (click)="addClause()"
-      [disabled]="parameter.type === 'object' || parameter.type === 'script'"
+      [disabled]="
+        parameter.type === 'object' ||
+        parameter.type === 'script' ||
+        parameter.type === 'result'
+      "
     >
       <mat-icon aria-label="Add OR Clause">add</mat-icon>
     </button>
@@ -97,12 +101,17 @@
           value="script"
           >Script</mat-option
         >
-        <mat-option *ngIf="!stepGroup.enabled" value="result"
+        <mat-option
+          *ngIf="!stepGroup.enabled && parameters.length === 1"
+          value="result"
           >Result</mat-option
         >
-        <mat-option *ngIf="parameter.className" value="object"
-          >Object</mat-option
+        <mat-option
+          *ngIf="parameter.className && parameters.length === 1"
+          value="object"
         >
+          Object
+        </mat-option>
         <mat-option
           *ngIf="
             parameter.name === 'pipeline' &&
