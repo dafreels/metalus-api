@@ -48,6 +48,7 @@ export class PipelinesEditorComponent implements OnInit {
   selectedStep: PipelineStep;
   selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
+  stepCreated$: Subject<PipelineStep> = new Subject<PipelineStep>();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
   stepLookup = {};
   typeAhead: string[] = [];
@@ -104,6 +105,25 @@ export class PipelinesEditorComponent implements OnInit {
           .compile(schema.definitions.BasePipeline);
       });
     });
+  }
+
+  modelChange(event) {
+    if (this.selectedPipeline.steps.length === 0) {
+      this.selectedPipeline = this.generatePipeline();
+    } else if (
+      Object.keys(event.nodes).length !== this.selectedPipeline.steps.length
+    ) {
+      console.log(this.selectedPipeline);
+      this.stepCreated$.subscribe((response: PipelineStep) => {
+        const duplicated = this.selectedPipeline.steps.find(
+          (step) => step.id === response.id
+        );
+        if (duplicated === undefined) {
+          this.selectedPipeline.steps.push(response);
+        }
+        this.generateModel(this.selectedPipeline);
+      });
+    }
   }
 
   @Input()
@@ -164,7 +184,6 @@ export class PipelinesEditorComponent implements OnInit {
     if (nodeId) {
       this.addNodeToTypeAhead(nodeId, this.typeAhead);
     }
-
     const executeIfEmpty = {
       name: 'executeIfEmpty',
       value: this.selectedStep.executeIfEmpty || ' ',
@@ -211,6 +230,7 @@ export class PipelinesEditorComponent implements OnInit {
         step.stepId = step.id;
         step.id = id.replace(' ', '_');
         this.dndSubject.next(this.createDesignerElement(step, event));
+        this.stepCreated$.next(step);
       }
     });
   }
@@ -559,23 +579,94 @@ export class PipelinesEditorComponent implements OnInit {
     this.designerModel = this.generateModelFromPipeline(this.selectedPipeline);
   }
 
+  private generateModel(pipeline: Pipeline) {
+    const model = DesignerComponent.newModel();
+    let nodeId;
+    this.stepLookup = {};
+    pipeline.steps.forEach((step) => {
+      nodeId = `designer-node-${model.nodeSeq++}`;
+      this.stepLookup[step.id] = nodeId;
+    });
+    // Add connections
+    let connectedNodes = [];
+    pipeline.steps.forEach((step) => {
+      if (step.type !== 'branch' && step.nextStepId) {
+        model.connections[
+          `${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepId]}`
+        ] = {
+          sourceNodeId: this.stepLookup[step.id],
+          targetNodeId: this.stepLookup[step.nextStepId],
+          endpoints: [
+            {
+              sourceEndPoint: 'output',
+              targetEndPoint: 'input',
+            },
+          ],
+        };
+        connectedNodes.push(step.nextStepId);
+      } else {
+        let connection;
+        step.params
+          .filter((p) => p.type.toLowerCase() === 'result')
+          .forEach((output) => {
+            if (output.value) {
+              connectedNodes.push(output.value);
+              connection =
+                model.connections[
+                  `${this.stepLookup[step.id]}::${
+                    this.stepLookup[output.value]
+                  }`
+                ];
+              if (!connection) {
+                connection = {
+                  sourceNodeId: this.stepLookup[step.id],
+                  targetNodeId: this.stepLookup[output.value],
+                  endpoints: [],
+                };
+                model.connections[
+                  `${this.stepLookup[step.id]}::${
+                    this.stepLookup[output.value]
+                  }`
+                ] = connection;
+              }
+              connection.endpoints.push({
+                sourceEndPoint: output.name,
+                targetEndPoint: 'input',
+              });
+            }
+          });
+      }
+    });
+    // See if automatic layout needs to be applied
+    if (!pipeline.layout || Object.keys(pipeline.layout).length === 0) {
+      DesignerComponent.performAutoLayout(
+        this.stepLookup,
+        connectedNodes,
+        model
+      );
+    }
+    return model;
+  }
+
   private generateModelFromPipeline(pipeline: Pipeline) {
     const model = DesignerComponent.newModel();
     let nodeId;
     this.stepLookup = {};
     pipeline.steps.forEach((step) => {
       nodeId = `designer-node-${model.nodeSeq++}`;
-      model.nodes[nodeId] = {
-        data: this.createDesignerElement(step, null),
-        x:
-          pipeline.layout && pipeline.layout[step.id].x
-            ? pipeline.layout[step.id].x
-            : -1,
-        y:
-          pipeline.layout && pipeline.layout[step.id].y
-            ? pipeline.layout[step.id].y
-            : -1,
-      };
+      if (Object.keys(pipeline.layout).length > 1) {
+        model.nodes[nodeId] = {
+          data: this.createDesignerElement(step, null),
+          x:
+            pipeline.layout && pipeline.layout[step.id].x
+              ? pipeline.layout[step.id].x
+              : -1,
+          y:
+            pipeline.layout && pipeline.layout[step.id].y
+              ? pipeline.layout[step.id].y
+              : -1,
+        };
+      }
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
