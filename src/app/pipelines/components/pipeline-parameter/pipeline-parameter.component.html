@@ -21,28 +21,57 @@
     <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
       <ng-container
         *ngIf="
-          (param.type === 'step' || param.type === 'secondary') &&
-            stepSuggestions.length > 0;
+          param.type === 'step' ||
+            param.type === 'secondary' ||
+            param.type === 'pipeline';
           else isNotTypeResponse
         "
       >
-        <mat-form-field>
-          <mat-select
-            [formControl]="stepResponseControl"
-            placeholder="Select Step Response"
-            #singleSelect
-          >
-            <app-mat-select-search
-              [formControl]="stepResponseFilterCtrl"
-            ></app-mat-select-search>
-            <mat-option
-              *ngFor="let step of filteredStepResponse | async"
-              [value]="step"
+        <ng-container
+          *ngIf="
+            (param.type !== 'step' || param.type !== 'secondary') &&
+            stepSuggestions.length > 0 &&
+            param.type !== 'pipeline'
+          "
+        >
+          <mat-form-field>
+            <mat-select
+              [formControl]="stepResponseControl"
+              placeholder="Select Step Response"
+              #singleSelect
             >
-              {{ step }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+              <app-mat-select-search
+                [formControl]="stepResponseFilterCtrl"
+              ></app-mat-select-search>
+              <mat-option
+                *ngFor="let step of filteredStepResponse | async"
+                [value]="step"
+              >
+                {{ step }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngIf="param.type === 'pipeline' && pipelines.length > 0">
+          <mat-form-field>
+            <mat-select
+              [formControl]="stepGroupControl"
+              placeholder="Select a Pipeline"
+              #singleSelect
+              (selectionChange)="stepGroupSelection(param.id)"
+            >
+              <app-mat-select-search
+                [formControl]="stepGroupFilterCtrl"
+              ></app-mat-select-search>
+              <mat-option
+                *ngFor="let step of filteredStepGroup | async"
+                [value]="step"
+              >
+                {{ step.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
       </ng-container>
       <ng-template #isNotTypeResponse>
         <mat-form-field>
