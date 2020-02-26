@@ -17,7 +17,7 @@ import {
   DesignerModel,
 } from '../../../designer/components/designer/designer.component';
 import { DndDropEvent } from 'ngx-drag-drop';
-import { Subject } from 'rxjs';
+import { Subject, pipe } from 'rxjs';
 import { NameDialogComponent } from '../../../shared/components/name-dialog/name-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StepsService } from '../../../steps/steps.service';
@@ -108,12 +108,11 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   modelChange(event) {
+    this.selectedPipeline = this.generatePipeline();
     if (this.selectedPipeline.steps.length === 0) {
-      this.selectedPipeline = this.generatePipeline();
     } else if (
       Object.keys(event.nodes).length !== this.selectedPipeline.steps.length
     ) {
-      console.log(this.selectedPipeline);
       this.stepCreated$.subscribe((response: PipelineStep) => {
         const duplicated = this.selectedPipeline.steps.find(
           (step) => step.id === response.id
@@ -754,8 +753,53 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
+  findSingleNodes(dif: number) {
+    const singleNodes = [];
+    let message = [];
+    Object.keys(this.designerModel.nodes).forEach((node) => {
+      Object.keys(this.designerModel.connections).forEach((connection) => {
+        if (connection.includes(node)) {
+          singleNodes.push(node);
+        }
+      });
+    });
+
+    Object.keys(this.designerModel.nodes).forEach((node) => {
+      const only = singleNodes.includes(node);
+      if (!only && dif > 1) {
+        const nodename: {} = Object.values(this.designerModel.nodes[node]);
+        message.push(`the node ${nodename[0].name} has no connections.`);
+      }
+    });
+    return message;
+  }
+
   private validatePipelineSteps(pipeline: Pipeline): String[] {
-    const errors = [];
+    let errors = [];
+    const difNodesAndConnections =
+      Object.keys(this.designerModel.nodes).length -
+      Object.keys(this.designerModel.connections).length;
+    errors = this.findSingleNodes(difNodesAndConnections);
+
+    if (difNodesAndConnections > 1) {
+      const nodes = Object.keys(this.designerModel.nodes);
+      const connections = Object.values(this.designerModel.connections);
+      const targetNodesId = connections.map(
+        (connection) => connection.targetNodeId
+      );
+      targetNodesId.forEach((targetNode) => {
+        const index = nodes.findIndex((node) => node === targetNode);
+        nodes.splice(index, 1);
+      });
+      let parentNodes = '';
+      nodes.forEach((node) => {
+        const nodeRoot: {} = Object.values(this.designerModel.nodes[node]);
+        parentNodes += ` ${nodeRoot[0].name}`;
+      });
+      errors.push(
+        `The nodes${parentNodes} are inputs please leave only one input.`
+      );
+    }
     if (pipeline.steps.length > 0) {
       pipeline.steps.forEach((step) => {
         if (step.params && step.params.length > 0) {
