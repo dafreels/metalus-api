@@ -25,7 +25,7 @@ import {
 } from 'src/app/shared/models/custom-dialog.model';
 import { BehaviorSubject } from 'rxjs';
 import { MatSelect } from '@angular/material';
-import { FormControl } from '@angular/forms';
+import { FormControl, Form } from '@angular/forms';
 
 export interface SplitParameter {
   id: number;
@@ -49,7 +49,7 @@ export interface StepGroupProperty {
 export class PipelineParameterComponent implements OnInit {
   @Input() pipelinesData: PipelineData[];
   @Input() stepType: string;
-  @Input() stepSuggestions;
+  @Input() stepSuggestions: string[];
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
   @Input() stepGroup: StepGroupProperty = { enabled: false };
@@ -69,6 +69,12 @@ export class PipelineParameterComponent implements OnInit {
   public stepResponseControl: FormControl = new FormControl();
   public stepResponseFilterCtrl: FormControl = new FormControl();
 
+  public filteredStepGroup: BehaviorSubject<Pipeline[]> = new BehaviorSubject<
+    Pipeline[]
+  >(null);
+  public stepGroupControl: FormControl = new FormControl();
+  public stepGroupFilterCtrl: FormControl = new FormControl();
+
   constructor(
     private chaneDetector: ChangeDetectorRef,
     private displayDialogService: DisplayDialogService
@@ -78,27 +84,60 @@ export class PipelineParameterComponent implements OnInit {
     this.stepResponseControl.setValue(this.stepSuggestions);
     this.filteredStepResponse.next(this.stepSuggestions);
 
+    this.stepGroupControl.setValue(this.pipelines);
+    this.filteredStepGroup.next(this.pipelines);
+
     // listen for search field value changes
     this.stepResponseFilterCtrl.valueChanges.subscribe(() => {
-      this.filterStepResponse();
+      this.filterList(
+        this.stepSuggestions,
+        this.stepResponseFilterCtrl,
+        this.filteredStepResponse
+      );
+    });
+
+    this.stepGroupFilterCtrl.valueChanges.subscribe(() => {
+      this.filterList(
+        this.pipelines,
+        this.stepGroupFilterCtrl,
+        this.filteredStepGroup
+      );
     });
   }
 
-  private filterStepResponse() {
-    if (!this.stepSuggestions) {
+  stepGroupSelection(id: number) {
+    const inputData = this.parameters.find((parameter) => parameter.id === id);
+    this.stepGroupControl.valueChanges.subscribe((response: Pipeline) => {
+      inputData.value = response.name;
+      this.stepGroup.pipeline = response;
+      this.handleChange(id);
+      this.parameters[0].value = this.stepGroup.pipeline.name;
+    });
+  }
+
+  private filterList(
+    arrayToBeFiltered,
+    control: FormControl,
+    arraySubject: BehaviorSubject<string[] | Pipeline[]>
+  ) {
+    if (!arrayToBeFiltered) {
       return;
     }
-    let search = this.stepResponseFilterCtrl.value;
+    let search = control.value;
     if (!search) {
-      this.filteredStepResponse.next(this.stepSuggestions);
+      arraySubject.next(arrayToBeFiltered);
       return;
     } else {
       search = search.toLowerCase();
     }
-    this.filteredStepResponse.next(
-      this.stepSuggestions.filter(
-        (response) => response.toLowerCase().indexOf(search) > -1
-      )
+    arraySubject.next(
+      arrayToBeFiltered.filter((response) => {
+        if (typeof response === 'object') {
+          return response.name.toLowerCase().indexOf(search) > -1;
+        } else {
+          return response.toLowerCase().indexOf(search) > -1;
+        }
+      })
     );
   }
 
@@ -252,6 +291,11 @@ export class PipelineParameterComponent implements OnInit {
         param.type !== 'text'
       ) {
         return true;
+      } else if (
+        this.parameter.name === 'pipeline' &&
+        param.type === 'pipeline'
+      ) {
+        return true;
       }
       return false;
     } else {
@@ -335,33 +379,6 @@ export class PipelineParameterComponent implements OnInit {
           this.handleChange(id);
         }
       });
-    } else if (this.stepGroup.enabled) {
-      if (
-        this.parameter.name === 'pipelineId' ||
-        (this.parameter.name === 'pipeline' && inputData.type === 'pipeline')
-      ) {
-        const dialogDimensions: DialogDimensions = {
-          width: '50%',
-          heigh: '25%',
-        };
-        const pipelineSelectorDialogResponse = this.displayDialogService.openDialog(
-          PipelinesSelectorModalComponent,
-          dialogDimensions,
-          this.pipelines
-        );
-        pipelineSelectorDialogResponse
-          .afterClosed()
-          .subscribe((result: string) => {
-            if (result) {
-              inputData.value = result;
-              this.stepGroup.pipeline = this.pipelines.find(
-                (p) => p.id === result
-              );
-              this.handleChange(id);
-              this.parameters[0].value = this.stepGroup.pipeline.name;
-            }
-          });
-      }
     }
   }
 }
