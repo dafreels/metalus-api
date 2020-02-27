@@ -823,6 +823,11 @@ export class PipelinesEditorComponent implements OnInit {
                 `Step ${step.id} has a required parameter ${param.name} that is missing a value.`
               );
             }
+            if (param.value && param.value.endsWith('&')) {
+              errors.push(
+                `You need to select a step group for ${step.id} pipeline parameter.`
+              );
+            }
           });
         }
       });
