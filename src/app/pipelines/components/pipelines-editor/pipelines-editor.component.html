@@ -210,25 +210,6 @@
                 </mat-form-field>
                 <mat-accordion>
                   <app-pipelines-parameter
-                    [stepParameters]="{
-                      name: 'executeIfEmpty',
-                      value: selectedStep.executeIfEmpty || ' ',
-                      type: 'text',
-                      required: false,
-                      defaultValue: undefined,
-                      language: undefined,
-                      className: undefined,
-                      parameterType: undefined
-                    }"
-                    [packageObjects]="packageObjects"
-                    [stepSuggestions]="typeAhead"
-                    [pipelines]="stepGroups"
-                    [pipelinesData]="pipelinesData"
-                    (parameterUpdate)="
-                      handleParameterUpdate('executeIfEmpty', $event)
-                    "
-                  ></app-pipelines-parameter>
-                  <app-pipelines-parameter
                     *ngFor="let param of selectedStep.params"
                     [stepType]="selectedStep.type"
                     [stepParameters]="param"
@@ -254,6 +235,7 @@
       (elementSelected)="stepSelected($event)"
       (elementAction)="handleElementAction($event)"
       [dataModel]="designerModel"
+      (modelChanged)="modelChange($event)"
     ></app-designer>
   </div>
 </div>

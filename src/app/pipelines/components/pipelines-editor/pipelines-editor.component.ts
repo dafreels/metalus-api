@@ -17,7 +17,7 @@ import {
   DesignerModel,
 } from '../../../designer/components/designer/designer.component';
 import { DndDropEvent } from 'ngx-drag-drop';
-import { Subject } from 'rxjs';
+import { Subject, pipe } from 'rxjs';
 import { NameDialogComponent } from '../../../shared/components/name-dialog/name-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { StepsService } from '../../../steps/steps.service';
@@ -35,7 +35,7 @@ import { DesignerPreviewComponent } from '../../../designer/components/designer-
 @Component({
   selector: 'app-pipelines-editor',
   templateUrl: './pipelines-editor.component.html',
-  styleUrls: ['./pipelines-editor.component.scss'],
+  styleUrls: ['./pipelines-editor.component.scss']
 })
 export class PipelinesEditorComponent implements OnInit {
   pipelinesData: PipelineData[] = [];
@@ -48,6 +48,7 @@ export class PipelinesEditorComponent implements OnInit {
   selectedStep: PipelineStep;
   selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
+  stepCreated$: Subject<PipelineStep> = new Subject<PipelineStep>();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
   stepLookup = {};
   typeAhead: string[] = [];
@@ -106,6 +107,24 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
+  modelChange(event) {
+    this.selectedPipeline = this.generatePipeline();
+    if (this.selectedPipeline.steps.length === 0) {
+    } else if (
+      Object.keys(event.nodes).length !== this.selectedPipeline.steps.length
+    ) {
+      this.stepCreated$.subscribe((response: PipelineStep) => {
+        const duplicated = this.selectedPipeline.steps.find(
+          (step) => step.id === response.id
+        );
+        if (duplicated === undefined) {
+          this.selectedPipeline.steps.push(response);
+        }
+        this.generateModel(this.selectedPipeline);
+      });
+    }
+  }
+
   @Input()
   set step(step: PipelineStep) {
     if (step) {
@@ -152,6 +171,11 @@ export class PipelinesEditorComponent implements OnInit {
 
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as PipelineStep;
+    if (this.selectedStep.params.length > 0) {
+      if (this.selectedStep.params[0].name === 'executeIfEmpty') {
+        this.selectedStep.params.shift();
+      }
+    }
     this.selectedElement = data;
     this.configureStepGroup();
     this.typeAhead = [];
@@ -159,6 +183,17 @@ export class PipelinesEditorComponent implements OnInit {
     if (nodeId) {
       this.addNodeToTypeAhead(nodeId, this.typeAhead);
     }
+    const executeIfEmpty = {
+      name: 'executeIfEmpty',
+      value: this.selectedStep.executeIfEmpty || ' ',
+      type: 'text',
+      required: false,
+      defaultValue: undefined,
+      language: undefined,
+      className: undefined,
+      parameterType: undefined,
+    };
+    this.selectedStep.params.unshift(executeIfEmpty);
   }
 
   /**
@@ -194,6 +229,7 @@ export class PipelinesEditorComponent implements OnInit {
         step.stepId = step.id;
         step.id = id.replace(' ', '_');
         this.dndSubject.next(this.createDesignerElement(step, event));
+        this.stepCreated$.next(step);
       }
     });
   }
@@ -542,23 +578,94 @@ export class PipelinesEditorComponent implements OnInit {
     this.designerModel = this.generateModelFromPipeline(this.selectedPipeline);
   }
 
+  private generateModel(pipeline: Pipeline) {
+    const model = DesignerComponent.newModel();
+    let nodeId;
+    this.stepLookup = {};
+    pipeline.steps.forEach((step) => {
+      nodeId = `designer-node-${model.nodeSeq++}`;
+      this.stepLookup[step.id] = nodeId;
+    });
+    // Add connections
+    let connectedNodes = [];
+    pipeline.steps.forEach((step) => {
+      if (step.type !== 'branch' && step.nextStepId) {
+        model.connections[
+          `${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepId]}`
+        ] = {
+          sourceNodeId: this.stepLookup[step.id],
+          targetNodeId: this.stepLookup[step.nextStepId],
+          endpoints: [
+            {
+              sourceEndPoint: 'output',
+              targetEndPoint: 'input',
+            },
+          ],
+        };
+        connectedNodes.push(step.nextStepId);
+      } else {
+        let connection;
+        step.params
+          .filter((p) => p.type.toLowerCase() === 'result')
+          .forEach((output) => {
+            if (output.value) {
+              connectedNodes.push(output.value);
+              connection =
+                model.connections[
+                  `${this.stepLookup[step.id]}::${
+                    this.stepLookup[output.value]
+                  }`
+                ];
+              if (!connection) {
+                connection = {
+                  sourceNodeId: this.stepLookup[step.id],
+                  targetNodeId: this.stepLookup[output.value],
+                  endpoints: [],
+                };
+                model.connections[
+                  `${this.stepLookup[step.id]}::${
+                    this.stepLookup[output.value]
+                  }`
+                ] = connection;
+              }
+              connection.endpoints.push({
+                sourceEndPoint: output.name,
+                targetEndPoint: 'input',
+              });
+            }
+          });
+      }
+    });
+    // See if automatic layout needs to be applied
+    if (!pipeline.layout || Object.keys(pipeline.layout).length === 0) {
+      DesignerComponent.performAutoLayout(
+        this.stepLookup,
+        connectedNodes,
+        model
+      );
+    }
+    return model;
+  }
+
   private generateModelFromPipeline(pipeline: Pipeline) {
     const model = DesignerComponent.newModel();
     let nodeId;
     this.stepLookup = {};
     pipeline.steps.forEach((step) => {
       nodeId = `designer-node-${model.nodeSeq++}`;
-      model.nodes[nodeId] = {
-        data: this.createDesignerElement(step, null),
-        x:
-          pipeline.layout && pipeline.layout[step.id].x
-            ? pipeline.layout[step.id].x
-            : -1,
-        y:
-          pipeline.layout && pipeline.layout[step.id].y
-            ? pipeline.layout[step.id].y
-            : -1,
-      };
+      if (Object.keys(pipeline.layout).length > 1) {
+        model.nodes[nodeId] = {
+          data: this.createDesignerElement(step, null),
+          x:
+            pipeline.layout && pipeline.layout[step.id].x
+              ? pipeline.layout[step.id].x
+              : -1,
+          y:
+            pipeline.layout && pipeline.layout[step.id].y
+              ? pipeline.layout[step.id].y
+              : -1,
+        };
+      }
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
@@ -646,11 +753,66 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
+  findSingleNodes(dif: number) {
+    const singleNodes = [];
+    let message = [];
+    Object.keys(this.designerModel.nodes).forEach((node) => {
+      Object.keys(this.designerModel.connections).forEach((connection) => {
+        if (connection.includes(node)) {
+          singleNodes.push(node);
+        }
+      });
+    });
+
+    Object.keys(this.designerModel.nodes).forEach((node) => {
+      const only = singleNodes.includes(node);
+      if (!only && dif > 1) {
+        const nodename: {} = Object.values(this.designerModel.nodes[node]);
+        message.push(`the node ${nodename[0].name} has no connections.`);
+      }
+    });
+    return message;
+  }
+
   private validatePipelineSteps(pipeline: Pipeline): String[] {
-    const errors = [];
+    let errors = [];
+    const difNodesAndConnections =
+      Object.keys(this.designerModel.nodes).length -
+      Object.keys(this.designerModel.connections).length;
+    errors = this.findSingleNodes(difNodesAndConnections);
+
+    if (difNodesAndConnections > 1) {
+      const nodes = Object.keys(this.designerModel.nodes);
+      const connections = Object.values(this.designerModel.connections);
+      const targetNodesId = connections.map(
+        (connection) => connection.targetNodeId
+      );
+      targetNodesId.forEach((targetNode) => {
+        const index = nodes.findIndex((node) => node === targetNode);
+        nodes.splice(index, 1);
+      });
+      let parentNodes = '';
+      nodes.forEach((node) => {
+        const nodeRoot: {} = Object.values(this.designerModel.nodes[node]);
+        parentNodes += ` ${nodeRoot[0].name}`;
+      });
+      errors.push(
+        `The nodes${parentNodes} are inputs please leave only one input.`
+      );
+    }
     if (pipeline.steps.length > 0) {
       pipeline.steps.forEach((step) => {
         if (step.params && step.params.length > 0) {
+          if (step.type === 'branch') {
+            const hasResultParameter = step.params.find(
+              (param) => param.type === 'result'
+            );
+            if (!hasResultParameter) {
+              errors.push(
+                `Step ${step.id} is a branch step and needs at least one result.`
+              );
+            }
+          }
           step.params.forEach((param) => {
             if (
               param.required &&
@@ -658,7 +820,12 @@ export class PipelinesEditorComponent implements OnInit {
                 (param.type !== 'object' && param.value.trim().length === 0))
             ) {
               errors.push(
-                `Step ${step.id} has a required parameter ${param.name} that is missing a value`
+                `Step ${step.id} has a required parameter ${param.name} that is missing a value.`
+              );
+            }
+            if (param.value && param.value.endsWith('&')) {
+              errors.push(
+                `You need to select a step group for ${step.id} pipeline parameter.`
               );
             }
           });

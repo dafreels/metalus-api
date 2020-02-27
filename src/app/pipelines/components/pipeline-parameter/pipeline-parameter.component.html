@@ -8,39 +8,109 @@
       mat-raised-button
       color="primary"
       (click)="addClause()"
-      [disabled]="parameter.type === 'object' || parameter.type === 'script'"
+      [disabled]="
+        parameter.type === 'object' ||
+        parameter.type === 'script' ||
+        parameter.type === 'result'
+      "
     >
       <mat-icon aria-label="Add OR Clause">add</mat-icon>
     </button>
   </div>
   <div *ngFor="let param of parameters">
-    <mat-form-field>
-      <input
-        *ngIf="!complexParameter"
+    <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
+      <ng-container
+        *ngIf="
+          param.type === 'step' ||
+            param.type === 'secondary' ||
+            param.type === 'pipeline';
+          else isNotTypeResponse
+        "
+      >
+        <ng-container
+          *ngIf="
+            (param.type !== 'step' || param.type !== 'secondary') &&
+            stepSuggestions.length > 0 &&
+            param.type !== 'pipeline'
+          "
+        >
+          <mat-form-field>
+            <mat-select
+              [formControl]="stepResponseControl"
+              placeholder="Select Step Response"
+              #singleSelect
+            >
+              <app-mat-select-search
+                [formControl]="stepResponseFilterCtrl"
+              ></app-mat-select-search>
+              <mat-option
+                *ngFor="let step of filteredStepResponse | async"
+                [value]="step"
+              >
+                {{ step }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngIf="param.type === 'pipeline' && pipelines.length > 0">
+          <mat-form-field>
+            <mat-select
+              [formControl]="stepGroupControl"
+              placeholder="Select a Pipeline"
+              #singleSelect
+              (selectionChange)="handleChange(param.id, param)"
+            >
+              <app-mat-select-search
+                [formControl]="stepGroupFilterCtrl"
+              ></app-mat-select-search>
+              <mat-option
+                *ngFor="let step of filteredStepGroup | async"
+                [value]="step"
+              >
+                {{ step.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+      </ng-container>
+      <ng-template #isNotTypeResponse>
+        <mat-form-field>
+          <input
+            matInput
+            *ngIf="param.type !== 'step' || param.type !== 'secondary'"
+            [(ngModel)]="param.value"
+            (change)="handleChange(param.id, param)"
+          />
+        </mat-form-field>
+      </ng-template>
+    </ng-container>
+    <ng-template #isAcomplexParameter>
+      <textarea
+        *ngIf="
+          complexParameter &&
+          (param.type !== 'step' || param.type !== 'secondary')
+        "
         matInput
         required
-        [matAutocomplete]="auto"
-        [(ngModel)]="param.value"
+        (change)="handleChange(param.id, param)"
+        [ngModel]="param.value"
+        disabled="true"
+      ></textarea>
+    </ng-template>
+
+    <!--     <mat-form-field>
+             <input
+        *ngIf="
+          !complexParameter &&
+          (param.type !== 'step' || param.type !== 'secondary')
+        "
+        matInput
+        required
         (change)="handleChange(param.id, param)"
         matTooltip="{{ stepGroup.pipeline?.name }}"
         matTooltipPosition="right"
       />
-      <textarea
-        *ngIf="complexParameter"
-        matInput
-        required
-        [ngModel]="param.value"
-        disabled="true"
-      ></textarea>
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option
-          *ngFor="let stepName of param.suggestions"
-          [value]="stepName"
-        >
-          <span>{{ stepName }}</span>
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+    </mat-form-field> -->
     <mat-form-field>
       <mat-label>Type</mat-label>
       <mat-select
@@ -50,16 +120,28 @@
       >
         <mat-option value="text">Static</mat-option>
         <mat-option value="global">Global</mat-option>
-        <mat-option value="step">Step Response</mat-option>
-        <mat-option value="secondary">Secondary Step Response</mat-option>
+        <mat-option *ngIf="stepSuggestions.length > 0" value="step"
+          >Step Response</mat-option
+        >
+        <mat-option *ngIf="stepSuggestions.length > 0" value="secondary"
+          >Secondary Step Response</mat-option
+        >
         <mat-option value="runtime">Runtime</mat-option>
-        <mat-option *ngIf="!stepGroup.enabled && param.language" value="script"
+        <mat-option
+          *ngIf="
+            !stepGroup.enabled && isAScriptParameter && parameters.length === 1
+          "
+          value="script"
           >Script</mat-option
         >
-        <mat-option *ngIf="!stepGroup.enabled" value="result"
+        <mat-option
+          *ngIf="!stepGroup.enabled && parameters.length === 1"
+          value="result"
           >Result</mat-option
         >
-        <mat-option *ngIf="parameter.className" value="object"
+        <mat-option
+          *ngIf="isAnObjectParameter && parameters.length === 1; s"
+          value="object"
           >Object</mat-option
         >
         <mat-option
