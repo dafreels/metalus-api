@@ -58,7 +58,7 @@
               [formControl]="stepGroupControl"
               placeholder="Select a Pipeline"
               #singleSelect
-              (selectionChange)="stepGroupSelection(param.id)"
+              (selectionChange)="handleChange(param.id, param)"
             >
               <app-mat-select-search
                 [formControl]="stepGroupFilterCtrl"
@@ -79,6 +79,7 @@
             matInput
             *ngIf="param.type !== 'step' || param.type !== 'secondary'"
             [(ngModel)]="param.value"
+            (change)="handleChange(param.id, param)"
           />
         </mat-form-field>
       </ng-template>
@@ -91,6 +92,7 @@
         "
         matInput
         required
+        (change)="handleChange(param.id, param)"
         [ngModel]="param.value"
         disabled="true"
       ></textarea>

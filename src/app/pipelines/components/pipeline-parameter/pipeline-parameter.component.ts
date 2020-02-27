@@ -105,16 +105,6 @@ export class PipelineParameterComponent implements OnInit {
     });
   }
 
-  stepGroupSelection(id: number) {
-    const inputData = this.parameters.find((parameter) => parameter.id === id);
-    this.stepGroupControl.valueChanges.subscribe((response: Pipeline) => {
-      inputData.value = response.name;
-      this.stepGroup.pipeline = response;
-      this.handleChange(id);
-      this.parameters[0].value = this.stepGroup.pipeline.name;
-    });
-  }
-
   private filterList(
     arrayToBeFiltered,
     control: FormControl,
@@ -220,13 +210,19 @@ export class PipelineParameterComponent implements OnInit {
   }
 
   handleChange(id: number, selectedparameter?: SplitParameter) {
-    if (selectedparameter) {
-      if (
-        selectedparameter.value !== '' &&
-        selectedparameter.type !== 'pipeline'
-      ) {
-        selectedparameter.value = '';
-      }
+    if (
+      selectedparameter !== undefined &&
+      selectedparameter.type === 'pipeline'
+    ) {
+      const inputData = this.parameters.find(
+        (parameter) => parameter.id === id
+      );
+      this.stepGroupControl.valueChanges.subscribe((response: Pipeline) => {
+        inputData.value = response.name;
+        this.stepGroup.pipeline = response;
+        this.handleChange(id);
+        this.parameters[0].value = this.stepGroup.pipeline.name;
+      });
     }
     const paramIndex = this.parameters.findIndex((p) => p.id === id);
 
