@@ -66,7 +66,7 @@ describe('Package Objects API File Tests', () => {
   });
 
   it('Should not return a package-object', async () => {
-    await request(mock).get('/api/v1/package-objects/bad-id').expect(204);
+    await request(mock).get('/api/v1/package-objects/bad-id').expect(404);
   });
 
   it('Should insert a single package-object', async () => {

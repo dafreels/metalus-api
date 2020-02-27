@@ -35,7 +35,7 @@ import { DesignerPreviewComponent } from '../../../designer/components/designer-
 @Component({
   selector: 'app-pipelines-editor',
   templateUrl: './pipelines-editor.component.html',
-  styleUrls: ['./pipelines-editor.component.scss'],
+  styleUrls: ['./pipelines-editor.component.scss']
 })
 export class PipelinesEditorComponent implements OnInit {
   pipelinesData: PipelineData[] = [];
