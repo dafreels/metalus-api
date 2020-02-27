@@ -108,8 +108,8 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   modelChange(event) {
-    this.selectedPipeline = this.generatePipeline();
     if (this.selectedPipeline.steps.length === 0) {
+      this.selectedPipeline = this.generatePipeline();
     } else if (
       Object.keys(event.nodes).length !== this.selectedPipeline.steps.length
     ) {
