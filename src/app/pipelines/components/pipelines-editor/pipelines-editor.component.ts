@@ -755,7 +755,7 @@ export class PipelinesEditorComponent implements OnInit {
 
   findSingleNodes(dif: number) {
     const singleNodes = [];
-    let message = `Current nodes without input are: `;
+    let message = `Current nodes without input are:`;
     Object.keys(this.designerModel.nodes).forEach((node) => {
       Object.keys(this.designerModel.connections).forEach((connection) => {
         if (connection.includes(node)) {
@@ -768,7 +768,7 @@ export class PipelinesEditorComponent implements OnInit {
       const only = singleNodes.includes(node);
       if (!only && dif > 1) {
         const nodename: {} = Object.values(this.designerModel.nodes[node]);
-        message += `${nodename[0].name}`;
+        message += ` ${nodename[0].name}`;
       }
     });
     message += `.`;
