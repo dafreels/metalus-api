@@ -35,7 +35,7 @@ import { DesignerPreviewComponent } from '../../../designer/components/designer-
 @Component({
   selector: 'app-pipelines-editor',
   templateUrl: './pipelines-editor.component.html',
-  styleUrls: ['./pipelines-editor.component.scss']
+  styleUrls: ['./pipelines-editor.component.scss'],
 })
 export class PipelinesEditorComponent implements OnInit {
   pipelinesData: PipelineData[] = [];
@@ -108,8 +108,8 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   modelChange(event) {
-    this.selectedPipeline = this.generatePipeline();
     if (this.selectedPipeline.steps.length === 0) {
+      this.selectedPipeline = this.generatePipeline();
     } else if (
       Object.keys(event.nodes).length !== this.selectedPipeline.steps.length
     ) {
@@ -755,7 +755,7 @@ export class PipelinesEditorComponent implements OnInit {
 
   findSingleNodes(dif: number) {
     const singleNodes = [];
-    let message = [];
+    let message = `Current nodes without input are: `;
     Object.keys(this.designerModel.nodes).forEach((node) => {
       Object.keys(this.designerModel.connections).forEach((connection) => {
         if (connection.includes(node)) {
@@ -768,18 +768,24 @@ export class PipelinesEditorComponent implements OnInit {
       const only = singleNodes.includes(node);
       if (!only && dif > 1) {
         const nodename: {} = Object.values(this.designerModel.nodes[node]);
-        message.push(`the node ${nodename[0].name} has no connections.`);
+        message += `${nodename[0].name}`;
       }
     });
+    message += `.`;
     return message;
   }
 
   private validatePipelineSteps(pipeline: Pipeline): String[] {
     let errors = [];
+
     const difNodesAndConnections =
       Object.keys(this.designerModel.nodes).length -
       Object.keys(this.designerModel.connections).length;
-    errors = this.findSingleNodes(difNodesAndConnections);
+
+    const nodesAlone = this.findSingleNodes(difNodesAndConnections);
+    if (nodesAlone.length > 34) {
+      errors.push(nodesAlone);
+    }
 
     if (difNodesAndConnections > 1) {
       const nodes = Object.keys(this.designerModel.nodes);
@@ -797,7 +803,7 @@ export class PipelinesEditorComponent implements OnInit {
         parentNodes += ` ${nodeRoot[0].name}`;
       });
       errors.push(
-        `The nodes${parentNodes} are inputs please leave only one input.`
+        `There can only be one Input Node, and currently there are more than one. Please connect all non-input nodes.`
       );
     }
     if (pipeline.steps.length > 0) {
