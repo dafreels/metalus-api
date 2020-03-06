@@ -126,71 +126,9 @@
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>Information</mat-panel-title>
-                <mat-panel-description>{{
-                  selectedStep.displayName
-                }}</mat-panel-description>
-              </mat-expansion-panel-header>
-              <div class="pipeline-form">
-                <mat-form-field>
-                  <input
-                    matInput
-                    placeholder="Step Id"
-                    [ngModel]="selectedStep.stepId"
-                    name="stepId"
-                    disabled="true"
-                  />
-                </mat-form-field>
-                <mat-form-field
-                  ><input
-                    matInput
-                    placeholder="Name"
-                    [ngModel]="selectedStep.displayName"
-                    disabled="true"
-                    name="displayName"
-                  />
-                </mat-form-field>
-                <mat-form-field
-                  ><textarea
-                    matInput
-                    placeholder="Description"
-                    [ngModel]="selectedStep.description"
-                    name="description"
-                    disabled="true"
-                  ></textarea
-                ></mat-form-field>
-                <mat-form-field
-                  ><input
-                    matInput
-                    placeholder="Category"
-                    required
-                    [ngModel]="selectedStep.category"
-                    name="category"
-                    disabled="true"
-                  />
-                </mat-form-field>
-                <mat-form-field *ngIf="selectedStep.engineMeta"
-                  ><input
-                    matInput
-                    placeholder="Engine Meta Command"
-                    [ngModel]="selectedStep.engineMeta.spark"
-                    name="stepCommand"
-                    disabled="true"
-                  />
-                </mat-form-field>
-                <mat-form-field *ngIf="selectedStep.engineMeta"
-                  ><input
-                    matInput
-                    placeholder="Engine Meta Package"
-                    [(ngModel)]="selectedStep.engineMeta.pkg"
-                    name="stepPackage"
-                    disabled="true"
-                  />
-                </mat-form-field>
-              </div>
-            </mat-expansion-panel>
+            <app-step-information
+              [selectedStep]="selectedStep"
+            ></app-step-information>
             <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-panel-title>Parameters</mat-panel-title>
