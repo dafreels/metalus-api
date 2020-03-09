@@ -128,6 +128,12 @@ export class PipelineParameterComponent implements OnInit {
               if (stepParameter.value.startsWith('$')) {
                 this.parameterType = 'runtime';
               }
+              if (stepParameter.value.startsWith('@')) {
+                this.parameterType = 'step';
+              }
+              if (stepParameter.value.startsWith('#')) {
+                this.parameterType = 'secondary';
+              }
               return {
                 id: this.id++,
                 value,
@@ -180,11 +186,10 @@ export class PipelineParameterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.stepResponseControl.setValue(this.stepSuggestions);
+    this.stepResponseControl.setValue(this.parameters[0].value);
     this.filteredStepResponse.next(this.stepSuggestions);
 
     const pipelinesName = this.pipelines.map((pipeline) => pipeline.name);
-    console.log(this.parameters[0]);
     this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
     this.filteredStepGroup.next(pipelinesName);
 
@@ -229,25 +234,27 @@ export class PipelineParameterComponent implements OnInit {
   }
 
   handleChange(id: number, selectedparameter?: SplitParameter) {
+    this.parameter.type = this.parameterType;
+
     if (selectedparameter !== undefined && this.parameterType === 'pipeline') {
       const inputData = this.parameters.find(
         (parameter) => parameter.id === id
       );
-      this.stepGroupControl.valueChanges.subscribe((response: string) => {
-        inputData.value = response;
-        this.stepGroup.pipeline = this.pipelines.find(
-          (pipeline) => pipeline.name === response
-        );
-        this.handleChange(id);
-        this.parameters[0].value = this.stepGroup.pipeline.name;
-      });
+      inputData.value = this.stepGroupControl.value;
+      this.stepGroup.pipeline = this.pipelines.find(
+        (pipeline) => pipeline.name === this.stepGroupControl.value
+      );
+      this.handleChange(id);
+      this.parameters[0].value = this.stepGroup.pipeline.name;
     }
+
     const paramIndex = this.parameters.findIndex((p) => p.id === id);
 
     if (paramIndex !== -1) {
       const param = this.parameters[paramIndex];
       if (this.parameterType === 'step' || this.parameterType === 'secondary') {
         param.suggestions = this.stepSuggestions;
+        selectedparameter.value = this.stepResponseControl.value;
       } else {
         param.suggestions = [];
       }
@@ -278,7 +285,7 @@ export class PipelineParameterComponent implements OnInit {
     this.parameter.language = this.isAScriptParameter;
     this.parameter.className = this.isAnObjectParameter;
     this.chaneDetector.detectChanges();
-    this.parameter.type = this.parameterType;
+
     this.parameterUpdate.emit(this.parameter);
   }
 
