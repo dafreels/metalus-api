@@ -822,8 +822,8 @@ export class PipelinesEditorComponent implements OnInit {
           step.params.forEach((param) => {
             if (
               param.required &&
-              (param.defaultValue.length === 0 ||
-                typeof param.defaultValue === undefined ||
+              (typeof param.defaultValue === undefined ||
+                param.defaultValue.length === 0 ||
                 (param.type !== 'object' &&
                   param.value &&
                   param.value.trim().length === 0))
@@ -837,7 +837,7 @@ export class PipelinesEditorComponent implements OnInit {
             if (
               param.value &&
               typeof param.value === 'string' &&
-              param.value.endsWith('&')
+              param.value.trim().endsWith('&')
             ) {
               errors.push(
                 `You need to select a step group for ${step.id} pipeline parameter.`
