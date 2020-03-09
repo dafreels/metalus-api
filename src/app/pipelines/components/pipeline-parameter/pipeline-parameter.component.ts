@@ -43,7 +43,7 @@ export interface StepGroupProperty {
 @Component({
   selector: 'app-pipelines-parameter',
   templateUrl: './pipeline-parameter.component.html',
-  styleUrls: ['./pipeline-parameter.component.scss']
+  styleUrls: ['./pipeline-parameter.component.scss'],
 })
 export class PipelineParameterComponent implements OnInit {
   @Input() pipelinesData: PipelineData[];
@@ -121,6 +121,12 @@ export class PipelineParameterComponent implements OnInit {
               }
               if (stepParameter.value.startsWith('&')) {
                 this.parameterType = 'pipeline';
+              }
+              if (stepParameter.value.startsWith('!')) {
+                this.parameterType = 'global';
+              }
+              if (stepParameter.value.startsWith('$')) {
+                this.parameterType = 'runtime';
               }
               return {
                 id: this.id++,
