@@ -55,7 +55,6 @@ export class PipelineParameterComponent implements OnInit {
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     if (stepParameter.value && typeof stepParameter.value === 'string') {
-      console.log(stepParameter.value);
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
         stepParameter.value = stepParameter.value.slice(
