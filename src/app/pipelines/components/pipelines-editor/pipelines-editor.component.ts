@@ -822,11 +822,7 @@ export class PipelinesEditorComponent implements OnInit {
           step.params.forEach((param) => {
             if (
               param.required &&
-              (typeof param.defaultValue === undefined ||
-                param.defaultValue === '' ||
-                (param.type !== 'object' &&
-                  param.value &&
-                  param.value.trim().length === 0))
+              (!param.defaultValue || param.defaultValue === '')
             ) {
               if (!param.value) {
                 errors.push(
