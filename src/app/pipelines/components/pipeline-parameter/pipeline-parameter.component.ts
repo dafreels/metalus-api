@@ -43,7 +43,7 @@ export interface StepGroupProperty {
 @Component({
   selector: 'app-pipelines-parameter',
   templateUrl: './pipeline-parameter.component.html',
-  styleUrls: ['./pipeline-parameter.component.scss']
+  styleUrls: ['./pipeline-parameter.component.scss'],
 })
 export class PipelineParameterComponent implements OnInit {
   @Input() pipelinesData: PipelineData[];
@@ -54,7 +54,7 @@ export class PipelineParameterComponent implements OnInit {
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
-    if (stepParameter.value) {
+    if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
         stepParameter.value = stepParameter.value.slice(
@@ -178,7 +178,6 @@ export class PipelineParameterComponent implements OnInit {
     this.filteredStepResponse.next(this.stepSuggestions);
 
     const pipelinesName = this.pipelines.map((pipeline) => pipeline.name);
-    console.log(this.parameters[0]);
     this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
     this.filteredStepGroup.next(pipelinesName);
 
