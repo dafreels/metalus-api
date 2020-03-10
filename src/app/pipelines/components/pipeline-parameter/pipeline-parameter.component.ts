@@ -54,7 +54,7 @@ export class PipelineParameterComponent implements OnInit {
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
-    if (stepParameter.value) {
+    if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
         stepParameter.value = stepParameter.value.slice(
