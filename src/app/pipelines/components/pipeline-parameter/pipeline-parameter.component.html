@@ -39,6 +39,7 @@
               [formControl]="stepResponseControl"
               placeholder="Select Step Response"
               #singleSelect
+              (selectionChange)="handleChange(param.id, param)"
             >
               <app-mat-select-search
                 [formControl]="stepResponseFilterCtrl"
