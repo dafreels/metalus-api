@@ -823,7 +823,7 @@ export class PipelinesEditorComponent implements OnInit {
             if (
               param.required &&
               (typeof param.defaultValue === undefined ||
-                param.defaultValue.length === 0 ||
+                param.defaultValue === '' ||
                 (param.type !== 'object' &&
                   param.value &&
                   param.value.trim().length === 0))
