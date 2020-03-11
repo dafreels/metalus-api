@@ -9,9 +9,9 @@
       color="primary"
       (click)="addClause()"
       [disabled]="
-        parameter.type === 'object' ||
-        parameter.type === 'script' ||
-        parameter.type === 'result'
+        parameterType === 'object' ||
+        parameterType === 'script' ||
+        parameterType === 'result'
       "
     >
       <mat-icon aria-label="Add OR Clause">add</mat-icon>

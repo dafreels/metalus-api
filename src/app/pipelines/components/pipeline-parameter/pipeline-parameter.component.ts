@@ -62,6 +62,7 @@ export class PipelineParameterComponent implements OnInit {
         );
       }
     }
+
     this.parameterType = stepParameter.type;
     if (stepParameter.language) {
       this.isAScriptParameter = stepParameter.language;
@@ -76,6 +77,26 @@ export class PipelineParameterComponent implements OnInit {
     } else if (stepParameter.type === 'object') {
       this.isAnObjectParameter = 'object';
       this.parameterType = 'object';
+    }
+    if (stepParameter.type === 'text') {
+      this.parameterType = 'text';
+    }
+    if (stepParameter.value) {
+      if (stepParameter.value.startsWith('&')) {
+        this.parameterType = 'pipeline';
+      }
+      if (stepParameter.value.startsWith('!')) {
+        this.parameterType = 'global';
+      }
+      if (stepParameter.value.startsWith('$')) {
+        this.parameterType = 'runtime';
+      }
+      if (stepParameter.value.startsWith('@')) {
+        this.parameterType = 'step';
+      }
+      if (stepParameter.value.startsWith('#')) {
+        this.parameterType = 'secondary';
+      }
     }
     if (stepParameter) {
       this.parameter = stepParameter;
@@ -118,21 +139,6 @@ export class PipelineParameterComponent implements OnInit {
                   type === 'runtime')
               ) {
                 value = value.substring(1);
-              }
-              if (stepParameter.value.startsWith('&')) {
-                this.parameterType = 'pipeline';
-              }
-              if (stepParameter.value.startsWith('!')) {
-                this.parameterType = 'global';
-              }
-              if (stepParameter.value.startsWith('$')) {
-                this.parameterType = 'runtime';
-              }
-              if (stepParameter.value.startsWith('@')) {
-                this.parameterType = 'step';
-              }
-              if (stepParameter.value.startsWith('#')) {
-                this.parameterType = 'secondary';
               }
               return {
                 id: this.id++,
@@ -235,7 +241,6 @@ export class PipelineParameterComponent implements OnInit {
 
   handleChange(id: number, selectedparameter?: SplitParameter) {
     this.parameter.type = this.parameterType;
-
     if (selectedparameter !== undefined && this.parameterType === 'pipeline') {
       const inputData = this.parameters.find(
         (parameter) => parameter.id === id
@@ -286,6 +291,8 @@ export class PipelineParameterComponent implements OnInit {
     this.parameter.className = this.isAnObjectParameter;
     this.chaneDetector.detectChanges();
 
+    this.parameter.type = this.parameterType;
+
     this.parameterUpdate.emit(this.parameter);
   }
 
@@ -307,7 +314,10 @@ export class PipelineParameterComponent implements OnInit {
 
   disableEditorButton(param: SplitParameter) {
     if (this.stepGroup.enabled) {
-      if (this.parameter.name === 'pipeline' && param.type !== 'pipeline') {
+      if (
+        this.parameter.name === 'pipeline' &&
+        this.parameterType !== 'pipeline'
+      ) {
         return true;
       } else if (
         this.parameter.name === 'pipelineId' &&
@@ -316,13 +326,13 @@ export class PipelineParameterComponent implements OnInit {
         return true;
       } else if (
         this.parameter.name === 'pipeline' &&
-        param.type === 'pipeline'
+        this.parameterType === 'pipeline'
       ) {
         return true;
       }
       return false;
     } else {
-      return param.type !== 'object' && param.type !== 'script';
+      return this.parameterType !== 'object' && this.parameterType !== 'script';
     }
   }
 
@@ -330,7 +340,7 @@ export class PipelineParameterComponent implements OnInit {
     const inputData = this.parameters.find((p) => p.id === id);
 
     if (!this.stepGroup.enabled) {
-      switch (inputData.type) {
+      switch (this.parameterType) {
         case 'script':
           const scriptDialogData = {
             code: inputData.value,
