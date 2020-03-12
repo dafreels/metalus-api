@@ -149,6 +149,7 @@
                 <mat-accordion>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep.params"
+                    [isABranchStep]="isABranchStep"
                     [stepType]="selectedStep.type"
                     [stepParameters]="param"
                     [stepGroup]="stepGroup"

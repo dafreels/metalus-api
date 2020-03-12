@@ -50,6 +50,7 @@ export class PipelinesEditorComponent implements OnInit {
   designerModel: DesignerModel = DesignerComponent.newModel();
   stepCreated$: Subject<PipelineStep> = new Subject<PipelineStep>();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  isABranchStep: boolean;
   stepLookup = {};
   typeAhead: string[] = [];
   pipelineValidator;
@@ -194,6 +195,9 @@ export class PipelinesEditorComponent implements OnInit {
       parameterType: undefined,
     };
     this.selectedStep.params.unshift(executeIfEmpty);
+    this.selectedStep.type === 'branch'
+      ? (this.isABranchStep = true)
+      : (this.isABranchStep = false);
   }
 
   /**
