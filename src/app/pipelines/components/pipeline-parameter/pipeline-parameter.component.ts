@@ -159,6 +159,7 @@ export class PipelineParameterComponent implements OnInit {
                 suggestions: [],
               },
             ];
+            this.parameterType = 'text';
           }
       }
     }
