@@ -826,8 +826,8 @@ export class PipelinesEditorComponent implements OnInit {
             ) {
               if (
                 !param.value ||
-                param.value.endsWith('!') ||
-                param.value.endsWith('$')
+                (typeof param.value === 'string' &&
+                  (param.value.endsWith('!') || param.value.endsWith('$')))
               ) {
                 errors.push(
                   `Step ${step.id} has a required parameter ${param.name} that is missing a value.`

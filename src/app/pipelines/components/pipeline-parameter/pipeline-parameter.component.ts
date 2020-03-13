@@ -81,7 +81,7 @@ export class PipelineParameterComponent implements OnInit {
     if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     }
-    if (stepParameter.value) {
+    if (stepParameter.value && typeof stepParameter.value === 'string') {
       if (stepParameter.value.startsWith('&')) {
         this.parameterType = 'pipeline';
       }
