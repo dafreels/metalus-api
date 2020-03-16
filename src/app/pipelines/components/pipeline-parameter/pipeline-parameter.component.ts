@@ -51,6 +51,7 @@ export class PipelineParameterComponent implements OnInit {
   @Input() stepSuggestions: string[];
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
+  @Input() isABranchStep: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
