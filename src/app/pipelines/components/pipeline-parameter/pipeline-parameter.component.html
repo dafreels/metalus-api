@@ -32,7 +32,8 @@
           *ngIf="
             (parameterType !== 'step' || parameterType !== 'secondary') &&
             stepSuggestions.length > 0 &&
-            parameterType !== 'pipeline'
+            parameterType !== 'pipeline' &&
+            parameterType !== 'result'
           "
         >
           <mat-form-field>
@@ -54,11 +55,11 @@
             </mat-select>
           </mat-form-field>
         </ng-container>
-        <ng-container
-          *ngIf="parameterType === 'pipeline' && pipelines.length > 0"
-        >
+        <ng-container *ngIf="parameterType === 'pipeline'">
           <mat-form-field>
             <mat-select
+              matTooltip="Info about the action"
+              [matTooltipDisabled]="hasNoStepGroup"
               [formControl]="stepGroupControl"
               placeholder="Select a Pipeline"
               #singleSelect

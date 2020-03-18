@@ -160,13 +160,16 @@ export class PipelineParameterComponent implements OnInit {
                 suggestions: [],
               },
             ];
-            this.parameterType = 'text';
+            if (stepParameter.type !== 'result') {
+              this.parameterType = 'text';
+            }
           }
       }
     }
   }
   isAScriptParameter: string;
   isAnObjectParameter: string;
+  hasNoStepGroup = false;
   parameterType: string;
   @Output() parameterUpdate = new EventEmitter<PipelineStepParam>();
   parameterName: string;
@@ -198,7 +201,12 @@ export class PipelineParameterComponent implements OnInit {
     this.filteredStepResponse.next(this.stepSuggestions);
 
     const pipelinesName = this.pipelines.map((pipeline) => pipeline.name);
-    this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
+    pipelinesName.length === 0
+      ? (this.hasNoStepGroup = false)
+      : (this.hasNoStepGroup = true);
+    if (this.parameters[0].value) {
+      this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
+    }
     this.filteredStepGroup.next(pipelinesName);
 
     // listen for search field value changes
@@ -252,7 +260,9 @@ export class PipelineParameterComponent implements OnInit {
         (pipeline) => pipeline.name === this.stepGroupControl.value
       );
       this.handleChange(id);
-      this.parameters[0].value = this.stepGroup.pipeline.name;
+      if (this.stepGroup.pipeline) {
+        this.parameters[0].value = this.stepGroup.pipeline.name;
+      }
     }
 
     const paramIndex = this.parameters.findIndex((p) => p.id === id);
