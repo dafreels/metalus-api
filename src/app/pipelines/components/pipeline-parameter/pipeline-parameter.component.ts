@@ -160,7 +160,9 @@ export class PipelineParameterComponent implements OnInit {
                 suggestions: [],
               },
             ];
-            this.parameterType = 'text';
+            if (stepParameter.type !== 'result') {
+              this.parameterType = 'text';
+            }
           }
       }
     }
