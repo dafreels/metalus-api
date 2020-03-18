@@ -254,7 +254,9 @@ export class PipelineParameterComponent implements OnInit {
         (pipeline) => pipeline.name === this.stepGroupControl.value
       );
       this.handleChange(id);
-      this.parameters[0].value = this.stepGroup.pipeline.name;
+      if (this.stepGroup.pipeline) {
+        this.parameters[0].value = this.stepGroup.pipeline.name;
+      }
     }
 
     const paramIndex = this.parameters.findIndex((p) => p.id === id);

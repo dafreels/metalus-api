@@ -32,7 +32,8 @@
           *ngIf="
             (parameterType !== 'step' || parameterType !== 'secondary') &&
             stepSuggestions.length > 0 &&
-            parameterType !== 'pipeline'
+            parameterType !== 'pipeline' &&
+            parameterType !== 'result'
           "
         >
           <mat-form-field>
