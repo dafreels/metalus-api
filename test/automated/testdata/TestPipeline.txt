@@ -1,0 +1,323 @@
+{
+    "id": "4f1cbda0-63dc-11ea-88e6-83bb9fef8780",
+    "name": "AutomatedTestPipeline",
+    "category": "pipeline",
+    "layout": {
+        "ParentNode": {
+            "x": 99,
+            "y": 14
+        },
+        "ObjectNode": {
+            "x": 162,
+            "y": 137
+        },
+        "ScriptNode": {
+            "x": 315,
+            "y": 14
+        },
+        "StepGroupNode": {
+            "x": 314,
+            "y": 144
+        },
+        "IntegerStep": {
+            "x": 533.5499877929688,
+            "y": 46.79998779296875
+        },
+        "BranchStep": {
+            "x": 538.5499877929688,
+            "y": 164.79998779296875
+        },
+        "ObjectPath1": {
+            "x": 446,
+            "y": 230
+        },
+        "ObjectPath2": {
+            "x": 645,
+            "y": 189
+        }
+    },
+    "steps": [
+        {
+            "id": "ParentNode",
+            "category": "TestData",
+            "creationDate": "2020-02-04T20:56:25.281Z",
+            "description": "Parent Step",
+            "displayName": "Parent Step",
+            "engineMeta": {
+                "pkg": "MetaPackage",
+                "spark": "MetaCommand",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-03-09T16:03:50.808Z",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "type": "text",
+                    "name": "ParentParameter",
+                    "required": false
+                }
+            ],
+            "tags": [
+                "Parent",
+                "Acxiom",
+                "Testing",
+                "Test",
+                "Data"
+            ],
+            "type": "pipeline",
+            "stepId": "ce73cde0-4790-11ea-90ac-75a3363c2dbd",
+            "nextStepId": "ObjectNode"
+        },
+        {
+            "id": "ObjectNode",
+            "category": "TestData",
+            "creationDate": "2020-02-04T20:49:48.882Z",
+            "description": "ObjectStep",
+            "displayName": "ObjectStep",
+            "engineMeta": {
+                "pkg": "MetaPackage",
+                "spark": "MetaCommand",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-03-09T16:06:42.657Z",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "type": "object",
+                    "name": "ObjectParameter",
+                    "required": true,
+                    "className": "ClassName",
+                    "value": "undefined"
+                }
+            ],
+            "tags": [
+                "Testing",
+                "Tags",
+                "Test",
+                "Data",
+                "Acxiom",
+                "Object"
+            ],
+            "type": "pipeline",
+            "stepId": "e22dcfd0-478f-11ea-90ac-75a3363c2dbd",
+            "nextStepId": "ScriptNode"
+        },
+        {
+            "id": "ScriptNode",
+            "category": "TestData",
+            "creationDate": "2020-02-04T20:51:15.893Z",
+            "description": "Script Step",
+            "displayName": "ScriptStep",
+            "engineMeta": {
+                "pkg": "MetaPackage",
+                "spark": "MetaCommand",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-03-10T15:09:45.795Z",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "type": "script",
+                    "name": "Script Parameter",
+                    "required": true,
+                    "language": "javascript",
+                    "defaultValue": "const val = 12;"
+                }
+            ],
+            "tags": [
+                "Testing",
+                "Data",
+                "Script",
+                "Acxiom"
+            ],
+            "type": "pipeline",
+            "stepId": "160a7bf0-4790-11ea-8bde-e1b40ea30547",
+            "nextStepId": "StepGroupNode"
+        },
+        {
+            "id": "StepGroupNode",
+            "type": "step-group",
+            "displayName": "Step Group",
+            "description": "Allows pipelines to be executed as a single step within a parent pipeline.",
+            "category": "FlowControl",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "name": "pipelineId",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "name": "pipeline",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "name": "pipelineMappings",
+                    "type": "object",
+                    "required": false
+                }
+            ],
+            "stepId": "f09b3b9c-82ac-56de-8dc8-f57c063dd4aa",
+            "nextStepId": "IntegerStep"
+        },
+        {
+            "id": "IntegerStep",
+            "category": "TestData",
+            "creationDate": "2020-02-04T20:52:13.145Z",
+            "description": "Integer Step",
+            "displayName": "IntegerStep",
+            "engineMeta": {
+                "pkg": "MetaPackage",
+                "spark": "MetaCommand",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-03-09T16:07:21.392Z",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "type": "text",
+                    "name": "Integer Parameter",
+                    "required": true,
+                    "value": "Automated Test"
+                }
+            ],
+            "tags": [
+                "Testing",
+                "Integer",
+                "Acxiom",
+                "Data"
+            ],
+            "type": "pipeline",
+            "stepId": "382ae760-4790-11ea-8bde-e1b40ea30547",
+            "nextStepId": "BranchStep"
+        },
+        {
+            "id": "BranchStep",
+            "category": "TestData",
+            "creationDate": "2020-02-04T20:54:43.487Z",
+            "description": "Branch Step",
+            "displayName": "BranchStep",
+            "engineMeta": {
+                "pkg": "MetaPackage",
+                "spark": "MetaCommand",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-02-21T16:09:57.335Z",
+            "params": [
+                {
+                    "type": "result",
+                    "name": "Branch Parameter 1",
+                    "required": true,
+                    "value": "ObjectPath1"
+                },
+                {
+                    "type": "result",
+                    "name": "Branch Parameter 2",
+                    "required": true,
+                    "value": "ObjectPath2"
+                }
+            ],
+            "tags": [
+                "Branch",
+                "Acxiom",
+                "Testing",
+                "Test",
+                "Data"
+            ],
+            "type": "branch",
+            "stepId": "91c745c0-4790-11ea-90ac-75a3363c2dbd"
+        },
+        {
+            "id": "ObjectPath1",
+            "category": "Testing",
+            "creationDate": "2020-02-05T22:37:12.693Z",
+            "description": "Testing Object",
+            "displayName": "Testing Object",
+            "engineMeta": {
+                "pkg": "Testing",
+                "spark": "Testing",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-02-05T22:37:12.693Z",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "type": "object",
+                    "name": "ObjectTest",
+                    "required": false,
+                    "className": "Testing"
+                }
+            ],
+            "tags": [
+                "Testing"
+            ],
+            "type": "pipeline",
+            "stepId": "0d66eff0-4868-11ea-be96-8f7f85c6c69a"
+        },
+        {
+            "id": "ObjectPath2",
+            "category": "Testing",
+            "creationDate": "2020-02-05T22:37:12.693Z",
+            "description": "Testing Object",
+            "displayName": "Testing Object",
+            "engineMeta": {
+                "pkg": "Testing",
+                "spark": "Testing",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-02-05T22:37:12.693Z",
+            "params": [
+                {
+                    "name": "executeIfEmpty",
+                    "value": " ",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "type": "object",
+                    "name": "ObjectTest",
+                    "required": false,
+                    "className": "Testing"
+                }
+            ],
+            "tags": [
+                "Testing"
+            ],
+            "type": "pipeline",
+            "stepId": "0d66eff0-4868-11ea-be96-8f7f85c6c69a"
+        }
+    ],
+    "creationDate": "2020-03-11T21:07:25.949Z",
+    "modifiedDate": "2020-03-11T21:08:07.075Z"
+}
