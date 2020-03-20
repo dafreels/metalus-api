@@ -1,8 +1,6 @@
 #### PROJECT STRUCTURE ####
-chai: "^4.2.0",
-mocha: "^7.0.0",
-selenium-webdriver: "^3.6.0"
-grunt: "^1.0.4"
+
+** To check all dependencies please refer to package.json
 
 Scope: 95% of automated test scripts belong to Pipelines Editor, 5% to Steps Editor
 
