@@ -1,0 +1,38 @@
+{
+    "id": "a745cf50-49e5-11ea-a132-1f6055e57373",
+    "name": "Step Group Pipeline",
+    "category": "step-group",
+    "layout": {
+        "ParentNode": {
+            "x": 514.5499877929688,
+            "y": 34.475006103515625
+        }
+    },
+    "steps": [
+        {
+            "id": "ParentNode",
+            "category": "TestData",
+            "creationDate": "2020-02-04T20:56:25.281Z",
+            "description": "Parent Step",
+            "displayName": "Parent Step",
+            "engineMeta": {
+                "pkg": "MetaPackage",
+                "spark": "MetaCommand",
+                "stepResults": []
+            },
+            "modifiedDate": "2020-02-04T20:56:25.281Z",
+            "params": [],
+            "tags": [
+                "Parent",
+                "Acxiom",
+                "Testing",
+                "Test",
+                "Data"
+            ],
+            "type": "pipeline",
+            "stepId": "ce73cde0-4790-11ea-90ac-75a3363c2dbd"
+        }
+    ],
+    "creationDate": "2020-02-07T20:08:49.096Z",
+    "modifiedDate": "2020-02-07T20:08:49.096Z"
+}
