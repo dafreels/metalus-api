@@ -6,6 +6,7 @@ import { StepsListComponent } from './components/selector/steps-list/steps-list.
 import { DesignerModule } from '../designer/designer.module';
 import { SharedModule } from '../shared/shared.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
+import {StepsListItemComponent} from "./components/selector/steps-list-item/steps-list-item.component";
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { CodeEditorModule } from '../code-editor/code-editor.module';
     StepsSelectorComponent,
     StepsCategoryComponent,
     StepsListComponent,
+    StepsListItemComponent
   ],
   exports: [
     StepsSelectorComponent,
