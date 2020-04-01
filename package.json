@@ -61,7 +61,6 @@
     "grunt-mocha-nyc": "^1.0.3",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
-    "prettier": "1.19.1",
     "rimraf-promise": "^2.0.0",
     "supertest": "^4.0.2",
     "ts-node": "~7.0.0",
