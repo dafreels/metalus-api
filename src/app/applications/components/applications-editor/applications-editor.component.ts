@@ -1,7 +1,7 @@
-import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
-import { PipelinesService } from './../../../pipelines/services/pipelines.service';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Application, Execution } from '../../applications.model';
+import {DisplayDialogService} from './../../../shared/services/display-dialog.service';
+import {PipelinesService} from './../../../pipelines/services/pipelines.service';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Application, Execution} from '../../applications.model';
 import {
   DesignerComponent,
   DesignerElement,
@@ -9,22 +9,23 @@ import {
   DesignerElementAddOutput,
   DesignerModel,
 } from '../../../designer/components/designer/designer.component';
-import { ApplicationsService } from '../../applications.service';
-import { Pipeline } from '../../../pipelines/models/pipelines.model';
-import { SharedFunctions } from '../../../shared/utils/shared-functions';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { FormControl } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { SparkConfEditorComponent } from '../spark-conf-editor/spark-conf-editor.component';
-import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { PropertiesEditorModalComponent } from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
-import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
-import { PackageObject } from '../../../core/package-objects/package-objects.model';
-import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
-import { ComponentsEditorComponent } from '../components-editor/components-editor.component';
-import { ExecutionEditorComponent } from '../execution-editor/execution-editor.component';
-import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
+import {ApplicationsService} from '../../applications.service';
+import {Pipeline} from '../../../pipelines/models/pipelines.model';
+import {SharedFunctions} from '../../../shared/utils/shared-functions';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {FormControl} from '@angular/forms';
+import {MatChipInputEvent} from '@angular/material/chips';
+import {SparkConfEditorComponent} from '../spark-conf-editor/spark-conf-editor.component';
+import {Subject} from 'rxjs';
+import {PropertiesEditorModalComponent} from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
+import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
+import {PackageObject} from '../../../core/package-objects/package-objects.model';
+import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
+import {ComponentsEditorComponent} from '../components-editor/components-editor.component';
+import {ExecutionEditorComponent} from '../execution-editor/execution-editor.component';
+import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
+import {AuthService} from "../../../shared/services/auth.service";
+import {Project} from "../../../shared/models/users.models";
 
 @Component({
   selector: 'app-applications-editor',
@@ -95,6 +96,7 @@ export class ApplicationsEditorComponent implements OnInit {
       globals: {},
       id: '',
       name: '',
+      project: null,
       pipelineListener: {
         className: 'com.acxiom.pipeline.DefaultPipelineListener',
         parameters: {},

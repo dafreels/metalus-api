@@ -6,3 +6,17 @@
 .menu-img {
   vertical-align: middle;
 }
+
+.home-layout {
+  display: grid;
+}
+
+// Nav bar styles
+.topnav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-button {
+  width: 100px;
+}

@@ -71,6 +71,23 @@
           "path:./dist/metalus/index.html"
         ]
       }
+    },
+    "isAuthenticated": {
+      "enabled": true,
+      "priority": 111,
+      "module": {
+        "name":"path:./lib/auth",
+        "method": "isAuthenticated"
+
+      }
+    },
+    "injectUser": {
+      "enabled": true,
+      "priority": 112,
+      "module": {
+        "name":"path:./lib/auth",
+        "method": "injectUser"
+      }
     }
   }
 }

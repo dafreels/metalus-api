@@ -1,14 +1,9 @@
-import { StepGroupProperty } from './../pipeline-parameter/pipeline-parameter.component';
-import { PipelinesService } from './../../services/pipelines.service';
-import { Component, Input, OnInit } from '@angular/core';
-import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
-import { PackageObject } from '../../../core/package-objects/package-objects.model';
-import {
-  Pipeline,
-  PipelineStep,
-  PipelineStepParam,
-  PipelineData,
-} from '../../models/pipelines.model';
+import {StepGroupProperty} from './../pipeline-parameter/pipeline-parameter.component';
+import {PipelinesService} from './../../services/pipelines.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
+import {PackageObject} from '../../../core/package-objects/package-objects.model';
+import {Pipeline, PipelineData, PipelineStep, PipelineStepParam,} from '../../models/pipelines.model';
 
 import {
   DesignerComponent,
@@ -16,21 +11,21 @@ import {
   DesignerElementAction,
   DesignerModel,
 } from '../../../designer/components/designer/designer.component';
-import { DndDropEvent } from 'ngx-drag-drop';
-import { Subject, pipe } from 'rxjs';
-import { NameDialogComponent } from '../../../shared/components/name-dialog/name-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { StepsService } from '../../../steps/steps.service';
-import { Step, StaticSteps } from '../../../steps/steps.model';
-import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
-import { WaitModalComponent } from '../../../shared/components/wait-modal/wait-modal.component';
-import { diff } from 'deep-object-diff';
-import { ErrorModalComponent } from '../../../shared/components/error-modal/error-modal.component';
+import {DndDropEvent} from 'ngx-drag-drop';
+import {Subject} from 'rxjs';
+import {NameDialogComponent} from '../../../shared/components/name-dialog/name-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {StepsService} from '../../../steps/steps.service';
+import {StaticSteps, Step} from '../../../steps/steps.model';
+import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
+import {WaitModalComponent} from '../../../shared/components/wait-modal/wait-modal.component';
+import {diff} from 'deep-object-diff';
+import {ErrorModalComponent} from '../../../shared/components/error-modal/error-modal.component';
 import * as Ajv from 'ajv';
-import { ConfirmationModalComponent } from '../../../shared/components/confirmation/confirmation-modal.component';
+import {ConfirmationModalComponent} from '../../../shared/components/confirmation/confirmation-modal.component';
 
-import { SharedFunctions } from '../../../shared/utils/shared-functions';
-import { DesignerPreviewComponent } from '../../../designer/components/designer-preview/designer-preview.component';
+import {SharedFunctions} from '../../../shared/utils/shared-functions';
+import {DesignerPreviewComponent} from '../../../designer/components/designer-preview/designer-preview.component';
 
 @Component({
   selector: 'app-pipelines-editor',
@@ -143,6 +138,7 @@ export class PipelinesEditorComponent implements OnInit {
   newPipeline() {
     this._pipeline = {
       name: '',
+      project: null,
       steps: [],
       id: '',
       category: 'pipeline',
@@ -748,6 +744,7 @@ export class PipelinesEditorComponent implements OnInit {
         this.selectedPipeline = newpipeline;
         this._pipeline = {
           name: '',
+          project: null,
           steps: [],
           id: '',
           category: 'pipeline',
@@ -882,6 +879,7 @@ export class PipelinesEditorComponent implements OnInit {
       id: this.selectedPipeline.id,
       name: this.selectedPipeline.name,
       category: this.selectedPipeline.category,
+      project: null,
       layout: {},
       steps: [],
     };

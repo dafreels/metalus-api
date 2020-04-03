@@ -10,7 +10,8 @@
         },
         {
           "required": [
-            "id"
+            "id",
+            "project"
           ],
           "properties": {
             "id": {
@@ -18,6 +19,17 @@
               "unique": true,
               "minLength": 36,
               "maxLength": 36
+            },
+            "project": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                }
+              }
             }
           }
         }

@@ -11,6 +11,7 @@
         {
           "required": [
             "id",
+            "project",
             "name",
             "steps"
           ],
@@ -19,6 +20,17 @@
               "type": "string",
               "minLength": 36,
               "maxLength": 36
+            },
+            "project": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                }
+              }
             }
           }
         }

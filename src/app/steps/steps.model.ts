@@ -1,7 +1,10 @@
+import {Project} from "../shared/models/users.models";
+
 export interface Step {
   id: string,
   displayName: string,
   description: string,
+  project?: Project;
   type: string,
   category: string,
   tags?: string[],

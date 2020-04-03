@@ -1,0 +1,41 @@
+<mat-card>
+  <mat-card-content>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>User Information</mat-card-title>
+        <div>
+          <span class="label">Id</span>
+          <span class="static-text">{{user.id}}</span>
+        </div>
+        <div>
+          <span class="label">Username</span>
+          <span class="static-text">{{user.username}}</span>
+        </div>
+        <div>
+          <span class="label">Display Name</span>
+          <span class="static-text">{{user.displayName}}</span>
+        </div>
+        <div>
+          <span class="label">Role</span>
+          <span class="static-text">{{user.role}}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>Projects</mat-card-title>
+        <div *ngFor="let project of user.projects">
+          <div>
+            <span class="label">Id</span>
+            <span class="static-text">{{project.id}}</span>
+          </div>
+          <div>
+            <span class="label">Display Name</span>
+            <span class="static-text">{{project.displayName}}</span>
+            <span *ngIf="project.id === user.defaultProjectId">*</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-card-content>
+</mat-card>
