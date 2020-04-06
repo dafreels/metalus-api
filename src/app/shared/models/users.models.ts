@@ -17,3 +17,10 @@ export interface Project {
   id: string;
   displayName: string;
 }
+
+export interface ChangePassword {
+  id: string;
+  password: string;
+  newPassword: string;
+  verifyNewPassword: string;
+}
