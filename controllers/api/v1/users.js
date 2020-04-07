@@ -24,7 +24,7 @@ module.exports = function (router) {
     })(req, res, next);
   });
 
-  router.put('/:id/changePassword', async (req, res,next) => {
+  router.put('/:id/changePassword', async (req, res, next) => {
     const changePassword = req.body;
     const userModel = new UsersModel();
     const user = await req.user;
@@ -38,6 +38,39 @@ module.exports = function (router) {
     }
     // Change password and return new user
     updateUser.password = changePassword.newPassword;
+    const newuser = await userModel.update(updateUser.id, updateUser);
+    res.status(200).json(newuser);
+  });
+
+  router.put('/:id', async (req, res, next) => {
+    const updateUser = req.body;
+    const userModel = new UsersModel();
+    const user = await req.user;
+    if (updateUser.id !== user.id && user.role !== 'admin') {
+      next(new Error('User does not have permission to update this user!'));
+    }
+    const existingUser = await userModel.getUser(updateUser.id);
+    updateUser.password = existingUser.password;
+    const newuser = await userModel.update(updateUser.id, updateUser);
+    res.status(200).json(newuser);
+  });
+
+  router.delete('/:id/project/:projectId', async (req, res, next) => {
+    const userModel = new UsersModel();
+    const userId = req.params.id;
+    const user = await req.user;
+    const projectId = req.params.projectId;
+    if (userId !== user.id && user.role !== 'admin') {
+      next(new Error('User does not have permission to update this user!'));
+    }
+    /*
+     * TODO:
+     *  See if the project has existing records
+     *  Delete or reassign those records to default project?
+     */
+    const updateUser = await userModel.getUser(userId);
+    const index = updateUser.projects.findIndex(p => p.id === projectId);
+    updateUser.projects.splice(index, 1);
     const newuser = await userModel.update(updateUser.id, updateUser);
     res.status(200).json(newuser);
   });

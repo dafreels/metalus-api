@@ -3,40 +3,61 @@
     <mat-card>
       <mat-card-content>
         <mat-card-title>User Information</mat-card-title>
-        <div>
+        <div class="form">
           <span class="label">Id</span>
-          <span class="static-text">{{user.id}}</span>
-        </div>
-        <div>
+          <span class="display">{{user.id}}</span>
           <span class="label">Username</span>
-          <span class="static-text">{{user.username}}</span>
-        </div>
-        <div>
+          <span class="display">{{user.username}}</span>
           <span class="label">Password</span>
-          <button mat-raised-button color="primary" (click)="startPasswordChange()">Change Password</button>
-        </div>
-        <div>
+          <span>
+            <button mat-icon-button color="primary" (click)="startPasswordChange()">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </span>
           <span class="label">Display Name</span>
-          <span class="static-text">{{user.displayName}}</span>
-        </div>
-        <div>
+          <span class="display">{{user.displayName}}</span>
           <span class="label">Role</span>
-          <span class="static-text">{{user.role}}</span>
+          <span class="display">{{user.role}}</span>
         </div>
       </mat-card-content>
     </mat-card>
     <mat-card>
       <mat-card-content>
-        <mat-card-title>Projects</mat-card-title>
-        <div *ngFor="let project of user.projects">
-          <div>
-            <span class="label">Id</span>
-            <span class="static-text">{{project.id}}</span>
+        <mat-card-header>
+          <mat-card-title-group>
+            <mat-card-title>Projects</mat-card-title>
+            <button mat-icon-button color="primary" (click)="addProject()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </mat-card-title-group>
+        </mat-card-header>
+        <div class="divTable blueTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <div class="divTableHead">Id</div>
+              <div class="divTableHead">Display Name</div>
+              <div class="divTableHead">Default</div>
+              <div class="divTableHead">Remove</div>
+            </div>
           </div>
-          <div>
-            <span class="label">Display Name</span>
-            <span class="static-text">{{project.displayName}}</span>
-            <span *ngIf="project.id === user.defaultProjectId">*</span>
+          <div class="divTableBody">
+            <div class="divTableRow" *ngFor="let project of user.projects">
+              <div class="divTableCell">{{project.id}}</div>
+              <div class="divTableCell">{{project.displayName}}</div>
+              <div class="divTableCell">
+                <button *ngIf="project.id !== user.defaultProjectId" mat-icon-button color="primary" (click)="changeDefaultProject(project.id)">
+                  <mat-icon>toggle_on</mat-icon>
+                </button>
+                <button *ngIf="project.id === user.defaultProjectId" mat-icon-button color="primary" disabled>
+                  <mat-icon>toggle_off</mat-icon>
+                </button>
+              </div>
+              <div class="divTableCell">
+                <button *ngIf="project.id !== user.defaultProjectId" mat-icon-button color="primary" (click)="removeProject(project.id)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </mat-card-content>
