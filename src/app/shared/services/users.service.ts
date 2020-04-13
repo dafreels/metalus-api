@@ -2,8 +2,9 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
 import {Observable, throwError} from "rxjs";
-import {ChangePassword, User} from "../models/users.models";
+import {ChangePassword, User, UserResponse} from "../models/users.models";
 import {AuthService} from "./auth.service";
+import {PipelinesResponse} from "../../pipelines/models/pipelines.model";
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,21 @@ export class UsersService {
       );
   }
 
+  addUser(user: User): Observable<User> {
+    return this.http.post<User>('/api/v1/users/', user, {
+      observe: 'response',
+    })
+      .pipe(
+        map((response) => response.body),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  removeUser(user: User) {
+    return this.http.delete(`/api/v1/users/${user.id}`, {})
+      .pipe(catchError((err) => throwError(err)));
+  }
+
   removeProject(user: User, projectId: string): Observable<User> {
     return this.http
       .delete<User>(`/api/v1/users/${user.id}/project/${projectId}`, {
@@ -40,6 +56,23 @@ export class UsersService {
       })
       .pipe(
         map((response) => response.body),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  getAllUsers(): Observable<User[]> {
+    return this.http
+      .get<UserResponse>(`/api/v1/users`, { observe: 'response' })
+      .pipe(
+        map((response) => {
+          if (response && response.body) {
+            return response.body.users.map((p) => {
+              delete p['_id'];
+              return p;
+            });
+          }
+          return [];
+        }),
         catchError((err) => throwError(err))
       );
   }

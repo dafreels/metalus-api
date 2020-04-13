@@ -1,12 +1,12 @@
 const UsersModel = require('../../../models/users.model');
-// const BaseRoutes = require('../../../lib/base.routes');
+const StepsModel = require('../../../models/steps.model');
+const PkgObjsModel = require('../../../models/package-objects.model');
+const AppsModel = require('../../../models/applications.model');
+const PipelinesModel = require('../../../models/pipelines.model');
 const passport = require('passport');
 
 module.exports = function (router) {
-  // const baseRoutes = new BaseRoutes('user', 'users', UsersModel);
-  // baseRoutes.buildBasicCrudRoutes(router);
 
-  // custom routes go here
   router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user) => {
       if (err) {
@@ -22,6 +22,35 @@ module.exports = function (router) {
         return res.json(user);
       });
     })(req, res, next);
+  });
+
+  router.get('/', async (req, res, next) => {
+    const user = await req.user;
+    if (user.role !== 'admin') {
+      next(new Error('User does not have permission to see all users!'));
+    }
+    const userModel = new UsersModel();
+    const users = await userModel.getAll();
+    if (users && users.length > 0) {
+      res.status(200).json({ users });
+    } else {
+      res.sendStatus(204);
+    }
+  });
+
+  router.post('/', async (req, res, next) => {
+    const user = await req.user;
+    if (user.role !== 'admin') {
+      next(new Error('User does not have permission add a new user!'));
+    }
+    const userModel = new UsersModel();
+    const newUser = req.body;
+    const existingUser = await userModel.getByKey({ username: newUser.username });
+    if (existingUser) {
+      next(new Error('User already exists!'));
+    }
+    const fullUser = await userModel.createOne(newUser);
+    res.status(200).json(fullUser);
   });
 
   router.put('/:id/changePassword', async (req, res, next) => {
@@ -50,7 +79,9 @@ module.exports = function (router) {
       next(new Error('User does not have permission to update this user!'));
     }
     const existingUser = await userModel.getUser(updateUser.id);
-    updateUser.password = existingUser.password;
+    if (!updateUser.password || updateUser.password.trim().length === 0) {
+      updateUser.password = existingUser.password;
+    }
     const newuser = await userModel.update(updateUser.id, updateUser);
     res.status(200).json(newuser);
   });
@@ -63,15 +94,39 @@ module.exports = function (router) {
     if (userId !== user.id && user.role !== 'admin') {
       next(new Error('User does not have permission to update this user!'));
     }
-    /*
-     * TODO:
-     *  See if the project has existing records
-     *  Delete or reassign those records to default project?
-     */
     const updateUser = await userModel.getUser(userId);
     const index = updateUser.projects.findIndex(p => p.id === projectId);
     updateUser.projects.splice(index, 1);
     const newuser = await userModel.update(updateUser.id, updateUser);
+    await deleteProjectData(userId, projectId);
     res.status(200).json(newuser);
   });
+
+  router.delete('/:id', async (req, res, next) => {
+    const userModel = new UsersModel();
+    const userId = req.params.id;
+    const user = await req.user;
+    if (userId !== user.id && user.role !== 'admin') {
+      next(new Error('User does not have permission to delete this user!'));
+    }
+    const existingUser = await userModel.getUser(updateUser.id);
+    for await (const project of existingUser.projects) {
+      await deleteProjectData(userId, project.id);
+    }
+    await userModel.delete(userId);
+    res.sendStatus(204);
+  });
 };
+
+async function deleteProjectData(userId, projectId) {
+  const query = {
+    project: {
+      userId,
+      projectId
+    }
+  };
+  await new StepsModel().deleteMany(query);
+  await new AppsModel().deleteMany(query);
+  await new PkgObjsModel().deleteMany(query);
+  return await new PipelinesModel().deleteMany(query);
+}

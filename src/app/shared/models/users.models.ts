@@ -24,3 +24,7 @@ export interface ChangePassword {
   newPassword: string;
   verifyNewPassword: string;
 }
+
+export interface UserResponse {
+  users: User[];
+}

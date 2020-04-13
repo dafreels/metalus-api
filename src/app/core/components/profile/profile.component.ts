@@ -2,11 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../../shared/services/auth.service';
 import {User} from "../../../shared/models/users.models";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
-import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
+import {DialogDimensions, generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {ChangePasswordModalComponent} from "./changePassword/change-password-modal.component";
 import {UsersService} from "../../../shared/services/users.service";
 import {NameDialogComponent} from "../../../shared/components/name-dialog/name-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 
 @Component({
   selector: 'app-profile',
@@ -36,7 +37,6 @@ export class ProfileComponent implements OnInit {
     changePasswordDialog.afterClosed().subscribe((result) => {
       result.id = this.user.id;
       this.usersService.changePassword(result).subscribe(result => {
-        this.user = result;
         this.authService.setUserInfo(this.user);
       });
     });
@@ -45,16 +45,32 @@ export class ProfileComponent implements OnInit {
   changeDefaultProject(projectId: string) {
     this.user.defaultProjectId = projectId;
     this.usersService.updateUser(this.user).subscribe(result => {
-      this.user = result;
       this.authService.setUserInfo(this.user);
     });
   }
 
   removeProject(projectId: string) {
-    this.user.defaultProjectId = projectId;
-    this.usersService.removeProject(this.user, projectId).subscribe(result => {
-      this.user = result;
-      this.authService.setUserInfo(this.user);
+    const deleteProjectDialogData = {
+      message:
+        'Are you sure you wish to delete this project? This will remove the project and all project data. Would you like to continue?',
+    };
+    const deleteProjectDialogDimensions: DialogDimensions = {
+      width: '450px',
+      heigh: '200px',
+    };
+    const deleteStepDialog = this.displayDialogService.openDialog(
+      ConfirmationModalComponent,
+      deleteProjectDialogDimensions,
+      deleteProjectDialogData
+    );
+
+    deleteStepDialog.afterClosed().subscribe(confirmation => {
+      if (confirmation) {
+        this.user.defaultProjectId = projectId;
+        this.usersService.removeProject(this.user, projectId).subscribe(result => {
+          this.authService.setUserInfo(this.user);
+        });
+      }
     });
   }
 
@@ -76,7 +92,6 @@ export class ProfileComponent implements OnInit {
           displayName: name
         });
         this.usersService.updateUser(this.user).subscribe(result => {
-          this.user = result;
           this.authService.setUserInfo(this.user);
         });
       }
