@@ -10,8 +10,7 @@
         },
         {
           "required": [
-            "id",
-            "project"
+            "id"
           ],
           "properties": {
             "id": {

@@ -109,7 +109,7 @@ module.exports = function (router) {
     if (userId !== user.id && user.role !== 'admin') {
       next(new Error('User does not have permission to delete this user!'));
     }
-    const existingUser = await userModel.getUser(updateUser.id);
+    const existingUser = await userModel.getUser(userId);
     for await (const project of existingUser.projects) {
       await deleteProjectData(userId, project.id);
     }

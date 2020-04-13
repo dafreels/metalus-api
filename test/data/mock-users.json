@@ -1,0 +1,16 @@
+[
+  {
+    "id": "mock-admin-user",
+    "username": "admin",
+    "password": "admin",
+    "displayName": "test admin user",
+    "role": "admin",
+    "defaultProjectId": "1",
+    "projects": [
+      {
+        "id": "1",
+        "displayName": "Default Project"
+      }
+    ]
+  }
+]

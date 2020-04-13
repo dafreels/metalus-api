@@ -12,7 +12,6 @@
           "type": "object",
           "required": [
             "id",
-            "project",
             "name",
             "executions"
           ],

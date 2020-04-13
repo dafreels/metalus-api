@@ -39,6 +39,7 @@ export class UsersComponent implements OnInit {
         password: '',
         displayName: '',
         role: 'developer',
+        defaultProjectId: '1',
         projects: [
           {
             id: '1',
