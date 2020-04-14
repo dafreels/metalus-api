@@ -19,6 +19,17 @@
             "id": {
               "type": "string"
             },
+            "project": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                }
+              }
+            },
             "name": {
               "type": "string"
             },

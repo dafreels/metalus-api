@@ -1,26 +1,22 @@
-import { Param } from './../../steps.model';
-import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
-import { Component, OnInit } from '@angular/core';
-import { Step } from '../../steps.model';
-import { StepsService } from '../../steps.service';
-import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
-import { PackageObject } from '../../../core/package-objects/package-objects.model';
-import { diff } from 'deep-object-diff';
-import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
-import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
-import { MatDialog } from '@angular/material/dialog';
-import { WaitModalComponent } from '../../../shared/components/wait-modal/wait-modal.component';
-import { NameDialogComponent } from '../../../shared/components/name-dialog/name-dialog.component';
-import { ErrorModalComponent } from '../../../shared/components/error-modal/error-modal.component';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { FormControl } from '@angular/forms';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import {Param} from './../../steps.model';
+import {DisplayDialogService} from './../../../shared/services/display-dialog.service';
+import {Component, OnInit} from '@angular/core';
+import {Step} from '../../steps.model';
+import {StepsService} from '../../steps.service';
+import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
+import {PackageObject} from '../../../core/package-objects/package-objects.model';
+import {diff} from 'deep-object-diff';
+import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
+import {ObjectEditorComponent} from '../../../shared/components/object-editor/object-editor.component';
+import {WaitModalComponent} from '../../../shared/components/wait-modal/wait-modal.component';
+import {NameDialogComponent} from '../../../shared/components/name-dialog/name-dialog.component';
+import {ErrorModalComponent} from '../../../shared/components/error-modal/error-modal.component';
+import {MatChipInputEvent} from '@angular/material/chips';
+import {FormControl} from '@angular/forms';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import * as Ajv from 'ajv';
-import { ConfirmationModalComponent } from '../../../shared/components/confirmation/confirmation-modal.component';
-import {
-  DialogDimensions,
-  generalDialogDimensions,
-} from 'src/app/shared/models/custom-dialog.model';
+import {ConfirmationModalComponent} from '../../../shared/components/confirmation/confirmation-modal.component';
+import {DialogDimensions, generalDialogDimensions,} from 'src/app/shared/models/custom-dialog.model';
 
 @Component({
   selector: 'app-steps-editor',

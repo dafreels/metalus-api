@@ -7,6 +7,8 @@ const expect = require('chai').expect;
 const stepData = require('../data/steps');
 const MongoDb = require('../../lib/mongo');
 const util = require('util');
+const auth = require('../../lib/auth');
+const TestHelpers = require('../helpers/TestHelpers');
 
 describe('Pipelines API Mongo Tests', () => {
   let app;
@@ -27,10 +29,29 @@ describe('Pipelines API Mongo Tests', () => {
       step2
     ]
   };
+  const state = {};
+  const mockUser = {
+    id: 'mock-admin-user',
+    username: 'admin',
+    password: '$2b$08$6tMg/Tp8yhYgOT8fkcXFi.j7ViaiZrZzRzD/pPLofIGvUTf24s3W.',
+    displayName: 'test admin user',
+    role: 'admin',
+    defaultProjectId: '1',
+    projects: [
+      {
+        id: '1',
+        displayName: 'Default Project'
+      }
+    ]
+  };
 
   before((done) => {
     app = express();
     server = http.createServer(app);
+    mock = server.listen(1300);
+    app.on('middleware:after:session', (eventargs) => {
+      auth.configurePassport(app);
+    });
     app.on('start', () => {
       done();
     });
@@ -42,12 +63,19 @@ describe('Pipelines API Mongo Tests', () => {
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
+            return MongoDb.getDatabase().collection('users').findOneAndUpdate({id: 'mock-admin-user'},
+              {$set: mockUser},
+              {
+                upsert: true,
+                returnOriginal: false
+              });
+          })
+          .then(() => {
             next(null, config);
           })
           .catch(next);
       }
     }));
-    mock = server.listen(1307);
   });
 
   after(async () => {
@@ -58,6 +86,7 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should fail to insert pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const badPipeline = {
       name: 'Bad Pipeline',
       steps: [
@@ -74,6 +103,7 @@ describe('Pipelines API Mongo Tests', () => {
     };
     const response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(badPipeline)
       .expect('Content-Type', /json/)
       .expect(422);
@@ -86,12 +116,14 @@ describe('Pipelines API Mongo Tests', () => {
     expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist;
     expect(errors.find(err => err.params.missingProperty === 'stepId')).to.exist;
     expect(errors.find(err => err.dataPath === '.steps[0].type')).to.have.property('message').eq('should be equal to one of the allowed values');
-    await request(mock).get('/api/v1/pipelines').expect(204);
+    await request(mock).get('/api/v1/pipelines').set('Cookie', [userInfo]).expect(204);
   });
 
   it('Should insert a single pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -104,8 +136,10 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should get the inserted pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .get(`/api/v1/pipelines/${pipeline.id}`)
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     const resp = JSON.parse(response.text);
@@ -115,8 +149,10 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should get all pipelines', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .get('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     const resp = JSON.parse(response.text);
@@ -126,9 +162,11 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should update a pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     pipeline.name = 'Red on the head fred';
     const response = await request(mock)
       .put(`/api/v1/pipelines/${pipeline.id}`)
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -139,13 +177,16 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should delete a pipeline', async () => {
-    await request(mock).delete(`/api/v1/pipelines/${pipeline.id}`).expect(204);
-    await request(mock).get('/api/v1/pipelines').expect(204);
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    await request(mock).delete(`/api/v1/pipelines/${pipeline.id}`).set('Cookie', [userInfo]).expect(204);
+    await request(mock).get('/api/v1/pipelines').set('Cookie', [userInfo]).expect(204);
   });
 
   it('Should upsert a single pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .put(`/api/v1/pipelines/${pipeline.id}`)
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -156,9 +197,11 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should update a single pipeline using post', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     pipeline.name = 'Some new name';
     const response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -169,6 +212,7 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should insert multiple pipelines', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const pipeline1 = JSON.parse(JSON.stringify(pipeline));
     pipeline1.id = 'b9fa820c-eda7-5c9c-91c9-13b2693ede10';
     const pipeline2 = JSON.parse(JSON.stringify(pipeline));
@@ -179,6 +223,7 @@ describe('Pipelines API Mongo Tests', () => {
     ];
     let response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(data)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -188,6 +233,7 @@ describe('Pipelines API Mongo Tests', () => {
     resp.pipelines.forEach(pipeline => verifyPipeline(pipeline, data.find(p => p.id === pipeline.id)));
     response = await request(mock)
       .get('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     resp = JSON.parse(response.text);

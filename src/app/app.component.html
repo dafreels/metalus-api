@@ -1,5 +1,5 @@
-<div>
-  <div>
+<div class="home-layout">
+  <div class="topnav">
     <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Navigation">
       <mat-icon>list</mat-icon>
     </button>
@@ -10,13 +10,13 @@
           <span class="spacer"><a [routerLink]="['/']" routerLinkActive="active">Home</a></span>
         </div>
       </button>
-<!--      <button mat-menu-item>-->
-<!--        <div>-->
-<!--          <mat-icon color="primary">dashboards</mat-icon>-->
-<!--          <span class="spacer"><a [routerLink]="['/applications-editor']"-->
-<!--                                  routerLinkActive="active">Applications Editor</a></span>-->
-<!--        </div>-->
-<!--      </button>-->
+      <!--      <button mat-menu-item>-->
+      <!--        <div>-->
+      <!--          <mat-icon color="primary">dashboards</mat-icon>-->
+      <!--          <span class="spacer"><a [routerLink]="['/applications-editor']"-->
+      <!--                                  routerLinkActive="active">Applications Editor</a></span>-->
+      <!--        </div>-->
+      <!--      </button>-->
       <button mat-menu-item>
         <div>
           <mat-icon color="primary">more_vert</mat-icon>
@@ -31,6 +31,27 @@
         </div>
       </button>
     </mat-menu>
+    <span>
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Navigation" class="nav-button">
+        <span *ngIf="user">{{user.displayName || user.username}}</span>
+        <span *ngIf="!user">Signin</span>
+        <mat-icon color="primary">expand_more</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item *ngIf="user">
+        <div>
+          <mat-icon color="primary">account_circle</mat-icon>
+          <span class="spacer"><a [routerLink]="['/profile']" routerLinkActive="active">Profile</a></span>
+        </div>
+      </button>
+        <button mat-menu-item *ngIf="user && user.role.toString() === 'admin'">
+        <div>
+          <mat-icon color="primary">group</mat-icon>
+          <span class="spacer"><a [routerLink]="['/users']" routerLinkActive="active">Users</a></span>
+        </div>
+      </button>
+      </mat-menu>
+      </span>
   </div>
   <div>
     <router-outlet></router-outlet>

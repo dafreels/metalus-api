@@ -7,12 +7,16 @@ const expect = require('chai').expect;
 const rmdir = require('rimraf-promise');
 const stepData = require('../data/steps');
 const util = require('util');
+const fs = require('fs');
+const auth = require('../../lib/auth');
+const TestHelpers = require('../helpers/TestHelpers');
 
 describe('Pipelines API File Tests', () => {
   let dataDir;
   let app;
   let server;
   let mock;
+  const state = {};
   const step1 = JSON.parse(JSON.stringify(stepData.find(step => step.id === '8daea683-ecde-44ce-988e-41630d251cb8')));
   step1.stepId = step1.id;
   step1.id = 'Load';
@@ -32,6 +36,10 @@ describe('Pipelines API File Tests', () => {
   before((done) => {
     app = express();
     server = http.createServer(app);
+    mock = server.listen(1300);
+    app.on('middleware:after:session', (eventargs) => {
+      auth.configurePassport(app);
+    });
     app.on('start', () => {
       done();
     });
@@ -41,10 +49,12 @@ describe('Pipelines API File Tests', () => {
         config.set('dataDir', 'testDataPipelines');
         dataDir = `./${config.get('dataDir') || 'data'}`;
         BaseModel.initialStorageParameters(config);
+        fs.mkdirSync(dataDir);
+        // Inject a user.json for authentication
+        fs.copyFileSync(`${process.cwd()}/test/data/mock-users.json`, `${dataDir}/users.json`);
         next(null, config);
       }
     }));
-    mock = server.listen(1302);
   });
 
   after(async () => {
@@ -54,6 +64,7 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should fail to insert pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const badPipeline = {
       name: 'Bad Pipeline',
       steps: [
@@ -70,6 +81,7 @@ describe('Pipelines API File Tests', () => {
     };
     const response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(badPipeline)
       .expect('Content-Type', /json/)
       .expect(422);
@@ -82,12 +94,14 @@ describe('Pipelines API File Tests', () => {
     expect(errors.find(err => err.params.missingProperty === 'displayName')).to.exist;
     expect(errors.find(err => err.params.missingProperty === 'stepId')).to.exist;
     expect(errors.find(err => err.dataPath === '.steps[0].type')).to.have.property('message').eq('should be equal to one of the allowed values');
-    await request(mock).get('/api/v1/pipelines').expect(204);
+    await request(mock).get('/api/v1/pipelines').set('Cookie', [userInfo]).expect(204);
   });
 
   it('Should insert a single pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -100,8 +114,10 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should get the inserted pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .get(`/api/v1/pipelines/${pipeline.id}`)
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     const resp = JSON.parse(response.text);
@@ -111,8 +127,10 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should get all pipelines', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .get('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     const resp = JSON.parse(response.text);
@@ -122,9 +140,11 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should update a pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     pipeline.name = 'Red on the head fred';
     const response = await request(mock)
       .put(`/api/v1/pipelines/${pipeline.id}`)
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -135,13 +155,16 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should delete a pipeline', async () => {
-    await request(mock).delete(`/api/v1/pipelines/${pipeline.id}`).expect(204);
-    await request(mock).get('/api/v1/pipelines').expect(204);
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    await request(mock).delete(`/api/v1/pipelines/${pipeline.id}`).set('Cookie', [userInfo]).expect(204);
+    await request(mock).get('/api/v1/pipelines').set('Cookie', [userInfo]).expect(204);
   });
 
   it('Should upsert a single pipeline', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .put(`/api/v1/pipelines/${pipeline.id}`)
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -152,9 +175,11 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should update a single pipeline using post', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     pipeline.name = 'Some new name';
     const response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(pipeline)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -165,6 +190,7 @@ describe('Pipelines API File Tests', () => {
   });
 
   it('Should insert multiple pipelines', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const pipeline1 = JSON.parse(JSON.stringify(pipeline));
     pipeline1.id = 'b9fa820c-eda7-5c9c-91c9-13b2693ede10';
     const pipeline2 = JSON.parse(JSON.stringify(pipeline));
@@ -175,6 +201,7 @@ describe('Pipelines API File Tests', () => {
     ];
     let response = await request(mock)
       .post('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .send(data)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -184,6 +211,7 @@ describe('Pipelines API File Tests', () => {
     resp.pipelines.forEach(pipeline => verifyPipeline(pipeline, data.find(p => p.id === pipeline.id)));
     response = await request(mock)
       .get('/api/v1/pipelines/')
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     resp = JSON.parse(response.text);
