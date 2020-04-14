@@ -9,6 +9,7 @@ const util = require('util');
 const fs = require('fs');
 const auth = require('../../lib/auth');
 const TestHelpers = require('../helpers/TestHelpers');
+const bcrypt = require('bcrypt');
 
 describe('Users API File Tests', () => {
   let dataDir;
@@ -145,7 +146,7 @@ describe('Users API File Tests', () => {
       .expect(200);
     resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp.password === 'newdevpassword');
+    expect(bcrypt.compareSync(changePassword.newPassword, resp.password)).to.equal(true);
   });
 
   it('Should change user', async () => {

@@ -167,7 +167,7 @@ describe('Users API Mongo Tests', () => {
       .expect(200);
     resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp.password === 'newdevpassword');
+    expect(bcrypt.compareSync(changePassword.newPassword, resp.password)).to.equal(true);
   });
 
   it('Should change user', async () => {
