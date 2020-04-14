@@ -165,6 +165,7 @@ describe('Users API File Tests', () => {
       id: '2',
       displayName: 'Second Project'
     });
+    user.password = '';
     response = await request(mock)
       .put(`/api/v1/users/${user.id}`)
       .send(user)

@@ -12,6 +12,7 @@ export class LoginComponent implements OnInit {
 
   username: String;
   userPassword: String;
+  loginError: Boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -21,9 +22,15 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.authService.login(this.username, this.userPassword)
-      .then((response) => {
-        this.authService.setUserInfo(response as User);
-        this.router.navigate(['landing']);
-      })
+      .subscribe(
+        user => {
+          this.loginError = false;
+          this.router.navigate(['landing']);
+        },
+        error => {
+          console.log(error);
+          this.loginError = true;
+        }
+        );
   }
 }

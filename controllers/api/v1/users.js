@@ -55,7 +55,7 @@ module.exports = function (router) {
       }
       try {
         // hash the password
-        newUser.password = bcrypt.hashSync(user.password, 8);
+        newUser.password = bcrypt.hashSync(newUser.password, 8);
         const fullUser = await userModel.createOne(newUser);
         res.status(201).json(fullUser);
       } catch(err) {
@@ -91,8 +91,16 @@ module.exports = function (router) {
     }
     const existingUser = await userModel.getUser(updateUser.id);
     try {
-      // Password cannot be changed using this method
-      updateUser.password = existingUser.password;
+      if (user.role === 'admin' &&
+        updateUser.password &&
+        updateUser.password.trim().length() > 0 &&
+        !bcrypt.compareSync(updateUser.password, existingUser.password) &&
+        updateUser.password !== existingUser.password) {
+        updateUser.password = bcrypt.hashSync(updateUser.password, 8);
+      } else {
+        // Password cannot be changed using this method
+        updateUser.password = existingUser.password;
+      }
       const newuser = await userModel.update(updateUser.id, updateUser);
       res.status(200).json(newuser);
     } catch (err) {

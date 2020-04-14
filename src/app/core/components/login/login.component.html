@@ -2,6 +2,7 @@
   <mat-card>
     <mat-card-content>
       <h2>Login</h2>
+      <h4 *ngIf="loginError" class="invalid-login">Invalid Login!</h4>
       <div class="login-form">
         <mat-form-field class="full-width-input">
           <input matInput placeholder="Username" [(ngModel)]="username" required>

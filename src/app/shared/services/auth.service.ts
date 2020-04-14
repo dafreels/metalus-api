@@ -1,6 +1,8 @@
 import {EventEmitter, Injectable, Output} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {User} from "../models/users.models";
+import {Observable, throwError} from "rxjs";
+import {catchError, map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +28,17 @@ export class AuthService {
     this.userItemSelection.emit(user);
   }
 
-  public login(username, password) {
-    return this.http.post('/api/v1/users/login', {'username': username, 'password': password}).toPromise()
+  public login(username, password): Observable<User> {
+    return this.http.post<User>('/api/v1/users/login', {'username': username, 'password': password}, {
+      observe: 'response',
+    })
+      .pipe(
+        map((response) => {
+          const user = response.body;
+          this.setUserInfo(user);
+          return user;
+        }),
+        catchError((err) => throwError(err))
+      );
   }
 }
