@@ -8,6 +8,7 @@ const MongoDb = require('../../lib/mongo');
 const util = require('util');
 const auth = require('../../lib/auth');
 const TestHelpers = require('../helpers/TestHelpers');
+const bcrypt = require('bcrypt');
 
 describe('Users API Mongo Tests', () => {
   let app;
