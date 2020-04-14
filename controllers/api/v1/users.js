@@ -43,14 +43,22 @@ module.exports = function (router) {
     if (user.role !== 'admin') {
       next(new Error('User does not have permission add a new user!'));
     }
-    const userModel = new UsersModel();
-    const newUser = req.body;
-    const existingUser = await userModel.getByKey({ username: newUser.username });
-    if (existingUser) {
-      next(new Error('User already exists!'));
+    if (!req.body || Object.keys(req.body).length === 0) {
+      res.status(400).send({message: 'POST request missing body'});
+    } else {
+      const userModel = new UsersModel();
+      const newUser = req.body;
+      const existingUser = await userModel.getByKey({username: newUser.username});
+      if (existingUser) {
+        next(new Error('User already exists!'));
+      }
+      try {
+        const fullUser = await userModel.createOne(newUser);
+        res.status(201).json(fullUser);
+      } catch(err) {
+        res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+      }
     }
-    const fullUser = await userModel.createOne(newUser);
-    res.status(200).json(fullUser);
   });
 
   router.put('/:id/changePassword', async (req, res, next) => {
@@ -82,8 +90,12 @@ module.exports = function (router) {
     if (!updateUser.password || updateUser.password.trim().length === 0) {
       updateUser.password = existingUser.password;
     }
-    const newuser = await userModel.update(updateUser.id, updateUser);
-    res.status(200).json(newuser);
+    try {
+      const newuser = await userModel.update(updateUser.id, updateUser);
+      res.status(200).json(newuser);
+    } catch (err) {
+      res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+    }
   });
 
   router.delete('/:id/project/:projectId', async (req, res, next) => {

@@ -5,6 +5,12 @@
   "definitions": {
     "users": {
       "type": "object",
+      "required": [
+        "id",
+        "username",
+        "defaultProjectId",
+        "projects"
+      ],
       "properties": {
         "id": {
           "type": "string",
