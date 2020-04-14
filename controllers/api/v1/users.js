@@ -4,6 +4,7 @@ const PkgObjsModel = require('../../../models/package-objects.model');
 const AppsModel = require('../../../models/applications.model');
 const PipelinesModel = require('../../../models/pipelines.model');
 const passport = require('passport');
+const bcrypt = require('bcrypt');
 
 module.exports = function (router) {
 
@@ -53,6 +54,8 @@ module.exports = function (router) {
         next(new Error('User already exists!'));
       }
       try {
+        // hash the password
+        newUser.password = bcrypt.hashSync(user.password, 8);
         const fullUser = await userModel.createOne(newUser);
         res.status(201).json(fullUser);
       } catch(err) {
@@ -70,11 +73,11 @@ module.exports = function (router) {
     }
     // Verify the provided password matches the password on file
     const updateUser = await userModel.getUser(changePassword.id);
-    if (user.role !== 'admin' && changePassword.password !== updateUser.password) {
+    if (user.role !== 'admin' && !bcrypt.compareSync(changePassword.password, updateUser.password)) {
       next(new Error('Invalid password provided!'));
     }
     // Change password and return new user
-    updateUser.password = changePassword.newPassword;
+    updateUser.password = bcrypt.hashSync(changePassword.newPassword, 8);
     const newuser = await userModel.update(updateUser.id, updateUser);
     res.status(200).json(newuser);
   });
@@ -87,10 +90,9 @@ module.exports = function (router) {
       next(new Error('User does not have permission to update this user!'));
     }
     const existingUser = await userModel.getUser(updateUser.id);
-    if (!updateUser.password || updateUser.password.trim().length === 0) {
-      updateUser.password = existingUser.password;
-    }
     try {
+      // Password cannot be changed using this method
+      updateUser.password = existingUser.password;
       const newuser = await userModel.update(updateUser.id, updateUser);
       res.status(200).json(newuser);
     } catch (err) {

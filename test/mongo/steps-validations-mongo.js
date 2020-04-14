@@ -19,7 +19,7 @@ describe('Steps Validation Mongo Tests', () => {
   const mockUser = {
     id: 'mock-admin-user',
     username: 'admin',
-    password: 'admin',
+    password: '$2b$08$6tMg/Tp8yhYgOT8fkcXFi.j7ViaiZrZzRzD/pPLofIGvUTf24s3W.',
     displayName: 'test admin user',
     role: 'admin',
     defaultProjectId: '1',
