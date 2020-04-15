@@ -1,46 +1,57 @@
-<mat-card>
-  <mat-card-content>
-    <mat-card-header>
-      <mat-card-title-group>
-        <mat-card-title>Users</mat-card-title>
-        <button mat-icon-button color="primary" (click)="addUser()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </mat-card-title-group>
-    </mat-card-header>
-    <div class="divTable blueTable">
-      <div class="divTableHeading">
-        <div class="divTableRow">
-          <div class="divTableHead">Id</div>
-          <div class="divTableHead">Display Name</div>
-          <div class="divTableHead">Username</div>
-          <div class="divTableHead">Role</div>
-          <div class="divTableHead">Default Project Id</div>
-          <div class="divTableHead">Edit</div>
-          <div class="divTableHead">Delete</div>
-        </div>
-      </div>
-      <div class="divTableBody">
-        <div class="divTableRow" *ngFor="let user of users">
-          <div class="divTableCell">{{user.id}}</div>
-          <div class="divTableCell">{{user.displayName}}</div>
-          <div class="divTableCell">{{user.username}}</div>
-          <div class="divTableCell">{{user.role}}</div>
-          <div class="divTableCell">{{user.defaultProjectId}}</div>
-          <div class="divTableCell">
-            <button *ngIf="user.id !== currentUser.id" mat-icon-button color="primary"
-                    (click)="editUser(user)">
-              <mat-icon>edit</mat-icon>
+<div>
+  <div class="topnav">
+    <span>
+      <nav-menu currentPage="users"></nav-menu>
+      <span class="page-title">Users</span>
+    </span>
+    <user-menu [user]="currentUser"></user-menu>
+  </div>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-header>
+          <mat-card-title-group>
+            <button mat-icon-button color="primary" (click)="addUser()">
+              <mat-icon>add</mat-icon>
             </button>
+          </mat-card-title-group>
+        </mat-card-header>
+        <div class="divTable blueTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <div class="divTableHead">Id</div>
+              <div class="divTableHead">Display Name</div>
+              <div class="divTableHead">Username</div>
+              <div class="divTableHead">Role</div>
+              <div class="divTableHead">Default Project Id</div>
+              <div class="divTableHead">Edit</div>
+              <div class="divTableHead">Delete</div>
+            </div>
           </div>
-          <div class="divTableCell">
-            <button *ngIf="user.id !== currentUser.id" mat-icon-button color="primary"
-                    (click)="removeUser(user)">
-              <mat-icon>remove</mat-icon>
-            </button>
+          <div class="divTableBody">
+            <div class="divTableRow" *ngFor="let user of users">
+              <div class="divTableCell">{{user.id}}</div>
+              <div class="divTableCell">{{user.displayName}}</div>
+              <div class="divTableCell">{{user.username}}</div>
+              <div class="divTableCell">{{user.role}}</div>
+              <div class="divTableCell">{{user.defaultProjectId}}</div>
+              <div class="divTableCell">
+                <button *ngIf="user.id !== currentUser.id" mat-icon-button color="primary"
+                        (click)="editUser(user)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+              <div class="divTableCell">
+                <button *ngIf="user.id !== currentUser.id" mat-icon-button color="primary"
+                        (click)="removeUser(user)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </mat-card-content>
-</mat-card>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

@@ -1,3 +1,13 @@
+// Nav bar styles
+.topnav {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+}
+
+.page-title {
+  font-weight: bold;
+}
 
 .form {
   display: grid;

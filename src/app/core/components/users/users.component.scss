@@ -1,3 +1,14 @@
+// Nav bar styles
+.topnav {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+}
+
+.page-title {
+  font-weight: bold;
+}
+
 /* DivTable.com */
 div.blueTable {
   border: 1px solid #1C6EA4;
