@@ -53,6 +53,7 @@ export class PipelinesEditorComponent implements OnInit {
   pipelineValidator;
   stepGroup: StepGroupProperty = { enabled: false };
   user: User;
+  editName: Boolean = false;
 
   constructor(
     private stepsService: StepsService,
@@ -151,6 +152,7 @@ export class PipelinesEditorComponent implements OnInit {
       category: 'pipeline',
     };
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
+    this.enableNameEdit();
     this.loadPipelineToDesigner();
   }
 
@@ -245,6 +247,7 @@ export class PipelinesEditorComponent implements OnInit {
     if (id === this.selectedPipeline.id) {
       return;
     }
+    this.disableNameEdit();
     const newPipeline = this.generatePipeline();
     // Cannot diff the pipeline since step orders could have changed
     if (this.hasPipelineChanged(newPipeline)) {
@@ -955,5 +958,13 @@ export class PipelinesEditorComponent implements OnInit {
         }
       });
     }
+  }
+
+  enableNameEdit() {
+    this.editName = true;
+  }
+
+  disableNameEdit() {
+    this.editName = false;
   }
 }

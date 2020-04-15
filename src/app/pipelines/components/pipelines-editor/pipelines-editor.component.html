@@ -23,39 +23,6 @@
   </div>
 <div class="pipelines-editor-layout">
   <div class="steps-editor-sidebar">
-    <div class="pipeline-panel">
-      <mat-card>
-        <mat-card-content>
-          <div class="pipeline-form">
-            <mat-form-field>
-              <input
-                matInput
-                placeholder="Id"
-                [(ngModel)]="selectedPipeline.id"
-                name="id"
-                disabled="true"
-              />
-            </mat-form-field>
-            <mat-form-field>
-              <input
-                matInput
-                placeholder="Name"
-                [(ngModel)]="selectedPipeline.name"
-                required
-                name="name"
-              />
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Type</mat-label>
-              <mat-select required [(ngModel)]="selectedPipeline.category">
-                <mat-option value="pipeline">Pipeline</mat-option>
-                <mat-option value="step-group">Step Group</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
     <app-steps-selector
       [steps]="steps"
       [draggableSteps]="true"
@@ -65,8 +32,29 @@
     <div class="pipeline-panel">
       <mat-card>
         <mat-card-content class="button-content">
-          <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()">Save</button>
-          <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="cancelPipelineChange()">Cancel</button>
+          <div class="pipeline-data">
+
+            <span>
+              <mat-form-field *ngIf="editName">
+                <input matInput [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
+              </mat-form-field>
+              <span class="pipeline-name" *ngIf="!editName">{{selectedPipeline.name}}</span>
+              <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </span>
+            <span class="pipeline-id">ID: {{selectedPipeline.id}}</span>
+            <mat-form-field>
+              <mat-select required [(ngModel)]="selectedPipeline.category">
+                <mat-option value="pipeline">Pipeline</mat-option>
+                <mat-option value="step-group">Step Group</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <span>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()">Save</button>
+            <button mat-button color="primary" style="margin-right: 5px;" (click)="cancelPipelineChange()">Cancel</button>
+          </span>
         </mat-card-content>
       </mat-card>
     </div>

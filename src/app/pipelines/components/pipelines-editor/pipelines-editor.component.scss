@@ -8,8 +8,23 @@
 }
 
 .button-content {
-  display: block;
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pipeline-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.pipeline-name {
+  font-size: larger;
+}
+
+.pipeline-id {
+  font-size: smaller;
+  color: #808080;
 }
 
 /*
