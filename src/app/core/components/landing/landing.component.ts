@@ -7,23 +7,31 @@ import { ApplicationsService } from '../../../applications/applications.service'
 import { Application } from '../../../applications/applications.model';
 import { PackageObjectsService } from '../../package-objects/package-objects.service';
 import { PackageObject } from '../../package-objects/package-objects.model';
+import {AuthService} from "../../../shared/services/auth.service";
+import {User} from "../../../shared/models/users.models";
 
 @Component({
   selector: 'app-landing-page',
   templateUrl: './landing.component.html',
+  styleUrls: ['./landing.component.scss']
 })
 export class LandingComponent implements OnInit {
   applicationCount = 0;
   pipelineCount = 0;
   packageObjectCount = 0;
   stepCount = 0;
+  user: User;
 
   constructor(
     private applicationService: ApplicationsService,
     private packageObjectsService: PackageObjectsService,
     private pipelinesService: PipelinesService,
-    private stepsService: StepsService
-  ) {}
+    private stepsService: StepsService,
+    private authService: AuthService
+  ) {
+    this.user = this.authService.getUserInfo();
+    this.authService.userItemSelection.subscribe(data => this.user = data);
+  }
 
   ngOnInit(): void {
     this.applicationService

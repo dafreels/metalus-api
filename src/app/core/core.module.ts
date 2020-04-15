@@ -9,6 +9,8 @@ import {ChangePasswordModalComponent} from "./components/profile/changePassword/
 import {ChangePasswordValidatorDirective} from "./components/profile/changePassword/change-password.directive";
 import {UsersComponent} from "./components/users/users.component";
 import {UsersModalComponent} from "./components/users/manage/users-modal.component";
+import {NavMenuComponent} from "./components/nav-menu/nav-menu.component";
+import {UserMenuComponent} from "./components/user-menu/user-menu.component";
 
 @NgModule({
   imports: [
@@ -20,9 +22,11 @@ import {UsersModalComponent} from "./components/users/manage/users-modal.compone
     ChangePasswordModalComponent,
     LandingComponent,
     LoginComponent,
+    NavMenuComponent,
     PageNotFoundComponent,
     ProfileComponent,
     UsersComponent,
+    UserMenuComponent,
     UsersModalComponent
   ],
   entryComponents: [
@@ -33,9 +37,11 @@ import {UsersModalComponent} from "./components/users/manage/users-modal.compone
     ChangePasswordModalComponent,
     LandingComponent,
     LoginComponent,
+    NavMenuComponent,
     PageNotFoundComponent,
     ProfileComponent,
     UsersComponent,
+    UserMenuComponent,
     UsersModalComponent
   ]
 })

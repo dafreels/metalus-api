@@ -1,3 +1,11 @@
+<div>
+  <div class="topnav">
+    <span>
+      <nav-menu currentPage="pipelines-editor"></nav-menu>
+      <span class="page-title">Pipelines Editor</span>
+    </span>
+    <user-menu [user]="user"></user-menu>
+  </div>
 <div class="pipelines-editor-layout">
   <div class="steps-editor-sidebar">
     <div class="pipeline-panel">
@@ -177,4 +185,5 @@
       (modelChanged)="modelChange($event)"
     ></app-designer>
   </div>
+</div>
 </div>

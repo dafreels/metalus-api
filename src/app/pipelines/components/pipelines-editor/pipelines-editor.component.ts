@@ -26,6 +26,8 @@ import {ConfirmationModalComponent} from '../../../shared/components/confirmatio
 
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
 import {DesignerPreviewComponent} from '../../../designer/components/designer-preview/designer-preview.component';
+import {AuthService} from "../../../shared/services/auth.service";
+import {User} from "../../../shared/models/users.models";
 
 @Component({
   selector: 'app-pipelines-editor',
@@ -50,13 +52,18 @@ export class PipelinesEditorComponent implements OnInit {
   typeAhead: string[] = [];
   pipelineValidator;
   stepGroup: StepGroupProperty = { enabled: false };
+  user: User;
 
   constructor(
     private stepsService: StepsService,
     private pipelinesService: PipelinesService,
     private packageObjectsService: PackageObjectsService,
-    public dialog: MatDialog
-  ) {}
+    public dialog: MatDialog,
+    private authService: AuthService
+  ) {
+    this.user = this.authService.getUserInfo();
+    this.authService.userItemSelection.subscribe(data => this.user = data);
+  }
 
   ngOnInit(): void {
     this.newPipeline();

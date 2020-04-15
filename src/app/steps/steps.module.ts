@@ -7,12 +7,14 @@ import { DesignerModule } from '../designer/designer.module';
 import { SharedModule } from '../shared/shared.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
 import {StepsListItemComponent} from "./components/selector/steps-list-item/steps-list-item.component";
+import {CoreModule} from "../core/core.module";
 
 @NgModule({
   imports: [
     SharedModule,
     DesignerModule,
     CodeEditorModule,
+    CoreModule
   ],
   declarations: [
     StepsEditorComponent,

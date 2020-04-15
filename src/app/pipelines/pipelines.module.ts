@@ -8,9 +8,10 @@ import { SharedModule } from '../shared/shared.module';
 import { StepsModule } from '../steps/steps.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
 import { StepInformationComponent } from './components/step-information/step-information.component';
+import {CoreModule} from "../core/core.module";
 
 @NgModule({
-  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule],
+  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],
   exports: [StepInformationComponent],
   declarations: [
     PipelinesEditorComponent,

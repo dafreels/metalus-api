@@ -1,5 +1,5 @@
-import {Param} from './../../steps.model';
-import {DisplayDialogService} from './../../../shared/services/display-dialog.service';
+import {Param} from '../../steps.model';
+import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {Component, OnInit} from '@angular/core';
 import {Step} from '../../steps.model';
 import {StepsService} from '../../steps.service';
@@ -17,6 +17,8 @@ import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import * as Ajv from 'ajv';
 import {ConfirmationModalComponent} from '../../../shared/components/confirmation/confirmation-modal.component';
 import {DialogDimensions, generalDialogDimensions,} from 'src/app/shared/models/custom-dialog.model';
+import {User} from "../../../shared/models/users.models";
+import {AuthService} from "../../../shared/services/auth.service";
 
 @Component({
   selector: 'app-steps-editor',
@@ -31,12 +33,17 @@ export class StepsEditorComponent implements OnInit {
   tagCtrl = new FormControl();
   separatorKeysCodes: number[] = [ENTER, COMMA];
   stepValidator;
+  user: User;
 
   constructor(
     private stepsService: StepsService,
     private packageObjectsService: PackageObjectsService,
-    private displayDialogService: DisplayDialogService
-  ) {}
+    private displayDialogService: DisplayDialogService,
+    private authService: AuthService
+  ) {
+    this.user = this.authService.getUserInfo();
+    this.authService.userItemSelection.subscribe(data => this.user = data);
+  }
 
   ngOnInit(): void {
     this.newStep();
