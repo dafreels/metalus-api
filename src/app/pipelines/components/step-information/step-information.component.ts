@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {PipelineStep} from "../../models/pipelines.model";
 
 @Component({
   selector: 'app-step-information',
@@ -6,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./step-information.component.scss'],
 })
 export class StepInformationComponent implements OnInit {
-  @Input() selectedStep;
+  @Input() selectedStep: PipelineStep;
 
   constructor() {}
 

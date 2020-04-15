@@ -1,8 +1,13 @@
 @import url('../../../../../node_modules/jsplumb/css/jsplumbtoolkit-defaults.css');
 
+.designer-card {
+  height: 100%;
+}
+
 .designer-canvas {
   min-height: 500px;
   margin-top: 15px;
+  height: 100%;
 }
 
 .designer-canvas .window:hover {

@@ -7,7 +7,7 @@
   flex-direction: column;
 }
 
-.button-content {
+.header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,8 +31,8 @@
  * Left side
  */
 .steps-editor-sidebar {
-  width: 30%;
-  margin-right: 15px;
+  width: 20%;
+  margin-right: 8px;
 }
 
 .pipeline-panel {
@@ -40,11 +40,24 @@
 }
 
 /*
- * Right Side
+ * Center
  */
 
 .designer-content {
-  width: 70%;
+  width: 60%;
+}
+
+/*
+ * Right
+ */
+.information-panel {
+  width: 20%;
+  margin-left: 8px;
+}
+
+.step-description {
+  font-size: x-small;
+  color: #808080;
 }
 
 // Nav bar styles
@@ -56,5 +69,6 @@
 
 .page-title {
   font-weight: bold;
+  font-size: larger;
 }
 

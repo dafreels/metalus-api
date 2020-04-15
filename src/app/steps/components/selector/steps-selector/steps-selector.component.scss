@@ -1,11 +1,14 @@
 
-//.mat-select-arrow {
-//  color: red;
-//  border-left: 0;
-//  border-right: 0;
-//  border-top: 0;
-//}
-
 .mat-form-field {
   margin-right: 8px;
+}
+
+.tag-select {
+  width: 15%;
+}
+
+.mat-tab-label, .mat-tab-label-active{
+  min-width: 20px !important;
+  padding: 3px !important;
+  margin: 3px !important;
 }

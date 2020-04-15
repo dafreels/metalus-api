@@ -31,9 +31,8 @@
   <div class="designer-content">
     <div class="pipeline-panel">
       <mat-card>
-        <mat-card-content class="button-content">
+        <mat-card-content class="header-content">
           <div class="pipeline-data">
-
             <span>
               <mat-form-field *ngIf="editName">
                 <input matInput [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
@@ -58,19 +57,26 @@
         </mat-card-content>
       </mat-card>
     </div>
-    <div class="pipeline-panel">
+    <app-designer
+      [addElementSubject]="dndSubject"
+      (designerDropEvent)="addStep($event)"
+      (elementSelected)="stepSelected($event)"
+      (elementAction)="handleElementAction($event)"
+      [dataModel]="designerModel"
+      (modelChanged)="modelChange($event)"
+    ></app-designer>
+  </div>
+  <div class="information-panel">
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <app-step-information
-              [selectedStep]="selectedStep"
-            ></app-step-information>
+            <app-step-information [selectedStep]="selectedStep"></app-step-information>
             <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-panel-title>Parameters</mat-panel-title>
-                <mat-panel-description>{{
-                  selectedStep.displayName
-                }}</mat-panel-description>
+                <mat-panel-description>
+                  <span class="step-description">{{selectedStep.displayName}}</span>
+                </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="pipeline-form">
                 <mat-form-field>
@@ -103,15 +109,6 @@
           </mat-accordion>
         </mat-card-content>
       </mat-card>
-    </div>
-    <app-designer
-      [addElementSubject]="dndSubject"
-      (designerDropEvent)="addStep($event)"
-      (elementSelected)="stepSelected($event)"
-      (elementAction)="handleElementAction($event)"
-      [dataModel]="designerModel"
-      (modelChanged)="modelChange($event)"
-    ></app-designer>
   </div>
 </div>
 </div>
