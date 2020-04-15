@@ -3,6 +3,10 @@
   margin-right: 8px;
 }
 
+.filter {
+  width: 75%;
+}
+
 .tag-select {
   width: 15%;
 }
@@ -11,4 +15,12 @@
   min-width: 20px !important;
   padding: 3px !important;
   margin: 3px !important;
+}
+
+.mat-card {
+  padding: 1px !important;
+}
+
+.sidebar {
+  height: 100%;
 }
