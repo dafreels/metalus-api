@@ -1,30 +1,15 @@
-import { DisplayDialogService } from './../../../shared/services/display-dialog.service';
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-  OnInit,
-} from '@angular/core';
-import {
-  Pipeline,
-  PipelineStepParam,
-  PipelineData,
-} from '../../models/pipelines.model';
-import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
-import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
-import { PackageObject } from '../../../core/package-objects/package-objects.model';
-import { SharedFunctions } from '../../../shared/utils/shared-functions';
-import { PropertiesEditorModalComponent } from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
-import {
-  generalDialogDimensions,
-  DialogDimensions,
-} from 'src/app/shared/models/custom-dialog.model';
-import { BehaviorSubject } from 'rxjs';
-import { MatSelect } from '@angular/material';
-import { FormControl } from '@angular/forms';
+import {DisplayDialogService} from './../../../shared/services/display-dialog.service';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild,} from '@angular/core';
+import {Pipeline, PipelineData, PipelineStepParam,} from '../../models/pipelines.model';
+import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
+import {ObjectEditorComponent} from '../../../shared/components/object-editor/object-editor.component';
+import {PackageObject} from '../../../core/package-objects/package-objects.model';
+import {SharedFunctions} from '../../../shared/utils/shared-functions';
+import {PropertiesEditorModalComponent} from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
+import {generalDialogDimensions,} from 'src/app/shared/models/custom-dialog.model';
+import {BehaviorSubject} from 'rxjs';
+import {MatSelect} from '@angular/material';
+import {FormControl} from '@angular/forms';
 
 export interface SplitParameter {
   id: number;

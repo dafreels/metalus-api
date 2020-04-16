@@ -16,6 +16,7 @@
 .pipeline-data {
   display: flex;
   flex-direction: column;
+  margin-left: 5px;
 }
 
 .pipeline-name {
@@ -70,5 +71,18 @@
 .page-title {
   font-weight: bold;
   font-size: larger;
+}
+
+// Error panel
+.error-panel {
+  margin-right: 15px;
+  background-color: #b4b4b4;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.error-icon {
+  vertical-align: middle;
+  margin-right: 5px;
 }
 
