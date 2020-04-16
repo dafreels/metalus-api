@@ -6,33 +6,34 @@
     </span>
     <span>
       <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newPipeline()">New</button>
-      <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu" style="margin-right: 5px;">Load</button>
+      <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
+              style="margin-right: 5px;">Load</button>
       <mat-menu #pipelineMenu="matMenu">
         <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id" (click)="loadPipeline(pipeline.id)">
           {{ pipeline.name }}
         </button>
       </mat-menu>
       <button mat-button color="primary" style="margin-right: 5px;" (click)="copyPipeline()"
-        [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Copy</button>
+              [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Copy</button>
       <button mat-button color="primary" (click)="importPipeline()">Import</button>
       <button mat-button color="primary" style="margin-right: 5px;" (click)="exportPipeline()">Export</button>
       <button mat-button color="primary" style="margin-right: 5px;" (click)="deletePipeline()"
-        [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Delete</button>
+              [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Delete</button>
       <user-menu [user]="user"></user-menu>
     </span>
   </div>
-<div class="pipelines-editor-layout">
-  <div class="steps-editor-sidebar">
-    <app-steps-selector
-      [steps]="steps"
-      [draggableSteps]="true"
-    ></app-steps-selector>
-  </div>
-  <div class="designer-content">
-    <div class="pipeline-panel">
-      <mat-card>
-        <mat-card-content class="header-content">
-          <div class="pipeline-data">
+  <div class="pipelines-editor-layout">
+    <div class="steps-editor-sidebar">
+      <app-steps-selector
+        [steps]="steps"
+        [draggableSteps]="true"
+      ></app-steps-selector>
+    </div>
+    <div class="designer-content">
+      <div class="pipeline-panel">
+        <mat-card>
+          <mat-card-content class="header-content">
+            <div class="pipeline-data">
             <span>
               <mat-form-field *ngIf="editName">
                 <input matInput [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
@@ -42,37 +43,39 @@
                 <mat-icon>edit</mat-icon>
               </button>
             </span>
-            <span class="pipeline-id">ID: {{selectedPipeline.id}}</span>
-            <mat-form-field>
-              <mat-select required [(ngModel)]="selectedPipeline.category">
-                <mat-option value="pipeline">Pipeline</mat-option>
-                <mat-option value="step-group">Step Group</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <span>
+              <span class="pipeline-id">ID: {{selectedPipeline.id}}</span>
+              <mat-form-field>
+                <mat-select required [(ngModel)]="selectedPipeline.category">
+                  <mat-option value="pipeline">Pipeline</mat-option>
+                  <mat-option value="step-group">Step Group</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <span>
             <span *ngIf="errors.length > 0" class="error-panel">
               <span><mat-icon color="warn" class="error-icon" (click)="showErrors()">warning</mat-icon></span>
               <span>{{errors.length}} Errors Detected</span>
             </span>
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()" [disabled]="errors.length > 0">
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()"
+                    [disabled]="errors.length > 0">
               Save
             </button>
-            <button mat-button color="primary" style="margin-right: 5px;" (click)="cancelPipelineChange()">Cancel</button>
+            <button mat-button color="primary" style="margin-right: 5px;"
+                    (click)="cancelPipelineChange()">Cancel</button>
           </span>
-        </mat-card-content>
-      </mat-card>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <app-designer
+        [addElementSubject]="dndSubject"
+        (designerDropEvent)="addStep($event)"
+        (elementSelected)="stepSelected($event)"
+        (elementAction)="handleElementAction($event)"
+        [dataModel]="designerModel"
+        (modelChanged)="modelChange($event)"
+      ></app-designer>
     </div>
-    <app-designer
-      [addElementSubject]="dndSubject"
-      (designerDropEvent)="addStep($event)"
-      (elementSelected)="stepSelected($event)"
-      (elementAction)="handleElementAction($event)"
-      [dataModel]="designerModel"
-      (modelChanged)="modelChange($event)"
-    ></app-designer>
-  </div>
-  <div class="information-panel">
+    <div class="information-panel">
       <mat-card>
         <mat-card-content>
           <mat-accordion>
@@ -115,6 +118,6 @@
           </mat-accordion>
         </mat-card-content>
       </mat-card>
+    </div>
   </div>
-</div>
 </div>
