@@ -645,19 +645,17 @@ export class PipelinesEditorComponent implements OnInit {
     this.stepLookup = {};
     pipeline.steps.forEach((step) => {
       nodeId = `designer-node-${model.nodeSeq++}`;
-      if (Object.keys(pipeline.layout).length > 1) {
-        model.nodes[nodeId] = {
-          data: this.createDesignerElement(step, null),
-          x:
-            pipeline.layout && pipeline.layout[step.id].x
-              ? pipeline.layout[step.id].x
-              : -1,
-          y:
-            pipeline.layout && pipeline.layout[step.id].y
-              ? pipeline.layout[step.id].y
-              : -1,
-        };
-      }
+      model.nodes[nodeId] = {
+        data: this.createDesignerElement(step, null),
+        x:
+          pipeline.layout && pipeline.layout[step.id].x
+            ? pipeline.layout[step.id].x
+            : -1,
+        y:
+          pipeline.layout && pipeline.layout[step.id].y
+            ? pipeline.layout[step.id].y
+            : -1,
+      };
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
@@ -712,11 +710,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
     // See if automatic layout needs to be applied
     if (!pipeline.layout || Object.keys(pipeline.layout).length === 0) {
-      DesignerComponent.performAutoLayout(
-        this.stepLookup,
-        connectedNodes,
-        model
-      );
+      DesignerComponent.performAutoLayout(this.stepLookup, connectedNodes, model);
     }
     return model;
   }

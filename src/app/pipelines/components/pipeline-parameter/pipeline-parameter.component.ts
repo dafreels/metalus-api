@@ -1,4 +1,4 @@
-import {DisplayDialogService} from './../../../shared/services/display-dialog.service';
+import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild,} from '@angular/core';
 import {Pipeline, PipelineData, PipelineStepParam,} from '../../models/pipelines.model';
 import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
@@ -13,6 +13,7 @@ import {FormControl} from '@angular/forms';
 
 export interface SplitParameter {
   id: number;
+  name: string;
   value: any;
   type: string;
   language?: string;
@@ -94,6 +95,7 @@ export class PipelineParameterComponent implements OnInit {
           this.parameters = [
             {
               id: this.id++,
+              name: stepParameter.name,
               value: stepParameter.value,
               type: stepParameter.type,
               language: stepParameter.language,
@@ -130,6 +132,7 @@ export class PipelineParameterComponent implements OnInit {
                 id: this.id++,
                 value,
                 type,
+                name: stepParameter.name,
                 suggestions:
                   type === 'step' || type === 'secondary'
                     ? this.stepSuggestions.map((s) => s)
@@ -143,6 +146,7 @@ export class PipelineParameterComponent implements OnInit {
                 value: '',
                 id: this.id++,
                 suggestions: [],
+                name: '',
               },
             ];
             if (stepParameter.type !== 'result') {
@@ -189,7 +193,7 @@ export class PipelineParameterComponent implements OnInit {
     pipelinesName.length === 0
       ? (this.hasNoStepGroup = false)
       : (this.hasNoStepGroup = true);
-    if (this.parameters[0].value) {
+    if ((this.parameters[0].name === 'pipeline' || this.parameters[0].name === 'pipelineId') && this.parameters[0].value) {
       this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
     }
     this.filteredStepGroup.next(pipelinesName);
@@ -305,6 +309,7 @@ export class PipelineParameterComponent implements OnInit {
     this.parameters.push({
       id: this.id++,
       value: '',
+      name: '',
       type: 'text',
     });
   }
