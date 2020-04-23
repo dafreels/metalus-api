@@ -115,7 +115,7 @@ export class StepsEditorComponent implements OnInit {
       };
       const stepSelectionDialogDimension: DialogDimensions = {
         width: '450px',
-        heigh: '200px',
+        height: '200px',
       };
       const stepSelectedDialog = this.displayDialogService.openDialog(
         ConfirmationModalComponent,
@@ -225,7 +225,7 @@ export class StepsEditorComponent implements OnInit {
   saveStep() {
     const saveStepDialogDimensions: DialogDimensions = {
       width: '25%',
-      heigh: '25%',
+      height: '25%',
     };
     const saveStepDialog = this.displayDialogService.openDialog(
       WaitModalComponent,
@@ -292,7 +292,7 @@ export class StepsEditorComponent implements OnInit {
     }
     const errorDialogDimensions: DialogDimensions = {
       width: '450px',
-      heigh: '300px',
+      height: '300px',
     };
     const errorDialog = this.displayDialogService.openDialog(
       ErrorModalComponent,
@@ -308,7 +308,7 @@ export class StepsEditorComponent implements OnInit {
   addNewParameter() {
     const newParameterDialogDimensions: DialogDimensions = {
       width: '25%',
-      heigh: '25%',
+      height: '25%',
     };
     const newParameterDialog = this.displayDialogService.openDialog(
       NameDialogComponent,
@@ -404,7 +404,7 @@ export class StepsEditorComponent implements OnInit {
     };
     const deleteStepDialogDimensions: DialogDimensions = {
       width: '450px',
-      heigh: '200px',
+      height: '200px',
     };
     const deleteStepDialog = this.displayDialogService.openDialog(
       ConfirmationModalComponent,
