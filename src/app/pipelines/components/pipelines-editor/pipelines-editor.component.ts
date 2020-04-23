@@ -645,16 +645,17 @@ export class PipelinesEditorComponent implements OnInit {
     const model = DesignerComponent.newModel();
     let nodeId;
     this.stepLookup = {};
+    const existingLayout = pipeline.layout && Object.keys(pipeline.layout).length > 0
     pipeline.steps.forEach((step) => {
       nodeId = `designer-node-${model.nodeSeq++}`;
       model.nodes[nodeId] = {
         data: this.createDesignerElement(step, null),
         x:
-          pipeline.layout && pipeline.layout[step.id].x
+          existingLayout && pipeline.layout[step.id].x
             ? pipeline.layout[step.id].x
             : -1,
         y:
-          pipeline.layout && pipeline.layout[step.id].y
+          existingLayout && pipeline.layout[step.id].y
             ? pipeline.layout[step.id].y
             : -1,
       };
@@ -711,7 +712,7 @@ export class PipelinesEditorComponent implements OnInit {
       }
     });
     // See if automatic layout needs to be applied
-    if (!pipeline.layout || Object.keys(pipeline.layout).length === 0) {
+    if (!existingLayout) {
       DesignerComponent.performAutoLayout(this.stepLookup, connectedNodes, model);
     }
     return model;
