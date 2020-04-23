@@ -74,7 +74,7 @@ export class UsersComponent implements OnInit {
     };
     const deleteStepDialogDimensions: DialogDimensions = {
       width: '450px',
-      heigh: '200px',
+      height: '200px',
     };
     const deleteStepDialog = this.displayDialogService.openDialog(
       ConfirmationModalComponent,

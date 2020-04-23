@@ -13,7 +13,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  public isAuthenticated(): Boolean {
+  public isAuthenticated(): boolean {
     const userData = this.getUserInfo();
     return userData && userData.id && userData.id.trim().length > 0;
   }

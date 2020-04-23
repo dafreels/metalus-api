@@ -11,7 +11,7 @@ export class DisplayDialogService {
   openDialog(component, dialogDimensions: DialogDimensions, data?) {
     const dialogRef = this.matDialog.open(component, {
       width: dialogDimensions.width,
-      height: dialogDimensions.heigh,
+      height: dialogDimensions.height,
       data,
       disableClose: true,
     });
