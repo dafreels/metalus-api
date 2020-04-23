@@ -5,6 +5,8 @@ const AppsModel = require('../../../models/applications.model');
 const PipelinesModel = require('../../../models/pipelines.model');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
+const IncomingForm = require('formidable').IncomingForm;
+const ValidationError = require('../../../lib/ValidationError');
 
 module.exports = function (router) {
 
@@ -23,6 +25,27 @@ module.exports = function (router) {
         return res.json(user);
       });
     })(req, res, next);
+  });
+
+  router.post('/:id/project/:projectId/upload', async (req, res, next) => {
+    const user = await req.user;
+    const userId = req.params.id;
+    if (userId !== user.id) {
+      next(new Error('User does not have permission to upload files for different user!'));
+    }
+    const form = new IncomingForm();
+    const files = [];
+    form.on('file', (field, file) => {
+      // TODO Create a directory to store jars?
+      // TODO How long should jars be kept?
+      files.push(file.path);
+    });
+    form.on('end', () => {
+      const jarFiles = files.join(',');
+      // TODO Trigger metadata-extractor here
+      res.sendStatus(200);
+    });
+    form.parse(req);
   });
 
   router.get('/', async (req, res, next) => {
@@ -59,7 +82,11 @@ module.exports = function (router) {
         const fullUser = await userModel.createOne(newUser);
         res.status(201).json(fullUser);
       } catch(err) {
-        res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+        if (err instanceof ValidationError) {
+          res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+        } else {
+          next(err);
+        }
       }
     }
   });
@@ -93,7 +120,7 @@ module.exports = function (router) {
     try {
       if (user.role === 'admin' &&
         updateUser.password &&
-        updateUser.password.trim().length() > 0 &&
+        updateUser.password.trim().length > 0 &&
         !bcrypt.compareSync(updateUser.password, existingUser.password) &&
         updateUser.password !== existingUser.password) {
         updateUser.password = bcrypt.hashSync(updateUser.password, 8);
@@ -104,7 +131,11 @@ module.exports = function (router) {
       const newuser = await userModel.update(updateUser.id, updateUser);
       res.status(200).json(newuser);
     } catch (err) {
-      res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+      if (err instanceof ValidationError) {
+        res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+      } else {
+       next(err);
+      }
     }
   });
 

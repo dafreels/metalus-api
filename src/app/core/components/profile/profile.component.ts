@@ -36,16 +36,18 @@ export class ProfileComponent implements OnInit {
     );
     changePasswordDialog.afterClosed().subscribe((result) => {
       result.id = this.user.id;
-      this.usersService.changePassword(result).subscribe(result => {
-        this.authService.setUserInfo(this.user);
+      this.usersService.changePassword(result).subscribe(updatedUser => {
+        this.authService.setUserInfo(updatedUser);
       });
     });
   }
 
   changeDefaultProject(projectId: string) {
-    this.user.defaultProjectId = projectId;
-    this.usersService.updateUser(this.user).subscribe(result => {
-      this.authService.setUserInfo(this.user);
+    // Clone user so project only shows up after the update is complete
+    const user = JSON.parse(JSON.stringify(this.user));
+    user.defaultProjectId = projectId;
+    this.usersService.updateUser(user).subscribe(updatedUser => {
+      this.authService.setUserInfo(updatedUser);
     });
   }
 
@@ -56,7 +58,7 @@ export class ProfileComponent implements OnInit {
     };
     const deleteProjectDialogDimensions: DialogDimensions = {
       width: '450px',
-      heigh: '200px',
+      height: '200px',
     };
     const deleteStepDialog = this.displayDialogService.openDialog(
       ConfirmationModalComponent,
@@ -66,9 +68,8 @@ export class ProfileComponent implements OnInit {
 
     deleteStepDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        this.user.defaultProjectId = projectId;
-        this.usersService.removeProject(this.user, projectId).subscribe(result => {
-          this.authService.setUserInfo(this.user);
+        this.usersService.removeProject(this.user, projectId).subscribe(updatedUser => {
+          this.authService.setUserInfo(updatedUser);
         });
       }
     });
@@ -84,15 +85,17 @@ export class ProfileComponent implements OnInit {
       if (result && result.trim().length > 0) {
         const name = result as string;
         let max = 0;
-        this.user.projects.forEach((prj) => {
+        // Clone user so project only shows up after the update is complete
+        const user = JSON.parse(JSON.stringify(this.user));
+        user.projects.forEach((prj) => {
           max = Math.max(max, parseInt(prj.id));
         });
-        this.user.projects.push({
+        user.projects.push({
           id: `${max + 1}`,
           displayName: name
         });
-        this.usersService.updateUser(this.user).subscribe(result => {
-          this.authService.setUserInfo(this.user);
+        this.usersService.updateUser(user).subscribe(updatedUser => {
+          this.authService.setUserInfo(updatedUser);
         });
       }
     });

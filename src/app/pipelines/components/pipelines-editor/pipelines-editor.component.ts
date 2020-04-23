@@ -281,11 +281,13 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   exportPipeline() {
+    const pipeline = this.generatePipeline();
+    delete pipeline.project;
     this.dialog.open(CodeEditorComponent, {
       width: '75%',
       height: '90%',
       data: {
-        code: JSON.stringify(this.generatePipeline(), null, 4),
+        code: JSON.stringify(pipeline, null, 4),
         language: 'json',
         allowSave: false,
       },
@@ -912,6 +914,7 @@ export class PipelinesEditorComponent implements OnInit {
     );
     const step = node.data.data;
     delete step._id;
+    delete step.project; // Remove project data since it serves no purpose outside of the UI
     PipelinesEditorComponent.adjustStepParameterType(step);
     if (pipeline.steps.findIndex((s) => s.id === step.id) === -1) {
       pipeline.steps.push(step);

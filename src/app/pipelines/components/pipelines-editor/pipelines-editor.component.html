@@ -36,7 +36,7 @@
             <div class="pipeline-data">
             <span>
               <mat-form-field *ngIf="editName">
-                <input matInput [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
+                <input matInput placeholder=" Pipeline Name" [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
               </mat-form-field>
               <span class="pipeline-name" *ngIf="!editName">{{selectedPipeline.name}}</span>
               <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
