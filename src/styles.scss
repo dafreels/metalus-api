@@ -14,3 +14,16 @@
   display: flex;
   flex-direction: column;
 }
+
+// Nav bar styles
+.topnav {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-weight: bold;
+  font-size: larger;
+}
