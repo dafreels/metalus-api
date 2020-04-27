@@ -316,23 +316,9 @@ export class PipelineParameterComponent implements OnInit {
 
   disableEditorButton(param: SplitParameter) {
     if (this.stepGroup.enabled) {
-      if (
-        this.parameter.name === 'pipeline' &&
-        this.parameterType !== 'pipeline'
-      ) {
-        return true;
-      } else if (
-        this.parameter.name === 'pipelineId' &&
-        param.type !== 'text'
-      ) {
-        return true;
-      } else if (
-        this.parameter.name === 'pipeline' &&
-        this.parameterType === 'pipeline'
-      ) {
-        return true;
-      }
-      return false;
+      return (this.parameter.name === 'pipeline' && this.parameterType !== 'pipeline') ||
+        (this.parameter.name === 'pipelineId' && param.type !== 'text') ||
+        (this.parameter.name === 'pipeline' && this.parameterType === 'pipeline');
     } else {
       return this.parameterType !== 'object' && this.parameterType !== 'script';
     }

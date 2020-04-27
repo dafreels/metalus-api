@@ -53,7 +53,7 @@ export class PipelinesEditorComponent implements OnInit {
   pipelineValidator;
   stepGroup: StepGroupProperty = { enabled: false };
   user: User;
-  editName: Boolean = false;
+  editName: boolean = false;
   errors = [];
 
   constructor(
@@ -412,22 +412,19 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   handleElementAction(action: DesignerElementAction) {
-    switch (action.action) {
-      case 'showPipeline':
-        // TODO Show something to the user letting them know we can't determine the pipelineId
-        if (action.element.data['type'] === 'step-group') {
-          const pipeline = this.getPipeline(<PipelineStep>action.element.data);
-          if (pipeline) {
-            const model = this.generateModelFromPipeline(pipeline);
-            this.dialog.open(DesignerPreviewComponent, {
-              width: '75%',
-              height: '90%',
-              data: model,
-            });
-          }
+    if (action.action === 'showPipeline') {
+      // TODO Show something to the user letting them know we can't determine the pipelineId
+      if (action.element.data['type'] === 'step-group') {
+        const pipeline = this.getPipeline(<PipelineStep>action.element.data);
+        if (pipeline) {
+          const model = this.generateModelFromPipeline(pipeline);
+          this.dialog.open(DesignerPreviewComponent, {
+            width: '75%',
+            height: '90%',
+            data: model,
+          });
         }
-        break;
-      default:
+      }
     }
   }
 
@@ -581,7 +578,7 @@ export class PipelinesEditorComponent implements OnInit {
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
-    let connectedNodes = [];
+    const connectedNodes = [];
     pipeline.steps.forEach((step) => {
       if (step.type !== 'branch' && step.nextStepId) {
         model.connections[
@@ -662,7 +659,7 @@ export class PipelinesEditorComponent implements OnInit {
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
-    let connectedNodes = [];
+    const connectedNodes = [];
     pipeline.steps.forEach((step) => {
       if (step.type !== 'branch' && step.nextStepId) {
         model.connections[
@@ -770,7 +767,7 @@ export class PipelinesEditorComponent implements OnInit {
     return errors;
   }
 
-  private validatePipelineSteps(pipeline: Pipeline): String[] {
+  private validatePipelineSteps(pipeline: Pipeline): string[] {
     let errors = [];
 
     const difNodesAndConnections =
@@ -916,6 +913,13 @@ export class PipelinesEditorComponent implements OnInit {
     const step = node.data.data;
     delete step._id;
     delete step.project; // Remove project data since it serves no purpose outside of the UI
+    if (step.executeIfEmpty && step.executeIfEmpty.trim().length === 0) {
+      delete step.executeIfEmpty;
+    }
+    if (step.params && step.params.find(p => p.name === 'executeIfEmpty')) {
+      const index = step.params.findIndex(p => p.name === 'executeIfEmpty');
+      step.params.splice(index, 1);
+    }
     PipelinesEditorComponent.adjustStepParameterType(step);
     if (pipeline.steps.findIndex((s) => s.id === step.id) === -1) {
       pipeline.steps.push(step);

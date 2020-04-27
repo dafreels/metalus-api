@@ -1,11 +1,8 @@
-import { EventEmitter, Input, Output } from '@angular/core';
-import { Step } from '../../steps.model';
-import { DropEffect } from 'ngx-drag-drop';
-import { SharedFunctions } from '../../../shared/utils/shared-functions';
+import {EventEmitter, Input, Output} from '@angular/core';
+import {Step} from '../../steps.model';
 
 export abstract class StepsSelectorBase {
   steps: Step[];
-  dropEffect: DropEffect = 'copy';
   @Input() draggableSteps = false;
   @Output() stepItemSelection = new EventEmitter();
 
@@ -20,9 +17,5 @@ export abstract class StepsSelectorBase {
 
   setSteps(steps) {
     this.steps = steps;
-  }
-
-  getStepIcon(step) {
-    return SharedFunctions.getMaterialIconName(step.type);
   }
 }
