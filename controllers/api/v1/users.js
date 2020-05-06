@@ -7,6 +7,13 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const IncomingForm = require('formidable').IncomingForm;
 const ValidationError = require('../../../lib/ValidationError');
+const fs = require('fs');
+const util = require('util');
+const stat = util.promisify(fs.stat);
+const mkdir = util.promisify(fs.mkdir);
+const rename = util.promisify(fs.rename);
+const readdir = util.promisify(fs.readdir);
+const unlink = util.promisify(fs.unlink);
 
 module.exports = function (router) {
 
@@ -25,27 +32,6 @@ module.exports = function (router) {
         return res.json(user);
       });
     })(req, res, next);
-  });
-
-  router.post('/:id/project/:projectId/upload', async (req, res, next) => {
-    const user = await req.user;
-    const userId = req.params.id;
-    if (userId !== user.id) {
-      next(new Error('User does not have permission to upload files for different user!'));
-    }
-    const form = new IncomingForm();
-    const files = [];
-    form.on('file', (field, file) => {
-      // TODO Create a directory to store jars?
-      // TODO How long should jars be kept?
-      files.push(file.path);
-    });
-    form.on('end', () => {
-      const jarFiles = files.join(',');
-      // TODO Trigger metadata-extractor here
-      res.sendStatus(200);
-    });
-    form.parse(req);
   });
 
   router.get('/', async (req, res, next) => {
@@ -167,6 +153,101 @@ module.exports = function (router) {
       await deleteProjectData(userId, project.id);
     }
     await userModel.delete(userId);
+    res.sendStatus(204);
+  });
+
+  router.get('/:id/project/:projectId/files', async (req, res, next) => {
+    const user = await req.user;
+    const userId = req.params.id;
+    const projectId = req.params.projectId;
+    if (userId !== user.id) {
+      next(new Error('User does not have permission to retrieve files for different user!'));
+    }
+    const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+    let exists;
+    try {
+      const stats = await stat(userJarDir);
+      exists = stats.isDirectory();
+    } catch (err) {
+      exists = false;
+    }
+    const files = exists ? await readdir(userJarDir) : [];
+    if (files.length === 0) {
+      res.sendStatus(204);
+    } else {
+      const existingFiles = [];
+      let fileStat;
+      for await (const file of files) {
+        fileStat = await stat(`${userJarDir}/${file}`);
+        existingFiles.push({
+          name: file,
+          path: userJarDir,
+          size: fileStat.size,
+          createdDate: fileStat.birthtime,
+          modifiedDate: fileStat.mtime
+        });
+      }
+      res.status(200).json({ files: existingFiles });
+    }
+  });
+
+  router.post('/:id/project/:projectId/upload', async (req, res, next) => {
+    const user = await req.user;
+    const userId = req.params.id;
+    const projectId = req.params.projectId;
+    if (userId !== user.id) {
+      next(new Error('User does not have permission to upload files for different user!'));
+    }
+    const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+    await mkdir(userJarDir, { recursive: true });
+    const options = {
+      uploadDir: userJarDir
+    };
+    let uploadedFileName = '';
+    const form = new IncomingForm(options);
+    form.parse(req)
+      .on('file', async (name, file) => {
+        uploadedFileName = `${userJarDir}/${file.name}`;
+        await rename(file.path, uploadedFileName);
+      })
+      .once('end', async () => {
+        const userModel = new UsersModel();
+        const projectUser = await userModel.getUser(userId);
+        const project = projectUser.projects.find(p => p.id = projectUser.defaultProjectId);
+        if (!project.uploadHistory) {
+          project.uploadHistory = [];
+        }
+        project.uploadHistory.push({
+          name: uploadedFileName,
+          uploadDate: new Date().getTime()
+        });
+        await userModel.update(userId, projectUser);
+        res.status(200).json({});
+      })
+      .once('error', (err) => {
+        next(err);
+      });
+  });
+
+  router.delete('/:id/project/:projectId/files/:fileName', async (req, res, next) => {
+    const user = await req.user;
+    const userId = req.params.id;
+    const projectId = req.params.projectId;
+    const fileName = req.params.fileName;
+    if (userId !== user.id) {
+      next(new Error('User does not have permission to delete files for different user!'));
+    }
+    const filePath = `${process.cwd()}/jars/${userId}/${projectId}/${fileName}`;
+    let exists;
+    try {
+      const stats = await stat(filePath);
+      exists = stats.isFile();
+    } catch (err) {
+      exists = false;
+    }
+    if (exists) {
+      await unlink(filePath);
+    }
     res.sendStatus(204);
   });
 };

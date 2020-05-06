@@ -9,6 +9,7 @@ import {LoginComponent} from "./core/components/login/login.component";
 import {AuthGuardService} from "./shared/services/auth-gaurd.service";
 import {ProfileComponent} from "./core/components/profile/profile.component";
 import {UsersComponent} from "./core/components/users/users.component";
+import {UploadComponent} from "./core/components/upload/upload.component";
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -19,6 +20,7 @@ const appRoutes: Routes = [
   {path: 'landing', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'profile', component: ProfileComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'users', component: UsersComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
+  {path: 'upload', component: UploadComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: '**', component: PageNotFoundComponent},
 ];
 

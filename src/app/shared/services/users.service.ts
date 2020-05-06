@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
-import {Observable, throwError} from "rxjs";
+import {Observable, Subject, throwError} from "rxjs";
 import {ChangePassword, User, UserResponse} from "../models/users.models";
 
 @Injectable({
@@ -75,3 +75,4 @@ export class UsersService {
       );
   }
 }
+

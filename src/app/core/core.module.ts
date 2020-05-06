@@ -11,6 +11,7 @@ import {UsersComponent} from "./components/users/users.component";
 import {UsersModalComponent} from "./components/users/manage/users-modal.component";
 import {NavMenuComponent} from "./components/nav-menu/nav-menu.component";
 import {UserMenuComponent} from "./components/user-menu/user-menu.component";
+import {UploadComponent} from "./components/upload/upload.component";
 
 @NgModule({
   imports: [
@@ -25,6 +26,7 @@ import {UserMenuComponent} from "./components/user-menu/user-menu.component";
     NavMenuComponent,
     PageNotFoundComponent,
     ProfileComponent,
+    UploadComponent,
     UsersComponent,
     UserMenuComponent,
     UsersModalComponent
@@ -40,6 +42,7 @@ import {UserMenuComponent} from "./components/user-menu/user-menu.component";
     NavMenuComponent,
     PageNotFoundComponent,
     ProfileComponent,
+    UploadComponent,
     UsersComponent,
     UserMenuComponent,
     UsersModalComponent

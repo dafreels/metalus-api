@@ -1,0 +1,79 @@
+<div>
+  <div class="topnav">
+    <span>
+      <nav-menu currentPage="upload"></nav-menu>
+      <span class="page-title">Upload Jars</span>
+    </span>
+    <user-menu [user]="user"></user-menu>
+  </div>
+  <div>
+    <mat-tab-group>
+      <mat-tab label="Upload Jars">
+        <div class="divTable blueTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <div class="divTableHead">Name</div>
+              <div class="divTableHead">Path</div>
+              <div class="divTableHead">Size</div>
+              <div class="divTableHead">Created Date</div>
+              <div class="divTableHead">Modified Date</div>
+              <div class="divTableHead">Delete</div>
+            </div>
+          </div>
+          <div class="divTableBody">
+            <div class="divTableRow" *ngFor="let file of uploadedFiles">
+              <div class="divTableCell">{{file.name}}</div>
+              <div class="divTableCell">{{file.path}}</div>
+              <div class="divTableCell">{{convertBytes(file.size)}}</div>
+              <div class="divTableCell">{{file.createdDate | date:'medium'}}</div>
+              <div class="divTableCell">{{file.modifiedDate | date:'medium'}}</div>
+              <div class="divTableCell">
+                <button mat-icon-button color="primary" (click)="removeFile(file.name)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="file" #file style="display: none" (change)="onFilesAdded()" multiple/>
+        <button mat-icon-button color="primary" (click)="addFiles()" [disabled]="uploading">
+          <mat-icon matTooltip="Upload Jars">cloud_upload</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" [disabled]="uploading">
+          <mat-icon matTooltip="Process Jars">build</mat-icon>
+        </button>
+        <mat-list>
+          <mat-list-item *ngFor="let file of files">
+            <h4 mat-line>{{file.name}}</h4>
+            <mat-progress-bar
+              *ngIf="progress"
+              mode="determinate"
+              [value]="progress[file.name].progress | async"
+            ></mat-progress-bar>
+          </mat-list-item>
+        </mat-list>
+      </mat-tab>
+      <mat-tab label="Manual Upload">
+        <mat-card>
+          <mat-card-content>
+            Download the latest version of Metalus Utils:
+            https://github.com/Acxiom/metalus/releases/tag/release_1_6_5<br/>
+            Upload Command:<br/>
+            <textarea cols="100" rows="15">
+          metalus-utils/target/metalus-utils/bin/metadata-extractor.sh \
+        --api-url http://localhost:8000 \
+        --jar-files https://repo1.maven.org/maven2/com/acxiom/metalus-common_2.11-spark_2.4/1.6.5/metalus-common_2.11-spark_2.4-1.6.5.jar,https://repo1.maven.org/maven2/com/acxiom/metalus-mongo_2.11-spark_2.4/1.6.4/metalus-mongo_2.11-spark_2.4-1.6.4.jar,https://repo1.maven.org/maven2/com/acxiom/metalus-aws_2.11-spark_2.4/1.6.4/metalus-aws_2.11-spark_2.4-1.6.4.jar \
+        --no-auth-download true \
+        --authorization.class com.acxiom.pipeline.api.SessionAuthorization \
+        --authorization.username [username] \
+        --authorization.password [password] \
+        --authorization.authUrl http://localhost:8000/api/v1/users/login \
+        --staging-dir staging
+        </textarea>
+          </mat-card-content>
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+

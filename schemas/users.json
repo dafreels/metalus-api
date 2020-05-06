@@ -47,6 +47,19 @@
               "displayName": {
                 "type": "string",
                 "minLength": 4
+              },
+              "uploadHistory": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "uploadDate": {
+                      "type": "number"
+                    }
+                  }
+                }
               }
             }
           }
