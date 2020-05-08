@@ -39,7 +39,7 @@
         <button mat-icon-button color="primary" (click)="addFiles()" [disabled]="uploading">
           <mat-icon matTooltip="Upload Jars">cloud_upload</mat-icon>
         </button>
-        <button mat-icon-button color="primary" [disabled]="uploading">
+        <button mat-icon-button color="primary" (click)="processJars()" [disabled]="uploading || uploadedFiles.length === 0">
           <mat-icon matTooltip="Process Jars">build</mat-icon>
         </button>
         <mat-list>

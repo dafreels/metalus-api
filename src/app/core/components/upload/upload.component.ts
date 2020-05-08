@@ -4,11 +4,14 @@ import {User} from "../../../shared/models/users.models";
 import {forkJoin} from "rxjs";
 import {FilesService} from "../../../shared/services/files.service";
 import {UploadedFile} from "../../../shared/models/files.model";
-import {UsersService} from "../../../shared/services/users.service";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
+import {Router} from "@angular/router";
+import {PasswordDialogComponent} from "../../../shared/components/password-dialog/password-dialog.component";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
+import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 
 @Component({
   selector: 'app-upload',
@@ -29,7 +32,8 @@ export class UploadComponent implements OnInit {
   constructor(private authService: AuthService,
               private filesService: FilesService,
               private displayDialogService: DisplayDialogService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private router: Router) {
     this.user = this.authService.getUserInfo();
     this.authService.userItemSelection.subscribe(data => this.user = data);
   }
@@ -99,9 +103,46 @@ export class UploadComponent implements OnInit {
     });
   }
 
+  processJars() {
+    const dialogRef = this.dialog.open(PasswordDialogComponent, {
+      width: '25%',
+      height: '25%',
+      data: { password: '' },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const waitDialogRef = this.dialog.open(WaitModalComponent, {
+          width: '25%',
+          height: '25%',
+        });
+        this.filesService.processFiles(this.user, result).subscribe(data => {
+          waitDialogRef.close();
+          this.router.navigate(['landing']);
+        },
+          (error) => this.handleError(error, dialogRef));
+      }
+    });
+  }
+
   convertBytes(bytes) {
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     const convertedSize = (bytes / Math.pow(1024, i)).toFixed(2);
     return `${convertedSize} ${this.sizes[i]}`;
+  }
+
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: { message },
+    });
   }
 }

@@ -81,4 +81,9 @@ export class FilesService {
     return this.http.delete(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/files/${fileName}`, {})
       .pipe(catchError((err) => throwError(err)));
   }
+
+  processFiles(user: User, password: string) {
+    return this.http.put(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/processUploadedJars`, { password })
+      .pipe(catchError((err) => throwError(err)));
+  }
 }

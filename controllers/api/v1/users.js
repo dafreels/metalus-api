@@ -7,13 +7,19 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const IncomingForm = require('formidable').IncomingForm;
 const ValidationError = require('../../../lib/ValidationError');
+const execFile = require('child_process').execFile;
 const fs = require('fs');
 const util = require('util');
 const stat = util.promisify(fs.stat);
 const mkdir = util.promisify(fs.mkdir);
 const rename = util.promisify(fs.rename);
 const readdir = util.promisify(fs.readdir);
+const rmdir = util.promisify(fs.rmdir);
 const unlink = util.promisify(fs.unlink);
+const exec = util.promisify(execFile);
+
+// TODO This should be replaced with the execution library once it is in place
+const metalusCommand = `${process.cwd()}/metalus-utils/bin/metadata-extractor.sh`;
 
 module.exports = function (router) {
 
@@ -213,7 +219,7 @@ module.exports = function (router) {
       .once('end', async () => {
         const userModel = new UsersModel();
         const projectUser = await userModel.getUser(userId);
-        const project = projectUser.projects.find(p => p.id = projectUser.defaultProjectId);
+        const project = projectUser.projects.find(p => p.id === projectUser.defaultProjectId);
         if (!project.uploadHistory) {
           project.uploadHistory = [];
         }
@@ -250,7 +256,84 @@ module.exports = function (router) {
     }
     res.sendStatus(204);
   });
+
+  router.put('/:id/project/:projectId/processUploadedJars', async (req, res, next) => {
+    const user = await req.user;
+    const userId = req.params.id;
+    const projectId = req.params.projectId;
+    const password = req.body.password;
+    if (userId !== user.id) {
+      next(new Error('User does not have permission to process files for different user!'));
+    }
+    const userModel = new UsersModel();
+    const projectUser = await userModel.getUser(userId);
+    if (!bcrypt.compareSync(password, projectUser.password)) {
+      next(new Error('Unable to upload metadata: Invalid password!'));
+    }
+    const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+    const stagingDir = `${userJarDir}/staging`;
+    let exists;
+    try {
+      const stats = await stat(userJarDir);
+      exists = stats.isDirectory();
+    } catch (err) {
+      exists = false;
+    }
+    if (exists) {
+      const files = await readdir(userJarDir);
+      if (files.length > 0) {
+        const jarFiles = [];
+        files.forEach((f) => {
+          if (f.indexOf('.jar') >= 1) {
+            jarFiles.push(`${userJarDir}/${f}`);
+          }
+        });
+        const parameters = [
+          '--api-url',
+          `http://localhost:${req.socket.localPort}`,
+          '--no-auth-download',
+          'true',
+          '--staging-dir',
+          stagingDir,
+          '--jar-files',
+          jarFiles.join(','),
+          '--authorization.class',
+          'com.acxiom.pipeline.api.SessionAuthorization',
+          '--authorization.username',
+          projectUser.username,
+          '--authorization.password',
+          password,
+          '--authorization.authUrl',
+          `http://localhost:${req.socket.localPort}/api/v1/users/login`,
+          '--clean-staging',
+          'true'
+        ];
+        try {
+          await exec(metalusCommand, parameters);
+          // Delete the jar directory
+          await removeDir(stagingDir);
+          await removeDir(userJarDir);
+        } catch (err) {
+          //TODO clean this up
+          return res.status(400).json({ error: err });
+        }
+      }
+    }
+    res.status(204).json({});
+  });
 };
+
+async function removeDir(dir) {
+  // Remove any additional files
+  const stagedFiles = await readdir(dir) || [];
+  if (stagedFiles.length > 0) {
+    for await (const file of stagedFiles) {
+      await unlink(`${dir}/${file}`);
+    }
+  }
+  // Delete the directory
+  await rmdir(dir);
+}
 
 async function deleteProjectData(userId, projectId) {
   const query = {

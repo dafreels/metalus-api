@@ -24,6 +24,8 @@ module.exports = (grunt) => {
 
   grunt.registerTask('build', [
     'test:api',
+    'curl-dir:metalusUtils',
+    'extract-metalus-utils',
     'coveralls:report'
   ])
 };
