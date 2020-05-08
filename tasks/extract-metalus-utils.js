@@ -1,7 +1,7 @@
 const tar = require('tar');
 const fs = require('fs');
 
-const fileName = './metalus-utils_2.11-spark_2.4-1.6.5.tar.gz';
+const fileName = './metalus-utils_2.11-spark_2.4-1.6.6.tar.gz';
 
 module.exports = function (grunt) {
   grunt.registerTask('extract-metalus-utils', function () {

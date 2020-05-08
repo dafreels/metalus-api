@@ -14,6 +14,7 @@ COPY package-lock.json /opt/metalus/
 COPY server.js /opt/metalus/
 COPY angular.json /opt/metalus/
 COPY tsconfig.json /opt/metalus/
+COPY metalus-utils/ /opt/metalus/
 
 ENV NODE_ENV development
 
