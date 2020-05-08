@@ -141,7 +141,7 @@ describe('Steps Validation Mongo Tests', () => {
       .set('Cookie', [userInfo])
       .send(stepData.find(step => step.id === '0a296858-e8b7-43dd-9f55-88d00a7cd8fa'))
       .expect('Content-Type', /json/)
-      .expect(500);
+      .expect(422);
     const stepResponse = JSON.parse(response.text);
     expect(stepResponse).to.exist;
     expect(stepResponse).to.have.property('errors').eq('update failed: id from object(0a296858-e8b7-43dd-9f55-88d00a7cd8fa) does not match id from url(bad-id)');
