@@ -4,7 +4,7 @@ module.exports = (grunt) => {
   return {
     metalusUtils: {
       src: [
-        'https://github.com/Acxiom/metalus/releases/download/release_1.6.6/metalus-utils_2.11-spark_2.4-1.6.6.tar.gz'
+        'https://github.com/Acxiom/metalus/releases/download/release_1_6_6/metalus-utils_2.11-spark_2.4-1.6.6.tar.gz'
       ],
       dest: '.'
     }
