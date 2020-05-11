@@ -4,7 +4,11 @@
       <nav-menu currentPage="profile"></nav-menu>
       <span class="page-title">Profile</span>
     </span>
-    <user-menu [user]="user"></user-menu>
+    <span>
+      <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change Password</button>
+      <button mat-raised-button color="primary" (click)="addProject()" style="margin-right: 5px;">New Project</button>
+      <user-menu [user]="user"></user-menu>
+    </span>
   </div>
   <div>
     <mat-card>
@@ -17,12 +21,6 @@
               <span class="display">{{user.id}}</span>
               <span class="label">Username</span>
               <span class="display">{{user.username}}</span>
-              <span class="label">Password</span>
-              <span>
-            <button mat-icon-button color="primary" (click)="startPasswordChange()">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </span>
               <span class="label">Display Name</span>
               <span class="display">{{user.displayName}}</span>
               <span class="label">Role</span>
@@ -35,9 +33,6 @@
             <mat-card-header>
               <mat-card-title-group>
                 <mat-card-title>Projects</mat-card-title>
-                <button mat-icon-button color="primary" (click)="addProject()">
-                  <mat-icon>add</mat-icon>
-                </button>
               </mat-card-title-group>
             </mat-card-header>
             <div class="divTable blueTable">

@@ -5,6 +5,7 @@ WORKDIR /opt/metalus
 COPY config /opt/metalus/config
 COPY controllers /opt/metalus/controllers
 COPY lib /opt/metalus/lib
+COPY metalus-utils /opt/metalus/metalus-utils
 COPY models /opt/metalus/models
 COPY schemas /opt/metalus/schemas
 COPY src /opt/metalus/src
@@ -14,7 +15,6 @@ COPY package-lock.json /opt/metalus/
 COPY server.js /opt/metalus/
 COPY angular.json /opt/metalus/
 COPY tsconfig.json /opt/metalus/
-COPY metalus-utils/ /opt/metalus/
 
 ENV NODE_ENV development
 
@@ -33,7 +33,9 @@ WORKDIR /opt/metalus
 
 RUN apk --no-cache add \
     nodejs \
-    npm
+    npm \
+    openjdk8 \
+    bash
 
 COPY --from=build /opt/metalus/ /opt/metalus/
 

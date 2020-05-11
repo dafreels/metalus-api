@@ -12,6 +12,9 @@ import {Router} from "@angular/router";
 import {PasswordDialogComponent} from "../../../shared/components/password-dialog/password-dialog.component";
 import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
+import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {FormControl} from "@angular/forms";
+import {MatChipInputEvent} from "@angular/material/chips";
 
 @Component({
   selector: 'app-upload',
@@ -22,12 +25,20 @@ export class UploadComponent implements OnInit {
   user: User;
   @ViewChild('file', {static: false}) file;
   files: Set<File> = new Set();
-  uploadedFiles: UploadedFile[];
+  uploadedFiles: UploadedFile[] = [];
   sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
   progress;
   uploading = false;
   uploadSuccessful = false;
+
+  // Additional Repos Chip fields
+  additionalRepos: string[] = [];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  additionalReposCtrl = new FormControl();
+
+  // Remote Jars Chip fields
+  remoteJars: string[] = [];
+  remoteJarsCtrl = new FormControl();
 
   constructor(private authService: AuthService,
               private filesService: FilesService,
@@ -115,7 +126,9 @@ export class UploadComponent implements OnInit {
           width: '25%',
           height: '25%',
         });
-        this.filesService.processFiles(this.user, result).subscribe(data => {
+        this.filesService.processFiles(this.user, result,
+          this.additionalRepos.join(','),
+          this.remoteJars.join(',')).subscribe(data => {
           waitDialogRef.close();
           this.router.navigate(['landing']);
         },
@@ -144,5 +157,59 @@ export class UploadComponent implements OnInit {
       height: '300px',
       data: { message },
     });
+  }
+
+  removeAdditionalRepo(repo: string) {
+    const index = this.additionalRepos.indexOf(repo);
+    if (index > -1) {
+      this.additionalRepos.splice(index, 1);
+    }
+  }
+
+  addAdditionalRepo(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our package
+    if ((value || '').trim()) {
+      if (!this.additionalRepos) {
+        this.additionalRepos = [];
+      }
+      this.additionalRepos.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.additionalReposCtrl.setValue(null);
+  }
+
+  removeRemoteJar(repo: string) {
+    const index = this.remoteJars.indexOf(repo);
+    if (index > -1) {
+      this.remoteJars.splice(index, 1);
+    }
+  }
+
+  addRemoteJar(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our package
+    if ((value || '').trim()) {
+      if (!this.remoteJars) {
+        this.remoteJars = [];
+      }
+      this.remoteJars.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.remoteJarsCtrl.setValue(null);
   }
 }

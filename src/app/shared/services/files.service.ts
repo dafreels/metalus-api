@@ -82,8 +82,13 @@ export class FilesService {
       .pipe(catchError((err) => throwError(err)));
   }
 
-  processFiles(user: User, password: string) {
-    return this.http.put(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/processUploadedJars`, { password })
+  processFiles(user: User, password: string, additionalRepos: string, remoteJars: string) {
+    const body = {
+      password,
+      repos: additionalRepos,
+      remoteJars
+    };
+    return this.http.put(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/processUploadedJars`, body)
       .pipe(catchError((err) => throwError(err)));
   }
 }

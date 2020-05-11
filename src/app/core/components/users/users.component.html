@@ -4,18 +4,14 @@
       <nav-menu currentPage="users"></nav-menu>
       <span class="page-title">Users</span>
     </span>
-    <user-menu [user]="currentUser"></user-menu>
+    <span>
+      <button mat-raised-button color="primary" (click)="addUser()" style="margin-right: 5px;">New</button>
+      <user-menu [user]="currentUser"></user-menu>
+    </span>
   </div>
   <div>
     <mat-card>
       <mat-card-content>
-        <mat-card-header>
-          <mat-card-title-group>
-            <button mat-icon-button color="primary" (click)="addUser()">
-              <mat-icon>add</mat-icon>
-            </button>
-          </mat-card-title-group>
-        </mat-card-header>
         <div class="divTable blueTable">
           <div class="divTableHeading">
             <div class="divTableRow">
@@ -36,13 +32,13 @@
               <div class="divTableCell">{{user.role}}</div>
               <div class="divTableCell">{{user.defaultProjectId}}</div>
               <div class="divTableCell">
-                <button *ngIf="user.id !== currentUser.id" mat-icon-button color="primary"
+                <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="primary"
                         (click)="editUser(user)">
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>
               <div class="divTableCell">
-                <button *ngIf="user.id !== currentUser.id" mat-icon-button color="primary"
+                <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="primary"
                         (click)="removeUser(user)">
                   <mat-icon>remove</mat-icon>
                 </button>

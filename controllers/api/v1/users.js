@@ -48,7 +48,7 @@ module.exports = function (router) {
     const userModel = new UsersModel();
     const users = await userModel.getAll();
     if (users && users.length > 0) {
-      res.status(200).json({ users });
+      res.status(200).json({users});
     } else {
       res.sendStatus(204);
     }
@@ -73,7 +73,7 @@ module.exports = function (router) {
         newUser.password = bcrypt.hashSync(newUser.password, 8);
         const fullUser = await userModel.createOne(newUser);
         res.status(201).json(fullUser);
-      } catch(err) {
+      } catch (err) {
         if (err instanceof ValidationError) {
           res.status(422).json({errors: err.getValidationErrors(), body: req.body});
         } else {
@@ -126,7 +126,7 @@ module.exports = function (router) {
       if (err instanceof ValidationError) {
         res.status(422).json({errors: err.getValidationErrors(), body: req.body});
       } else {
-       next(err);
+        next(err);
       }
     }
   });
@@ -193,7 +193,7 @@ module.exports = function (router) {
           modifiedDate: fileStat.mtime
         });
       }
-      res.status(200).json({ files: existingFiles });
+      res.status(200).json({files: existingFiles});
     }
   });
 
@@ -205,7 +205,7 @@ module.exports = function (router) {
       next(new Error('User does not have permission to upload files for different user!'));
     }
     const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
-    await mkdir(userJarDir, { recursive: true });
+    await mkdir(userJarDir, {recursive: true});
     const options = {
       uploadDir: userJarDir
     };
@@ -262,6 +262,8 @@ module.exports = function (router) {
     const userId = req.params.id;
     const projectId = req.params.projectId;
     const password = req.body.password;
+    const repos = req.body.repos;
+    const remoteJars = req.body.remoteJars;
     if (userId !== user.id) {
       next(new Error('User does not have permission to process files for different user!'));
     }
@@ -272,51 +274,56 @@ module.exports = function (router) {
     }
     const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
     const stagingDir = `${userJarDir}/staging`;
-    let exists;
+    const jarFiles = [];
     try {
       const stats = await stat(userJarDir);
-      exists = stats.isDirectory();
-    } catch (err) {
-      exists = false;
-    }
-    if (exists) {
-      const files = await readdir(userJarDir);
-      if (files.length > 0) {
-        const jarFiles = [];
-        files.forEach((f) => {
-          if (f.indexOf('.jar') >= 1) {
-            jarFiles.push(`${userJarDir}/${f}`);
-          }
-        });
-        const parameters = [
-          '--api-url',
-          `http://localhost:${req.socket.localPort}`,
-          '--no-auth-download',
-          'true',
-          '--staging-dir',
-          stagingDir,
-          '--jar-files',
-          jarFiles.join(','),
-          '--authorization.class',
-          'com.acxiom.pipeline.api.SessionAuthorization',
-          '--authorization.username',
-          projectUser.username,
-          '--authorization.password',
-          password,
-          '--authorization.authUrl',
-          `http://localhost:${req.socket.localPort}/api/v1/users/login`,
-          '--clean-staging',
-          'true'
-        ];
-        try {
-          await exec(metalusCommand, parameters);
-          // Delete the jar directory
-          await removeDir(stagingDir);
-          await removeDir(userJarDir);
-        } catch (err) {
-          //TODO clean this up
-          return res.status(400).json({ error: err });
+      if (stats.isDirectory()) {
+        const files = await readdir(userJarDir);
+        if (files.length > 0) {
+          files.forEach((f) => {
+            if (f.indexOf('.jar') >= 1) {
+              jarFiles.push(`${userJarDir}/${f}`);
+            }
+          });
         }
+      }
+    } catch (err) {}
+    if (remoteJars && remoteJars.trim().length > 0) {
+      remoteJars.split(",").forEach(f => jarFiles.push(f));
+    }
+    if (jarFiles.length > 0) {
+      const parameters = [
+        '--api-url',
+        `http://localhost:${req.socket.localPort}`,
+        '--no-auth-download',
+        'true',
+        '--staging-dir',
+        stagingDir,
+        '--jar-files',
+        jarFiles.join(','),
+        '--authorization.class',
+        'com.acxiom.pipeline.api.SessionAuthorization',
+        '--authorization.username',
+        projectUser.username,
+        '--authorization.password',
+        password,
+        '--authorization.authUrl',
+        `http://localhost:${req.socket.localPort}/api/v1/users/login`,
+        '--clean-staging',
+        'true'
+      ];
+      if (repos && repos.trim().length > 0) {
+        parameters.push('--repo');
+        parameters.push(repos);
+      }
+      try {
+        await exec(metalusCommand, parameters, { maxBuffer: 1024 * 5000 });
+        // Delete the jar directory
+        await removeDir(stagingDir);
+        await removeDir(userJarDir);
+      } catch (err) {
+        //TODO clean this up
+        return res.status(400).json({error: err});
       }
     }
     res.status(204).json({});
@@ -325,14 +332,23 @@ module.exports = function (router) {
 
 async function removeDir(dir) {
   // Remove any additional files
-  const stagedFiles = await readdir(dir) || [];
-  if (stagedFiles.length > 0) {
-    for await (const file of stagedFiles) {
-      await unlink(`${dir}/${file}`);
-    }
+  let exists;
+  try {
+    const stats = await stat(dir);
+    exists = stats.isDirectory();
+  } catch (err) {
+    exists = false;
   }
-  // Delete the directory
-  await rmdir(dir);
+  if (exists) {
+    const stagedFiles = await readdir(dir) || [];
+    if (stagedFiles.length > 0) {
+      for await (const file of stagedFiles) {
+        await unlink(`${dir}/${file}`);
+      }
+    }
+    // Delete the directory
+    await rmdir(dir);
+  }
 }
 
 async function deleteProjectData(userId, projectId) {
@@ -342,6 +358,9 @@ async function deleteProjectData(userId, projectId) {
       projectId
     }
   };
+  const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+  await removeDir(`${userJarDir}/staging`);
+  await removeDir(userJarDir);
   await new StepsModel().deleteMany(query);
   await new AppsModel().deleteMany(query);
   await new PkgObjsModel().deleteMany(query);

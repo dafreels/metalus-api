@@ -65,6 +65,7 @@
           "enum": [
             "Pipeline",
             "pipeline",
+            "Branch",
             "branch",
             "fork",
             "join",
@@ -115,11 +116,8 @@
               "type": "string",
               "description": "Package where this step is located"
             },
-            "stepResults": {
-              "type": "array",
-              "items": {
-                "$ref": "steps.json#/definitions/stepResults"
-              }
+            "results": {
+              "$ref": "steps.json#/definitions/stepResults"
             }
           }
         }

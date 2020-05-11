@@ -33,7 +33,7 @@ export class UsersComponent implements OnInit {
   addUser() {
     const dialogRef = this.dialog.open(UsersModalComponent, {
       width: '50%',
-      height: '50%',
+      height: '60%',
       data: {
         username: '',
         password: '',
@@ -57,7 +57,7 @@ export class UsersComponent implements OnInit {
   editUser(user: User) {
     const dialogRef = this.dialog.open(UsersModalComponent, {
       width: '50%',
-      height: '50%',
+      height: '60%',
       data: user,
     });
     dialogRef.afterClosed().subscribe((result) => {
