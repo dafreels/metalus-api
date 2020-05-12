@@ -80,7 +80,7 @@
         <mat-card-content>
           <mat-accordion>
             <app-step-information [selectedStep]="selectedStep"></app-step-information>
-            <mat-expansion-panel>
+            <mat-expansion-panel style="margin-top: 5px;">
               <mat-expansion-panel-header>
                 <mat-panel-title>Parameters</mat-panel-title>
                 <mat-panel-description>
@@ -109,8 +109,7 @@
                     [stepSuggestions]="typeAhead"
                     [pipelines]="stepGroups"
                     [pipelinesData]="pipelinesData"
-                    (parameterUpdate)="handleParameterUpdate(param.name, $event)"
-                  ></app-pipelines-parameter>
+                    (parameterUpdate)="handleParameterUpdate(param.name, $event)"></app-pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>
