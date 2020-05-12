@@ -45,7 +45,7 @@ export class PipelinesEditorComponent implements OnInit {
   selectedStep: PipelineStep;
   selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
-  stepCreated$: Subject<PipelineStep> = new Subject<PipelineStep>();
+  stepCreated: Subject<PipelineStep> = new Subject<PipelineStep>();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
   isABranchStep: boolean;
   stepLookup = {};
@@ -54,6 +54,7 @@ export class PipelinesEditorComponent implements OnInit {
   stepGroup: StepGroupProperty = { enabled: false };
   user: User;
   editName: boolean = false;
+  editStepId: boolean = false;
   errors = [];
 
   constructor(
@@ -114,9 +115,9 @@ export class PipelinesEditorComponent implements OnInit {
 
   modelChange(event) {
     if (this.selectedPipeline.steps.length === 0) {
-      this.selectedPipeline = this.generatePipeline();
+      this.selectedPipeline = this.generatePipeline(true);
     } else if (Object.keys(event.nodes).length !== this.selectedPipeline.steps.length) {
-      this.stepCreated$.subscribe((response: PipelineStep) => {
+      this.stepCreated.subscribe((response: PipelineStep) => {
         const duplicated = this.selectedPipeline.steps.find(
           (step) => step.id === response.id
         );
@@ -240,7 +241,7 @@ export class PipelinesEditorComponent implements OnInit {
         step.stepId = step.id;
         step.id = id.replace(' ', '_');
         this.dndSubject.next(this.createDesignerElement(step, event));
-        this.stepCreated$.next(step);
+        this.stepCreated.next(step);
       }
     });
   }
@@ -250,7 +251,7 @@ export class PipelinesEditorComponent implements OnInit {
       return;
     }
     this.disableNameEdit();
-    const newPipeline = this.generatePipeline();
+    const newPipeline = this.generatePipeline(true);
     // Cannot diff the pipeline since step orders could have changed
     if (this.hasPipelineChanged(newPipeline)) {
       const dialogRef = this.dialog.open(ConfirmationModalComponent, {
@@ -281,7 +282,7 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   exportPipeline() {
-    const pipeline = this.generatePipeline();
+    const pipeline = this.generatePipeline(true);
     delete pipeline.project;
     this.dialog.open(CodeEditorComponent, {
       width: '75%',
@@ -316,7 +317,7 @@ export class PipelinesEditorComponent implements OnInit {
       width: '25%',
       height: '25%',
     });
-    const newPipeline = this.generatePipeline();
+    const newPipeline = this.generatePipeline(true);
     let observable;
     if (
       this.selectedPipeline.id &&
@@ -879,7 +880,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
-  private generatePipeline(): Pipeline {
+  private generatePipeline(removeExecuteIfEmptyParameter: boolean): Pipeline {
     const targetIds = Object.values(this.designerModel.connections).map(
       (conn) => conn.targetNodeId
     );
@@ -910,7 +911,8 @@ export class PipelinesEditorComponent implements OnInit {
     const nodeId = Object.keys(this.designerModel.nodes).find(
       (key) => this.designerModel.nodes[key].data.name === node.data.name
     );
-    const step = node.data.data;
+    // Clone the step data
+    const step = JSON.parse(JSON.stringify(node.data.data));
     delete step._id;
     delete step.project; // Remove project data since it serves no purpose outside of the UI
     if (step.executeIfEmpty && step.executeIfEmpty.trim().length === 0) {
@@ -979,9 +981,18 @@ export class PipelinesEditorComponent implements OnInit {
     this.validateChanges();
   }
 
+  enableStepIdEdit() {
+    this.editStepId = true;
+  }
+
+  disableStepIdEdit() {
+    this.editStepId = false;
+    this.validateChanges();
+  }
+
   validateChanges() {
     const errors = [];
-    const newPipeline = this.generatePipeline();
+    const newPipeline = this.generatePipeline(false);
     const stepValidations = this.validatePipelineSteps(newPipeline);
     if (!this.pipelineValidator(newPipeline) || stepValidations.length > 0) {
       stepValidations.forEach(e => errors.push(e));

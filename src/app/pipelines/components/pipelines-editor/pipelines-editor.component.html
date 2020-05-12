@@ -88,15 +88,16 @@
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="pipeline-form">
-                <mat-form-field>
-                  <input
-                    matInput
-                    placeholder="Id"
-                    [(ngModel)]="selectedStep.id"
-                    name="id"
-                    (change)="handleIdChange()"
-                  />
-                </mat-form-field>
+                <span>
+                  <mat-form-field *ngIf="editStepId">
+                    <input matInput placeholder=" Pipeline Name" [(ngModel)]="selectedStep.id" required
+                           (focusout)="disableStepIdEdit()" (change)="handleIdChange()"/>
+                  </mat-form-field>
+                  <span class="pipeline-name" *ngIf="!editStepId">{{selectedStep.id}}</span>
+                  <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editStepId" (click)="enableStepIdEdit()">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </span>
                 <mat-accordion>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep.params"

@@ -167,23 +167,17 @@ export class PipelineParameterComponent implements OnInit {
   parameter: PipelineStepParam;
   private id = 0;
 
-  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >(null);
+  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
   @ViewChild('singleSelect', { static: false }) singleSelect: MatSelect;
   public stepResponseControl: FormControl = new FormControl();
   public stepResponseFilterCtrl: FormControl = new FormControl();
 
-  public filteredStepGroup: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >(null);
+  public filteredStepGroup: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
   public stepGroupControl: FormControl = new FormControl('');
   public stepGroupFilterCtrl: FormControl = new FormControl();
 
-  constructor(
-    private chaneDetector: ChangeDetectorRef,
-    private displayDialogService: DisplayDialogService
-  ) {}
+  constructor(private chaneDetector: ChangeDetectorRef,
+    private displayDialogService: DisplayDialogService) {}
 
   ngOnInit(): void {
     this.stepResponseControl.setValue(this.parameters[0].value);
@@ -246,8 +240,7 @@ export class PipelineParameterComponent implements OnInit {
       );
       inputData.value = this.stepGroupControl.value;
       this.stepGroup.pipeline = this.pipelines.find(
-        (pipeline) => pipeline.name === this.stepGroupControl.value
-      );
+        (pipeline) => pipeline.name === this.stepGroupControl.value);
       this.handleChange(id);
       if (this.stepGroup.pipeline) {
         this.parameters[0].value = this.stepGroup.pipeline.name;
