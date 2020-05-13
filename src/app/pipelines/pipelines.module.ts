@@ -9,16 +9,21 @@ import { StepsModule } from '../steps/steps.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
 import { StepInformationComponent } from './components/step-information/step-information.component';
 import {CoreModule} from "../core/core.module";
+import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],
   exports: [StepInformationComponent],
   declarations: [
+    CustomBranchDialogComponent,
     PipelinesEditorComponent,
     PipelineParameterComponent,
     PipelinesSelectorModalComponent,
     StepInformationComponent,
   ],
-  entryComponents: [PipelinesSelectorModalComponent],
+  entryComponents: [
+    CustomBranchDialogComponent,
+    PipelinesSelectorModalComponent
+  ],
 })
 export class PipelinesModule {}

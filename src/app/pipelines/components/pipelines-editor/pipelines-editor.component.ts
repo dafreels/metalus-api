@@ -28,6 +28,7 @@ import {SharedFunctions} from '../../../shared/utils/shared-functions';
 import {DesignerPreviewComponent} from '../../../designer/components/designer-preview/designer-preview.component';
 import {AuthService} from "../../../shared/services/auth.service";
 import {User} from "../../../shared/models/users.models";
+import {CustomBranchDialogComponent} from "../custom-branch-step/custom-branch-dialog.component";
 
 @Component({
   selector: 'app-pipelines-editor',
@@ -75,6 +76,7 @@ export class PipelinesEditorComponent implements OnInit {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
       steps.push(StaticSteps.STEP_GROUP);
+      steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
       this.steps = steps;
     });
 
@@ -115,7 +117,7 @@ export class PipelinesEditorComponent implements OnInit {
 
   modelChange(event) {
     if (this.selectedPipeline.steps.length === 0) {
-      this.selectedPipeline = this.generatePipeline(true);
+      this.selectedPipeline = this.generatePipeline();
     } else if (Object.keys(event.nodes).length !== this.selectedPipeline.steps.length) {
       this.stepCreated.subscribe((response: PipelineStep) => {
         const duplicated = this.selectedPipeline.steps.find(
@@ -228,18 +230,33 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   addStep(event: DndDropEvent) {
-    const dialogRef = this.dialog.open(NameDialogComponent, {
-      width: '25%',
-      height: '25%',
-      data: { name: '' },
-    });
+    let dialogRef;
+    if (event.data.id === '6344948a-2032-472b-873c-064e6530989e') {
+      dialogRef = this.dialog.open(CustomBranchDialogComponent, {
+        width: '40%',
+        height: '60%',
+        data: this.packageObjects
+      });
+    } else {
+      dialogRef = this.dialog.open(NameDialogComponent, {
+        width: '25%',
+        height: '25%',
+        data: {name: ''},
+      });
+    }
     dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.trim().length > 0) {
-        const id = result as string;
-        const step = JSON.parse(JSON.stringify(event.data));
-        // Switch the id and stepId
-        step.stepId = step.id;
-        step.id = id.replace(' ', '_');
+      if (result) {
+        let step;
+        if (result.stepId) {
+          step = result;
+        } else {
+          const id = result as string;
+          step = JSON.parse(JSON.stringify(event.data));
+          // Switch the id and stepId
+          step.stepId = step.id;
+          step.id = id;
+        }
+        step.id = step.id.replace(' ', '_');
         this.dndSubject.next(this.createDesignerElement(step, event));
         this.stepCreated.next(step);
       }
@@ -251,7 +268,7 @@ export class PipelinesEditorComponent implements OnInit {
       return;
     }
     this.disableNameEdit();
-    const newPipeline = this.generatePipeline(true);
+    const newPipeline = this.generatePipeline();
     // Cannot diff the pipeline since step orders could have changed
     if (this.hasPipelineChanged(newPipeline)) {
       const dialogRef = this.dialog.open(ConfirmationModalComponent, {
@@ -282,7 +299,7 @@ export class PipelinesEditorComponent implements OnInit {
   }
 
   exportPipeline() {
-    const pipeline = this.generatePipeline(true);
+    const pipeline = this.generatePipeline();
     delete pipeline.project;
     this.dialog.open(CodeEditorComponent, {
       width: '75%',
@@ -317,7 +334,7 @@ export class PipelinesEditorComponent implements OnInit {
       width: '25%',
       height: '25%',
     });
-    const newPipeline = this.generatePipeline(true);
+    const newPipeline = this.generatePipeline();
     let observable;
     if (
       this.selectedPipeline.id &&
@@ -880,7 +897,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
   }
 
-  private generatePipeline(removeExecuteIfEmptyParameter: boolean): Pipeline {
+  private generatePipeline(): Pipeline {
     const targetIds = Object.values(this.designerModel.connections).map(
       (conn) => conn.targetNodeId
     );
@@ -992,7 +1009,7 @@ export class PipelinesEditorComponent implements OnInit {
 
   validateChanges() {
     const errors = [];
-    const newPipeline = this.generatePipeline(false);
+    const newPipeline = this.generatePipeline();
     const stepValidations = this.validatePipelineSteps(newPipeline);
     if (!this.pipelineValidator(newPipeline) || stepValidations.length > 0) {
       stepValidations.forEach(e => errors.push(e));
