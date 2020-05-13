@@ -40,6 +40,7 @@ export class PipelinesEditorComponent implements OnInit {
   packageObjects: PackageObject[];
   pipelines: Pipeline[];
   stepGroups: Pipeline[];
+  stepGroupSteps: Step[];
   steps: Step[];
   selectedPipeline: Pipeline;
   _pipeline: Pipeline;
@@ -78,6 +79,7 @@ export class PipelinesEditorComponent implements OnInit {
       steps.push(StaticSteps.STEP_GROUP);
       steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
       this.steps = steps;
+      this.createStepGroupSteps();
     });
 
     this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
@@ -89,7 +91,7 @@ export class PipelinesEditorComponent implements OnInit {
         this.stepGroups = [];
       }
 
-      const stepGroups = [];
+      this.stepGroupSteps = [];
       let stepGroup;
       this.stepGroups.forEach(sg => {
         stepGroup = JSON.parse(JSON.stringify(StaticSteps.STEP_GROUP));
@@ -97,10 +99,10 @@ export class PipelinesEditorComponent implements OnInit {
         stepGroup.category = 'StepGroups';
         stepGroup.params[0].value = sg.id;
         stepGroup.displayName = sg.name;
-        stepGroups.push(stepGroup);
+        this.stepGroupSteps.push(stepGroup);
       });
 
-      this.steps = this.steps.concat(stepGroups);
+      this.createStepGroupSteps();
 
       pipelines.forEach((element: PipelineData) => {
         const pipeline: PipelineData = {
@@ -126,6 +128,14 @@ export class PipelinesEditorComponent implements OnInit {
           .compile(schema.definitions.BasePipeline);
       });
     });
+  }
+
+  private createStepGroupSteps() {
+    if (this.stepGroupSteps &&
+      this.stepGroupSteps.length > 0 &&
+      !this.steps.find(s => s.id === this.stepGroups[0].id)) {
+      this.steps = this.steps.concat(this.stepGroupSteps);
+    }
   }
 
   modelChange(event) {
