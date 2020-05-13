@@ -89,6 +89,19 @@ export class PipelinesEditorComponent implements OnInit {
         this.stepGroups = [];
       }
 
+      const stepGroups = [];
+      let stepGroup;
+      this.stepGroups.forEach(sg => {
+        stepGroup = JSON.parse(JSON.stringify(StaticSteps.STEP_GROUP));
+        stepGroup.stepId = stepGroup.id;
+        stepGroup.category = 'StepGroups';
+        stepGroup.params[0].value = sg.id;
+        stepGroup.displayName = sg.name;
+        stepGroups.push(stepGroup);
+      });
+
+      this.steps = this.steps.concat(stepGroups);
+
       pipelines.forEach((element: PipelineData) => {
         const pipeline: PipelineData = {
           id: element.id,
