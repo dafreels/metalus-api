@@ -22,10 +22,16 @@
                               routerLinkActive="active">Pipelines Editor</a></span>
     </div>
   </button>
-  <button mat-menu-item [disabled]="currentPage === 'steps-editor'">
+  <button mat-menu-item [disabled]="currentPage === 'upload'">
     <div>
-      <mat-icon color="primary">apps</mat-icon>
-      <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>
+      <mat-icon color="primary">group</mat-icon>
+      <span class="spacer"><a [routerLink]="['/upload']" routerLinkActive="active">Upload Metadata</a></span>
     </div>
   </button>
+<!--  <button mat-menu-item [disabled]="currentPage === 'steps-editor'">-->
+<!--    <div>-->
+<!--      <mat-icon color="primary">apps</mat-icon>-->
+<!--      <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>-->
+<!--    </div>-->
+<!--  </button>-->
 </mat-menu>
