@@ -22,6 +22,9 @@ export class SharedFunctions {
         case '$':
           type = 'runtime';
           break;
+        case '?':
+          type = 'mapped_runtime';
+          break;
         case '&':
           type = 'pipeline';
           break;
@@ -42,6 +45,9 @@ export class SharedFunctions {
         break;
       case 'secondary':
         leadCharacter = '#';
+        break;
+      case 'mapped_runtime':
+        leadCharacter = '?';
         break;
       case 'runtime':
         leadCharacter = '$';

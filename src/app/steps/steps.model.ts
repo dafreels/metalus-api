@@ -109,6 +109,15 @@ export class StaticSteps {
         language: undefined
       },
       {
+        name: 'useParentGlobals',
+        type: 'boolean',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
         name: 'pipelineMappings',
         type: 'object',
         required: false,

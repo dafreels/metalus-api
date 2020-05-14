@@ -1001,6 +1001,7 @@ export class PipelinesEditorComponent implements OnInit {
         switch (param.type) {
           case 'global':
           case 'runtime':
+          case 'mapped_runtime':
           case 'pipeline':
           case 'step':
           case 'secondary':

@@ -47,6 +47,7 @@ export class PropertiesEditorComponent {
       case 'secondary':
       case 'global':
       case 'runtime':
+      case 'mapped_runtime':
       case 'string':
         value = '';
         break;
