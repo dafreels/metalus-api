@@ -279,7 +279,7 @@ export class PipelinesEditorComponent implements OnInit {
           step.stepId = step.id;
           step.id = id;
         }
-        step.id = step.id.replace(' ', '_');
+        step.id = step.id.replace(/ /g, '_');
         this.dndSubject.next(this.createDesignerElement(step, event));
         this.stepCreated.next(step);
       }

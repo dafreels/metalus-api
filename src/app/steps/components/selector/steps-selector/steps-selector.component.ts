@@ -50,7 +50,9 @@ export class StepsSelectorComponent {
       this.originalSteps.filter((s) => {
         stepTags = s.tags || [];
         return (
-          s.displayName.toLocaleLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1 &&
+          (s.displayName.toLocaleLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1 ||
+            (s.engineMeta && s.engineMeta.spark &&
+              s.engineMeta.spark.toLocaleLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1)) &&
           (!tags ||
             tags.length === 0 ||
             stepTags.findIndex((t) => tags.indexOf(t) > -1) > -1)

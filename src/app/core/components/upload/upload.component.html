@@ -92,17 +92,17 @@
         <mat-card>
           <mat-card-content>
             Download the latest version of Metalus Utils:
-            https://github.com/Acxiom/metalus/releases/tag/release_1_6_5<br/>
+            https://github.com/Acxiom/metalus/releases/tag/release_1_6_6<br/>
             Upload Command:<br/>
             <textarea cols="100" rows="15">
-          metalus-utils/target/metalus-utils/bin/metadata-extractor.sh \
-        --api-url http://localhost:8000 \
-        --jar-files https://repo1.maven.org/maven2/com/acxiom/metalus-common_2.11-spark_2.4/1.6.5/metalus-common_2.11-spark_2.4-1.6.5.jar,https://repo1.maven.org/maven2/com/acxiom/metalus-mongo_2.11-spark_2.4/1.6.4/metalus-mongo_2.11-spark_2.4-1.6.4.jar,https://repo1.maven.org/maven2/com/acxiom/metalus-aws_2.11-spark_2.4/1.6.4/metalus-aws_2.11-spark_2.4-1.6.4.jar \
+          [path-to-metalus-utils]/metalus-utils/bin/metadata-extractor.sh \
+        --api-url http://[host]]:8000 \
+        --jar-files [path-to-jar-file] \
         --no-auth-download true \
         --authorization.class com.acxiom.pipeline.api.SessionAuthorization \
         --authorization.username [username] \
         --authorization.password [password] \
-        --authorization.authUrl http://localhost:8000/api/v1/users/login \
+        --authorization.authUrl http://[host]:8000/api/v1/users/login \
         --staging-dir staging
         </textarea>
           </mat-card-content>
