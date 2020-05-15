@@ -227,7 +227,7 @@ export class PipelinesEditorComponent implements OnInit {
       parameterType: undefined,
     };
     this.selectedStep.params.unshift(executeIfEmpty);
-    this.selectedStep.type === 'branch'
+    this.selectedStep.type.toLocaleLowerCase() === 'branch'
       ? (this.isABranchStep = true)
       : (this.isABranchStep = false);
   }
@@ -621,7 +621,7 @@ export class PipelinesEditorComponent implements OnInit {
     // Add connections
     const connectedNodes = [];
     pipeline.steps.forEach((step) => {
-      if (step.type !== 'branch' && step.nextStepId) {
+      if (step.type.toLocaleLowerCase() !== 'branch' && step.nextStepId) {
         model.connections[
           `${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepId]}`
         ] = {
@@ -698,7 +698,7 @@ export class PipelinesEditorComponent implements OnInit {
     // Add connections
     const connectedNodes = [];
     pipeline.steps.forEach((step) => {
-      if (step.type !== 'branch' && step.nextStepId) {
+      if (step.type.toLocaleLowerCase() !== 'branch' && step.nextStepId) {
         model.connections[
           `${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepId]}`
         ] = {
@@ -841,7 +841,7 @@ export class PipelinesEditorComponent implements OnInit {
     if (pipeline.steps.length > 0) {
       pipeline.steps.forEach((step) => {
         if (step.params && step.params.length > 0) {
-          if (step.type === 'branch') {
+          if (step.type.toLocaleLowerCase() === 'branch') {
             const hasResultParameter = step.params.find(
               (param) => param.type === 'result'
             );
@@ -969,7 +969,7 @@ export class PipelinesEditorComponent implements OnInit {
         (conn) => conn.sourceNodeId === nodeId
       );
       if (children.length > 0) {
-        if (step.type === 'branch') {
+        if (step.type.toLocaleLowerCase() === 'branch') {
           let childNode;
           delete step.nextStepId;
           children.forEach((child) => {

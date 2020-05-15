@@ -207,7 +207,7 @@ export class StepsEditorComponent implements OnInit {
 
   isValid() {
     return !(
-      this.selectedStep.type === 'branch' &&
+      this.selectedStep.type.toLocaleLowerCase() === 'branch' &&
       (!this.selectedStep.params ||
         this.selectedStep.params.length === 0 ||
         !this.selectedStep.params.find((p) => p.type === 'result'))

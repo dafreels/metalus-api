@@ -130,7 +130,7 @@
                 placeholder="Engine Meta Command"
                 [(ngModel)]="selectedStep.engineMeta.spark"
                 name="stepCommand"
-                [required]="selectedStep.type !== 'branch'"
+                [required]="selectedStep.type.toLocaleLowerCase() !== 'branch'"
                 [minLength]="5"
             /></mat-form-field>
 
@@ -140,13 +140,13 @@
                 placeholder="Engine Meta Package"
                 [(ngModel)]="selectedStep.engineMeta.pkg"
                 name="stepPackage"
-                [required]="selectedStep.type !== 'branch'"
+                [required]="selectedStep.type.toLocaleLowerCase() !== 'branch'"
                 [minLength]="5"
             /></mat-form-field>
 
             <mat-slide-toggle
               name="stepType"
-              [ngModel]="selectedStep.type === 'branch'"
+              [ngModel]="selectedStep.type.toLocaleLowerCase() === 'branch'"
               (ngModelChange)="changeStepType($event)"
             >
               Branch Step?
