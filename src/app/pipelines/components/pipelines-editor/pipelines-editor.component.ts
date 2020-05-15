@@ -670,11 +670,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
     // See if automatic layout needs to be applied
     if (!pipeline.layout || Object.keys(pipeline.layout).length === 0) {
-      DesignerComponent.performAutoLayout(
-        this.stepLookup,
-        connectedNodes,
-        model
-      );
+      DesignerComponent.performAutoLayout(model);
     }
     return model;
   }
@@ -751,7 +747,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
     // See if automatic layout needs to be applied
     if (!existingLayout) {
-      DesignerComponent.performAutoLayout(this.stepLookup, connectedNodes, model);
+      DesignerComponent.performAutoLayout(model);
     }
     return model;
   }
@@ -1048,5 +1044,11 @@ export class PipelinesEditorComponent implements OnInit {
       }
     }
     this.errors = errors;
+  }
+
+  autoLayout() {
+    const pipeline = this.generatePipeline();
+    delete pipeline.layout;
+    this.designerModel = this.generateModelFromPipeline(pipeline);
   }
 }

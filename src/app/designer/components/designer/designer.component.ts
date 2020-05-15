@@ -14,6 +14,7 @@ import {DndDropEvent} from 'ngx-drag-drop';
 import {Subject} from 'rxjs';
 import {DesignerNodeComponent} from '../designer-node/designer-node.component';
 import {DesignerNodeDirective} from '../../directives/designer-node.directive';
+import { graphlib, layout } from 'dagre';
 
 export interface DesignerElement {
   name: string;
@@ -336,7 +337,7 @@ export class DesignerComponent implements AfterViewInit {
     componentRef.instance.data = data;
     componentRef.instance.id = nodeId;
     componentRef.location.nativeElement.className = data.style;
-    // Handle selection events TODO: Try to find an angular way to do this
+    // Handle selection events
     componentRef.instance.nodeSelected.subscribe(data => {
       if (this.selectedComponent) {
         this.selectedComponent.location.nativeElement.className = this.selectedComponent.location.nativeElement.className.replace('designer-node-selected', '');
@@ -368,35 +369,32 @@ export class DesignerComponent implements AfterViewInit {
     return endPoint;
   }
 
-  // TODO This is a basic layout algorithm, need to try to use a proper library like dagre
-  static performAutoLayout(nodeLookup, connectedNodes, model) {
-    let x = 300;
-    let y = 100;
-    const nodeId = nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]];
-    if (nodeId) {
-      const rootNode = model.nodes[nodeLookup[Object.keys(nodeLookup).filter(key => connectedNodes.indexOf(key) === -1)[0]]];
-      DesignerComponent.setNodeCoordinates(model, nodeLookup, rootNode, nodeId, x, y);
-    }
-  }
-
-  private static setNodeCoordinates(model, nodeLookup, parentNode, nodeId, x, y) {
-    if (parentNode.x === -1) {
-      parentNode.x = x;
-    }
-    parentNode.y = y;
-    const children = Object.keys(model.connections).filter(key => key.indexOf(nodeId) === 0);
-    const totalWidth = children.length * 80;
-    y += 125;
-    x = children.length === 1 ? x : x - (totalWidth / 2);
-    if (x < 0) {
-      x = 100;
-    }
-    let childNode;
-    children.forEach(child => {
-      nodeId = model.connections[child].targetNodeId;
-      childNode = model.nodes[nodeId];
-      DesignerComponent.setNodeCoordinates(model, nodeLookup, childNode, nodeId, x, y);
-      x += 80;
+  static performAutoLayout(model) {
+    const graph = new graphlib.Graph();
+    graph.setGraph({});
+    graph.setDefaultEdgeLabel(() => { return {}; });
+    let node;
+    Object.keys(model.nodes).forEach(nodeKey => {
+      node = model.nodes[nodeKey];
+      // TODO need to get the width/height from the node being used
+      graph.setNode(nodeKey, {width: 64, height: 64});
+    });
+    // Set the edges
+    let edge;
+    Object.keys(model.connections).forEach(conn => {
+      edge = model.connections[conn];
+      graph.setEdge(edge.sourceNodeId, edge.targetNodeId);
+    })
+    // Perform layout
+    layout(graph);
+    // Update the model nodes
+    let gnode;
+    // TODO Need to try and center the elements
+    graph.nodes().forEach(n => {
+      node = model.nodes[n];
+      gnode = graph.node(n);
+      node.x = gnode.x + 32;
+      node.y = gnode.y + 32;
     });
   }
 }

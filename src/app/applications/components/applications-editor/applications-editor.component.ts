@@ -147,8 +147,6 @@ export class ApplicationsEditorComponent implements OnInit {
     // const executions = {};
     this.selectedApplication.executions.forEach((execution) => {
       this.createModelNode(model, execution, -1, -1);
-      // nodeId = `designer-node-${model.nodeSeq++}`;
-      // executions[execution.id] = execution;
     });
     // Create connections
     const connectedNodes = [];
@@ -184,11 +182,11 @@ export class ApplicationsEditorComponent implements OnInit {
       !this.selectedApplication.layout ||
       Object.keys(this.selectedApplication.layout).length === 0
     ) {
-      DesignerComponent.performAutoLayout(
-        this.executionLookup,
-        connectedNodes,
-        model
-      );
+      // DesignerComponent.performAutoLayout(
+      //   this.executionLookup,
+      //   connectedNodes,
+      //   model
+      // );
     }
     this.designerModel = model;
   }
