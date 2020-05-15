@@ -5,11 +5,11 @@
   <div *ngFor="let param of parameters">
     <span>
       <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
-        <ng-container *ngIf=" parameterType === 'step' || parameterType === 'secondary' ||
-              parameterType === 'pipeline' || parameterType === 'result'; else isNotTypeResponse">
+        <ng-container *ngIf=" param.type === 'step' || param.type === 'secondary' ||
+              param.type === 'pipeline' || param.type === 'result'; else isNotTypeResponse">
           <ng-container
-            *ngIf="(parameterType !== 'step' || parameterType !== 'secondary') &&
-              stepSuggestions.length > 0 && parameterType !== 'pipeline' && parameterType !== 'result'">
+            *ngIf="(param.type !== 'step' || param.type !== 'secondary') &&
+              stepSuggestions.length > 0 && param.type !== 'pipeline' && param.type !== 'result'">
             <mat-form-field style="width: 85%;">
               <mat-select
                 [formControl]="stepResponseControl"
@@ -26,7 +26,7 @@
               </mat-select>
             </mat-form-field>
           </ng-container>
-          <ng-container *ngIf="parameterType === 'pipeline'">
+          <ng-container *ngIf="param.type === 'pipeline'">
             <mat-form-field style="width: 85%;">
               <mat-select matTooltip="Info about the action" [matTooltipDisabled]="hasNoStepGroup" [formControl]="stepGroupControl"
                 placeholder="Select a Pipeline" #singleSelect (selectionChange)="handleChange(param.id, param)">
@@ -40,13 +40,13 @@
         </ng-container>
         <ng-template #isNotTypeResponse>
           <mat-form-field style="width: 85%;">
-            <input matInput *ngIf=" parameterType !== 'step' || parameterType !== 'secondary' ||
-            parameterType !== 'result'" [(ngModel)]="param.value" (change)="handleChange(param.id, param)"/>
+            <input matInput *ngIf=" param.type !== 'step' || param.type !== 'secondary' ||
+            param.type !== 'result'" [(ngModel)]="param.value" (change)="handleChange(param.id, param)"/>
           </mat-form-field>
         </ng-template>
       </ng-container>
       <ng-template #isAcomplexParameter>
-        <textarea *ngIf=" complexParameter && (parameterType !== 'step' || parameterType !== 'secondary')" matInput
+        <textarea *ngIf=" complexParameter && (param.type !== 'step' || param.type !== 'secondary')" matInput
                   required (change)="handleChange(param.id, param)" [ngModel]="param.value" disabled="true"></textarea>
       </ng-template>
       <button style="width: 10%;" *ngIf="param.id > 0" mat-icon-button color="primary" (click)="removeClause(param.id)">
@@ -81,11 +81,11 @@
                     -1))" value="pipeline">Pipeline</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field style="width: 40%" *ngIf="!stepGroup.enabled && parameterType === 'script'">
+      <mat-form-field style="width: 40%" *ngIf="!stepGroup.enabled && param.type === 'script'">
         <mat-label>Script Language</mat-label>
         <mat-select
           [(ngModel)]="param.language"
-          [disabled]="parameterType !== 'script'"
+          [disabled]="param.type !== 'script'"
           (selectionChange)="handleChange(param.id, param)">
           <mat-option value="javascript">Javascript</mat-option>
           <mat-option value="json">JSON</mat-option>
