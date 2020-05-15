@@ -238,38 +238,51 @@ export class DesignerComponent implements AfterViewInit {
       if (this.modelPopulating) {
         return;
       }
-      let connection = this.model.connections[`${info.sourceId}::${info.targetId}`];
-      if (!connection) {
-        connection = {
-          sourceNodeId: info.sourceId,
-          targetNodeId: info.targetId,
-          endpoints: []
-        };
-        this.model.connections[`${info.sourceId}::${info.targetId}`] = connection;
-      }
-      const endpoint = connection.endpoints.find(ep => ep.sourceEndPoint === this.model.endpoints[info.sourceEndpoint.id].name);
-      if (!endpoint) {
-        connection.endpoints.push({
-          sourceEndPoint: this.model.endpoints[info.sourceEndpoint.id].name,
-          targetEndPoint: this.model.endpoints[info.targetEndpoint.id].name
-        });
-      }
+      this.addConnection(info.sourceId, info.targetId, info.sourceEndpoint, info.targetEndpoint);
       this.broadCastModelChanges();
     });
+    this.jsPlumbInstance.bind('connectionMoved', (info) => {
+      this.removeConnection(info.originalSourceId, info.originalTargetId, info.originalSourceEndpoint);
+      this.addConnection(info.newSourceId, info.newTargetId, info.newSourceEndpoint, info.newTargetEndpoint);
+      this.broadCastModelChanges()
+    });
     this.jsPlumbInstance.bind('connectionDetached', (info) => {
-      let connection = this.model.connections[`${info.sourceId}::${info.targetId}`];
-      if (connection) {
-        const endpoint = connection.endpoints.findIndex(ep => ep.sourceEndPoint === this.model.endpoints[info.sourceEndpoint.id].name);
-        if (endpoint !== -1) {
-          connection.endpoints.splice(endpoint, 1);
-        }
-        if (connection.endpoints.length === 0) {
-          delete this.model.connections[`${info.sourceId}::${info.targetId}`];
-        }
-        this.broadCastModelChanges();
-      }
+      this.removeConnection(info.sourceId, info.targetId, info.sourceEndpoint);
+      this.broadCastModelChanges();
     });
     this.designerCanvas.viewContainerRef.clear();
+  }
+
+  private removeConnection(sourceId, targetId, sourceEndpoint) {
+    const connection = this.model.connections[`${sourceId}::${targetId}`];
+    if (connection) {
+      const endpoint = connection.endpoints.findIndex(ep => ep.sourceEndPoint === this.model.endpoints[sourceEndpoint.id].name);
+      if (endpoint !== -1) {
+        connection.endpoints.splice(endpoint, 1);
+      }
+      if (connection.endpoints.length === 0) {
+        delete this.model.connections[`${sourceId}::${targetId}`];
+      }
+    }
+  }
+
+  private addConnection(sourceId, targetId, sourceEndpoint, targetEndpoint) {
+    let connection = this.model.connections[`${sourceId}::${targetId}`];
+    if (!connection) {
+      connection = {
+        sourceNodeId: sourceId,
+        targetNodeId: targetId,
+        endpoints: []
+      };
+      this.model.connections[`${sourceId}::${targetId}`] = connection;
+    }
+    const endpoint = connection.endpoints.find(ep => ep.sourceEndPoint === this.model.endpoints[sourceEndpoint.id].name);
+    if (!endpoint) {
+      connection.endpoints.push({
+        sourceEndPoint: this.model.endpoints[sourceEndpoint.id].name,
+        targetEndPoint: this.model.endpoints[targetEndpoint.id].name
+      });
+    }
   }
 
   private addNModelNode(nodeId, nodeData) {

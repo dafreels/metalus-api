@@ -179,6 +179,7 @@ export class PipelinesEditorComponent implements OnInit {
       category: 'pipeline',
     };
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
+    this.newStep();
     this.enableNameEdit();
     this.loadPipelineToDesigner();
   }

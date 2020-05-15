@@ -12,12 +12,10 @@
               stepSuggestions.length > 0 && param.type !== 'pipeline' && param.type !== 'result'">
             <mat-form-field style="width: 85%;">
               <mat-select
-                [formControl]="stepResponseControl"
+                [(ngModel)]="param.value"
                 placeholder="Select Step Response"
                 #singleSelect
                 (selectionChange)="handleChange(param.id, param)">
-                <app-mat-select-search
-                  [formControl]="stepResponseFilterCtrl"></app-mat-select-search>
                 <mat-option
                   *ngFor="let step of filteredStepResponse | async"
                   [value]="step">

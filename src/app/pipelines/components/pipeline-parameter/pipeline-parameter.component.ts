@@ -57,8 +57,7 @@ export class PipelineParameterComponent implements OnInit {
     } else if (stepParameter.type === 'script') {
       this.isAScriptParameter = 'script';
       this.parameterType = 'script';
-    }
-    if (stepParameter.className) {
+    } else if (stepParameter.className && stepParameter.type !== 'script') {
       this.isAnObjectParameter = stepParameter.className;
       this.parameterType = 'object';
     } else if (stepParameter.type === 'object') {
@@ -108,6 +107,7 @@ export class PipelineParameterComponent implements OnInit {
           break;
 
         default:
+          this.complexParameter = false;
           if (stepParameter.value) {
             let value;
             let type;
@@ -166,8 +166,6 @@ export class PipelineParameterComponent implements OnInit {
 
   public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
   @ViewChild('singleSelect', { static: false }) singleSelect: MatSelect;
-  public stepResponseControl: FormControl = new FormControl();
-  public stepResponseFilterCtrl: FormControl = new FormControl();
 
   public filteredStepGroup: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
   public stepGroupControl: FormControl = new FormControl('');
@@ -177,7 +175,6 @@ export class PipelineParameterComponent implements OnInit {
     private displayDialogService: DisplayDialogService) {}
 
   ngOnInit(): void {
-    this.stepResponseControl.setValue(this.parameters[0].value);
     this.filteredStepResponse.next(this.stepSuggestions);
 
     const pipelinesName = this.pipelines.map((pipeline) => pipeline.name);
@@ -188,15 +185,6 @@ export class PipelineParameterComponent implements OnInit {
       this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
     }
     this.filteredStepGroup.next(pipelinesName);
-
-    // listen for search field value changes
-    this.stepResponseFilterCtrl.valueChanges.subscribe(() => {
-      this.filterList(
-        this.stepSuggestions,
-        this.stepResponseFilterCtrl,
-        this.filteredStepResponse
-      );
-    });
 
     this.stepGroupFilterCtrl.valueChanges.subscribe(() => {
       this.filterList(
@@ -248,12 +236,12 @@ export class PipelineParameterComponent implements OnInit {
       const param = this.parameters[paramIndex];
       if (paramType === 'step' || paramType === 'secondary') {
         param.suggestions = this.stepSuggestions;
-        selectedparameter.value = this.stepResponseControl.value;
+        selectedparameter.value = param.value;
       } else {
         param.suggestions = [];
       }
 
-      this.complexParameter = this.parameterType === 'object' || this.parameterType === 'script';
+      this.complexParameter = paramType === 'object' || paramType === 'script';
       this.parameters[paramIndex] = param;
     }
     let parameterValue = '';
