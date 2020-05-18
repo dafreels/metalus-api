@@ -218,7 +218,7 @@ export class PipelineParameterComponent implements OnInit {
 
   handleChange(id: number, selectedparameter?: SplitParameter) {
     this.parameter.type = this.parameterType;
-    const paramType = selectedparameter.type.toLocaleLowerCase();
+    const paramType = selectedparameter ? selectedparameter.type.toLocaleLowerCase() : this.parameterType;
     if (selectedparameter && paramType === 'pipeline') {
       const inputData = this.parameters.find((parameter) => parameter.id === id);
       inputData.value = this.stepGroupControl.value;
@@ -236,7 +236,9 @@ export class PipelineParameterComponent implements OnInit {
       const param = this.parameters[paramIndex];
       if (paramType === 'step' || paramType === 'secondary') {
         param.suggestions = this.stepSuggestions;
-        selectedparameter.value = param.value;
+        if (selectedparameter) {
+          selectedparameter.value = param.value;
+        }
       } else {
         param.suggestions = [];
       }
@@ -309,7 +311,7 @@ export class PipelineParameterComponent implements OnInit {
             if (result) {
               inputData.value = result.code;
               inputData.language = result.language;
-              this.handleChange(id);
+              this.handleChange(id, inputData);
             }
           });
           break;
@@ -336,7 +338,7 @@ export class PipelineParameterComponent implements OnInit {
             if (result) {
               inputData.value = result.userObject;
               inputData.className = result.schemaName;
-              this.handleChange(id);
+              this.handleChange(id, inputData);
             }
           });
           break;
