@@ -1,6 +1,6 @@
 import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.component';
 import {PipelinesService} from '../../services/pipelines.service';
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
 import {Pipeline, PipelineData, PipelineStep, PipelineStepParam,} from '../../models/pipelines.model';
@@ -36,6 +36,7 @@ import {CustomBranchDialogComponent} from "../custom-branch-step/custom-branch-d
   styleUrls: ['./pipelines-editor.component.scss'],
 })
 export class PipelinesEditorComponent implements OnInit {
+  @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
   pipelines: Pipeline[];
@@ -671,7 +672,7 @@ export class PipelinesEditorComponent implements OnInit {
     });
     // See if automatic layout needs to be applied
     if (!pipeline.layout || Object.keys(pipeline.layout).length === 0) {
-      DesignerComponent.performAutoLayout(model);
+      DesignerComponent.performAutoLayout(model, this.designerElement);
     }
     return model;
   }
@@ -748,7 +749,8 @@ export class PipelinesEditorComponent implements OnInit {
     });
     // See if automatic layout needs to be applied
     if (!existingLayout) {
-      DesignerComponent.performAutoLayout(model);
+      console.log(this.designerElement)
+      DesignerComponent.performAutoLayout(model, this.designerElement);
     }
     return model;
   }

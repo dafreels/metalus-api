@@ -382,7 +382,7 @@ export class DesignerComponent implements AfterViewInit {
     return endPoint;
   }
 
-  static performAutoLayout(model) {
+  static performAutoLayout(model, parentComponent?: DesignerComponent) {
     const graph = new graphlib.Graph();
     graph.setGraph({});
     graph.setDefaultEdgeLabel(() => { return {}; });
@@ -402,11 +402,27 @@ export class DesignerComponent implements AfterViewInit {
     layout(graph);
     // Update the model nodes
     let gnode;
-    // TODO Need to try and center the elements
+    
+    // Center elements on parent container
+    let center = 0;
+    let horizontalOffset = 32;
+    if(parentComponent) {
+      // Get parent container's width, use the middle point for horiziontal offset
+      horizontalOffset = horizontalOffset + (parentComponent.canvas.nativeElement.offsetParent.clientWidth / 2);
+      // if there are nodes defined, then process additional center offset
+      if(graph.nodes().length > 0) {
+        // Get the first node from the graph and get its internal offset, use that as the center point
+        const n = graph.nodes()[0]
+        node = model.nodes[n];
+        gnode = graph.node(n);
+        center = gnode.x + 32; // +32 to meet the midpoint of the node
+      }
+    }
+
     graph.nodes().forEach(n => {
       node = model.nodes[n];
       gnode = graph.node(n);
-      node.x = gnode.x + 32;
+      node.x = gnode.x + horizontalOffset - center;
       node.y = gnode.y + 32;
     });
   }

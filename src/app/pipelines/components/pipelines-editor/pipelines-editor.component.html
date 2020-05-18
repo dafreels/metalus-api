@@ -75,6 +75,7 @@
         (elementSelected)="stepSelected($event)"
         (elementAction)="handleElementAction($event)"
         [dataModel]="designerModel"
+        #designerElement
         (modelChanged)="modelChange($event)"></app-designer>
     </div>
     <div class="information-panel">
