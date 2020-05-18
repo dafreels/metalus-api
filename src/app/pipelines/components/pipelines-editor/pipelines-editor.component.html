@@ -52,8 +52,8 @@
               </mat-form-field>
             </div>
             <span>
-            <span *ngIf="errors.length > 0" class="error-panel">
-              <span><mat-icon color="warn" class="error-icon" (click)="showErrors()">warning</mat-icon></span>
+            <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
+              <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
               <span>{{errors.length}} Errors Detected</span>
             </span>
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()"

@@ -16,11 +16,11 @@
     <mat-tab-group>
       <mat-tab label="Category">
         <app-steps-category [stepList]="filterSteps" (stepItemSelection)='stepSelected($event)'
-                            [draggableSteps]="draggableSteps"></app-steps-category>
+                            [draggableSteps]="draggableSteps" class="steps-by-category"></app-steps-category>
       </mat-tab>
       <mat-tab label="List">
         <app-steps-list [stepList]="filterSteps" (stepItemSelection)='stepSelected($event)'
-                        [draggableSteps]="draggableSteps"></app-steps-list>
+                        [draggableSteps]="draggableSteps" class="steps-by-list"></app-steps-list>
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>
