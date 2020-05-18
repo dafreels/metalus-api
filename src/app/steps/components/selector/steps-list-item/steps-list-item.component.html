@@ -4,6 +4,8 @@
                [dndDraggable]="step"
                [dndDisableIf]="!draggableSteps"
                [dndEffectAllowed]="dropEffect">
-      <mat-icon color="primary">{{getStepIcon(step)}}</mat-icon>
-      <span class="step-list-text">{{step.displayName}}</span>
+      <div class="step-list-container" dndDragImageRef>
+            <mat-icon color="primary">{{getStepIcon(step)}}</mat-icon>
+            <span class="step-list-text">{{step.displayName}}</span>
+      </div>
 </mat-list-item>
