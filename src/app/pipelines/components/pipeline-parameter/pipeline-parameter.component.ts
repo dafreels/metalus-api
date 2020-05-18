@@ -63,8 +63,7 @@ export class PipelineParameterComponent implements OnInit {
     } else if (stepParameter.type === 'object') {
       this.isAnObjectParameter = 'object';
       this.parameterType = 'object';
-    }
-    if (stepParameter.type === 'text') {
+    } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     }
     if (stepParameter.value && typeof stepParameter.value === 'string') {
@@ -120,7 +119,7 @@ export class PipelineParameterComponent implements OnInit {
                 type = 'pipeline';
               } else {
                 value = e.trim();
-                type = SharedFunctions.getType(value, 'text');
+                type = SharedFunctions.getType(value, stepParameter.type);
               }
               if (value &&
                 (type === 'global' || type === 'step' || type === 'secondary'
@@ -139,8 +138,8 @@ export class PipelineParameterComponent implements OnInit {
           } else {
             this.parameters = [
               {
-                type: 'text',
-                value: '',
+                type: stepParameter.type,
+                value: stepParameter.type === 'boolean' ? false : '',
                 id: this.id++,
                 suggestions: [],
                 name: '',
@@ -250,6 +249,8 @@ export class PipelineParameterComponent implements OnInit {
     let count = 0;
     this.parameters.forEach((p) => {
       if (typeof p.value === 'object') {
+        parameterValue = p.value;
+      } else if (p.type === 'boolean' || p.type === 'integer') {
         parameterValue = p.value;
       } else if (count === 0) {
         parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${p.value}`;

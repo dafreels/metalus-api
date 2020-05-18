@@ -42,7 +42,9 @@ export class CustomBranchDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.stepsService.getSteps().subscribe(steps => this.steps = steps);
+    this.stepsService.getSteps().subscribe(steps => {
+      this.steps = steps.filter(s => s.type.toLocaleLowerCase() !== 'branch');
+    });
   }
 
   handleStepSelected() {

@@ -23,7 +23,7 @@ export interface PipelineStep extends Step {
 }
 
 export interface PipelineStepParam extends Param {
-  value: string;
+  value: any;
 }
 
 export type PipelineCategory = 'pipeline' | 'step-group';

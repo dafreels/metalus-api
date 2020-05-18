@@ -37,8 +37,14 @@
           </ng-container>
         </ng-container>
         <ng-template #isNotTypeResponse>
-          <mat-form-field style="width: 85%;">
-            <input matInput *ngIf=" param.type !== 'step' || param.type !== 'secondary' ||
+          <mat-slide-toggle *ngIf="param.type === 'boolean'" (change)="handleChange(param.id, param)"
+                            style="width: 85%;" [(ngModel)]="param.value"></mat-slide-toggle>
+          <mat-form-field *ngIf="param.type === 'integer'" style="width: 85%;">
+            <input matInput type="number" *ngIf="param.type !== 'step' || param.type !== 'secondary' ||
+            param.type !== 'result'" [(ngModel)]="param.value" (change)="handleChange(param.id, param)"/>
+          </mat-form-field>
+          <mat-form-field *ngIf="param.type !== 'boolean' && param.type !== 'integer'" style="width: 85%;">
+            <input matInput *ngIf="param.type !== 'step' || param.type !== 'secondary' ||
             param.type !== 'result'" [(ngModel)]="param.value" (change)="handleChange(param.id, param)"/>
           </mat-form-field>
         </ng-template>
@@ -61,6 +67,8 @@
           <mat-option *ngIf="stepSuggestions.length > 0" value="secondary">Secondary Step Response</mat-option>
           <mat-option value="runtime">Runtime</mat-option>
           <mat-option value="mapped_runtime">Mapped Runtime</mat-option>
+          <mat-option value="integer">Integer</mat-option>
+          <mat-option value="boolean">Boolean</mat-option>
           <mat-option
             *ngIf=" !stepGroup.enabled && isAScriptParameter && parameters.length === 1"
             value="script">Script</mat-option>
