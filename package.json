@@ -29,7 +29,7 @@
     "@types/dagre": "^0.7.44",
     "acorn": "^7.1.1",
     "ajv": "^6.11.0",
-    "angular6-json-schema-form": "^7.3.0",
+    "angular6-json-schema-form": "8.0.0",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.18.3",
     "core-js": "^2.6.11",
