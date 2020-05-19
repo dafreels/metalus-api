@@ -104,7 +104,19 @@ export class PipelineParameterComponent implements OnInit {
             },
           ];
           break;
-
+        case 'boolean':
+        case 'integer':
+          this.complexParameter = false;
+          this.parameters = [
+            {
+              type: stepParameter.type,
+              value: stepParameter.value,
+              id: this.id++,
+              suggestions: [],
+              name: '',
+            },
+          ];
+          break;
         default:
           this.complexParameter = false;
           if (stepParameter.value) {
