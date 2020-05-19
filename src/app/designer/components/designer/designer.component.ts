@@ -162,8 +162,13 @@ export class DesignerComponent implements AfterViewInit {
     this.viewReady = true;
   }
 
-  removeElement(data: DesignerElement) {
-    this.jsPlumbInstance.remove(Object.keys(this.model.nodes).find(key => this.model.nodes[key].data.name === data.name));
+  removeElement(data: DesignerElement, componentRef) {
+    let key = Object.keys(this.model.nodes).find(key => this.model.nodes[key].data.name === data.name);
+    this.jsPlumbInstance.remove(key);
+    delete this.model.nodes[key];
+    delete this.htmlNodeLookup[key];
+    this.designerCanvas.viewContainerRef.remove(this.designerCanvas.viewContainerRef.indexOf(componentRef));
+    this.broadCastModelChanges();
   }
 
   static newModel() {
@@ -360,7 +365,7 @@ export class DesignerComponent implements AfterViewInit {
       this.elementSelected.emit(data)
     });
     componentRef.instance.nodeAction.subscribe(data => this.elementAction.emit(data));
-    componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data));
+    componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data, componentRef));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;
     node.setAttribute('id', nodeId);
@@ -402,7 +407,7 @@ export class DesignerComponent implements AfterViewInit {
     layout(graph);
     // Update the model nodes
     let gnode;
-    
+
     // Center elements on parent container
     let center = 0;
     let horizontalOffset = 32;

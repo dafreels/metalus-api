@@ -749,8 +749,16 @@ export class PipelinesEditorComponent implements OnInit {
     });
     // See if automatic layout needs to be applied
     if (!existingLayout) {
-      console.log(this.designerElement)
       DesignerComponent.performAutoLayout(model, this.designerElement);
+      if (!pipeline.layout) {
+        pipeline.layout = {};
+      }
+      Object.keys(model.nodes).forEach(k => {
+        pipeline.layout[model.nodes[k].data.data.id] = {
+            x: model.nodes[k].x,
+            y: model.nodes[k].y,
+          };
+      });
     }
     return model;
   }
