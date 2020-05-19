@@ -17,11 +17,9 @@ A set of APIs are provided that manage the metadata for:
 
 The web interface provides several editors:
 
-* Object Editor: Allows building complex objects based on the selected Package Object. This editor is accessed from the Applications, Steps and Pipeline Editors.
-* Code Editor: Allows writing code in JSON, SQL, Javascript and Scala. This editor is accessed from the Steps and Pipeline Editors.
-* [Steps Editor](docs/steps-editor.md): Manages the steps metadata used by the Pipelines Editor
+* Object Editor: Allows building complex objects based on the selected Package Object.
+* Code Editor: Allows writing code in JSON, SQL, Javascript and Scala.
 * [Pipelines Editor](docs/pipelines-editor.md): Provides a mechanism for building pipelines using the steps metadata. The parameters for each step will change based on the steps metadata.
-* Applications Editor: Provides a mechanism for building an application. This editor consumes the pipelines created using the Pipelines Editor.
 
 # Running
 This project requires:
@@ -35,16 +33,15 @@ This project requires:
 ## Starting
 Before starting the application, it must be determined what storage medium will be used. Two methods are provided, file and mongo. File storage is only recommended
 for demos and getting started. Mongo is the preferred choice for long term usage.
-
 ### File
 A set of preloaded files are provided under the *common_steps_preloaded_data/file* directory. Copy these files under the *data* directory to make them accessible.
-Run the following command to start the server: **npm run file**
-
+Run the following command to start the server: **npm run file-api**
 ### Mongo
 A set of mongo export files are provided under the *common_steps_preloaded_data/mongo* directory. Import these file using the following commands:
 
 * mongoimport --db=metalus --collection=steps --file=steps.json
 * mongoimport --db=metalus --collection=package-objects --file=package-objects.json
+* mongoimport --db=metalus --collection=users --file=users.json
 
 The file *config/mongo.json* contains all of the settings required to connect with the Mongo database.
 
@@ -57,7 +54,10 @@ The file *config/mongo.json* contains all of the settings required to connect wi
 |databaseUser    |<not set>    |
 |databasePassword|<not set>    |
 
-Run the following command to start the server: **npm run mongo**
+Run the following command to start the server: **npm run mongo-api**
+
+### Users
+A single default user is provided in the standard collections. The credentials are admin/admin.
 
 ### Development
 When developing, two services need to be started:

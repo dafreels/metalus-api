@@ -1,6 +1,6 @@
 # Pipelines Editor
-The pipelines editor allows a user to construct pipelines using the provided steps. The [Applications Editor](applications-editor.md) is the main consumer
-of the pipelines.
+The _Pipelines Editor_ allows a user to construct pipelines using the provided steps, step groups and
+custom branch steps.
 
 ![Pipelines Editor](images/pipeline-editor.png "Pipelines Editor")
 
