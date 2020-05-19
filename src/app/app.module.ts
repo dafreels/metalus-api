@@ -21,7 +21,6 @@ import { PipelinesModule } from './pipelines/pipelines.module';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-
     CoreModule,
     SharedModule,
     ApplicationsModule,

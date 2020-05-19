@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "users.json",
+  "$ref": "#/definitions/users",
+  "definitions": {
+    "users": {
+      "type": "object",
+      "required": [
+        "id",
+        "username",
+        "defaultProjectId",
+        "projects"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "unique": true
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 4
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "developer"
+          ]
+        },
+        "defaultProjectId": {
+          "type": "string"
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 4
+              },
+              "uploadHistory": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "uploadDate": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

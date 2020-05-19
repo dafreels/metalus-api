@@ -1,25 +1,36 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "package-objects.json",
-    "$ref": "#/definitions/package-objects",
-    "definitions": {
-        "package-objects": {
-            "type": "object",
-            "required": [
-                "id",
-                "schema"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "schema": {
-                    "type": "string"
-                },
-              "layout": {
-                "type": "string"
-              }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "package-objects.json",
+  "$ref": "#/definitions/package-objects",
+  "definitions": {
+    "package-objects": {
+      "type": "object",
+      "required": [
+        "id",
+        "schema"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string"
+            },
+            "projectId": {
+              "type": "string"
             }
+          }
+        },
+        "schema": {
+          "type": "string"
+        },
+        "layout": {
+          "type": "string"
         }
+      }
     }
+  }
 }

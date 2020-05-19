@@ -1,7 +1,6 @@
-import { ObjectEditorComponent } from './../components/object-editor/object-editor.component';
-import { ComponentRef } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {DialogDimensions} from '../models/custom-dialog.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,10 +8,10 @@ import { Injectable } from '@angular/core';
 export class DisplayDialogService {
   constructor(public matDialog: MatDialog) {}
 
-  openDialog(component, width: string, height: string, data) {
+  openDialog(component, dialogDimensions: DialogDimensions, data?) {
     const dialogRef = this.matDialog.open(component, {
-      width,
-      height,
+      width: dialogDimensions.width,
+      height: dialogDimensions.height,
       data,
       disableClose: true,
     });

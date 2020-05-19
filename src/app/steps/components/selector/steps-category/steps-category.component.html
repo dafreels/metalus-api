@@ -1,0 +1,14 @@
+<mat-card>
+  <mat-card-content>
+      <mat-expansion-panel *ngFor="let category of categories" style="margin-bottom: 5px;">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{category.name}}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="step-list-container">
+          <mat-action-list class="step-list">
+            <app-steps-list-item [steps]="category.steps" (stepItemSelection)="handleStepSelection($event)" [draggableSteps]="draggableSteps"></app-steps-list-item>
+          </mat-action-list>
+        </div>
+      </mat-expansion-panel>
+  </mat-card-content>
+</mat-card>

@@ -1,11 +1,18 @@
 import { Param, Step } from '../../steps/steps.model';
+import {Project} from "../../shared/models/users.models";
 
 export interface Pipeline {
   id: string;
   name: string;
+  project: Project;
   steps: PipelineStep[];
   category?: PipelineCategory;
   layout?: object;
+}
+
+export interface PipelineData {
+  id: string;
+  name: string;
 }
 
 export interface PipelineStep extends Step {
@@ -16,7 +23,7 @@ export interface PipelineStep extends Step {
 }
 
 export interface PipelineStepParam extends Param {
-  value: string;
+  value: any;
 }
 
 export type PipelineCategory = 'pipeline' | 'step-group';

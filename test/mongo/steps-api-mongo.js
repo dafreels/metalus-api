@@ -7,16 +7,37 @@ const expect = require('chai').expect;
 const stepData = require('../data/steps');
 const MongoDb = require('../../lib/mongo');
 const util = require('util');
+const auth = require('../../lib/auth');
+const TestHelpers = require('../helpers/TestHelpers');
 
 describe('Steps API Mongo Tests', () => {
   let app;
   let server;
   let mock;
   const body = JSON.parse(JSON.stringify(stepData.find(step => step.id === '87db259d-606e-46eb-b723-82923349640f')));
+  const state = {};
+  const mockUser = {
+    id: 'mock-admin-user',
+    username: 'admin',
+    password: '$2b$08$6tMg/Tp8yhYgOT8fkcXFi.j7ViaiZrZzRzD/pPLofIGvUTf24s3W.',
+    displayName: 'test admin user',
+    role: 'admin',
+    defaultProjectId: '1',
+    projects: [
+      {
+        id: '1',
+        displayName: 'Default Project'
+      }
+    ]
+  };
 
   before((done) => {
     app = express();
     server = http.createServer(app);
+    mock = server.listen(1300);
+    app.on('middleware:after:session', (eventargs) => {
+      auth.configurePassport(app);
+    });
     app.on('start', () => {
       done();
     });
@@ -28,12 +49,19 @@ describe('Steps API Mongo Tests', () => {
         BaseModel.initialStorageParameters(config);
         MongoDb.init(config)
           .then(() => {
+            return MongoDb.getDatabase().collection('users').findOneAndUpdate({id: 'mock-admin-user'},
+              {$set: mockUser},
+              {
+                upsert: true,
+                returnOriginal: false
+              });
+          })
+          .then(() => {
             next(null, config);
           })
           .catch(next);
       }
     }));
-    mock = server.listen(1308);
   });
 
   after(async () => {
@@ -44,8 +72,10 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should insert a single step', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .post('/api/v1/steps/')
+      .set('Cookie', [userInfo])
       .send(body)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -57,8 +87,10 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should get the inserted step', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .get(`/api/v1/steps/${body.id}`)
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     const stepResponse = JSON.parse(response.text);
@@ -69,8 +101,10 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should get all steps', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .get('/api/v1/steps')
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     const stepResponse = JSON.parse(response.text);
@@ -81,9 +115,11 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should update a step', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     body.displayName = 'Red on the head fred';
     const response = await request(mock)
       .put(`/api/v1/steps/${body.id}`)
+      .set('Cookie', [userInfo])
       .send(body)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -95,13 +131,16 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should delete a step', async () => {
-    await request(mock).delete(`/api/v1/steps/${body.id}`).expect(204);
-    await request(mock).get('/api/v1/steps').expect(204);
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    await request(mock).delete(`/api/v1/steps/${body.id}`).set('Cookie', [userInfo]).expect(204);
+    await request(mock).get('/api/v1/steps').set('Cookie', [userInfo]).expect(204);
   });
 
   it('Should upsert a single step', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .put(`/api/v1/steps/${body.id}`)
+      .set('Cookie', [userInfo])
       .send(body)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -113,8 +152,10 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should update a single step using post', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
       .post('/api/v1/steps/')
+      .set('Cookie', [userInfo])
       .send(body)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -126,10 +167,12 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should insert multiple steps', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
     const stepIds = ['8daea683-ecde-44ce-988e-41630d251cb8', '0a296858-e8b7-43dd-9f55-88d00a7cd8fa', 'e4dad367-a506-5afd-86c0-82c2cf5cd15c'];
-    const data = JSON.parse(JSON.stringify(stepData.filter(step => stepIds.indexOf(step.id) !== -1)));
+    const data = stepData.filter(step => stepIds.indexOf(step.id) !== -1);
     let response = await request(mock)
       .post('/api/v1/steps/')
+      .set('Cookie', [userInfo])
       .send(data)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -139,6 +182,7 @@ describe('Steps API Mongo Tests', () => {
     stepResponse.steps.forEach(step => verifyStep(step, data.find(s => s.id === step.id)));
     response = await request(mock)
       .get('/api/v1/steps/')
+      .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
     stepResponse = JSON.parse(response.text);

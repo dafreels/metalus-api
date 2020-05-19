@@ -1,0 +1,28 @@
+<div class="form">
+  <span class=" label username">Username</span>
+  <mat-form-field class="userInput">
+    <input matInput placeholder="Username" [(ngModel)]="data.username" required>
+  </mat-form-field>
+  <span class="label password">Password</span>
+  <mat-form-field class="passwordInput">
+    <input matInput type="password" placeholder="Password" [(ngModel)]="data.password" required>
+  </mat-form-field>
+  <span class="label displayName">Display Name</span>
+  <mat-form-field class="displayNameInput">
+    <input matInput placeholder="Display Name" [(ngModel)]="data.displayName" required>
+  </mat-form-field>
+  <span class="label role">Role</span>
+  <mat-form-field class="roleInput">
+    <mat-label>Role</mat-label>
+    <mat-select required [(ngModel)]="data.role">
+      <mat-option value="admin">Administrator</mat-option>
+      <mat-option value="developer">Developer</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <span class="buttons">
+    <button mat-raised-button color="primary" (click)="saveUser()" style="margin-right: 5px;">Save</button>
+    <button mat-raised-button color="primary" (click)="closeDialog()">Cancel</button>
+  </span>
+</div>
+
+

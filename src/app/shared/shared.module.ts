@@ -13,6 +13,8 @@ import { PropertiesEditorModalComponent } from './components/properties-editor/m
 import { WaitModalComponent } from './components/wait-modal/wait-modal.component';
 import { ObjectEditorComponent } from './components/object-editor/object-editor.component';
 import { CloseDialogButtonComponent } from './components/close-dialog-button/close-dialog-button.component';
+import { MatSelectSearchComponent } from './components/mat-select-search/mat-select-search.component';
+import {PasswordDialogComponent} from "./components/password-dialog/password-dialog.component";
 
 const commonModules = [
   FormsModule,
@@ -27,6 +29,7 @@ const commonModules = [
   imports: [...commonModules, ...materialDesignModules],
   declarations: [
     NameDialogComponent,
+    PasswordDialogComponent,
     ConfirmationModalComponent,
     ErrorModalComponent,
     PropertiesEditorComponent,
@@ -34,14 +37,17 @@ const commonModules = [
     WaitModalComponent,
     ObjectEditorComponent,
     CloseDialogButtonComponent,
+    MatSelectSearchComponent,
   ],
   exports: [
     ...commonModules,
     ...materialDesignModules,
     CloseDialogButtonComponent,
+    MatSelectSearchComponent,
   ],
   entryComponents: [
     NameDialogComponent,
+    PasswordDialogComponent,
     ConfirmationModalComponent,
     ErrorModalComponent,
     PropertiesEditorModalComponent,

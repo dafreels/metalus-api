@@ -1,0 +1,114 @@
+<div>
+  <div class="topnav">
+    <span>
+      <nav-menu currentPage="upload"></nav-menu>
+      <span class="page-title">Upload Jars</span>
+    </span>
+    <span>
+      <button mat-raised-button color="primary" (click)="addFiles()" [disabled]="uploading" style="margin-right: 5px;">Upload</button>
+      <button mat-raised-button color="primary" (click)="processJars()"
+              [disabled]="uploading || (uploadedFiles.length === 0 && remoteJars.length === 0)" style="margin-right: 5px;">Process</button>
+      <user-menu [user]="user"></user-menu>
+    </span>
+  </div>
+  <div>
+    <mat-tab-group>
+      <mat-tab label="Upload Jars">
+        <mat-form-field class="chip-field">
+          <mat-chip-list #additionalReposList>
+            <mat-chip *ngFor="let repo of additionalRepos"
+                      selectable="true"
+                      removable="true"
+                      (removed)="removeAdditionalRepo(repo)">
+              {{repo}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Additional Repos"
+              [matChipInputFor]="additionalReposList"
+              [formControl]="additionalReposCtrl"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+              (matChipInputTokenEnd)="addAdditionalRepo($event)">
+          </mat-chip-list>
+        </mat-form-field>
+        <mat-form-field class="chip-field">
+          <mat-chip-list #remoteJarsList>
+            <mat-chip *ngFor="let jar of remoteJars"
+                      selectable="true"
+                      removable="true"
+                      (removed)="removeRemoteJar(jar)">
+              {{jar}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            <input
+              placeholder="Remote Jars"
+              [matChipInputFor]="remoteJarsList"
+              [formControl]="remoteJarsCtrl"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+              (matChipInputTokenEnd)="addRemoteJar($event)">
+          </mat-chip-list>
+        </mat-form-field>
+        <div class="divTable blueTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <div class="divTableHead">Name</div>
+              <div class="divTableHead">Path</div>
+              <div class="divTableHead">Size</div>
+              <div class="divTableHead">Created Date</div>
+              <div class="divTableHead">Modified Date</div>
+              <div class="divTableHead">Delete</div>
+            </div>
+          </div>
+          <div class="divTableBody">
+            <div class="divTableRow" *ngFor="let file of uploadedFiles">
+              <div class="divTableCell">{{file.name}}</div>
+              <div class="divTableCell">{{file.path}}</div>
+              <div class="divTableCell">{{convertBytes(file.size)}}</div>
+              <div class="divTableCell">{{file.createdDate | date:'medium'}}</div>
+              <div class="divTableCell">{{file.modifiedDate | date:'medium'}}</div>
+              <div class="divTableCell">
+                <button mat-icon-button color="primary" (click)="removeFile(file.name)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="file" #file style="display: none" (change)="onFilesAdded()" multiple/>
+        <mat-list>
+          <mat-list-item *ngFor="let file of files">
+            <h4 mat-line>{{file.name}}</h4>
+            <mat-progress-bar
+              *ngIf="progress"
+              mode="determinate"
+              [value]="progress[file.name].progress | async"
+            ></mat-progress-bar>
+          </mat-list-item>
+        </mat-list>
+      </mat-tab>
+      <mat-tab label="Manual Upload">
+        <mat-card>
+          <mat-card-content>
+            Download the latest version of Metalus Utils:
+            https://github.com/Acxiom/metalus/releases/tag/release_1_6_6<br/>
+            Upload Command:<br/>
+            <textarea cols="100" rows="15">
+          [path-to-metalus-utils]/metalus-utils/bin/metadata-extractor.sh \
+        --api-url http://[host]]:8000 \
+        --jar-files [path-to-jar-file] \
+        --no-auth-download true \
+        --authorization.class com.acxiom.pipeline.api.SessionAuthorization \
+        --authorization.username [username] \
+        --authorization.password [password] \
+        --authorization.authUrl http://[host]:8000/api/v1/users/login \
+        --staging-dir staging
+        </textarea>
+          </mat-card-content>
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+

@@ -2,6 +2,7 @@ import {
   Pipeline,
   PipelineParameter,
 } from '../pipelines/models/pipelines.model';
+import {Project} from "../shared/models/users.models";
 
 export interface ApplicationsResponse {
   applications: Application[];
@@ -10,6 +11,7 @@ export interface ApplicationsResponse {
 export interface Application extends BaseApplicationProperties {
   id: string;
   name: string;
+  project: Project;
   sparkConf: SparkConf;
   stepPackages: string[];
   applicationProperties: object;

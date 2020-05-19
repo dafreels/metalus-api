@@ -1,7 +1,10 @@
+import {Project} from "../shared/models/users.models";
+
 export interface Step {
   id: string,
   displayName: string,
   description: string,
+  project?: Project;
   type: string,
   category: string,
   tags?: string[],
@@ -72,6 +75,14 @@ export class StaticSteps {
     category: 'FlowControl',
     params: []
   };
+  static CUSTOM_BRANCH_STEP: Step = {
+    id: '6344948a-2032-472b-873c-064e6530989e',
+    type: 'branch',
+    displayName: 'Custom Branch',
+    description: 'Custom branch control',
+    category: 'FlowControl',
+    params: []
+  };
   static STEP_GROUP: Step = {
     id: 'f09b3b9c-82ac-56de-8dc8-f57c063dd4aa',
     type: 'step-group',
@@ -91,6 +102,15 @@ export class StaticSteps {
       {
         name: 'pipeline',
         type: 'text',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        name: 'useParentGlobals',
+        type: 'boolean',
         required: false,
         defaultValue: undefined,
         parameterType: undefined,

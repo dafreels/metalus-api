@@ -1,11 +1,26 @@
-<mat-card>
+<mat-card class="sidebar">
   <mat-card-content>
+    <span>
+        <mat-form-field class="filter">
+          <mat-label><mat-icon>search</mat-icon></mat-label>
+          <input #filter matInput placeholder="Search"
+                 (input)="filterList(filter.value, tagSelect.value)">
+        </mat-form-field>
+          <mat-form-field class="tag-select">
+            <mat-label><mat-icon>filter_list</mat-icon></mat-label>
+            <mat-select #tagSelect multiple (selectionChange)="filterList(filter.value, tagSelect.value)">
+              <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+      </span>
     <mat-tab-group>
-      <mat-tab label="Tree">
-        <app-steps-tree [stepList]="steps" (stepItemSelection)='stepSelected($event)' [draggableSteps]="draggableSteps"></app-steps-tree>
+      <mat-tab label="Category">
+        <app-steps-category [stepList]="filterSteps" (stepItemSelection)='stepSelected($event)'
+                            [draggableSteps]="draggableSteps" class="steps-by-category"></app-steps-category>
       </mat-tab>
       <mat-tab label="List">
-        <app-steps-list [stepList]="steps" (stepItemSelection)='stepSelected($event)' [draggableSteps]="draggableSteps"></app-steps-list>
+        <app-steps-list [stepList]="filterSteps" (stepItemSelection)='stepSelected($event)'
+                        [draggableSteps]="draggableSteps" class="steps-by-list"></app-steps-list>
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>

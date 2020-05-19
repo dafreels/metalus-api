@@ -7,17 +7,33 @@
   flex-direction: column;
 }
 
-.button-content {
-  display: block;
-  text-align: right;
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pipeline-data {
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
+}
+
+.pipeline-name {
+  font-size: larger;
+}
+
+.pipeline-id {
+  font-size: smaller;
+  color: #808080;
 }
 
 /*
  * Left side
  */
 .steps-editor-sidebar {
-  width: 30%;
-  margin-right: 15px;
+  width: 20%;
+  margin-right: 8px;
 }
 
 .pipeline-panel {
@@ -25,10 +41,38 @@
 }
 
 /*
- * Right Side
+ * Center
  */
 
 .designer-content {
-  width: 70%;
+  width: 60%;
+  height: 75vh;
+}
+
+/*
+ * Right
+ */
+.information-panel {
+  width: 20%;
+  margin-left: 8px;
+}
+
+.step-description {
+  font-size: x-small;
+  color: #808080;
+}
+
+// Error panel
+.error-panel {
+  margin-right: 15px;
+  background-color: #b4b4b4;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.error-icon {
+  vertical-align: middle;
+  margin-right: 5px;
 }
 

@@ -1,0 +1,14 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-panel {
+  display: grid;
+  justify-content: center;
+  width: 100%;
+}
+
+.invalid-login {
+  color: #ff0000;
+}

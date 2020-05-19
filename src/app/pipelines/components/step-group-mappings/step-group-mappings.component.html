@@ -1,0 +1,18 @@
+<div>
+  <mat-accordion>
+    <app-pipelines-parameter
+      *ngFor="let param of params"
+      [isABranchStep]="false"
+      [stepType]="stepType"
+      [stepParameters]="param"
+      [packageObjects]="data.packageObjects"
+      [stepSuggestions]="data.typeAhead"
+      [pipelines]="[]"
+      [pipelinesData]="[]"></app-pipelines-parameter>
+  </mat-accordion>
+</div>
+<span>
+  <button mat-raised-button color="primary" (click)="addParameter()" style="margin-right: 5px">Add Parameter</button>
+  <button mat-raised-button color="primary" (click)="saveDialog()" style="margin-right: 5px">Save</button>
+  <button mat-raised-button color="primary" (click)="cancelDialog()">Cancel</button>
+</span>

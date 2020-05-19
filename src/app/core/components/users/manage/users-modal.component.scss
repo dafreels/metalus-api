@@ -1,0 +1,58 @@
+.form {
+  display: grid;
+  padding: 1em;
+  background: #f9f9f9;
+  border: 1px solid #c1c1c1;
+  margin: 2rem auto 0 0;
+  max-width: 600px;
+  padding: 1em;
+  grid-template-columns: 200px 1fr;
+  grid-gap: 16px;
+  grid-template-areas:
+  "a bb"
+  "c dd"
+  "e ff"
+  "g hh"
+  "i jj";
+}
+
+.username {
+  grid-area: a;
+}
+
+.userInput {
+  grid-area: bb;
+}
+
+.password {
+  grid-area: c;
+}
+
+.passwordInput {
+  grid-area: dd;
+}
+
+.displayName {
+  grid-area: e;
+}
+
+.displayNameInput {
+  grid-area: ff;
+}
+
+.role {
+  grid-area: g;
+}
+
+.roleInput {
+  grid-area: hh;
+}
+
+.buttons {
+  grid-area: jj;
+}
+
+.label {
+  text-align: right;
+  font-weight: bold;
+}

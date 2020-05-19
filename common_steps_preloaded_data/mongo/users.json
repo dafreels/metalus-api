@@ -1,0 +1,1 @@
+{"_id":{"$oid":"5e85c7fbf90c29ede14615b6"},"id":"1","username":"admin","password":"$2b$08$nAabZ9FOg/me5U/a3vmCie0YnkzmvezqUfetzrQlmMEosQYfvI3TK","role":"admin","defaultProjectId":"1","projects":[{"id":"1","displayName":"Default Project"}],"displayName":"Administrator","creationDate":null,"modifiedDate":{"$date":"2020-05-19T10:29:49.463Z"},"project":null}

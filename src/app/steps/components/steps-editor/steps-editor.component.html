@@ -1,24 +1,63 @@
+<div>
+  <div class="topnav">
+    <span>
+      <nav-menu currentPage="steps-editor"></nav-menu>
+      <span class="page-title">Steps Editor</span>
+    </span>
+    <user-menu [user]="user"></user-menu>
+  </div>
 <div class="steps-editor-layout">
   <div class="steps-editor-sidebar">
-    <app-steps-selector [steps]="steps" (stepItemSelection)="stepSelected($event)"></app-steps-selector>
+    <app-steps-selector
+      [steps]="steps"
+      (stepItemSelection)="stepSelected($event)"
+    ></app-steps-selector>
   </div>
   <div class="steps-editor-content">
     <mat-card>
       <mat-card-content class="button-content">
-        <button mat-raised-button color="primary" [disabled]="!stepForm.form.valid" (click)="saveStep()"
-                style="margin-right: 5px;">Save
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!stepForm.form.valid"
+          (click)="saveStep()"
+          style="margin-right: 5px;"
+        >
+          Save
         </button>
-        <button mat-raised-button color="primary" [disabled]="!stepChanged()" (click)="cancel()"
-                style="margin-right: 5px;">Cancel
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!stepChanged()"
+          (click)="cancel()"
+          style="margin-right: 5px;"
+        >
+          Cancel
         </button>
-        <button mat-raised-button color="primary" [disabled]="stepChanged()" (click)="newStep()"
-                style="margin-right: 5px;">New
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="stepChanged()"
+          (click)="newStep()"
+          style="margin-right: 5px;"
+        >
+          New
         </button>
-        <button mat-raised-button color="primary"
-                [disabled]="selectedStep.id === 'undefined' || selectedStep.id.trim().length === 0"
-                (click)="deleteStep()" style="margin-right: 5px;">Delete
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="
+            selectedStep.id === 'undefined' ||
+            selectedStep.id.trim().length === 0
+          "
+          (click)="deleteStep()"
+          style="margin-right: 5px;"
+        >
+          Delete
         </button>
-        <button mat-raised-button color="primary" (click)="bulkLoadSteps()">Bulk</button>
+        <button mat-raised-button color="primary" (click)="bulkLoadSteps()">
+          Bulk
+        </button>
       </mat-card-content>
     </mat-card>
     <mat-card>
@@ -26,24 +65,53 @@
         <mat-card-content>
           <div class="form-layout">
             <mat-form-field>
-              <input matInput placeholder="Id" [(ngModel)]="selectedStep.id" name="id" disabled="true">
+              <input
+                matInput
+                placeholder="Id"
+                [(ngModel)]="selectedStep.id"
+                name="id"
+                disabled="true"
+              />
             </mat-form-field>
-            <mat-form-field><input matInput placeholder="Name" [(ngModel)]="selectedStep.displayName" required
-                                   name="displayName" id="displayName" minlength="4">
+            <mat-form-field
+              ><input
+                matInput
+                placeholder="Name"
+                [(ngModel)]="selectedStep.displayName"
+                required
+                name="displayName"
+                id="displayName"
+                minlength="4"
+              />
             </mat-form-field>
-            <mat-form-field><textarea matInput placeholder="Description" [(ngModel)]="selectedStep.description"
-                                      name="description" required minlength="5"></textarea>
+            <mat-form-field
+              ><textarea
+                matInput
+                placeholder="Description"
+                [(ngModel)]="selectedStep.description"
+                name="description"
+                required
+                minlength="5"
+              ></textarea>
             </mat-form-field>
-            <mat-form-field><input matInput placeholder="Category" [(ngModel)]="selectedStep.category" name="category"
-                                   required>
+            <mat-form-field
+              ><input
+                matInput
+                placeholder="Category"
+                [(ngModel)]="selectedStep.category"
+                name="category"
+                required
+              />
             </mat-form-field>
             <mat-form-field>
               <mat-chip-list #tagList>
-                <mat-chip *ngFor="let tag of selectedStep.tags"
-                          selectable="true"
-                          removable="true"
-                          (removed)="removeTag(tag)">
-                  {{tag}}
+                <mat-chip
+                  *ngFor="let tag of selectedStep.tags"
+                  selectable="true"
+                  removable="true"
+                  (removed)="removeTag(tag)"
+                >
+                  {{ tag }}
                   <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
                 <input
@@ -52,24 +120,44 @@
                   [formControl]="tagCtrl"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                   [matChipInputAddOnBlur]="true"
-                  (matChipInputTokenEnd)="addTag($event)">
+                  (matChipInputTokenEnd)="addTag($event)"
+                />
               </mat-chip-list>
             </mat-form-field>
-            <mat-form-field><input matInput placeholder="Engine Meta Command"
-                                   [(ngModel)]="selectedStep.engineMeta.spark"
-                                   name="stepCommand"
-                                   [required]="selectedStep.type !== 'branch'"
-                                   [minLength]="5"></mat-form-field>
-            <mat-form-field><input matInput placeholder="Engine Meta Package" [(ngModel)]="selectedStep.engineMeta.pkg"
-                                   name="stepPackage"
-                                   [required]="selectedStep.type !== 'branch'"
-                                   [minLength]="5"></mat-form-field>
-            <mat-slide-toggle name="stepType" [ngModel]="selectedStep.type === 'branch'" (ngModelChange)="changeStepType($event)">
+            <mat-form-field
+              ><input
+                matInput
+                placeholder="Engine Meta Command"
+                [(ngModel)]="selectedStep.engineMeta.spark"
+                name="stepCommand"
+                [required]="selectedStep.type.toLocaleLowerCase() !== 'branch'"
+                [minLength]="5"
+            /></mat-form-field>
+
+            <mat-form-field
+              ><input
+                matInput
+                placeholder="Engine Meta Package"
+                [(ngModel)]="selectedStep.engineMeta.pkg"
+                name="stepPackage"
+                [required]="selectedStep.type.toLocaleLowerCase() !== 'branch'"
+                [minLength]="5"
+            /></mat-form-field>
+
+            <mat-slide-toggle
+              name="stepType"
+              [ngModel]="selectedStep.type.toLocaleLowerCase() === 'branch'"
+              (ngModelChange)="changeStepType($event)"
+            >
               Branch Step?
             </mat-slide-toggle>
 
             <div class="step-parameter-add-div">
-              <button mat-raised-button color="primary" (click)="addNewParameter()">
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="addNewParameter()"
+              >
                 <mat-icon aria-label="Add a new parameter">add</mat-icon>
               </button>
             </div>
@@ -78,18 +166,29 @@
               <mat-expansion-panel *ngFor="let param of selectedStep.params">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    <button mat-raised-button color="primary" (click)="deleteParameter(param)">
-                      <mat-icon aria-label="Remove this parameter">remove</mat-icon>
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="deleteParameter(param)"
+                    >
+                      <mat-icon aria-label="Remove this parameter"
+                        >remove</mat-icon
+                      >
                     </button>
                   </mat-panel-title>
                   <mat-panel-description>
-                    {{param.name}}
+                    {{ param.name }}
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="form-layout">
                   <mat-form-field>
                     <mat-label>Type</mat-label>
-                    <mat-select name="paramType" required [(ngModel)]="param.type">
+                    <mat-select
+                      name="paramType"
+                      required
+                      [(ngModel)]="param.type"
+                      (selectionChange)="changeParameterType(param)"
+                    >
                       <mat-option value="string">String</mat-option>
                       <mat-option value="integer">Integer</mat-option>
                       <mat-option value="list">List</mat-option>
@@ -101,28 +200,48 @@
                     </mat-select>
                   </mat-form-field>
 
-                  <mat-slide-toggle name="paramRequired" [(ngModel)]="param.required">Required?</mat-slide-toggle>
+                  <mat-slide-toggle
+                    name="paramRequired"
+                    [(ngModel)]="param.required"
+                    >Required?</mat-slide-toggle
+                  >
 
                   <div>
-              <span style="display: inline-flex; width: 90%">
-                <mat-form-field style="width: 99%">
-                  <textarea matInput placeholder="Default Value"
-                            [(ngModel)]="param.defaultValue"
-                            [disabled]="(param.type === 'script' || param.type === 'object')"
-                            name="defaultValue"></textarea>
-                </mat-form-field>
-              </span>
+                    <span style="display: inline-flex; width: 90%">
+                      <mat-form-field style="width: 99%">
+                        <textarea
+                          matInput
+                          placeholder="Default Value"
+                          [(ngModel)]="param.defaultValue"
+                          [disabled]="
+                            param.type === 'script' || param.type === 'object'
+                          "
+                          name="defaultValue"
+                        ></textarea>
+                      </mat-form-field>
+                    </span>
                     <span>
-                    <button mat-raised-button color="primary"
-                            [disabled]="!(param.type === 'script' || param.type === 'object')"
-                            (click)="openEditor(param)"><mat-icon aria-label="Open Editor">edit</mat-icon></button>
-                  </span>
+                      <button
+                        mat-raised-button
+                        color="primary"
+                        [disabled]="
+                          !(param.type === 'script' || param.type === 'object')
+                        "
+                        (click)="openEditor(param)"
+                      >
+                        <mat-icon aria-label="Open Editor">edit</mat-icon>
+                      </button>
+                    </span>
                   </div>
 
                   <mat-form-field>
                     <mat-label>Script Language</mat-label>
-                    <mat-select name="language" [disabled]="param.type !== 'script'" [required]="param.type === 'script'"
-                                [(ngModel)]="param.language">
+                    <mat-select
+                      name="language"
+                      [disabled]="param.type !== 'script'"
+                      [required]="param.type === 'script'"
+                      [(ngModel)]="param.language"
+                    >
                       <mat-option value="javascript">Javascript</mat-option>
                       <mat-option value="json">JSON</mat-option>
                       <mat-option value="scala">Scala</mat-option>
@@ -131,11 +250,22 @@
                   </mat-form-field>
 
                   <mat-form-field>
-                    <input matInput placeholder="Class Name" [disabled]="param.type !== 'object'"
-                           [required]="param.type === 'object'" [(ngModel)]="param.className" name="className">
+                    <input
+                      matInput
+                      placeholder="Class Name"
+                      [disabled]="param.type !== 'object'"
+                      [required]="param.type === 'object'"
+                      [(ngModel)]="param.className"
+                      name="className"
+                    />
                   </mat-form-field>
                   <mat-form-field>
-                    <input matInput placeholder="Parameter Type" [(ngModel)]="param.parameterType" name="parameterType">
+                    <input
+                      matInput
+                      placeholder="Parameter Type"
+                      [(ngModel)]="param.parameterType"
+                      name="parameterType"
+                    />
                   </mat-form-field>
                 </div>
               </mat-expansion-panel>
@@ -145,4 +275,5 @@
       </form>
     </mat-card>
   </div>
+</div>
 </div>

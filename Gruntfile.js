@@ -25,5 +25,11 @@ module.exports = (grunt) => {
   grunt.registerTask('build', [
     'test:api',
     'coveralls:report'
-  ])
+  ]);
+
+  grunt.registerTask('prep-docker', [
+    'clean:metalus',
+    'curl-dir:metalusUtils',
+    'extract-metalus-utils',
+  ]);
 };

@@ -16,8 +16,19 @@
             "id": {
               "type": "string",
               "unique": true,
-              "minLength": 36,
+              "minLength": 25,
               "maxLength": 36
+            },
+            "project": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -54,6 +65,7 @@
           "enum": [
             "Pipeline",
             "pipeline",
+            "Branch",
             "branch",
             "fork",
             "join",
@@ -71,17 +83,7 @@
             ],
             "properties": {
               "type": {
-                "type": "string",
-                "enum": [
-                  "integer",
-                  "list",
-                  "boolean",
-                  "script",
-                  "string",
-                  "text",
-                  "result",
-                  "object"
-                ]
+                "type": "string"
               },
               "name": {
                 "type": "string",
@@ -90,9 +92,7 @@
               "required": {
                 "type": "boolean"
               },
-              "defaultValue": {
-                "type": "string"
-              },
+              "defaultValue": {},
               "language": {
                 "type": "string"
               },
@@ -116,11 +116,8 @@
               "type": "string",
               "description": "Package where this step is located"
             },
-            "stepResults": {
-              "type": "array",
-              "items": {
-                "$ref": "steps.json#/definitions/stepResults"
-              }
+            "results": {
+              "$ref": "steps.json#/definitions/stepResults"
             }
           }
         }

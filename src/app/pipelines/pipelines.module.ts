@@ -7,22 +7,26 @@ import { PipelinesSelectorModalComponent } from './components/pipelines-selector
 import { SharedModule } from '../shared/shared.module';
 import { StepsModule } from '../steps/steps.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
+import { StepInformationComponent } from './components/step-information/step-information.component';
+import {CoreModule} from "../core/core.module";
+import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
+import {StepGroupMappingsComponent} from "./components/step-group-mappings/step-group-mappings.component";
 
 @NgModule({
-  imports: [
-    SharedModule,
-    StepsModule,
-    DesignerModule,
-    CodeEditorModule,
-  ],
+  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],
+  exports: [StepInformationComponent],
   declarations: [
+    CustomBranchDialogComponent,
     PipelinesEditorComponent,
     PipelineParameterComponent,
-    PipelinesSelectorModalComponent
+    PipelinesSelectorModalComponent,
+    StepGroupMappingsComponent,
+    StepInformationComponent,
   ],
   entryComponents: [
+    CustomBranchDialogComponent,
     PipelinesSelectorModalComponent,
-  ]
+    StepGroupMappingsComponent
+  ],
 })
-
 export class PipelinesModule {}

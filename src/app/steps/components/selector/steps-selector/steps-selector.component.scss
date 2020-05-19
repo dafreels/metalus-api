@@ -1,0 +1,35 @@
+
+.mat-form-field {
+  margin-right: 8px;
+}
+
+.filter {
+  width: 75%;
+}
+
+.tag-select {
+  width: 15%;
+}
+
+.mat-tab-label, .mat-tab-label-active{
+  min-width: 20px !important;
+  padding: 3px !important;
+  margin: 3px !important;
+}
+
+.mat-card {
+  padding: 1px !important;
+}
+
+.sidebar {
+  height: 100%;
+}
+
+.steps-by-category .mat-card{
+  max-height: 75vh;
+}
+
+.steps-by-list .mat-card {
+  max-height: 75vh;
+}
+

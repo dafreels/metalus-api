@@ -5,6 +5,9 @@ module.exports = (grunt) => {
   return {
     coverage: {
       src: ['.nyc_output', 'coverage']
+    },
+    metalus: {
+      src: ['metalus-utils']
     }
   };
 };
