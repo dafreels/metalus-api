@@ -1,16 +1,9 @@
 import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.component';
 import {PipelinesService} from '../../services/pipelines.service';
-import {Component, Input, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
 import {Pipeline, PipelineData, PipelineStep, PipelineStepParam,} from '../../models/pipelines.model';
-
-import {
-  DesignerComponent,
-  DesignerElement,
-  DesignerElementAction,
-  DesignerModel,
-} from '../../../designer/components/designer/designer.component';
 import {DndDropEvent} from 'ngx-drag-drop';
 import {Subject} from 'rxjs';
 import {NameDialogComponent} from '../../../shared/components/name-dialog/name-dialog.component';
@@ -29,6 +22,8 @@ import {DesignerPreviewComponent} from '../../../designer/components/designer-pr
 import {AuthService} from "../../../shared/services/auth.service";
 import {User} from "../../../shared/models/users.models";
 import {CustomBranchDialogComponent} from "../custom-branch-step/custom-branch-dialog.component";
+import {DesignerComponent} from "../../../designer/components/designer/designer.component";
+import {DesignerElement, DesignerElementAction, DesignerModel} from "../../../designer/designer-constants";
 
 @Component({
   selector: 'app-pipelines-editor',
