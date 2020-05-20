@@ -19,7 +19,7 @@ import {
   DesignerConstants,
   DesignerElement,
   DesignerElementAction,
-  DesignerElementAddOutput,
+  DesignerElementAddOutput, DesignerElementOutput,
   DesignerModel
 } from "../../designer-constants";
 
@@ -264,7 +264,7 @@ export class DesignerComponent implements AfterViewInit {
             data.outputs.length > 1 ? output : null,
             rotations[i++]));
         this.model.endpoints[endpoint.id] = {
-          name: output,
+          name: output.name,
           nodeId
         }
       });
@@ -306,8 +306,9 @@ export class DesignerComponent implements AfterViewInit {
     this.modelChanged.emit(this.model);
   }
 
-  private getSourceEndpointOptions(name: string, rotation: number) {
-    const endPoint = JSON.parse(JSON.stringify(DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+  private getSourceEndpointOptions(output: DesignerElementOutput, rotation: number) {
+    const endPoint = output ? output.endPointOptions : JSON.parse(JSON.stringify(DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+    const name = output ? output.name : null;
     endPoint.anchor = [ 'Perimeter', { shape:'Circle', rotation: rotation}];
     if (name) {
       endPoint.overlays = [

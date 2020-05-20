@@ -23,7 +23,13 @@ import {AuthService} from "../../../shared/services/auth.service";
 import {User} from "../../../shared/models/users.models";
 import {CustomBranchDialogComponent} from "../custom-branch-step/custom-branch-dialog.component";
 import {DesignerComponent} from "../../../designer/components/designer/designer.component";
-import {DesignerElement, DesignerElementAction, DesignerModel} from "../../../designer/designer-constants";
+import {
+  DesignerConstants,
+  DesignerElement,
+  DesignerElementAction,
+  DesignerElementOutput,
+  DesignerModel
+} from "../../../designer/designer-constants";
 
 @Component({
   selector: 'app-pipelines-editor',
@@ -567,11 +573,11 @@ export class PipelinesEditorComponent implements OnInit {
     if (step.type.toLocaleLowerCase() === 'branch') {
       step.params.forEach((p) => {
         if (p.type.toLocaleLowerCase() === 'result') {
-          outputs.push(p.name);
+          outputs.push(new DesignerElementOutput(p.name, 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
         }
       });
     } else {
-      outputs.push('output');
+      outputs.push(new DesignerElementOutput('output', 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
     }
     return outputs;
   }

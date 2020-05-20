@@ -19,9 +19,10 @@ import {ExecutionEditorComponent} from '../execution-editor/execution-editor.com
 import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
 import {DesignerComponent} from "../../../designer/components/designer/designer.component";
 import {
+  DesignerConstants,
   DesignerElement,
   DesignerElementAction,
-  DesignerElementAddOutput,
+  DesignerElementAddOutput, DesignerElementOutput,
   DesignerModel
 } from "../../../designer/designer-constants";
 
@@ -39,12 +40,8 @@ export class ApplicationsEditorComponent implements OnInit {
   pipelines: Pipeline[];
   packageObjects: PackageObject[];
   executionLookup = {};
-  addExecutionSubject: Subject<DesignerElement> = new Subject<
-    DesignerElement
-  >();
-  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<
-    DesignerElementAddOutput
-  >();
+  addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
 
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -516,7 +513,7 @@ export class ApplicationsEditorComponent implements OnInit {
     const outputs = [];
     executions.forEach((exec) => {
       if (exec.parents && exec.parents.indexOf(execution.id) !== -1) {
-        outputs.push(exec.id);
+        outputs.push(new DesignerElementOutput(exec.id, 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
       }
     });
     return outputs;

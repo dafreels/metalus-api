@@ -13,35 +13,45 @@ export class DesignerConstants {
     strokeWidth: 4
   };
 
-  static DEFAULT_SOURCE_ENDPOINT: EndpointOptions = {
-    id: '',
-    maxConnections: 1,
-    parameters: undefined,
-    reattachConnections: false,
-    scope: '',
-    type: '',
-    anchor: 'Bottom',
-    isSource: true,
-    isTarget: false,
-    paintStyle: DesignerConstants.DEFAULT_ENDPOINT_STYLE,
-    hoverPaintStyle: DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE,
-    connector:[ 'Straight', { } ]
-  };
+  static DEFAULT_SOURCE_ENDPOINT: EndpointOptions = DesignerConstants.getSourceEndpointOptions();
 
-  static DEFAULT_TARGET_ENDPOINT: EndpointOptions = {
-    id: '',
-    parameters: undefined,
-    reattachConnections: false,
-    scope: '',
-    type: '',
-    anchor: 'Top',
-    isSource: false,
-    isTarget: true,
-    paintStyle: DesignerConstants.DEFAULT_ENDPOINT_STYLE,
-    hoverPaintStyle: DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE,
-    maxConnections: -1,
-    dropOptions: { hoverClass: 'hover' }
-  };
+  static DEFAULT_TARGET_ENDPOINT: EndpointOptions = DesignerConstants.getTargetEndpointOptions();
+
+  static getSourceEndpointOptions(endPointStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_STYLE,
+                                  endPointHoverStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE): EndpointOptions {
+    return {
+      id: '',
+      maxConnections: 1,
+      parameters: undefined,
+      reattachConnections: false,
+      scope: '',
+      type: '',
+      anchor: 'Bottom',
+      isSource: true,
+      isTarget: false,
+      paintStyle: endPointStyle,
+      hoverPaintStyle: endPointHoverStyle,
+      connector:[ 'Straight', { } ]
+    };
+  }
+
+  static getTargetEndpointOptions(endPointStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_STYLE,
+                                  endPointHoverStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE): EndpointOptions {
+    return {
+      id: '',
+      parameters: undefined,
+      reattachConnections: false,
+      scope: '',
+      type: '',
+      anchor: 'Top',
+      isSource: false,
+      isTarget: true,
+      paintStyle: endPointStyle,
+      hoverPaintStyle: endPointHoverStyle,
+      maxConnections: -1,
+      dropOptions: { hoverClass: 'hover' }
+    };
+  }
 }
 
 export interface DesignerAction {
@@ -70,7 +80,7 @@ export interface DesignerElementAddOutput {
 export interface DesignerElement {
   name: string;
   input: boolean;
-  outputs: Array<string>;
+  outputs: Array<DesignerElementOutput>;
   tooltip: string;
   icon: string;
   data: {};
@@ -83,20 +93,8 @@ export interface DesignerElement {
   }
 }
 
-// export class DesignerElementOutput {
-//   name: string;
-//   endPointOptions: EndpointOptions = {
-//     id: '',
-//     maxConnections: 1,
-//     parameters: undefined,
-//     reattachConnections: false,
-//     scope: '',
-//     type: '',
-//     anchor: 'Bottom',
-//     isSource: true,
-//     isTarget: false,
-//     paintStyle: DesignerConstants.DEFAULT_ENDPOINT_STYLE,
-//     hoverPaintStyle: DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE,
-//     connector: ['Straight', {}]
-//   };
-// }
+export class DesignerElementOutput {
+  constructor(public name: string,
+              public type: string,
+              public endPointOptions: EndpointOptions) {}
+}
