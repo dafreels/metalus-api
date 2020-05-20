@@ -79,7 +79,6 @@ export class DesignerComponent implements AfterViewInit {
         const nodeId = Object.keys(this.model.nodes).find(node => {
           return this.model.nodes[node].data['name'] === request.element.name;
         });
-        console.log(`Adding output for nodeId: ${nodeId}`)
         const endpoint =
           this.jsPlumbInstance.addEndpoint(this.htmlNodeLookup[nodeId], this.getSourceEndpointOptions(null, 0));
         this.model.endpoints[endpoint.id] = {
@@ -260,9 +259,7 @@ export class DesignerComponent implements AfterViewInit {
       let endpoint;
       data.outputs.forEach(output => {
         endpoint =
-          this.jsPlumbInstance.addEndpoint(node, this.getSourceEndpointOptions(
-            data.outputs.length > 1 ? output : null,
-            rotations[i++]));
+          this.jsPlumbInstance.addEndpoint(node, this.getSourceEndpointOptions(output, rotations[i++]));
         this.model.endpoints[endpoint.id] = {
           name: output.name,
           nodeId
@@ -308,7 +305,7 @@ export class DesignerComponent implements AfterViewInit {
 
   private getSourceEndpointOptions(output: DesignerElementOutput, rotation: number) {
     const endPoint = output ? output.endPointOptions : JSON.parse(JSON.stringify(DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
-    const name = output ? output.name : null;
+    const name = output && output.type !== 'normal' ? output.name : null;
     endPoint.anchor = [ 'Perimeter', { shape:'Circle', rotation: rotation}];
     if (name) {
       endPoint.overlays = [
