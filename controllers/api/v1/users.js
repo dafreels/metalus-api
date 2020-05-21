@@ -7,16 +7,8 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const IncomingForm = require('formidable').IncomingForm;
 const ValidationError = require('../../../lib/ValidationError');
-const execFile = require('child_process').execFile;
-const fs = require('fs');
-const util = require('util');
-const stat = util.promisify(fs.stat);
-const mkdir = util.promisify(fs.mkdir);
-const rename = util.promisify(fs.rename);
-const readdir = util.promisify(fs.readdir);
-const rmdir = util.promisify(fs.rmdir);
-const unlink = util.promisify(fs.unlink);
-const exec = util.promisify(execFile);
+const mUtils = require('../../../lib/metalus-utils');
+
 
 // TODO This should be replaced with the execution library once it is in place
 const metalusCommand = `${process.cwd()}/metalus-utils/bin/metadata-extractor.sh`;
@@ -172,19 +164,19 @@ module.exports = function (router) {
     const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
     let exists;
     try {
-      const stats = await stat(userJarDir);
+      const stats = await mUtils.stat(userJarDir);
       exists = stats.isDirectory();
     } catch (err) {
       exists = false;
     }
-    const files = exists ? await readdir(userJarDir) : [];
+    const files = exists ? await mUtils.readdir(userJarDir) : [];
     if (files.length === 0) {
       res.sendStatus(204);
     } else {
       const existingFiles = [];
       let fileStat;
       for await (const file of files) {
-        fileStat = await stat(`${userJarDir}/${file}`);
+        fileStat = await mUtils.stat(`${userJarDir}/${file}`);
         existingFiles.push({
           name: file,
           path: userJarDir,
@@ -205,7 +197,7 @@ module.exports = function (router) {
       next(new Error('User does not have permission to upload files for different user!'));
     }
     const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
-    await mkdir(userJarDir, {recursive: true});
+    await mUtils.mkdir(userJarDir, {recursive: true});
     const options = {
       uploadDir: userJarDir
     };
@@ -214,7 +206,7 @@ module.exports = function (router) {
     form.parse(req)
       .on('file', async (name, file) => {
         uploadedFileName = `${userJarDir}/${file.name}`;
-        await rename(file.path, uploadedFileName);
+        await mUtils.rename(file.path, uploadedFileName);
       })
       .once('end', async () => {
         const userModel = new UsersModel();
@@ -242,20 +234,21 @@ module.exports = function (router) {
     const fileName = req.params.fileName;
     if (userId !== user.id) {
       next(new Error('User does not have permission to delete files for different user!'));
-    }
-    const filePath = `${process.cwd()}/jars/${userId}/${projectId}/${fileName}`;
-    let exists;
-    try {
-      const stats = await stat(filePath);
-      exists = stats.isFile();
-    } catch (err) {
-      exists = false;
-    }
-    if (exists) {
-      await unlink(filePath);
-      res.sendStatus(200);
     } else {
-      res.sendStatus(204);
+      const filePath = `${process.cwd()}/jars/${userId}/${projectId}/${fileName}`;
+      let exists;
+      try {
+        const stats = await mUtils.stat(filePath);
+        exists = stats.isFile();
+      } catch (err) {
+        exists = false;
+      }
+      if (exists) {
+        await mUtils.unlink(filePath);
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(204);
+      }
     }
   });
 
@@ -278,9 +271,9 @@ module.exports = function (router) {
     const stagingDir = `${userJarDir}/staging`;
     const jarFiles = [];
     try {
-      const stats = await stat(userJarDir);
+      const stats = await mUtils.stat(userJarDir);
       if (stats.isDirectory()) {
-        const files = await readdir(userJarDir);
+        const files = await mUtils.readdir(userJarDir);
         if (files.length > 0) {
           files.forEach((f) => {
             if (f.indexOf('.jar') >= 1) {
@@ -319,10 +312,10 @@ module.exports = function (router) {
         parameters.push(repos);
       }
       try {
-        await exec(metalusCommand, parameters, { maxBuffer: 1024 * 5000 });
+        await mUtils.exec(metalusCommand, parameters, { maxBuffer: 1024 * 5000 });
         // Delete the jar directory
-        await removeDir(stagingDir);
-        await removeDir(userJarDir);
+        await mUtils.removeDir(stagingDir);
+        await mUtils.removeDir(userJarDir);
       } catch (err) {
         //TODO clean this up
         return res.status(400).json({error: err});
@@ -332,24 +325,24 @@ module.exports = function (router) {
   });
 };
 
-async function removeDir(dir) {
+async function remveDir(dir) {
   // Remove any additional files
   let exists;
   try {
-    const stats = await stat(dir);
+    const stats = await mUtils.stat(dir);
     exists = stats.isDirectory();
   } catch (err) {
     exists = false;
   }
   if (exists) {
-    const stagedFiles = await readdir(dir) || [];
+    const stagedFiles = await mUtils.readdir(dir) || [];
     if (stagedFiles.length > 0) {
       for await (const file of stagedFiles) {
-        await unlink(`${dir}/${file}`);
+        await mUtils.unlink(`${dir}/${file}`);
       }
     }
     // Delete the directory
-    await rmdir(dir);
+    await mUtils.rmdir(dir);
   }
 }
 
@@ -361,8 +354,8 @@ async function deleteProjectData(userId, projectId) {
     }
   };
   const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
-  await removeDir(`${userJarDir}/staging`);
-  await removeDir(userJarDir);
+  await mUtils.removeDir(`${userJarDir}/staging`);
+  await mUtils.removeDir(userJarDir);
   await new StepsModel().deleteMany(query);
   await new AppsModel().deleteMany(query);
   await new PkgObjsModel().deleteMany(query);

@@ -10,6 +10,7 @@ const auth = require('../../lib/auth');
 const TestHelpers = require('../helpers/TestHelpers');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
+const mUtils = require('../../lib/metalus-utils');
 
 describe('Users API Mongo Tests', () => {
   let app;
@@ -83,6 +84,7 @@ describe('Users API Mongo Tests', () => {
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
     await util.promisify(mock.close.bind(mock))();
+    await mUtils.removeDir('jars');
   });
 
   it('Should fail insert on missing body', async () => {
@@ -224,13 +226,13 @@ describe('Users API Mongo Tests', () => {
     expect(resp).to.have.property('projects').lengthOf(1);
   });
 
-  it('Should fail to upload a jar file to the wrong user', async () => {
-    const userInfo = await TestHelpers.authUser(request(mock), state);
-    await request(mock)
-      .post(`/api/v1/users/bad-user/project/1/upload`)
-      .set('Cookie', [userInfo])
-      .expect(500);
-  });
+  // it('Should fail to upload a jar file to the wrong user', async () => {
+  //   const userInfo = await TestHelpers.authUser(request(mock), state);
+  //   await request(mock)
+  //     .post(`/api/v1/users/bad-user/project/1/upload`)
+  //     .set('Cookie', [userInfo])
+  //     .expect(500);
+  // });
 
   it('Should upload a jar file to the first project', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);
@@ -326,11 +328,12 @@ describe('Users API Mongo Tests', () => {
     expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
     expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test2.jar`));
 
-    // // can't delete a different users file
-    // await request(mock)
-    //    .delete(`/api/v1/users/bad-user/project/1/files/test2.jar`)
-    //    .set('Cookie', [userInfo])
-    //    .expect(500);
+    // can't delete a different users file
+    await request(mock)
+       .delete(`/api/v1/users/mock-dev-user/project/1/files/test2.jar`)
+       .send(mockUser)
+       .set('Cookie', [userInfo])
+       .expect(500);
   });
 
   it('Should delete user', async () => {
