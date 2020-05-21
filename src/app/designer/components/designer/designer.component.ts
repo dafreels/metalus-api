@@ -80,7 +80,7 @@ export class DesignerComponent implements AfterViewInit {
           return this.model.nodes[node].data['name'] === request.element.name;
         });
         const endpoint =
-          this.jsPlumbInstance.addEndpoint(this.htmlNodeLookup[nodeId], this.getSourceEndpointOptions(null, 0));
+          this.jsPlumbInstance.addEndpoint(this.htmlNodeLookup[nodeId], DesignerComponent.getSourceEndpointOptions(null, 0));
         this.model.endpoints[endpoint.id] = {
           name: request.output,
           nodeId
@@ -259,7 +259,7 @@ export class DesignerComponent implements AfterViewInit {
       let endpoint;
       data.outputs.forEach(output => {
         endpoint =
-          this.jsPlumbInstance.addEndpoint(node, this.getSourceEndpointOptions(output, rotations[i++]));
+          this.jsPlumbInstance.addEndpoint(node, DesignerComponent.getSourceEndpointOptions(output, rotations[i++]));
         this.model.endpoints[endpoint.id] = {
           name: output.name,
           nodeId
@@ -300,10 +300,12 @@ export class DesignerComponent implements AfterViewInit {
   }
 
   private broadCastModelChanges() {
-    this.modelChanged.emit(this.model);
+    if (!this.modelPopulating) {
+      this.modelChanged.emit(this.model);
+    }
   }
 
-  private getSourceEndpointOptions(output: DesignerElementOutput, rotation: number) {
+  private static getSourceEndpointOptions(output: DesignerElementOutput, rotation: number) {
     const endPoint = output ? output.endPointOptions : JSON.parse(JSON.stringify(DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
     const name = output && output.type !== 'normal' ? output.name : null;
     endPoint.anchor = [ 'Perimeter', { shape:'Circle', rotation: rotation}];

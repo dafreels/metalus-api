@@ -18,7 +18,9 @@ export class DesignerConstants {
   static DEFAULT_TARGET_ENDPOINT: EndpointOptions = DesignerConstants.getTargetEndpointOptions();
 
   static getSourceEndpointOptions(endPointStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_STYLE,
-                                  endPointHoverStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE): EndpointOptions {
+                                  endPointHoverStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE,
+                                  connectorStyle: PaintStyle = null,
+                                  connectorHoverStyle: PaintStyle = null): EndpointOptions {
     return {
       id: '',
       maxConnections: 1,
@@ -31,7 +33,9 @@ export class DesignerConstants {
       isTarget: false,
       paintStyle: endPointStyle,
       hoverPaintStyle: endPointHoverStyle,
-      connector:[ 'Straight', { } ]
+      connector:[ 'Straight', { } ],
+      connectorStyle,
+      connectorHoverStyle
     };
   }
 
