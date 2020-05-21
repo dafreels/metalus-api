@@ -5,7 +5,8 @@
       <span class="page-title">Profile</span>
     </span>
     <span>
-      <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change Password</button>
+      <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change
+        Password</button>
       <button mat-raised-button color="primary" (click)="addProject()" style="margin-right: 5px;">New Project</button>
       <user-menu [user]="user"></user-menu>
     </span>
@@ -13,61 +14,57 @@
   <div>
     <mat-card>
       <mat-card-content>
-        <mat-card>
-          <mat-card-content>
-            <mat-card-title>User Information</mat-card-title>
-            <div class="form">
-              <span class="label">Id</span>
-              <span class="display">{{user.id}}</span>
-              <span class="label">Username</span>
-              <span class="display">{{user.username}}</span>
-              <span class="label">Display Name</span>
-              <span class="display">{{user.displayName}}</span>
-              <span class="label">Role</span>
-              <span class="display">{{user.role}}</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
-        <mat-card>
-          <mat-card-content>
-            <mat-card-header>
-              <mat-card-title-group>
-                <mat-card-title>Projects</mat-card-title>
-              </mat-card-title-group>
-            </mat-card-header>
-            <div class="divTable blueTable">
-              <div class="divTableHeading">
-                <div class="divTableRow">
-                  <div class="divTableHead">Id</div>
-                  <div class="divTableHead">Display Name</div>
-                  <div class="divTableHead">Default</div>
-                  <div class="divTableHead">Remove</div>
-                </div>
-              </div>
-              <div class="divTableBody">
-                <div class="divTableRow" *ngFor="let project of user.projects">
-                  <div class="divTableCell">{{project.id}}</div>
-                  <div class="divTableCell">{{project.displayName}}</div>
-                  <div class="divTableCell">
-                    <button *ngIf="project.id !== user.defaultProjectId" mat-icon-button color="primary" (click)="changeDefaultProject(project.id)">
-                      <mat-icon>toggle_on</mat-icon>
-                    </button>
-                    <button *ngIf="project.id === user.defaultProjectId" mat-icon-button color="primary" disabled>
-                      <mat-icon>toggle_off</mat-icon>
-                    </button>
-                  </div>
-                  <div class="divTableCell">
-                    <button *ngIf="project.id !== user.defaultProjectId" mat-icon-button color="primary" (click)="removeProject(project.id)">
-                      <mat-icon>remove</mat-icon>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
+        <mat-card-title>User Information</mat-card-title>
+        <div class="user-info mat-elevation-z2">
+          <span class="label">Id</span>
+          <span class="display">{{user.id}}</span>
+          <span class="label">Username</span>
+          <span class="display">{{user.username}}</span>
+          <span class="label">Display Name</span>
+          <span class="display">{{user.displayName}}</span>
+          <span class="label">Role</span>
+          <span class="display">{{user.role}}</span>
+        </div>
+        <div class="mt-2">
+          <mat-card-title>Projects</mat-card-title>
+          <mat-table [dataSource]="user.projects" class="mat-elevation-z2">
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="displayName">
+              <mat-header-cell *matHeaderCellDef> Display Name </mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.displayName}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="default">
+              <mat-header-cell *matHeaderCellDef> Default </mat-header-cell>
+              <mat-cell *matCellDef="let element"> <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button
+                  color="primary" (click)="changeDefaultProject(element.id)">
+                  <mat-icon>toggle_on</mat-icon>
+                </button>
+                <button *ngIf="element.id === user.defaultProjectId" mat-icon-button color="primary" disabled>
+                  <mat-icon>toggle_off</mat-icon>
+                </button> </mat-cell>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="remove">
+              <mat-header-cell *matHeaderCellDef> Remove </mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button color="grey"
+                  (click)="removeProject(element.id)">
+                  <mat-icon>delete</mat-icon>
+                </button> </mat-cell>
+
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>
 </div>
-
