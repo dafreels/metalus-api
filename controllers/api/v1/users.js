@@ -325,27 +325,6 @@ module.exports = function (router) {
   });
 };
 
-async function remveDir(dir) {
-  // Remove any additional files
-  let exists;
-  try {
-    const stats = await mUtils.stat(dir);
-    exists = stats.isDirectory();
-  } catch (err) {
-    exists = false;
-  }
-  if (exists) {
-    const stagedFiles = await mUtils.readdir(dir) || [];
-    if (stagedFiles.length > 0) {
-      for await (const file of stagedFiles) {
-        await mUtils.unlink(`${dir}/${file}`);
-      }
-    }
-    // Delete the directory
-    await mUtils.rmdir(dir);
-  }
-}
-
 async function deleteProjectData(userId, projectId) {
   const query = {
     project: {
