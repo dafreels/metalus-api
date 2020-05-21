@@ -253,8 +253,10 @@ module.exports = function (router) {
     }
     if (exists) {
       await unlink(filePath);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(204);
     }
-    res.sendStatus(204);
   });
 
   router.put('/:id/project/:projectId/processUploadedJars', async (req, res, next) => {
