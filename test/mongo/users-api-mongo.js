@@ -203,36 +203,13 @@ describe('Users API Mongo Tests', () => {
     expect(resp).to.have.property('projects').lengthOf(2);
   });
 
-  it('Should delete user project', async () => {
+  it('Should fail to upload a jar file to the wrong user', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);
-    let response = await request(mock)
-      .get('/api/v1/users/')
+    await request(mock)
+      .post(`/api/v1/users/bad-user/project/1/upload`)
       .set('Cookie', [userInfo])
-      .expect('Content-Type', /json/)
-      .expect(200);
-    let resp = JSON.parse(response.text);
-    expect(resp).to.exist;
-    expect(resp).to.have.property('users').lengthOf(2);
-    const user = resp.users.find(user => user.username === 'dev');
-    expect(user).to.have.property('projects').lengthOf(2);
-    response = await request(mock)
-      .delete(`/api/v1/users/${user.id}/project/2`)
-      .send(user)
-      .set('Cookie', [userInfo])
-      .expect('Content-Type', /json/)
-      .expect(200);
-    resp = JSON.parse(response.text);
-    expect(resp).to.exist;
-    expect(resp).to.have.property('projects').lengthOf(1);
+      .expect(500);
   });
-
-  // it('Should fail to upload a jar file to the wrong user', async () => {
-  //   const userInfo = await TestHelpers.authUser(request(mock), state);
-  //   await request(mock)
-  //     .post(`/api/v1/users/bad-user/project/1/upload`)
-  //     .set('Cookie', [userInfo])
-  //     .expect(500);
-  // });
 
   it('Should upload a jar file to the first project', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);
@@ -285,6 +262,7 @@ describe('Users API Mongo Tests', () => {
     expect(updateModTime > initialModTime);
   });
 
+  // TODO: upload as a different user
   // it('Should upload a file as a different user', async() => {
   //   const userInfo = await TestHelpers.authUser(request(mock), state);
   //   const response = await request(mock)
@@ -310,6 +288,8 @@ describe('Users API Mongo Tests', () => {
   //   expect(fs.existsSync(`jars/${user.id}/1/${filename}`));
   // });
 
+  // TODO: upload to a different project
+
   it('Should delete an existing jar file', async () => {
     let userInfo = await TestHelpers.authUser(request(mock), state);
     let projectId = mockUser.projects[0].id;
@@ -334,6 +314,32 @@ describe('Users API Mongo Tests', () => {
        .send(mockUser)
        .set('Cookie', [userInfo])
        .expect(500);
+  });
+
+
+  it('Should delete user project', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    let response = await request(mock)
+      .get('/api/v1/users/')
+      .set('Cookie', [userInfo])
+      .expect('Content-Type', /json/)
+      .expect(200);
+    let resp = JSON.parse(response.text);
+    expect(resp).to.exist;
+    expect(resp).to.have.property('users').lengthOf(2);
+    const user = resp.users.find(user => user.username === 'dev');
+    expect(user).to.have.property('projects').lengthOf(2);
+    response = await request(mock)
+      .delete(`/api/v1/users/${user.id}/project/2`)
+      .send(user)
+      .set('Cookie', [userInfo])
+      .expect('Content-Type', /json/)
+      .expect(200);
+    resp = JSON.parse(response.text);
+    expect(resp).to.exist;
+    expect(resp).to.have.property('projects').lengthOf(1);
+
+    // TODO: test that the project jars folder was deleted
   });
 
   it('Should delete user', async () => {
