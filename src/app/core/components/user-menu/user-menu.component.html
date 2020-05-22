@@ -17,5 +17,11 @@
         <span class="spacer"><a [routerLink]="['/users']" routerLinkActive="active">Users</a></span>
       </div>
     </button>
+    <button mat-menu-item *ngIf="user && user.role.toString() === 'admin'">
+      <div>
+        <mat-icon color="primary">power_off</mat-icon>
+        <span class="spacer"><a (click)="logout()">Logout</a></span>
+      </div>
+    </button>
   </mat-menu>
 </span>

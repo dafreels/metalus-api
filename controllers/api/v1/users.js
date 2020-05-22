@@ -40,6 +40,13 @@ module.exports = function (router) {
     })(req, res, next);
   });
 
+  router.post('/logout', (req, res) => {
+    if (req.logout) {
+      req.logout();
+    }
+    res.sendStatus(204);
+  });
+
   router.get('/', async (req, res, next) => {
     const user = await req.user;
     if (user.role !== 'admin') {
