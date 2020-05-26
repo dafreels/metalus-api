@@ -15,7 +15,7 @@ import {ConfirmationModalComponent} from "../../../shared/components/confirmatio
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-
+  displayedColumns: string[] = ['id', 'displayName', 'default', 'remove'];
   user: User;
 
   constructor(private authService: AuthService,

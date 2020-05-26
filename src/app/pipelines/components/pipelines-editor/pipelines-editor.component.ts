@@ -66,13 +66,38 @@ export class PipelinesEditorComponent implements OnInit {
     private pipelinesService: PipelinesService,
     private packageObjectsService: PackageObjectsService,
     public dialog: MatDialog,
-    private authService: AuthService
-  ) {
+    private authService: AuthService) {
     this.user = this.authService.getUserInfo();
-    this.authService.userItemSelection.subscribe(data => this.user = data);
+    this.authService.userItemSelection.subscribe(data => {
+      this.user = data;
+      const newPipeline = this.generatePipeline();
+      // Cannot diff the pipeline since step orders could have changed
+      if (this.hasPipelineChanged(newPipeline)) {
+        const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+          width: '450px',
+          height: '200px',
+          data: {
+            message:
+              'You have unsaved changes to the current pipeline. Would you like to continue?',
+          },
+        });
+
+        dialogRef.afterClosed().subscribe((confirmation) => {
+          if (confirmation) {
+            this.loadUIData();
+          }
+        });
+      } else {
+        this.loadUIData();
+      }
+    });
   }
 
   ngOnInit(): void {
+    this.loadUIData();
+  }
+
+  private loadUIData() {
     this.newPipeline();
     this.newStep();
     this.stepsService.getSteps().subscribe((steps: Step[]) => {
@@ -122,7 +147,7 @@ export class PipelinesEditorComponent implements OnInit {
       });
 
     this.pipelinesService.getPipelineSchema().subscribe((schema) => {
-      const ajv = new Ajv({ allErrors: true });
+      const ajv = new Ajv({allErrors: true});
       this.stepsService.getStepSchema().subscribe((stepSchema) => {
         this.pipelineValidator = ajv
           .addSchema(stepSchema, 'stepSchema')
@@ -572,11 +597,11 @@ export class PipelinesEditorComponent implements OnInit {
     if (step.type.toLocaleLowerCase() === 'branch') {
       step.params.forEach((p) => {
         if (p.type.toLocaleLowerCase() === 'result') {
-          outputs.push(new DesignerElementOutput(p.name, 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+          outputs.push(new DesignerElementOutput(p.name, 'result', DesignerConstants.getSourceEndpointOptions()));
         }
       });
     } else {
-      outputs.push(new DesignerElementOutput('output', 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+      outputs.push(new DesignerElementOutput('output', 'normal', DesignerConstants.getSourceEndpointOptions()));
     }
     outputs.push(PipelinesEditorComponent.generateErrorOutput());
     return outputs;
@@ -656,7 +681,6 @@ export class PipelinesEditorComponent implements OnInit {
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
-    const connectedNodes = [];
     pipeline.steps.forEach((step) => {
       if (step.nextStepOnError) {
         model.connections[
@@ -671,7 +695,6 @@ export class PipelinesEditorComponent implements OnInit {
             },
           ],
         };
-        connectedNodes.push(step.nextStepId);
       }
       if (step.type.toLocaleLowerCase() !== 'branch' && step.nextStepId) {
         model.connections[
@@ -686,20 +709,14 @@ export class PipelinesEditorComponent implements OnInit {
             },
           ],
         };
-        connectedNodes.push(step.nextStepId);
       } else {
         let connection;
         step.params
           .filter((p) => p.type.toLowerCase() === 'result')
           .forEach((output) => {
             if (output.value) {
-              connectedNodes.push(output.value);
               connection =
-                model.connections[
-                  `${this.stepLookup[step.id]}::${
-                    this.stepLookup[output.value]
-                  }`
-                ];
+                model.connections[`${this.stepLookup[step.id]}::${this.stepLookup[output.value]}`];
               if (!connection) {
                 connection = {
                   sourceNodeId: this.stepLookup[step.id],

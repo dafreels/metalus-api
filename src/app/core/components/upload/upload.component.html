@@ -1,16 +1,9 @@
 <div>
-  <div class="topnav">
-    <span>
-      <nav-menu currentPage="upload"></nav-menu>
-      <span class="page-title">Upload Jars</span>
-    </span>
-    <span>
-      <button mat-raised-button color="primary" (click)="addFiles()" [disabled]="uploading" style="margin-right: 5px;">Upload</button>
-      <button mat-raised-button color="primary" (click)="processJars()"
-              [disabled]="uploading || (uploadedFiles.length === 0 && remoteJars.length === 0)" style="margin-right: 5px;">Process</button>
-      <user-menu [user]="user"></user-menu>
-    </span>
-  </div>
+  <nav-toolbar page="upload" title="Upload Jars" [user]="user">
+    <button mat-raised-button color="primary" (click)="addFiles()" [disabled]="uploading" style="margin-right: 5px;">Upload</button>
+    <button mat-raised-button color="primary" (click)="processJars()"
+            [disabled]="uploading || (uploadedFiles.length === 0 && remoteJars.length === 0)" style="margin-right: 5px;">Process</button>
+  </nav-toolbar>
   <div>
     <mat-tab-group>
       <mat-tab label="Upload Jars">

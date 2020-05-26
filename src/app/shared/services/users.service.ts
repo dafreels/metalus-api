@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
-import {Observable, Subject, throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {ChangePassword, User, UserResponse} from "../models/users.models";
 
 @Injectable({
@@ -60,7 +60,7 @@ export class UsersService {
 
   getAllUsers(): Observable<User[]> {
     return this.http
-      .get<UserResponse>(`/api/v1/users`, { observe: 'response' })
+      .get<UserResponse>(`/api/v1/users`, {observe: 'response'})
       .pipe(
         map((response) => {
           if (response && response.body) {

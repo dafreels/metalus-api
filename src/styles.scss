@@ -1,6 +1,38 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
+// Include the theming library
+@import '~@angular/material/theming';
+// Include non-theme styles for core.
+@include mat-core();
+// Define a theme.
+$primary: mat-palette($mat-deep-purple);
+$accent:  mat-palette($mat-amber, A200, A100, A400);
+$theme: mat-light-theme($primary, $accent);
+// Include all theme styles for the components.
+@include angular-material-theme($theme);
+
+body {
+  background: rgb(240, 240, 240);
+  .mt-1{
+    margin-top: 1rem;
+  }
+  .mt-2{
+    margin-top: 2rem;
+  }
+}
+
+mat-table {
+  margin-right: 6rem;
+  mat-header-row {
+    mat-header-cell {
+      background-color: mat-color($primary);
+      color: white;
+      font-size: medium;
+    }
+  }
+}
+
 .designer-node-step-group {
   background-color: #bebebe;
 }
@@ -19,7 +51,6 @@
 .topnav {
   display: flex;
   justify-content: space-between;
-  width: 95%;
   margin-bottom: 8px;
 }
 

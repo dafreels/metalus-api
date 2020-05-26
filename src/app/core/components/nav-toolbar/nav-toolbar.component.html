@@ -1,0 +1,10 @@
+<div class="topnav">
+  <span class="menu-left">
+    <nav-menu [currentPage]="page"></nav-menu>
+    <span class="page-title">{{title}}</span>
+  </span>
+  <span class="menu-right">
+    <ng-content></ng-content>
+    <user-menu [user]="user"></user-menu>
+  </span>
+</div>
