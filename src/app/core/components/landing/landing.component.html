@@ -1,11 +1,5 @@
 <div>
-  <div class="topnav">
-    <span>
-      <nav-menu currentPage="landing"></nav-menu>
-      <span class="page-title">Home</span>
-    </span>
-    <user-menu [user]="user"></user-menu>
-  </div>
+  <nav-toolbar page="landing" title="Home" [user]="user" ></nav-toolbar>
   <div>
     <mat-grid-list cols="4">
       <mat-grid-tile>

@@ -1,14 +1,7 @@
 <div>
-  <div class="topnav">
-    <span>
-      <nav-menu currentPage="users"></nav-menu>
-      <span class="page-title">Users</span>
-    </span>
-    <span>
-      <button mat-raised-button color="primary" (click)="addUser()" style="margin-right: 5px;">New</button>
-      <user-menu [user]="currentUser"></user-menu>
-    </span>
-  </div>
+  <nav-toolbar page="users" title="Users" [user]="currentUser">
+    <button mat-raised-button color="primary" (click)="addUser()" style="margin-right: 5px;">New</button>
+  </nav-toolbar>
   <div>
     <mat-card>
       <mat-card-content>

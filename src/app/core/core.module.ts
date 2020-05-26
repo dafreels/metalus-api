@@ -12,6 +12,7 @@ import {UsersModalComponent} from "./components/users/manage/users-modal.compone
 import {NavMenuComponent} from "./components/nav-menu/nav-menu.component";
 import {UserMenuComponent} from "./components/user-menu/user-menu.component";
 import {UploadComponent} from "./components/upload/upload.component";
+import {NavToolbarComponent} from "./components/nav-toolbar/nav-toolbar.component";
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import {UploadComponent} from "./components/upload/upload.component";
     LandingComponent,
     LoginComponent,
     NavMenuComponent,
+    NavToolbarComponent,
     PageNotFoundComponent,
     ProfileComponent,
     UploadComponent,
@@ -40,6 +42,7 @@ import {UploadComponent} from "./components/upload/upload.component";
     LandingComponent,
     LoginComponent,
     NavMenuComponent,
+    NavToolbarComponent,
     PageNotFoundComponent,
     ProfileComponent,
     UploadComponent,

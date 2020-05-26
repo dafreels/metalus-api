@@ -1,27 +1,20 @@
 <div>
-  <div class="topnav">
-    <span>
-      <nav-menu currentPage="pipelines-editor"></nav-menu>
-      <span class="page-title">Pipelines Editor</span>
-    </span>
-    <span>
-      <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newPipeline()">New</button>
-      <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
-              style="margin-right: 5px;">Load</button>
-      <mat-menu #pipelineMenu="matMenu">
-        <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id" (click)="loadPipeline(pipeline.id)">
-          {{ pipeline.name }}
-        </button>
-      </mat-menu>
-      <button mat-button color="primary" style="margin-right: 5px;" (click)="copyPipeline()"
-              [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Copy</button>
-      <button mat-button color="primary" (click)="importPipeline()">Import</button>
-      <button mat-button color="primary" style="margin-right: 5px;" (click)="exportPipeline()">Export</button>
-      <button mat-button color="primary" style="margin-right: 5px;" (click)="deletePipeline()"
-              [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Delete</button>
-      <user-menu [user]="user"></user-menu>
-    </span>
-  </div>
+  <nav-toolbar page="pipelines-editor" title="Pipelines Editor" [user]="user">
+    <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newPipeline()">New</button>
+    <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
+            style="margin-right: 5px;">Load</button>
+    <mat-menu #pipelineMenu="matMenu">
+      <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id" (click)="loadPipeline(pipeline.id)">
+        {{ pipeline.name }}
+      </button>
+    </mat-menu>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="copyPipeline()"
+            [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Copy</button>
+    <button mat-button color="primary" (click)="importPipeline()">Import</button>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="exportPipeline()">Export</button>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="deletePipeline()"
+            [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Delete</button>
+  </nav-toolbar>
   <div class="pipelines-editor-layout">
     <div class="steps-editor-sidebar">
       <app-steps-selector
