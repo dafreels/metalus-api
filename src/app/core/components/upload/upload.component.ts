@@ -46,7 +46,10 @@ export class UploadComponent implements OnInit {
               public dialog: MatDialog,
               private router: Router) {
     this.user = this.authService.getUserInfo();
-    this.authService.userItemSelection.subscribe(data => this.user = data);
+    this.authService.userItemSelection.subscribe(data => {
+      this.user = data;
+      this.filesService.getFiles(this.user).subscribe(data => this.uploadedFiles = data);
+    });
   }
 
   ngOnInit(): void {

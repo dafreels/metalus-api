@@ -66,13 +66,38 @@ export class PipelinesEditorComponent implements OnInit {
     private pipelinesService: PipelinesService,
     private packageObjectsService: PackageObjectsService,
     public dialog: MatDialog,
-    private authService: AuthService
-  ) {
+    private authService: AuthService) {
     this.user = this.authService.getUserInfo();
-    this.authService.userItemSelection.subscribe(data => this.user = data);
+    this.authService.userItemSelection.subscribe(data => {
+      this.user = data;
+      const newPipeline = this.generatePipeline();
+      // Cannot diff the pipeline since step orders could have changed
+      if (this.hasPipelineChanged(newPipeline)) {
+        const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+          width: '450px',
+          height: '200px',
+          data: {
+            message:
+              'You have unsaved changes to the current pipeline. Would you like to continue?',
+          },
+        });
+
+        dialogRef.afterClosed().subscribe((confirmation) => {
+          if (confirmation) {
+            this.loadUIData();
+          }
+        });
+      } else {
+        this.loadUIData();
+      }
+    });
   }
 
   ngOnInit(): void {
+    this.loadUIData();
+  }
+
+  private loadUIData() {
     this.newPipeline();
     this.newStep();
     this.stepsService.getSteps().subscribe((steps: Step[]) => {
@@ -122,7 +147,7 @@ export class PipelinesEditorComponent implements OnInit {
       });
 
     this.pipelinesService.getPipelineSchema().subscribe((schema) => {
-      const ajv = new Ajv({ allErrors: true });
+      const ajv = new Ajv({allErrors: true});
       this.stepsService.getStepSchema().subscribe((stepSchema) => {
         this.pipelineValidator = ajv
           .addSchema(stepSchema, 'stepSchema')

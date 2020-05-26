@@ -30,10 +30,17 @@ export class LandingComponent implements OnInit {
     private authService: AuthService
   ) {
     this.user = this.authService.getUserInfo();
-    this.authService.userItemSelection.subscribe(data => this.user = data);
+    this.authService.userItemSelection.subscribe(data => {
+      this.user = data;
+      this.loadCounts();
+    });
   }
 
   ngOnInit(): void {
+    this.loadCounts();
+  }
+
+  private loadCounts() {
     this.applicationService
       .getApplications()
       .subscribe((applications: Application[]) => {
