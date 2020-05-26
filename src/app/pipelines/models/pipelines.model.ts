@@ -19,6 +19,7 @@ export interface PipelineStep extends Step {
   stepId: string;
   params: PipelineStepParam[];
   nextStepId?: string;
+  nextStepOnError?: string;
   executeIfEmpty?: string;
 }
 

@@ -1,14 +1,7 @@
-import {DisplayDialogService} from './../../../shared/services/display-dialog.service';
-import {PipelinesService} from './../../../pipelines/services/pipelines.service';
+import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
+import {PipelinesService} from '../../../pipelines/services/pipelines.service';
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Application, Execution} from '../../applications.model';
-import {
-  DesignerComponent,
-  DesignerElement,
-  DesignerElementAction,
-  DesignerElementAddOutput,
-  DesignerModel,
-} from '../../../designer/components/designer/designer.component';
 import {ApplicationsService} from '../../applications.service';
 import {Pipeline} from '../../../pipelines/models/pipelines.model';
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
@@ -24,8 +17,14 @@ import {CodeEditorComponent} from '../../../code-editor/components/code-editor/c
 import {ComponentsEditorComponent} from '../components-editor/components-editor.component';
 import {ExecutionEditorComponent} from '../execution-editor/execution-editor.component';
 import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
-import {AuthService} from "../../../shared/services/auth.service";
-import {Project} from "../../../shared/models/users.models";
+import {DesignerComponent} from "../../../designer/components/designer/designer.component";
+import {
+  DesignerConstants,
+  DesignerElement,
+  DesignerElementAction,
+  DesignerElementAddOutput, DesignerElementOutput,
+  DesignerModel
+} from "../../../designer/designer-constants";
 
 @Component({
   selector: 'app-applications-editor',
@@ -41,12 +40,8 @@ export class ApplicationsEditorComponent implements OnInit {
   pipelines: Pipeline[];
   packageObjects: PackageObject[];
   executionLookup = {};
-  addExecutionSubject: Subject<DesignerElement> = new Subject<
-    DesignerElement
-  >();
-  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<
-    DesignerElementAddOutput
-  >();
+  addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
 
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -518,7 +513,7 @@ export class ApplicationsEditorComponent implements OnInit {
     const outputs = [];
     executions.forEach((exec) => {
       if (exec.parents && exec.parents.indexOf(execution.id) !== -1) {
-        outputs.push(exec.id);
+        outputs.push(new DesignerElementOutput(exec.id, 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
       }
     });
     return outputs;

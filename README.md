@@ -49,7 +49,7 @@ The file *config/mongo.json* contains all of the settings required to connect wi
 |----------------|-------------|
 |storageType     |mongodb      |
 |databaseServer  |localhost    |
-|databaseName    |metalus         |
+|databaseName    |metalus      |
 |databaseSSL     |false        |
 |databaseUser    |<not set>    |
 |databasePassword|<not set>    |

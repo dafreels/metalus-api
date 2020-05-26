@@ -9,51 +9,19 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {DragEventCallbackOptions, EndpointOptions, jsPlumb, PaintStyle} from 'jsplumb';
+import {DragEventCallbackOptions, jsPlumb} from 'jsplumb';
 import {DndDropEvent} from 'ngx-drag-drop';
 import {Subject} from 'rxjs';
 import {DesignerNodeComponent} from '../designer-node/designer-node.component';
 import {DesignerNodeDirective} from '../../directives/designer-node.directive';
-import { graphlib, layout } from 'dagre';
-
-export interface DesignerElement {
-  name: string;
-  input: boolean;
-  outputs: Array<string>;
-  tooltip: string;
-  icon: string;
-  data: {};
-  event?: DndDropEvent;
-  style?: string;
-  actions?: DesignerAction[];
-  layout?: {
-    x: number;
-    y: number;
-  }
-}
-
-export interface DesignerAction {
-  displayName: string;
-  action: string;
-  enableFunction;
-}
-
-export interface DesignerModel {
-  nodeSeq: number,
-  nodes: object,
-  endpoints: object,
-  connections: object
-}
-
-export interface DesignerElementAction {
-  action: string;
-  element: DesignerElement;
-}
-
-export interface DesignerElementAddOutput {
-  element: DesignerElement;
-  output: string;
-}
+import {graphlib, layout} from 'dagre';
+import {
+  DesignerConstants,
+  DesignerElement,
+  DesignerElementAction,
+  DesignerElementAddOutput, DesignerElementOutput,
+  DesignerModel
+} from "../../designer-constants";
 
 @Component({
   selector: 'app-designer',
@@ -71,46 +39,8 @@ export class DesignerComponent implements AfterViewInit {
   @Output() modelChanged = new EventEmitter();
   @Output() elementSelected = new EventEmitter<DesignerElement>();
   @Output() elementAction = new EventEmitter<DesignerElementAction>();
-  endPointStyle: PaintStyle = {
-    fill: '#7AB02C',
-    stroke: '7'
-  };
-  endpointHoverStyle: PaintStyle = {
-    fill: '#216477',
-    stroke: '7',
-    strokeWidth: 4
-  };
-  sourceEndpoint: EndpointOptions = {
-    id: '',
-    maxConnections: 1,
-    parameters: undefined,
-    reattachConnections: false,
-    scope: '',
-    type: '',
-    anchor: 'Bottom',
-    isSource: true,
-    isTarget: false,
-    paintStyle: this.endPointStyle,
-    hoverPaintStyle: this.endpointHoverStyle,
-    connector:[ 'Straight', { } ]
-  };
-  // connector: [ 'Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ] //midpoint: 0.0001
-  targetEndpoint: EndpointOptions = {
-    id: '',
-    parameters: undefined,
-    reattachConnections: false,
-    scope: '',
-    type: '',
-    anchor: 'Top',
-    isSource: false,
-    isTarget: true,
-    paintStyle: this.endPointStyle,
-    hoverPaintStyle: this.endpointHoverStyle,
-    maxConnections: -1,
-    dropOptions: { hoverClass: 'hover' }
-  };
-  selectedComponent;
 
+  selectedComponent;
   jsPlumbInstance;
 
   // TODO see if there is an angular way to handle this
@@ -149,9 +79,8 @@ export class DesignerComponent implements AfterViewInit {
         const nodeId = Object.keys(this.model.nodes).find(node => {
           return this.model.nodes[node].data['name'] === request.element.name;
         });
-        console.log(`Adding output for nodeId: ${nodeId}`)
         const endpoint =
-          this.jsPlumbInstance.addEndpoint(this.htmlNodeLookup[nodeId], this.getSourceEndpointOptions(null, 0));
+          this.jsPlumbInstance.addEndpoint(this.htmlNodeLookup[nodeId], DesignerComponent.getSourceEndpointOptions(null, 0));
         this.model.endpoints[endpoint.id] = {
           name: request.output,
           nodeId
@@ -162,8 +91,13 @@ export class DesignerComponent implements AfterViewInit {
     this.viewReady = true;
   }
 
-  removeElement(data: DesignerElement) {
-    this.jsPlumbInstance.remove(Object.keys(this.model.nodes).find(key => this.model.nodes[key].data.name === data.name));
+  removeElement(data: DesignerElement, componentRef) {
+    let key = Object.keys(this.model.nodes).find(key => this.model.nodes[key].data.name === data.name);
+    this.jsPlumbInstance.remove(key);
+    delete this.model.nodes[key];
+    delete this.htmlNodeLookup[key];
+    this.designerCanvas.viewContainerRef.remove(this.designerCanvas.viewContainerRef.indexOf(componentRef));
+    this.broadCastModelChanges();
   }
 
   static newModel() {
@@ -296,7 +230,7 @@ export class DesignerComponent implements AfterViewInit {
 
     // Add the input connector
     if (data.input) {
-      const endpoint = this.jsPlumbInstance.addEndpoint(node, this.targetEndpoint);
+      const endpoint = this.jsPlumbInstance.addEndpoint(node, DesignerConstants.DEFAULT_TARGET_ENDPOINT);
       this.model.endpoints[endpoint.id] = {
         name: 'input',
         nodeId
@@ -325,11 +259,9 @@ export class DesignerComponent implements AfterViewInit {
       let endpoint;
       data.outputs.forEach(output => {
         endpoint =
-          this.jsPlumbInstance.addEndpoint(node, this.getSourceEndpointOptions(
-            data.outputs.length > 1 ? output : null,
-            rotations[i++]));
+          this.jsPlumbInstance.addEndpoint(node, DesignerComponent.getSourceEndpointOptions(output, rotations[i++]));
         this.model.endpoints[endpoint.id] = {
-          name: output,
+          name: output.name,
           nodeId
         }
       });
@@ -360,7 +292,7 @@ export class DesignerComponent implements AfterViewInit {
       this.elementSelected.emit(data)
     });
     componentRef.instance.nodeAction.subscribe(data => this.elementAction.emit(data));
-    componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data));
+    componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data, componentRef));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;
     node.setAttribute('id', nodeId);
@@ -368,11 +300,14 @@ export class DesignerComponent implements AfterViewInit {
   }
 
   private broadCastModelChanges() {
-    this.modelChanged.emit(this.model);
+    if (!this.modelPopulating) {
+      this.modelChanged.emit(this.model);
+    }
   }
 
-  private getSourceEndpointOptions(name: string, rotation: number) {
-    const endPoint = JSON.parse(JSON.stringify(this.sourceEndpoint));
+  private static getSourceEndpointOptions(output: DesignerElementOutput, rotation: number) {
+    const endPoint = output ? output.endPointOptions : JSON.parse(JSON.stringify(DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+    const name = output && output.type !== 'normal' ? output.name : null;
     endPoint.anchor = [ 'Perimeter', { shape:'Circle', rotation: rotation}];
     if (name) {
       endPoint.overlays = [
@@ -402,7 +337,7 @@ export class DesignerComponent implements AfterViewInit {
     layout(graph);
     // Update the model nodes
     let gnode;
-    
+
     // Center elements on parent container
     let center = 0;
     let horizontalOffset = 32;

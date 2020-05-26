@@ -275,7 +275,9 @@ export class PipelineParameterComponent implements OnInit {
     this.parameter.type = this.parameters.length > 1 ? 'text' : this.parameters[0].type;
     // Only used for object or script meaning there should be only 1 parameter
     this.parameter.language = this.isAScriptParameter;
-    this.parameter.className = this.isAnObjectParameter;
+    if (this.isAnObjectParameter !== 'object') {
+      this.parameter.className = this.isAnObjectParameter;
+    }
     this.changeDetector.detectChanges();
     this.parameterUpdate.emit(this.parameter);
   }

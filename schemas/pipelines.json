@@ -82,6 +82,9 @@
             "nextStepId": {
               "type": "string"
             },
+            "nextStepOnError": {
+              "type": "string"
+            },
             "executeIfEmpty": {
               "type": "string"
             }

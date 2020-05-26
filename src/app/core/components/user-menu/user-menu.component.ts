@@ -1,5 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {User} from "../../../shared/models/users.models";
+import {AuthService} from "../../../shared/services/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'user-menu',
@@ -9,5 +11,11 @@ import {User} from "../../../shared/models/users.models";
 export class UserMenuComponent {
   @Input() user: User;
 
-  constructor() {}
+  constructor(private authService : AuthService, private route : Router) {}
+
+  logout() {
+    this.authService.logout().subscribe(() => {
+      this.route.navigate(['login'], { queryParams: { returnUrl: '/' } });
+    });
+  }
 }
