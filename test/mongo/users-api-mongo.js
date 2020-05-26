@@ -348,7 +348,6 @@ describe('Users API Mongo Tests', () => {
     expect(updateModTime > initialModTime);
   });
 
-  // TODO: upload as a different user
   it('Should upload a file as a different user', async() => {
     const devState = {};
     const userInfo = await TestHelpers.authUser(request(mock), devState, 'dev', 'newdevpassword');
@@ -442,8 +441,6 @@ describe('Users API Mongo Tests', () => {
 
     // make sure the project folder is deleted from the filesystem
     expect(!fs.existsSync(`/api/v1/users/${user.id}/project/2`));
-
-    // TODO: test that the project jars folder was deleted
   });
 
   it('Should delete user', async () => {
