@@ -1,6 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
+body {
+  background: rgb(240, 240, 240);
+  .mt-1{
+    margin-top: 1rem;
+  }
+  .mt-2{
+    margin-top: 2rem;
+  }
+}
 .designer-node-step-group {
   background-color: #bebebe;
 }
