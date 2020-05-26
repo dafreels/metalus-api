@@ -200,38 +200,49 @@ module.exports = function (router) {
     const user = await req.user;
     const userId = req.params.id;
     const projectId = req.params.projectId;
+    let errors = false;
     if (userId !== user.id) {
+      errors = true;
       next(new Error('User does not have permission to upload files for different user!'));
     }
-    const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
-    await mUtils.mkdir(userJarDir, {recursive: true});
-    const options = {
-      uploadDir: userJarDir
-    };
-    let uploadedFileName = '';
-    const form = new IncomingForm(options);
-    form.parse(req)
-      .on('file', async (name, file) => {
-        uploadedFileName = `${userJarDir}/${file.name}`;
-        await mUtils.rename(file.path, uploadedFileName);
-      })
-      .once('end', async () => {
-        const userModel = new UsersModel();
-        const projectUser = await userModel.getUser(userId);
-        const project = projectUser.projects.find(p => p.id === projectUser.defaultProjectId);
-        if (!project.uploadHistory) {
-          project.uploadHistory = [];
-        }
-        project.uploadHistory.push({
-          name: uploadedFileName,
-          uploadDate: new Date().getTime()
+
+    const projectExists = await new UsersModel().hasProjectId(userId, projectId);
+    if(!projectExists) {
+      errors = true;
+      next(new Error(`User has not setup a project with id ${projectId}`));
+    }
+
+    if(!errors) {
+      const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+      await mUtils.mkdir(userJarDir, {recursive: true});
+      const options = {
+        uploadDir: userJarDir
+      };
+      let uploadedFileName = '';
+      const form = new IncomingForm(options);
+      form.parse(req)
+        .on('file', async (name, file) => {
+          uploadedFileName = `${userJarDir}/${file.name}`;
+          await mUtils.rename(file.path, uploadedFileName);
+        })
+        .once('end', async () => {
+          const userModel = new UsersModel();
+          const projectUser = await userModel.getUser(userId);
+          const project = projectUser.projects.find(p => p.id === projectUser.defaultProjectId);
+          if (!project.uploadHistory) {
+            project.uploadHistory = [];
+          }
+          project.uploadHistory.push({
+            name: uploadedFileName,
+            uploadDate: new Date().getTime()
+          });
+          await userModel.update(userId, projectUser);
+          res.status(200).json({});
+        })
+        .once('error', (err) => {
+          next(err);
         });
-        await userModel.update(userId, projectUser);
-        res.status(200).json({});
-      })
-      .once('error', (err) => {
-        next(err);
-      });
+    }
   });
 
   router.delete('/:id/project/:projectId/files/:fileName', async (req, res, next) => {
