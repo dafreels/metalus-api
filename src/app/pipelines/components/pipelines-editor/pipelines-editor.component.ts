@@ -572,11 +572,11 @@ export class PipelinesEditorComponent implements OnInit {
     if (step.type.toLocaleLowerCase() === 'branch') {
       step.params.forEach((p) => {
         if (p.type.toLocaleLowerCase() === 'result') {
-          outputs.push(new DesignerElementOutput(p.name, 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+          outputs.push(new DesignerElementOutput(p.name, 'result', DesignerConstants.getSourceEndpointOptions()));
         }
       });
     } else {
-      outputs.push(new DesignerElementOutput('output', 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
+      outputs.push(new DesignerElementOutput('output', 'normal', DesignerConstants.getSourceEndpointOptions()));
     }
     outputs.push(PipelinesEditorComponent.generateErrorOutput());
     return outputs;
@@ -656,7 +656,6 @@ export class PipelinesEditorComponent implements OnInit {
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
-    const connectedNodes = [];
     pipeline.steps.forEach((step) => {
       if (step.nextStepOnError) {
         model.connections[
@@ -671,7 +670,6 @@ export class PipelinesEditorComponent implements OnInit {
             },
           ],
         };
-        connectedNodes.push(step.nextStepId);
       }
       if (step.type.toLocaleLowerCase() !== 'branch' && step.nextStepId) {
         model.connections[
@@ -686,20 +684,14 @@ export class PipelinesEditorComponent implements OnInit {
             },
           ],
         };
-        connectedNodes.push(step.nextStepId);
       } else {
         let connection;
         step.params
           .filter((p) => p.type.toLowerCase() === 'result')
           .forEach((output) => {
             if (output.value) {
-              connectedNodes.push(output.value);
               connection =
-                model.connections[
-                  `${this.stepLookup[step.id]}::${
-                    this.stepLookup[output.value]
-                  }`
-                ];
+                model.connections[`${this.stepLookup[step.id]}::${this.stepLookup[output.value]}`];
               if (!connection) {
                 connection = {
                   sourceNodeId: this.stepLookup[step.id],
