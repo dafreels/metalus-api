@@ -80,6 +80,14 @@
             ></mat-progress-bar>
           </mat-list-item>
         </mat-list>
+        <mat-list>
+          <mat-list-item>
+            <mat-slide-toggle checked="false" color="primary" [(ngModel)]="skipSteps" [disabled]="skipPipelines">Skip Steps</mat-slide-toggle>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-slide-toggle checked="false" color="primary" [(ngModel)]="skipPipelines" [disabled]="skipSteps">Skip Pipelines</mat-slide-toggle>
+          </mat-list-item>
+        </mat-list>
       </mat-tab>
       <mat-tab label="Manual Upload">
         <mat-card>

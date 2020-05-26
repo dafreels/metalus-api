@@ -40,6 +40,10 @@ export class UploadComponent implements OnInit {
   remoteJars: string[] = [];
   remoteJarsCtrl = new FormControl();
 
+  // skip metadata options
+  skipPipelines = false;
+  skipSteps = false;
+
   constructor(private authService: AuthService,
               private filesService: FilesService,
               private displayDialogService: DisplayDialogService,
@@ -131,10 +135,13 @@ export class UploadComponent implements OnInit {
         });
         this.filesService.processFiles(this.user, result,
           this.additionalRepos.join(','),
-          this.remoteJars.join(',')).subscribe(data => {
+          this.remoteJars.join(','),
+          this.skipPipelines,
+          this.skipSteps).subscribe(data => {
           waitDialogRef.close();
           this.router.navigate(['landing']);
         },
+
           (error) => this.handleError(error, dialogRef));
       }
     });
