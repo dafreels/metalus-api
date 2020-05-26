@@ -52,7 +52,7 @@ export class UploadComponent implements OnInit {
     this.user = this.authService.getUserInfo();
     this.authService.userItemSelection.subscribe(data => {
       this.user = data;
-      this.filesService.getFiles(this.user).subscribe(data => this.uploadedFiles = data);
+      this.filesService.getFiles(this.user).subscribe(d => this.uploadedFiles = d);
     });
   }
 
@@ -66,7 +66,7 @@ export class UploadComponent implements OnInit {
 
   onFilesAdded() {
     const files: { [key: string]: File } = this.file.nativeElement.files;
-    for (let key in files) {
+    for (const key in files) {
       if (!isNaN(parseInt(key))) {
         this.files.add(files[key]);
       }
@@ -80,9 +80,9 @@ export class UploadComponent implements OnInit {
     // start the upload and save the progress map
     this.progress = this.filesService.uploadFiles(this.user, this.files);
 
-    // // convert the progress map into an array
+    // convert the progress map into an array
     const allProgressObservables = [];
-    for (let key in this.progress) {
+    for (const key in this.progress) {
       allProgressObservables.push(this.progress[key].progress);
     }
     // When all progress-observables are completed...
@@ -112,9 +112,9 @@ export class UploadComponent implements OnInit {
     );
     deleteStepDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        this.filesService.removeFile(this.user, fileName).subscribe(data => {
-          this.filesService.getFiles(this.user).subscribe(data => {
-            this.uploadedFiles = data;
+        this.filesService.removeFile(this.user, fileName).subscribe(() => {
+          this.filesService.getFiles(this.user).subscribe(d => {
+            this.uploadedFiles = d;
           });
         });
       }
@@ -141,7 +141,6 @@ export class UploadComponent implements OnInit {
           waitDialogRef.close();
           this.router.navigate(['landing']);
         },
-
           (error) => this.handleError(error, dialogRef));
       }
     });
