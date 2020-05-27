@@ -113,7 +113,7 @@ export class UploadComponent implements OnInit {
     );
     deleteStepDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        this.filesService.removeFile(this.user, fileName).subscribe(() => {
+        this.filesService.removeFile(this.user, fileName).subscribe( data => {
           this.filesService.getFiles(this.user).subscribe(d => {
             this.uploadedFiles = d;
           });

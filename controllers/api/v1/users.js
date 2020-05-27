@@ -263,9 +263,9 @@ module.exports = function (router) {
       }
       if (exists) {
         await mUtils.removeDir(filePath);
-        res.sendStatus(200);
+        res.status(200).json({'status': 'success'});
       } else {
-        res.sendStatus(204);
+        res.status(204).json({'status': 'file not found'});
       }
     }
   });
