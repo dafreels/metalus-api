@@ -25,14 +25,25 @@ body {
 mat-table {
   margin-right: 6rem;
   mat-header-row {
-    mat-header-cell {
+    .mat-header-cell {
       background-color: mat-color($primary);
       color: white;
       font-size: medium;
     }
   }
 }
-
+.mat-menu-item {
+  .mat-icon {
+  display: inline-block;
+  margin-top: -40px;
+  }
+  a {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;   
+  }
+}
 .designer-node-step-group {
   background-color: #bebebe;
 }
