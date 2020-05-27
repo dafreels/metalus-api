@@ -186,7 +186,7 @@ export class UploadComponent implements OnInit {
         this.additionalRepos = [];
       }
 
-      value.trim().split(/,| /).forEach( repo => {
+      value.trim().split(/,|\s+/).forEach( repo => {
         if(repo.trim()) this.additionalRepos.push(repo);
       });
     }
@@ -215,7 +215,7 @@ export class UploadComponent implements OnInit {
       if (!this.remoteJars) {
         this.remoteJars = [];
       }
-      value.trim().split(/,| /).forEach( jar => {
+      value.trim().split(/,|\s+/).forEach( jar => {
         if(jar.trim()) this.remoteJars.push(jar);
       });
     }
