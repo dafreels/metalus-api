@@ -4,14 +4,14 @@ import {
   ComponentFactoryResolver,
   ElementRef,
   EventEmitter,
-  Input,
+  Input, OnDestroy,
   Output,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {DragEventCallbackOptions, jsPlumb} from 'jsplumb';
 import {DndDropEvent} from 'ngx-drag-drop';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {DesignerNodeComponent} from '../designer-node/designer-node.component';
 import {DesignerNodeDirective} from '../../directives/designer-node.directive';
 import {graphlib, layout} from 'dagre';
@@ -22,6 +22,7 @@ import {
   DesignerElementAddOutput, DesignerElementOutput,
   DesignerModel
 } from "../../designer-constants";
+import {SharedFunctions} from "../../../shared/utils/shared-functions";
 
 @Component({
   selector: 'app-designer',
@@ -29,7 +30,7 @@ import {
   styleUrls: ['./designer.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class DesignerComponent implements AfterViewInit {
+export class DesignerComponent implements AfterViewInit, OnDestroy {
   @ViewChild(DesignerNodeDirective, {static: true}) designerCanvas: DesignerNodeDirective;
   @ViewChild('canvas', {static: false}) canvas: ElementRef;
   @Input() addElementSubject: Subject<DesignerElement>;
@@ -48,6 +49,9 @@ export class DesignerComponent implements AfterViewInit {
   modelPopulating: boolean = false;
 
   htmlNodeLookup:object = {};
+
+  subscriptions: Subscription[] = [];
+  elementSubscriptions: Subscription[] = [];
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
@@ -71,11 +75,12 @@ export class DesignerComponent implements AfterViewInit {
     this.initializeDesigner();
     // Listen for the add new element call back event
     if (this.addElementSubject) {
-      this.addElementSubject.subscribe(element => this.addDesignerElement(element));
+      this.subscriptions.push(
+        this.addElementSubject.subscribe(element => this.addDesignerElement(element)));
     }
     // Listen for add output events for an element
     if (this.addElementOutput) {
-      this.addElementOutput.subscribe(request => {
+      this.subscriptions.push(this.addElementOutput.subscribe(request => {
         const nodeId = Object.keys(this.model.nodes).find(node => {
           return this.model.nodes[node].data['name'] === request.element.name;
         });
@@ -85,10 +90,15 @@ export class DesignerComponent implements AfterViewInit {
           name: request.output,
           nodeId
         }
-      });
+      }));
     }
     this.populateFromModel();
     this.viewReady = true;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions = SharedFunctions.clearSubscriptions(this.subscriptions);
+    this.elementSubscriptions = SharedFunctions.clearSubscriptions(this.elementSubscriptions);
   }
 
   removeElement(data: DesignerElement, componentRef) {
@@ -162,6 +172,7 @@ export class DesignerComponent implements AfterViewInit {
   }
 
   private initializeDesigner() {
+    this.elementSubscriptions = SharedFunctions.clearSubscriptions(this.elementSubscriptions);
     if (this.jsPlumbInstance) {
       this.jsPlumbInstance.deleteEveryConnection();
       this.jsPlumbInstance.deleteEveryEndpoint();
@@ -283,16 +294,16 @@ export class DesignerComponent implements AfterViewInit {
     componentRef.instance.id = nodeId;
     componentRef.location.nativeElement.className = data.style;
     // Handle selection events
-    componentRef.instance.nodeSelected.subscribe(data => {
+    this.elementSubscriptions.push(componentRef.instance.nodeSelected.subscribe(data => {
       if (this.selectedComponent) {
         this.selectedComponent.location.nativeElement.className = this.selectedComponent.location.nativeElement.className.replace('designer-node-selected', '');
       }
       componentRef.location.nativeElement.className = `${componentRef.location.nativeElement.className} designer-node-selected`;
       this.selectedComponent = componentRef;
       this.elementSelected.emit(data)
-    });
-    componentRef.instance.nodeAction.subscribe(data => this.elementAction.emit(data));
-    componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data, componentRef));
+    }));
+    this.elementSubscriptions.push(componentRef.instance.nodeAction.subscribe(data => this.elementAction.emit(data)));
+    this.elementSubscriptions.push(componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data, componentRef)));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;
     node.setAttribute('id', nodeId);

@@ -1,11 +1,11 @@
 import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.component';
 import {PipelinesService} from '../../services/pipelines.service';
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
 import {Pipeline, PipelineData, PipelineStep, PipelineStepParam,} from '../../models/pipelines.model';
 import {DndDropEvent} from 'ngx-drag-drop';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {NameDialogComponent} from '../../../shared/components/name-dialog/name-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {StepsService} from '../../../steps/steps.service';
@@ -16,7 +16,6 @@ import {diff} from 'deep-object-diff';
 import {ErrorModalComponent} from '../../../shared/components/error-modal/error-modal.component';
 import * as Ajv from 'ajv';
 import {ConfirmationModalComponent} from '../../../shared/components/confirmation/confirmation-modal.component';
-
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
 import {DesignerPreviewComponent} from '../../../designer/components/designer-preview/designer-preview.component';
 import {AuthService} from "../../../shared/services/auth.service";
@@ -36,7 +35,7 @@ import {
   templateUrl: './pipelines-editor.component.html',
   styleUrls: ['./pipelines-editor.component.scss'],
 })
-export class PipelinesEditorComponent implements OnInit {
+export class PipelinesEditorComponent implements OnInit, OnDestroy {
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
@@ -60,6 +59,7 @@ export class PipelinesEditorComponent implements OnInit {
   editName: boolean = false;
   editStepId: boolean = false;
   errors = [];
+  subscriptions: Subscription[] = [];
 
   constructor(
     private stepsService: StepsService,
@@ -68,7 +68,7 @@ export class PipelinesEditorComponent implements OnInit {
     public dialog: MatDialog,
     private authService: AuthService) {
     this.user = this.authService.getUserInfo();
-    this.authService.userItemSelection.subscribe(data => {
+    this.subscriptions.push(this.authService.userItemSelection.subscribe(data => {
       this.user = data;
       const newPipeline = this.generatePipeline();
       // Cannot diff the pipeline since step orders could have changed
@@ -90,11 +90,15 @@ export class PipelinesEditorComponent implements OnInit {
       } else {
         this.loadUIData();
       }
-    });
+    }));
   }
 
   ngOnInit(): void {
     this.loadUIData();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions = SharedFunctions.clearSubscriptions(this.subscriptions);
   }
 
   private loadUIData() {
@@ -169,14 +173,14 @@ export class PipelinesEditorComponent implements OnInit {
     if (this.selectedPipeline.steps.length === 0) {
       this.selectedPipeline = this.generatePipeline();
     } else if (Object.keys(event.nodes).length !== this.selectedPipeline.steps.length) {
-      this.stepCreated.subscribe((response: PipelineStep) => {
+      this.subscriptions.push(this.stepCreated.subscribe((response: PipelineStep) => {
         const duplicated = this.selectedPipeline.steps.find(
           (step) => step.id === response.id
         );
         if (!duplicated) {
           this.selectedPipeline.steps.push(response);
         }
-      });
+      }));
     }
     this.validateChanges();
   }
@@ -294,7 +298,7 @@ export class PipelinesEditorComponent implements OnInit {
         data: {name: ''},
       });
     }
-    dialogRef.afterClosed().subscribe((result) => {
+    this.subscriptions.push(dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         let step;
         if (result.stepId) {
@@ -310,7 +314,7 @@ export class PipelinesEditorComponent implements OnInit {
         this.dndSubject.next(this.createDesignerElement(step, event));
         this.stepCreated.next(step);
       }
-    });
+    }));
   }
 
   loadPipeline(id: string) {
@@ -330,11 +334,11 @@ export class PipelinesEditorComponent implements OnInit {
         },
       });
 
-      dialogRef.afterClosed().subscribe((confirmation) => {
+      this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
         if (confirmation) {
           this.handleLoadPipeline(id);
         }
-      });
+      }));
     } else {
       this.handleLoadPipeline(id);
     }
@@ -368,7 +372,7 @@ export class PipelinesEditorComponent implements OnInit {
       height: '90%',
       data: { code: '', language: 'json', allowSave: true },
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    this.subscriptions.push(dialogRef.afterClosed().subscribe((result) => {
       if (result && result.code.trim().length > 0) {
         const pipeline = JSON.parse(result.code);
         delete pipeline._id;
@@ -376,7 +380,7 @@ export class PipelinesEditorComponent implements OnInit {
         this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
         this.loadPipelineToDesigner();
       }
-    });
+    }));
   }
 
   savePipeline() {
@@ -394,7 +398,7 @@ export class PipelinesEditorComponent implements OnInit {
     } else {
       observable = this.pipelinesService.addPipeline(newPipeline);
     }
-    observable.subscribe(
+    this.subscriptions.push(observable.subscribe(
       (pipeline: Pipeline) => {
         this._pipeline = pipeline;
         this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
@@ -422,7 +426,7 @@ export class PipelinesEditorComponent implements OnInit {
         dialogRef.close();
       },
       (error) => this.handleError(error, dialogRef)
-    );
+    ));
   }
 
   deletePipeline() {
@@ -434,7 +438,7 @@ export class PipelinesEditorComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe(
+    this.subscriptions.push(dialogRef.afterClosed().subscribe(
       (confirmation) => {
         if (confirmation) {
           this.pipelinesService
@@ -455,7 +459,7 @@ export class PipelinesEditorComponent implements OnInit {
         }
       },
       (error) => this.handleError(error, dialogRef)
-    );
+    ));
   }
 
   copyPipeline() {
@@ -469,11 +473,11 @@ export class PipelinesEditorComponent implements OnInit {
         },
       });
 
-      dialogRef.afterClosed().subscribe((confirmation) => {
+      this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
         if (confirmation) {
           this.handleCopyPipeline();
         }
-      });
+      }));
     } else {
       this.handleCopyPipeline();
     }
@@ -759,7 +763,7 @@ export class PipelinesEditorComponent implements OnInit {
       height: '25%',
       data: { name: `Copy of ${this.selectedPipeline.name}` },
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    this.subscriptions.push(dialogRef.afterClosed().subscribe((result) => {
       if (result && result.trim().length > 0) {
         const newpipeline = JSON.parse(JSON.stringify(this.selectedPipeline));
         delete newpipeline['_id'];
@@ -775,7 +779,7 @@ export class PipelinesEditorComponent implements OnInit {
         };
         this.loadPipelineToDesigner();
       }
-    });
+    }));
   }
 
   findSingleNodes(dif: number) {

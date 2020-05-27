@@ -2,6 +2,7 @@ import {
   Pipeline,
   PipelineStepParam,
 } from '../../pipelines/models/pipelines.model';
+import {Subscription} from "rxjs";
 
 export class SharedFunctions {
   private static leadCharacters: string[] = ['@', '!', '#', '$'];
@@ -115,5 +116,12 @@ export class SharedFunctions {
     });
 
     return globals;
+  }
+
+  static clearSubscriptions(subscriptions: Subscription[]) {
+    if (subscriptions && subscriptions.length > 0) {
+      subscriptions.forEach(sub => sub.unsubscribe());
+    }
+    return [];
   }
 }
