@@ -257,12 +257,12 @@ module.exports = function (router) {
       let exists;
       try {
         const stats = await mUtils.stat(filePath);
-        exists = stats.isFile();
+        exists = stats.isFile() || stats.isDirectory();
       } catch (err) {
         exists = false;
       }
       if (exists) {
-        await mUtils.unlink(filePath);
+        await mUtils.removeDir(filePath);
         res.sendStatus(200);
       } else {
         res.sendStatus(204);
