@@ -185,7 +185,10 @@ export class UploadComponent implements OnInit {
       if (!this.additionalRepos) {
         this.additionalRepos = [];
       }
-      this.additionalRepos.push(value.trim());
+
+      value.trim().split(/,| /).forEach( repo => {
+        if(repo.trim()) this.additionalRepos.push(repo);
+      });
     }
 
     // Reset the input value
@@ -212,7 +215,9 @@ export class UploadComponent implements OnInit {
       if (!this.remoteJars) {
         this.remoteJars = [];
       }
-      this.remoteJars.push(value.trim());
+      value.trim().split(/,| /).forEach( jar => {
+        if(jar.trim()) this.remoteJars.push(jar);
+      });
     }
 
     // Reset the input value
