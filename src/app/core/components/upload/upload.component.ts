@@ -22,6 +22,7 @@ import {MatChipInputEvent} from "@angular/material/chips";
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent implements OnInit {
+  displayedColumns: string[] = [ 'name', 'path', 'size', 'createdDate', 'modifiedDate', 'delete' ];
   user: User;
   @ViewChild('file', {static: false}) file;
   files: Set<File> = new Set();
