@@ -12,42 +12,39 @@
   <div>
     <mat-card>
       <mat-card-content>
-        <div class="divTable blueTable">
-          <div class="divTableHeading">
-            <div class="divTableRow">
-              <div class="divTableHead">Id</div>
-              <div class="divTableHead">Display Name</div>
-              <div class="divTableHead">Username</div>
-              <div class="divTableHead">Role</div>
-              <div class="divTableHead">Default Project Id</div>
-              <div class="divTableHead">Edit</div>
-              <div class="divTableHead">Delete</div>
-            </div>
-          </div>
-          <div class="divTableBody">
-            <div class="divTableRow" *ngFor="let user of users">
-              <div class="divTableCell">{{user.id}}</div>
-              <div class="divTableCell">{{user.displayName}}</div>
-              <div class="divTableCell">{{user.username}}</div>
-              <div class="divTableCell">{{user.role}}</div>
-              <div class="divTableCell">{{user.defaultProjectId}}</div>
-              <div class="divTableCell">
-                <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="primary"
-                        (click)="editUser(user)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-              </div>
-              <div class="divTableCell">
-                <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="primary"
-                        (click)="removeUser(user)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <mat-table [dataSource]="users" class="mat-elevation-z2">
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="displayName">
+            <mat-header-cell *matHeaderCellDef> Display Name </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.displayName}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="username">
+            <mat-header-cell *matHeaderCellDef> User Name </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.username}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="role">
+            <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.role}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="defaultProjectId">
+            <mat-header-cell *matHeaderCellDef> Default ProjectId </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.defaultProjectId}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="removeUser">
+            <mat-header-cell *matHeaderCellDef>Remove User</mat-header-cell>
+            <mat-cell *matCellDef="let user">
+              <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="grey" (click)="removeUser(user)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
       </mat-card-content>
     </mat-card>
   </div>
 </div>
-

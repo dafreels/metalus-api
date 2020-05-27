@@ -7,6 +7,7 @@ import {AuthService} from "../../../shared/services/auth.service";
 import {DialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {UsersModalComponent} from "./manage/users-modal.component";
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-users',
@@ -17,7 +18,8 @@ export class UsersComponent implements OnInit {
 
   currentUser: User;
   users: User[];
-
+  public dataSource = new MatTableDataSource<User>()
+  public displayedColumns = ['id', 'displayName', 'username', 'role', 'defaultProjectId','removeUser']
   constructor(private authService: AuthService,
               private usersService: UsersService,
               private displayDialogService: DisplayDialogService,
