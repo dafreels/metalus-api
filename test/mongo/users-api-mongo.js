@@ -9,6 +9,8 @@ const util = require('util');
 const auth = require('../../lib/auth');
 const TestHelpers = require('../helpers/TestHelpers');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const mUtils = require('../../lib/metalus-utils');
 
 describe('Users API Mongo Tests', () => {
   let app;
@@ -82,6 +84,7 @@ describe('Users API Mongo Tests', () => {
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
     await util.promisify(mock.close.bind(mock))();
+    await mUtils.removeDir('jars');
   });
 
   it('Should fail insert on missing body', async () => {
@@ -178,6 +181,7 @@ describe('Users API Mongo Tests', () => {
       .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
+
     let resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('users').lengthOf(2);
@@ -198,6 +202,220 @@ describe('Users API Mongo Tests', () => {
     expect(resp).to.exist;
     expect(resp).to.have.property('projects').lengthOf(2);
   });
+
+  it('Should fail to upload a jar file to the wrong user', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    await request(mock)
+      .post(`/api/v1/users/bad-user/project/1/upload`)
+      .set('Cookie', [userInfo])
+      .expect(500);
+  });
+
+  it('Should upload a jar file to the first project', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    let filename = 'test.jar';
+    let projectId = mockUser.projects[0].id;
+    expect(fs.existsSync(`test/data/${filename}`));
+    expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/${mockUser.id}/project/${projectId}/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    const initialModTime = fs.statSync(`jars/${mockUser.id}/${projectId}/${filename}`).mtimeMs;
+
+    // upload a 2nd file
+    filename = 'test2.jar';
+    expect(fs.existsSync(`test/data/${filename}`));
+    expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/${mockUser.id}/project/${projectId}/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+
+    // make sure both files are still there
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
+
+    // test overwrite existing (check modified date was updated
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/${mockUser.id}/project/${projectId}/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    const updateModTime = fs.statSync(`jars/${mockUser.id}/${projectId}/${filename}`).mtimeMs;
+    expect(updateModTime > initialModTime);
+  });
+
+  it('Should delete an existing jar file', async () => {
+    let userInfo = await TestHelpers.authUser(request(mock), state);
+    let projectId = mockUser.projects[0].id;
+    // no file exists
+    await request(mock)
+      .delete(`/api/v1/users/${mockUser.id}/project/${projectId}/files/bad.jar`)
+      .set('Cookie', [userInfo])
+      .expect(204);
+
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test2.jar`));
+    await request(mock)
+      .delete(`/api/v1/users/${mockUser.id}/project/${projectId}/files/test.jar`)
+      .set('Cookie', [userInfo])
+      .expect(200);
+    expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test2.jar`));
+
+    // can't delete a different users file
+    await request(mock)
+       .delete(`/api/v1/users/mock-dev-user/project/1/files/test2.jar`)
+       .send(mockUser)
+       .set('Cookie', [userInfo])
+       .expect(500);
+  });
+
+
+  it('Should fail to upload a jar file to the wrong user', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    await request(mock)
+      .post(`/api/v1/users/bad-user/project/1/upload`)
+      .set('Cookie', [userInfo])
+      .expect(500);
+  });
+
+  it('Should upload a jar file to the first project', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    let filename = 'test.jar';
+    let projectId = mockUser.projects[0].id;
+    expect(fs.existsSync(`test/data/${filename}`));
+    expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/${mockUser.id}/project/${projectId}/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    const initialModTime = fs.statSync(`jars/${mockUser.id}/${projectId}/${filename}`).mtimeMs;
+
+    // upload a 2nd file
+    filename = 'test2.jar';
+    expect(fs.existsSync(`test/data/${filename}`));
+    expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/${mockUser.id}/project/${projectId}/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+
+    // make sure both files are still there
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
+
+    // test overwrite existing (check modified date was updated)
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/${mockUser.id}/project/${projectId}/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/${filename}`));
+    const updateModTime = fs.statSync(`jars/${mockUser.id}/${projectId}/${filename}`).mtimeMs;
+    expect(updateModTime > initialModTime);
+  });
+
+  it('Should upload a file as a different user', async() => {
+    const devState = {};
+    const userInfo = await TestHelpers.authUser(request(mock), devState, 'dev', 'newdevpassword');
+    // let resp = JSON.parse(response.text);
+    // const user = resp.users.find(user => user.username === 'dev');
+    const filename = 'test.jar';
+    expect(!fs.existsSync(`jars/mock-dev-user/1/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/mock-dev-user/project/1/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+    expect(fs.existsSync(`jars/mock-dev-user/1/${filename}`));
+
+    // upload to a different project
+    expect(!fs.existsSync(`jars/mock-dev-user/2/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/mock-dev-user/project/2/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(200);
+    expect(fs.existsSync(`jars/mock-dev-user/2/${filename}`));
+
+    // upload to a project that doesn't exist, should fail
+    expect(!fs.existsSync(`jars/mock-dev-user/bad-project/${filename}`));
+    await request(mock)
+      .post(`/api/v1/users/mock-dev-user/project/bad-project/upload`)
+      .set('Cookie', [userInfo])
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .field('Content-Type', 'multipart/form-data')
+      .field('file', filename)
+      .attach('files', `test/data/${filename}`)
+      .expect(500);
+    expect(!fs.existsSync(`jars/mock-dev-user/bad-project/${filename}`));
+  });
+
+  it('Should delete an existing jar file', async () => {
+    let userInfo = await TestHelpers.authUser(request(mock), state);
+    let projectId = mockUser.projects[0].id;
+    // no file exists
+    await request(mock)
+      .delete(`/api/v1/users/${mockUser.id}/project/${projectId}/files/bad.jar`)
+      .set('Cookie', [userInfo])
+      .expect(204);
+
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test2.jar`));
+    await request(mock)
+      .delete(`/api/v1/users/${mockUser.id}/project/${projectId}/files/test.jar`)
+      .set('Cookie', [userInfo])
+      .expect(200);
+    expect(!fs.existsSync(`jars/${mockUser.id}/${projectId}/test.jar`));
+    expect(fs.existsSync(`jars/${mockUser.id}/${projectId}/test2.jar`));
+
+    // can't delete a different users file
+    await request(mock)
+       .delete(`/api/v1/users/mock-dev-user/project/1/files/test2.jar`)
+       .send(mockUser)
+       .set('Cookie', [userInfo])
+       .expect(500);
+  });
+
 
   it('Should delete user project', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);
@@ -220,6 +438,9 @@ describe('Users API Mongo Tests', () => {
     resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('projects').lengthOf(1);
+
+    // make sure the project folder is deleted from the filesystem
+    expect(!fs.existsSync(`/api/v1/users/${user.id}/project/2`));
   });
 
   it('Should delete user', async () => {
@@ -233,7 +454,7 @@ describe('Users API Mongo Tests', () => {
     expect(resp).to.exist;
     expect(resp).to.have.property('users').lengthOf(2);
     const user = resp.users.find(user => user.username === 'dev');
-    response = await request(mock)
+    await request(mock)
       .delete(`/api/v1/users/${user.id}`)
       .send(user)
       .set('Cookie', [userInfo])

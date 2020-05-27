@@ -41,4 +41,15 @@ export class AuthService {
         catchError((err) => throwError(err))
       );
   }
+
+  public logout() {
+    return this.http.post<any>('/api/v1/users/logout', null, { observe: 'response' })
+      .pipe(
+        map(() => {
+          sessionStorage.removeItem('userInfo');
+          this.userItemSelection.emit(null);
+        }),
+        catchError((err) => throwError(err))
+      );
+  }
 }

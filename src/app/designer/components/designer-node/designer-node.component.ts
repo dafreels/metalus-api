@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { DesignerElement, DesignerElementAction } from '../designer/designer.component';
 import { MatMenuTrigger } from '@angular/material/menu';
+import {DesignerElement, DesignerElementAction} from "../../designer-constants";
 
 @Component({
   selector: 'app-designer-node',

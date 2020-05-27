@@ -1,62 +1,58 @@
 <div>
-  <div class="topnav">
-    <span>
-      <nav-menu currentPage="profile"></nav-menu>
-      <span class="page-title">Profile</span>
-    </span>
-    <span>
-      <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change
-        Password</button>
-      <button mat-raised-button color="primary" (click)="addProject()" style="margin-right: 5px;">New Project</button>
-      <user-menu [user]="user"></user-menu>
-    </span>
-  </div>
+  <nav-toolbar page="profile" title="Profile" [user]="user">
+    <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change
+      Password</button>
+    <button mat-raised-button color="primary" (click)="addProject()" style="margin-right: 5px;">New Project</button>
+  </nav-toolbar>
   <div>
     <mat-card>
       <mat-card-content>
         <mat-card-title>User Information</mat-card-title>
         <div class="user-info mat-elevation-z2">
           <span class="label">Id</span>
-          <span class="display">{{user.id}}</span>
+          <span>{{user.id}}</span>
           <span class="label">Username</span>
-          <span class="display">{{user.username}}</span>
+          <span>{{user.username}}</span>
           <span class="label">Display Name</span>
-          <span class="display">{{user.displayName}}</span>
+          <span>{{user.displayName}}</span>
           <span class="label">Role</span>
-          <span class="display">{{user.role}}</span>
+          <span>{{user.role}}</span>
         </div>
         <div class="mt-2">
           <mat-card-title>Projects</mat-card-title>
           <mat-table [dataSource]="user.projects" class="mat-elevation-z2">
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
-              <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+              <mat-header-cell *matHeaderCellDef> Id</mat-header-cell>
+              <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="displayName">
-              <mat-header-cell *matHeaderCellDef> Display Name </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef> Display Name</mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.displayName}} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="default">
-              <mat-header-cell *matHeaderCellDef> Default </mat-header-cell>
-              <mat-cell *matCellDef="let element"> <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button
-                  color="primary" (click)="changeDefaultProject(element.id)">
+              <mat-header-cell *matHeaderCellDef> Default</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button
+                        color="primary" (click)="changeDefaultProject(element.id)">
                   <mat-icon>toggle_on</mat-icon>
                 </button>
                 <button *ngIf="element.id === user.defaultProjectId" mat-icon-button color="primary" disabled>
                   <mat-icon>toggle_off</mat-icon>
-                </button> </mat-cell>
+                </button>
+              </mat-cell>
             </ng-container>
 
             <!-- Symbol Column -->
             <ng-container matColumnDef="remove">
-              <mat-header-cell *matHeaderCellDef> Remove </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef> Remove</mat-header-cell>
               <mat-cell *matCellDef="let element">
                 <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button color="grey"
-                  (click)="removeProject(element.id)">
-                  <mat-icon>delete</mat-icon>
-                </button> </mat-cell>
+                        (click)="removeProject(element.id)">
+                  <mat-icon color="primary">delete</mat-icon>
+                </button>
+              </mat-cell>
 
             </ng-container>
 
