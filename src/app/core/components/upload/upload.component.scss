@@ -1,5 +1,6 @@
 .chip-field {
-  width: 50%;
+  width: 95%;
+  center: true;
 }
 
 mat-table {
@@ -9,5 +10,9 @@ mat-table {
       font-size: medium;
     }
   }
+}
+
+.skip-toggle {
+  padding-right: 3.0em;
 }
 
