@@ -60,6 +60,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   editStepId: boolean = false;
   errors = [];
   subscriptions: Subscription[] = [];
+  private stepsLoading: boolean = false;
+  private pipelinesLoading: boolean = false;
 
   constructor(
     private stepsService: StepsService,
@@ -104,25 +106,33 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   private loadUIData() {
     this.newPipeline();
     this.newStep();
+    this.pipelinesLoading = true;
+    this.stepsLoading = true;
+    this.steps = [];
+    this.pipelines = [];
+    this.stepGroupSteps = [];
     this.stepsService.getSteps().subscribe((steps: Step[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
       steps.push(StaticSteps.STEP_GROUP);
       steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
       this.steps = steps;
+      this.stepsLoading = false;
       this.createStepGroupSteps();
+      this.verifyLoadMetadata();
     });
 
     this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
-      if (pipelines) {
+      let stepGroups;
+      if (pipelines && pipelines.length > 0) {
         this.pipelines = pipelines;
-        this.stepGroups = pipelines.filter((p) => p.category === 'step-group');
+        stepGroups = pipelines.filter((p) => p.category === 'step-group');
       } else {
         this.pipelines = [];
-        this.stepGroups = [];
+        stepGroups = [];
       }
+      this.stepGroups = stepGroups;
 
-      this.stepGroupSteps = [];
       let stepGroup;
       this.stepGroups.forEach(sg => {
         stepGroup = JSON.parse(JSON.stringify(StaticSteps.STEP_GROUP));
@@ -142,6 +152,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         };
         this.pipelinesData.push(pipeline);
       });
+      this.pipelinesLoading = false;
+      this.verifyLoadMetadata();
     });
 
     this.packageObjectsService
@@ -166,6 +178,16 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       this.stepGroupSteps.length > 0 &&
       !this.steps.find(s => s.id === this.stepGroups[0].id)) {
       this.steps = this.steps.concat(this.stepGroupSteps);
+    }
+  }
+
+  private verifyLoadMetadata() {
+    if (!this.stepsLoading && !this.pipelinesLoading && this.steps.length < 5 ) {
+      this.dialog.open(ErrorModalComponent, {
+        width: '450px',
+        height: '300px',
+        data: { message: 'This project has no step metadata loaded.\n\nPlease visit the Upload Metadata screen to continue.' },
+      });
     }
   }
 
