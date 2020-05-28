@@ -22,6 +22,7 @@ import {MatChipInputEvent} from "@angular/material/chips";
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent implements OnInit {
+  displayedColumns: string[] = [ 'name', 'path', 'size', 'createdDate', 'modifiedDate', 'delete' ];
   user: User;
   @ViewChild('file', {static: false}) file;
   files: Set<File> = new Set();
@@ -40,6 +41,10 @@ export class UploadComponent implements OnInit {
   remoteJars: string[] = [];
   remoteJarsCtrl = new FormControl();
 
+  // skip metadata options
+  skipPipelines = false;
+  skipSteps = false;
+
   constructor(private authService: AuthService,
               private filesService: FilesService,
               private displayDialogService: DisplayDialogService,
@@ -48,7 +53,7 @@ export class UploadComponent implements OnInit {
     this.user = this.authService.getUserInfo();
     this.authService.userItemSelection.subscribe(data => {
       this.user = data;
-      this.filesService.getFiles(this.user).subscribe(data => this.uploadedFiles = data);
+      this.filesService.getFiles(this.user).subscribe(d => this.uploadedFiles = d);
     });
   }
 
@@ -62,7 +67,7 @@ export class UploadComponent implements OnInit {
 
   onFilesAdded() {
     const files: { [key: string]: File } = this.file.nativeElement.files;
-    for (let key in files) {
+    for (const key in files) {
       if (!isNaN(parseInt(key))) {
         this.files.add(files[key]);
       }
@@ -76,9 +81,9 @@ export class UploadComponent implements OnInit {
     // start the upload and save the progress map
     this.progress = this.filesService.uploadFiles(this.user, this.files);
 
-    // // convert the progress map into an array
+    // convert the progress map into an array
     const allProgressObservables = [];
-    for (let key in this.progress) {
+    for (const key in this.progress) {
       allProgressObservables.push(this.progress[key].progress);
     }
     // When all progress-observables are completed...
@@ -108,9 +113,9 @@ export class UploadComponent implements OnInit {
     );
     deleteStepDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        this.filesService.removeFile(this.user, fileName).subscribe(data => {
-          this.filesService.getFiles(this.user).subscribe(data => {
-            this.uploadedFiles = data;
+        this.filesService.removeFile(this.user, fileName).subscribe( data => {
+          this.filesService.getFiles(this.user).subscribe(d => {
+            this.uploadedFiles = d;
           });
         });
       }
@@ -131,7 +136,9 @@ export class UploadComponent implements OnInit {
         });
         this.filesService.processFiles(this.user, result,
           this.additionalRepos.join(','),
-          this.remoteJars.join(',')).subscribe(data => {
+          this.remoteJars.join(','),
+          this.skipPipelines,
+          this.skipSteps).subscribe(data => {
           waitDialogRef.close();
           this.router.navigate(['landing']);
         },
@@ -178,7 +185,10 @@ export class UploadComponent implements OnInit {
       if (!this.additionalRepos) {
         this.additionalRepos = [];
       }
-      this.additionalRepos.push(value.trim());
+
+      value.trim().split(/,|\s+/).forEach( repo => {
+        if(repo.trim()) this.additionalRepos.push(repo);
+      });
     }
 
     // Reset the input value
@@ -205,7 +215,9 @@ export class UploadComponent implements OnInit {
       if (!this.remoteJars) {
         this.remoteJars = [];
       }
-      this.remoteJars.push(value.trim());
+      value.trim().split(/,|\s+/).forEach( jar => {
+        if(jar.trim()) this.remoteJars.push(jar);
+      });
     }
 
     // Reset the input value

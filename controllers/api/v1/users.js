@@ -257,15 +257,15 @@ module.exports = function (router) {
       let exists;
       try {
         const stats = await mUtils.stat(filePath);
-        exists = stats.isFile();
+        exists = stats.isFile() || stats.isDirectory();
       } catch (err) {
         exists = false;
       }
       if (exists) {
-        await mUtils.unlink(filePath);
-        res.sendStatus(200);
+        await mUtils.removeDir(filePath);
+        res.status(200).json({'status': 'success'});
       } else {
-        res.sendStatus(204);
+        res.status(204).json({'status': 'file not found'});
       }
     }
   });
@@ -277,6 +277,8 @@ module.exports = function (router) {
     const password = req.body.password;
     const repos = req.body.repos;
     const remoteJars = req.body.remoteJars;
+    const skipPipelines = req.body.skipPipelines;
+    const skipSteps = req.body.skipSteps;
     if (userId !== user.id) {
       next(new Error('User does not have permission to process files for different user!'));
     }
@@ -300,7 +302,9 @@ module.exports = function (router) {
           });
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      next(err);
+    }
     if (remoteJars && remoteJars.trim().length > 0) {
       remoteJars.split(",").forEach(f => jarFiles.push(f));
     }
@@ -329,8 +333,17 @@ module.exports = function (router) {
         parameters.push('--repo');
         parameters.push(repos);
       }
+      if (skipPipelines) {
+        parameters.push('--excludePipelines');
+        parameters.push('true');
+      }
+
+      if (skipSteps) {
+        parameters.push('--excludeSteps');
+        parameters.push('true');
+      }
       try {
-        await mUtils.exec(metalusCommand, parameters, { maxBuffer: 1024 * 5000 });
+        await mUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 5000});
         // Delete the jar directory
         await mUtils.removeDir(stagingDir);
         await mUtils.removeDir(userJarDir);
