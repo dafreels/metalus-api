@@ -259,20 +259,23 @@ export class PipelineParameterComponent implements OnInit {
     }
     let parameterValue = '';
     let count = 0;
+    // TODO May need to ensure we don't mix primitives like boolean and integer
     this.parameters.forEach((p) => {
       if (typeof p.value === 'object') {
-        parameterValue = p.value;
-      } else if (p.type === 'boolean' || p.type === 'integer') {
         parameterValue = p.value;
       } else if (count === 0) {
         parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${p.value}`;
       } else {
         parameterValue = `${parameterValue} || ${SharedFunctions.getLeadCharacter(p.type)}${p.value}`;
       }
+      if (p.type === 'boolean' || p.type === 'integer') {
+        this.parameter.type = p.type;
+      } else if (count > 1) {
+        this.parameter.type = 'text';
+      }
       count += 1;
     });
     this.parameter.value = parameterValue;
-    this.parameter.type = this.parameters.length > 1 ? 'text' : this.parameters[0].type;
     // Only used for object or script meaning there should be only 1 parameter
     this.parameter.language = this.isAScriptParameter;
     if (this.isAnObjectParameter !== 'object') {
