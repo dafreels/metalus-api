@@ -35,8 +35,21 @@ module.exports = function (router) {
   router.post('/logout', (req, res) => {
     if (req.logout) {
       req.logout();
+      req.session.destroy((err) => {
+        res.sendStatus(204);
+      });
+    } else {
+      res.sendStatus(204);
     }
-    res.sendStatus(204);
+  });
+
+  router.get('/:id/session-valid', async (req, res, next) => {
+    const user = await req.user;
+    if (user && user.id === req.params.id) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
+    }
   });
 
   router.get('/', async (req, res, next) => {
@@ -142,7 +155,7 @@ module.exports = function (router) {
     const index = updateUser.projects.findIndex(p => p.id === projectId);
     updateUser.projects.splice(index, 1);
     const newuser = await userModel.update(updateUser.id, updateUser);
-    await deleteProjectData(userId, projectId);
+    await deleteProjectData(userId, projectId, getProjectJarsBaseDir(req));
     res.status(200).json(newuser);
   });
 
@@ -155,7 +168,7 @@ module.exports = function (router) {
     }
     const existingUser = await userModel.getUser(userId);
     for await (const project of existingUser.projects) {
-      await deleteProjectData(userId, project.id);
+      await deleteProjectData(userId, project.id, getProjectJarsBaseDir(req));
     }
     await userModel.delete(userId);
     res.sendStatus(204);
@@ -168,7 +181,7 @@ module.exports = function (router) {
     if (userId !== user.id) {
       next(new Error('User does not have permission to retrieve files for different user!'));
     }
-    const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+    const userJarDir = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
     let exists;
     try {
       const stats = await mUtils.stat(userJarDir);
@@ -213,7 +226,7 @@ module.exports = function (router) {
     }
 
     if(!errors) {
-      const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+      const userJarDir = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
       await mUtils.mkdir(userJarDir, {recursive: true});
       const options = {
         uploadDir: userJarDir
@@ -253,7 +266,7 @@ module.exports = function (router) {
     if (userId !== user.id) {
       next(new Error('User does not have permission to delete files for different user!'));
     } else {
-      const filePath = `${process.cwd()}/jars/${userId}/${projectId}/${fileName}`;
+      const filePath = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}/${fileName}`;
       let exists;
       try {
         const stats = await mUtils.stat(filePath);
@@ -287,7 +300,7 @@ module.exports = function (router) {
     if (!bcrypt.compareSync(password, projectUser.password)) {
       next(new Error('Unable to upload metadata: Invalid password!'));
     }
-    const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
+    const userJarDir = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
     const stagingDir = `${userJarDir}/staging`;
     const jarFiles = [];
     try {
@@ -356,18 +369,21 @@ module.exports = function (router) {
   });
 };
 
-async function deleteProjectData(userId, projectId) {
+async function deleteProjectData(userId, projectId, userJarDir) {
   const query = {
     project: {
       userId,
       projectId
     }
   };
-  const userJarDir = `${process.cwd()}/jars/${userId}/${projectId}`;
   await mUtils.removeDir(`${userJarDir}/staging`);
   await mUtils.removeDir(userJarDir);
   await new StepsModel().deleteMany(query);
   await new AppsModel().deleteMany(query);
   await new PkgObjsModel().deleteMany(query);
   return await new PipelinesModel().deleteMany(query);
+}
+
+function getProjectJarsBaseDir(req) {
+  return req.app.kraken.get('baseJarsDir') || `${process.cwd()}/jars`;
 }

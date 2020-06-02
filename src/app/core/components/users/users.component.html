@@ -30,7 +30,7 @@
             <mat-header-cell *matHeaderCellDef>Remove User</mat-header-cell>
             <mat-cell *matCellDef="let user">
               <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="grey" (click)="removeUser(user)">
-                <mat-icon>delete</mat-icon>
+                <mat-icon color="primary">delete</mat-icon>
               </button>
             </mat-cell>
           </ng-container>
