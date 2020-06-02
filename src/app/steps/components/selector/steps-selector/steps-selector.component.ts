@@ -20,19 +20,20 @@ export class StepsSelectorComponent {
   set steps(steps: Step[]) {
     this.originalSteps = steps;
     const updatedSteps = [];
+    const tags = [];
     if (steps) {
       steps.forEach((s) => {
         if (s.tags) {
           s.tags.forEach((t) => {
-            if (this.tags.indexOf(t) === -1) {
-              this.tags.push(t);
+            if (tags.indexOf(t) === -1) {
+              tags.push(t);
             }
           });
         }
         updatedSteps.push(s);
       });
     }
-    this.tags = this.tags.sort();
+    this.tags = tags.sort();
     this.setSteps(updatedSteps);
   }
 
