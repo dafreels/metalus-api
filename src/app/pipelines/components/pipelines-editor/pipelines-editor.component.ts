@@ -519,11 +519,19 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           });
         }
       }
+    } else if (action.action === 'refreshStep') {
+      this.refreshStepMetadata(action.element.data['id']);
     }
   }
 
   private createDesignerElement(step: PipelineStep, event) {
-    let actions = [];
+    let actions = [{
+      displayName: 'Refresh Step',
+      action: 'refreshStep',
+      enableFunction: () => {
+        return true;
+      },
+      }];
     if (step.type === 'step-group') {
       actions.push({
         displayName: 'Show pipeline',
@@ -1087,5 +1095,41 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     const pipeline = this.generatePipeline();
     delete pipeline.layout;
     this.designerModel = this.generateModelFromPipeline(pipeline);
+  }
+
+  refreshStepMetadata(id: string) {
+    const nodeIds = Object.keys(this.designerModel.nodes);
+    if (id) {
+      const nodeId = nodeIds.find(key => this.designerModel.nodes[key].data.data.id === id);
+      this.designerModel.nodes[nodeId].data.data = this.updateStep(this.designerModel.nodes[nodeId].data.data);
+      this.designerModel.nodes[nodeId].data.tooltip = this.designerModel.nodes[nodeId].data.data.description;
+    } else {
+      nodeIds.forEach((key) => {
+        this.designerModel.nodes[key].data.data = this.updateStep(this.designerModel.nodes[key].data.data);
+        this.designerModel.nodes[key].data.tooltip = this.designerModel.nodes[key].data.data.description;
+      });
+    }
+  }
+
+  private updateStep(step: PipelineStep) {
+    const stepMeta = this.steps.find(s => s.id === step.stepId);
+    if (stepMeta) {
+      const originalParameters = step.params;
+      const pipelineStepId = step.id;
+      const mergedStep = Object.assign({}, step, stepMeta);
+      let metaParam;
+      mergedStep.params = originalParameters.map((param) => {
+        metaParam = stepMeta.params.find(p => p.name === param.name);
+        if (metaParam) {
+          return Object.assign({}, metaParam, param);
+        } else {
+          return param;
+        }
+      });
+      mergedStep.id = pipelineStepId;
+      mergedStep.stepId = stepMeta.id;
+      return mergedStep;
+    }
+    return step;
   }
 }
