@@ -13,7 +13,6 @@ export interface ErrorDialogData {
 export class ErrorModalComponent {
   constructor(public dialogRef: MatDialogRef<ErrorDialogData>,
               @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
-
   closeDialog(): void {
     this.dialogRef.close();
   }

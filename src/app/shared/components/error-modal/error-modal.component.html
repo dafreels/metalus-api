@@ -1,13 +1,10 @@
-<mat-card>
-  <mat-card-header>An Error has occurred!</mat-card-header>
-  <mat-card-content>
-    <div class="error-message">
-      <mat-form-field>
-        <textarea matInput placeholder="Description" name="Error Message" disabled="true" rows="7">{{data.message}}</textarea>
-      </mat-form-field>
-    </div>
-  </mat-card-content>
-</mat-card>
-<div mat-dialog-actions>
+<h4 class="mat-display-6">An Error has occurred!</h4>
+<mat-dialog-content>
+  <h5>Description:</h5>
+    <p>
+      {{data.message}}
+    </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
   <button mat-raised-button color="warn" (click)="closeDialog()">OK</button>
-</div>
+</mat-dialog-actions>
