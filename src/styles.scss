@@ -1,5 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+/* You can add global styles to this file, and also import other styl/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';// @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
 
 // Include the theming library
 @import '~@angular/material/theming';
@@ -13,6 +14,7 @@ $theme: mat-light-theme($primary, $accent);
 @include angular-material-theme($theme);
 
 body {
+  font-family: 'Roboto';
   background: rgb(240, 240, 240);
   .mt-1{
     margin-top: 1rem;

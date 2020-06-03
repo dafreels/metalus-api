@@ -23,6 +23,9 @@
 
 .sidebar {
   height: 100%;
+  mat-card-content.content {
+    padding: 0.5rem;
+  }
 }
 
 .steps-by-category .mat-card{

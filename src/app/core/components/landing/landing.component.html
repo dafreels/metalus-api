@@ -4,46 +4,58 @@
     <mat-grid-list cols="4">
       <mat-grid-tile>
         <mat-card>
-          <mat-card-header>
-            <mat-card-title-group>
+          <mat-card-header class="item">
+            <div mat-card-avatar>
               <mat-icon color="primary">dashboard</mat-icon>
-              <mat-card-title>Applications</mat-card-title>
-            </mat-card-title-group>
+            </div>
+            <mat-card-title>Applications
+              <mat-chip-list>
+                <mat-chip>{{applicationCount}}</mat-chip>
+              </mat-chip-list>
+            </mat-card-title>
           </mat-card-header>
-          <mat-card-content>{{applicationCount}}</mat-card-content>
         </mat-card>
       </mat-grid-tile>
       <mat-grid-tile>
         <mat-card>
-          <mat-card-header>
-            <mat-card-title-group>
+          <mat-card-header class="item">
+            <div mat-card-avatar>
               <mat-icon color="primary">more_vert</mat-icon>
-              <mat-card-title>Pipelines</mat-card-title>
-            </mat-card-title-group>
+            </div>
+            <mat-card-title>Pipelines
+              <mat-chip-list>
+                <mat-chip>{{pipelineCount}}</mat-chip>
+              </mat-chip-list>
+            </mat-card-title>
           </mat-card-header>
-          <mat-card-content>{{pipelineCount}}</mat-card-content>
         </mat-card>
       </mat-grid-tile>
       <mat-grid-tile>
         <mat-card>
-          <mat-card-header>
-            <mat-card-title-group>
+          <mat-card-header class="item">
+            <div mat-card-avatar>
               <mat-icon color="primary">apps</mat-icon>
-              <mat-card-title>Steps</mat-card-title>
-            </mat-card-title-group>
+            </div>
+            <mat-card-title>Steps
+              <mat-chip-list>
+                <mat-chip>{{stepCount}}</mat-chip>
+              </mat-chip-list>
+            </mat-card-title>
           </mat-card-header>
-          <mat-card-content>{{stepCount}}</mat-card-content>
         </mat-card>
       </mat-grid-tile>
       <mat-grid-tile>
         <mat-card>
-          <mat-card-header>
-            <mat-card-title-group>
+          <mat-card-header class="item">
+            <div mat-card-avatar>
               <mat-icon color="primary">group_work</mat-icon>
-              <mat-card-title>Object Schemas</mat-card-title>
-            </mat-card-title-group>
+            </div>
+            <mat-card-title>Object Schemas
+              <mat-chip-list>
+                <mat-chip>{{packageObjectCount}}</mat-chip>
+              </mat-chip-list>
+            </mat-card-title>
           </mat-card-header>
-          <mat-card-content>{{packageObjectCount}}</mat-card-content>
         </mat-card>
       </mat-grid-tile>
     </mat-grid-list>

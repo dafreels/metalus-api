@@ -1,6 +1,6 @@
 <app-close-dialog-button></app-close-dialog-button>
-<mat-card>
-  <mat-card-content>
+<!-- <mat-card> -->
+  <!-- <mat-card-content> -->
     <div class="code-language">
       <mat-form-field>
         <mat-label>Select Language: </mat-label>
@@ -12,8 +12,8 @@
         </mat-select>
       </mat-form-field>
     </div>
-  </mat-card-content>
-</mat-card>
+  <!-- </mat-card-content>
+</mat-card> -->
 <div class="code-div">
   <ace
     [mode]="data.language"
@@ -32,3 +32,33 @@
     Ok
   </button>
 </div>
+
+
+
+<!-- 
+<mat-dialog-content>
+  <app-close-dialog-button></app-close-dialog-button>
+
+  <div class="code-language">
+    <mat-form-field>
+      <mat-label>Select Language: </mat-label>
+      <mat-select class="code-language" required [(ngModel)]="data.language">
+        <mat-option value="javascript">Javascript</mat-option>
+        <mat-option value="json">JSON</mat-option>
+        <mat-option value="scala">Scala</mat-option>
+        <mat-option value="sql">SQL</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="code-div">
+    <ace [mode]="data.language" [theme]="'solarized_light'" [(value)]="data.code"></ace>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+
+
+  <button mat-raised-button mat-dialog-close>Close</button>
+  <button *ngIf="data.allowSave" mat-raised-button color="primary" [mat-dialog-close]="data">
+    Ok
+  </button>
+</mat-dialog-actions> -->
