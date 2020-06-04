@@ -2,6 +2,7 @@ const express = require('express');
 const kraken = require('kraken-js');
 const BaseModel = require('./lib/base.model');
 const auth = require('./lib/auth');
+const MetalusUtils = require('./lib/metalus-utils');
 
 const options = {
   onconfig: function (config, next) {
@@ -13,7 +14,8 @@ const options = {
       app.use(session({
         secret: 'metalus',
         cookie: {
-          maxAge: 1000 * 60 * 60 * 24 // 1 day
+          httpOnly: false,
+          maxAge: MetalusUtils.MAX_SESSION_AGE
         },
         store: new MongoDBStore({
           uri: MongoDb.buildConnectionUrl(config),

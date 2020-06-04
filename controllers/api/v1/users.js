@@ -43,12 +43,14 @@ module.exports = function (router) {
     }
   });
 
-  router.get('/:id/session-valid', async (req, res, next) => {
+  router.get('/:id/session-valid', async (req, res) => {
     const user = await req.user;
     if (user && user.id === req.params.id) {
-      res.sendStatus(200);
+      res.status(200).json({
+        expires: req.session.cookie._expires.getTime()
+      });
     } else {
-      res.sendStatus(401);
+      res.status(401).json({});
     }
   });
 
