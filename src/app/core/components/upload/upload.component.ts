@@ -53,12 +53,16 @@ export class UploadComponent implements OnInit {
     this.user = this.authService.getUserInfo();
     this.authService.userItemSelection.subscribe(data => {
       this.user = data;
-      this.filesService.getFiles(this.user).subscribe(d => this.uploadedFiles = d);
+      if (this.user) {
+        this.filesService.getFiles(this.user).subscribe(d => this.uploadedFiles = d);
+      }
     });
   }
 
   ngOnInit(): void {
-    this.filesService.getFiles(this.user).subscribe(data => this.uploadedFiles = data);
+    if (this.user) {
+      this.filesService.getFiles(this.user).subscribe(data => this.uploadedFiles = data);
+    }
   }
 
   addFiles() {

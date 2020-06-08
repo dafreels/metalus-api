@@ -704,11 +704,11 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       model.nodes[nodeId] = {
         data: this.createDesignerElement(step, null),
         x:
-          existingLayout && pipeline.layout[step.id].x
+          existingLayout && pipeline.layout[step.id] && pipeline.layout[step.id].x
             ? pipeline.layout[step.id].x
             : -1,
         y:
-          existingLayout && pipeline.layout[step.id].y
+          existingLayout && pipeline.layout[step.id] && pipeline.layout[step.id].y
             ? pipeline.layout[step.id].y
             : -1,
       };
