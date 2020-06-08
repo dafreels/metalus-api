@@ -169,7 +169,7 @@ export class UploadComponent implements OnInit {
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',
-      data: { message },
+      data: { messages: message.split('\n') },
     });
   }
 

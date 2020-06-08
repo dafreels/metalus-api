@@ -297,7 +297,7 @@ export class StepsEditorComponent implements OnInit {
     const errorDialog = this.displayDialogService.openDialog(
       ErrorModalComponent,
       errorDialogDimensions,
-      { message }
+      { messages: message.split('\n') }
     );
   }
 

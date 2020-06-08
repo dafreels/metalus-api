@@ -186,7 +186,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       this.dialog.open(ErrorModalComponent, {
         width: '450px',
         height: '300px',
-        data: { message: 'This project has no step metadata loaded.\n\nPlease visit the Upload Metadata screen to continue.' },
+        data: { messages: ['This project has no step metadata loaded.', 'Please visit the Upload Metadata screen to continue.'] },
       });
     }
   }
@@ -923,14 +923,14 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   }
 
   showErrors() {
-    let message = '';
+    const messages = [];
     this.errors.forEach((err) => {
-      message = `${message}${err.component} ${err.field}: ${err.message}\n\n`;
+      messages.push(`${err.component} ${err.field}: ${err.message}`);
     });
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',
-      data: { message },
+      data: { messages },
     });
   }
 
@@ -946,7 +946,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',
-      data: { message },
+      data: { messages: message.split('\n') },
     });
   }
 
