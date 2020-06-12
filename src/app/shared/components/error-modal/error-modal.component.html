@@ -1,7 +1,9 @@
 <h4 class="mat-display-6">An Error has occurred!</h4>
 <mat-dialog-content>
-  <h5>Description</h5>
-      <textarea matInput  placeholder="Description" name="Error Message" disabled="true" rows="7">{{data.message}}</textarea>
+  <h5>Description:</h5>
+  <p *ngFor="let message of data.messages">
+    {{message}}<br/><br/>
+  </p>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-raised-button color="warn" (click)="closeDialog()">OK</button>
