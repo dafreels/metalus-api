@@ -3,6 +3,8 @@ import {Project, User} from "../../../shared/models/users.models";
 import {AuthService} from "../../../shared/services/auth.service";
 import {Router} from "@angular/router";
 import {UsersService} from "../../../shared/services/users.service";
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { LogOutComponent } from '../log-out/log-out.component';
 
 @Component({
   selector: 'user-menu',
@@ -15,7 +17,8 @@ export class UserMenuComponent {
 
   constructor(private authService : AuthService,
               private usersService: UsersService,
-              private route : Router) {}
+              private route : Router,
+              public matDialog: MatDialog) {}
 
   @Input()
   set user(user) {
@@ -23,9 +26,16 @@ export class UserMenuComponent {
     this.defaultProject = user.projects.find(p => p.id === user.defaultProjectId);
   }
 
-  logout() {
-    this.authService.logout().subscribe(() => {
-      this.route.navigate(['login'], { queryParams: { returnUrl: '/' } });
+  public openModal() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    const modalDialog = this.matDialog.open(LogOutComponent, dialogConfig);
+    modalDialog.afterClosed().subscribe(result => {
+      if (result) {
+        this.authService.logout().subscribe(() => {
+          this.route.navigate(['login'], { queryParams: { returnUrl: '/' } });
+        });
+      }
     });
   }
 
