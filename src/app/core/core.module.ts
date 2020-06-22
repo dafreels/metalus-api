@@ -13,6 +13,7 @@ import {NavMenuComponent} from "./components/nav-menu/nav-menu.component";
 import {UserMenuComponent} from "./components/user-menu/user-menu.component";
 import {UploadComponent} from "./components/upload/upload.component";
 import {NavToolbarComponent} from "./components/nav-toolbar/nav-toolbar.component";
+import { LogOutComponent } from './components/log-out/log-out.component';
 
 @NgModule({
   imports: [
@@ -31,11 +32,13 @@ import {NavToolbarComponent} from "./components/nav-toolbar/nav-toolbar.componen
     UploadComponent,
     UsersComponent,
     UserMenuComponent,
-    UsersModalComponent
+    UsersModalComponent,
+    LogOutComponent
   ],
   entryComponents: [
     ChangePasswordModalComponent,
-    UsersModalComponent
+    UsersModalComponent,
+    LogOutComponent
   ],
   exports: [
     ChangePasswordModalComponent,

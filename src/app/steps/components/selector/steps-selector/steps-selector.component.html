@@ -4,7 +4,10 @@
         <mat-form-field class="filter">
           <mat-label><mat-icon>search</mat-icon></mat-label>
           <input #filter matInput placeholder="Search"
-                 (input)="filterList(filter.value, tagSelect.value)">
+          (input)="filterList(filter.value, tagSelect.value)" type="text">
+                 <button  mat-button *ngIf="filter.value" matSuffix mat-icon-button aria-label="Clear" (click)="filter.value='';filterList(filter.value, tagSelect.value)">
+                   <mat-icon>close</mat-icon>
+                 </button>
         </mat-form-field>
           <mat-form-field class="tag-select">
             <mat-label><mat-icon>filter_list</mat-icon></mat-label>
