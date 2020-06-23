@@ -662,7 +662,9 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         }),
       );
   }
-
+  get hasChanges() {
+    return this.hasPipelineChanged(this.selectedPipeline);
+  }
   private hasPipelineChanged(newPipeline) {
     let changed = this._pipeline.steps.length !== newPipeline.steps.length;
     let originalStep;

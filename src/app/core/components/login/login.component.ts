@@ -16,7 +16,9 @@ export class LoginComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-
+    if(this.authService.isAuthenticated()) {
+      this.authService.logout().subscribe(() => {});
+    }
   }
 
   login() {
@@ -24,6 +26,7 @@ export class LoginComponent implements OnInit {
       .subscribe(
         user => {
           this.loginError = false;
+          this.hasLoggedIn = true;
           this.router.navigate(['landing']);
         },
         error => {

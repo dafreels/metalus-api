@@ -10,13 +10,14 @@ import {AuthGuardService} from "./shared/services/auth-gaurd.service";
 import {ProfileComponent} from "./core/components/profile/profile.component";
 import {UsersComponent} from "./core/components/users/users.component";
 import {UploadComponent} from "./core/components/upload/upload.component";
+import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard';
 
 const appRoutes: Routes = [
-  {path: 'login', component: LoginComponent},
+  {path: 'login', component: LoginComponent, canDeactivate:[ConfirmDeactivateGuard]},
   {path: '', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService]},
   {path: 'steps-editor', component: StepsEditorComponent, canActivate: [AuthGuardService]},
-  {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService]},
+  {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService],  canDeactivate:[ConfirmDeactivateGuard]},
   {path: 'landing', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'profile', component: ProfileComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'users', component: UsersComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
