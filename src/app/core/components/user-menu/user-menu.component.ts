@@ -32,9 +32,7 @@ export class UserMenuComponent {
     const modalDialog = this.matDialog.open(LogOutComponent, dialogConfig);
     modalDialog.afterClosed().subscribe(result => {
       if (result) {
-        this.authService.logout().subscribe(() => {
           this.route.navigate(['login'], { queryParams: { returnUrl: '/' } });
-        });
       }
     });
   }

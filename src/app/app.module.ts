@@ -15,6 +15,7 @@ import {
 import {ApplicationsModule} from './applications/applications.module';
 import {StepsModule} from './steps/steps.module';
 import {PipelinesModule} from './pipelines/pipelines.module';
+import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard';
 
 @NgModule({
   imports: [
@@ -32,6 +33,7 @@ import {PipelinesModule} from './pipelines/pipelines.module';
     AppComponent
   ],
   providers: [
+    ConfirmDeactivateGuard,
     { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true, autoFocus: false }},
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: {
         showDelay: 500,
