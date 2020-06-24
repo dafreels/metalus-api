@@ -12,6 +12,7 @@ export class LoginComponent implements OnInit {
   username: String;
   userPassword: String;
   loginError: Boolean = false;
+  hasLoggedIn: boolean;
 
   constructor(private authService: AuthService, private router: Router) {}
 
