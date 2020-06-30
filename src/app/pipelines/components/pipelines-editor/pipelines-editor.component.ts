@@ -71,9 +71,9 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     private authService: AuthService) {
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(this.authService.userItemSelection.subscribe(data => {
-      this.user = data;
       const newPipeline = this.generatePipeline();
       // Cannot diff the pipeline since step orders could have changed
+    if (data.defaultProjectId != this.user.defaultProjectId) {
       if (this.hasPipelineChanged(newPipeline)) {
         const dialogRef = this.dialog.open(ConfirmationModalComponent, {
           width: '450px',
@@ -86,12 +86,16 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe((confirmation) => {
           if (confirmation) {
+            this.user = data;
             this.loadUIData();
+          } else {
+            this.authService.setUserInfo({ ...this.user });
           }
         });
       } else {
         this.loadUIData();
       }
+    }
     }));
   }
 
