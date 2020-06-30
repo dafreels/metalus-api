@@ -208,6 +208,12 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         }
       }));
     }
+    // Build out the step lookup from the new model
+    let node;
+    Object.keys(this.designerModel.nodes).forEach(key => {
+      node = this.designerModel.nodes[key];
+      this.stepLookup[node.data.name] = key;
+    });
     this.validateChanges();
   }
 
@@ -337,6 +343,12 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           step.id = id;
         }
         step.id = step.id.replace(/ /g, '_');
+        // Set the value of boolean parameters if undefined
+        step.params.forEach((p) => {
+          if (p.type.toLocaleLowerCase() === 'boolean' && !p.value) {
+            p.value = false;
+          }
+        });
         this.dndSubject.next(this.createDesignerElement(step, event));
         this.stepCreated.next(step);
       }
