@@ -275,7 +275,13 @@ export class PipelineParameterComponent implements OnInit {
       }
       count += 1;
     });
-    this.parameter.value = parameterValue;
+    if (this.parameter.type === 'boolean' && ['true', 'false'].indexOf(parameterValue) >= 0) {
+      this.parameter.value = (parameterValue === 'true');
+    } else if (this.parameter.type === 'integer' && Number(parameterValue)) {
+      this.parameter.value = Number(parameterValue)
+    } else {
+      this.parameter.value = parameterValue;
+    }
     // Only used for object or script meaning there should be only 1 parameter
     this.parameter.language = this.isAScriptParameter;
     if (this.isAnObjectParameter !== 'object') {
