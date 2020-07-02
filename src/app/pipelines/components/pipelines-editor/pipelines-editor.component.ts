@@ -733,59 +733,67 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       this.stepLookup[step.id] = nodeId;
     });
     // Add connections
+    let source;
+    let target;
     pipeline.steps.forEach((step) => {
+      source = this.stepLookup[step.id];
       if (step.nextStepOnError) {
-        model.connections[
-          `${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepOnError]}`
-          ] = {
-          sourceNodeId: this.stepLookup[step.id],
-          targetNodeId: this.stepLookup[step.nextStepOnError],
-          endpoints: [
-            {
-              sourceEndPoint: 'onError',
-              targetEndPoint: 'input',
-            },
-          ],
-        };
+        target = this.stepLookup[step.nextStepOnError];
+        if (source && target) {
+          model.connections[`${source}::${target}`] = {
+            sourceNodeId: this.stepLookup[step.id],
+            targetNodeId: this.stepLookup[step.nextStepOnError],
+            endpoints: [
+              {
+                sourceEndPoint: 'onError',
+                targetEndPoint: 'input',
+              },
+            ],
+          };
+        }
       }
       if (step.type.toLocaleLowerCase() !== 'branch' && step.nextStepId) {
-        model.connections[
-          `${this.stepLookup[step.id]}::${this.stepLookup[step.nextStepId]}`
-        ] = {
-          sourceNodeId: this.stepLookup[step.id],
-          targetNodeId: this.stepLookup[step.nextStepId],
-          endpoints: [
-            {
-              sourceEndPoint: 'output',
-              targetEndPoint: 'input',
-            },
-          ],
-        };
+        target = this.stepLookup[step.nextStepId];
+        if (source && target) {
+          model.connections[`${source}::${target}`] = {
+            sourceNodeId: this.stepLookup[step.id],
+            targetNodeId: this.stepLookup[step.nextStepId],
+            endpoints: [
+              {
+                sourceEndPoint: 'output',
+                targetEndPoint: 'input',
+              },
+            ],
+          };
+        }
       } else {
         let connection;
         step.params
           .filter((p) => p.type.toLowerCase() === 'result')
           .forEach((output) => {
-            if (output.value) {
-              connection =
-                model.connections[`${this.stepLookup[step.id]}::${this.stepLookup[output.value]}`];
-              if (!connection) {
-                connection = {
-                  sourceNodeId: this.stepLookup[step.id],
-                  targetNodeId: this.stepLookup[output.value],
-                  endpoints: [],
-                };
-                model.connections[
-                  `${this.stepLookup[step.id]}::${
-                    this.stepLookup[output.value]
-                  }`
-                ] = connection;
+            target = this.stepLookup[output.value];
+              if (output.value) {
+                if (source && target) {
+                  connection =
+                    model.connections[`${source}::${target}`];
+                  if (!connection) {
+                    connection = {
+                      sourceNodeId: this.stepLookup[step.id],
+                      targetNodeId: this.stepLookup[output.value],
+                      endpoints: [],
+                    };
+                    model.connections[
+                      `${this.stepLookup[step.id]}::${
+                        this.stepLookup[output.value]
+                      }`
+                      ] = connection;
+                  }
+                  connection.endpoints.push({
+                    sourceEndPoint: output.name,
+                    targetEndPoint: 'input',
+                  });
+                }
               }
-              connection.endpoints.push({
-                sourceEndPoint: output.name,
-                targetEndPoint: 'input',
-              });
-            }
           });
       }
     });
@@ -1037,11 +1045,13 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           delete step.nextStepId;
           children.forEach((child) => {
             childNode = this.designerModel.nodes[child.targetNodeId];
-            child.endpoints.forEach((ep) => {
-              step.params.find((p) => p.name === ep.sourceEndPoint).value =
-                childNode.data.name;
-              this.addNodeToPipeline(childNode, pipeline);
-            });
+            if (childNode) {
+              child.endpoints.forEach((ep) => {
+                step.params.find((p) => p.name === ep.sourceEndPoint).value =
+                  childNode.data.name;
+                this.addNodeToPipeline(childNode, pipeline);
+              });
+            }
           });
         } else {
           const childNode = this.designerModel.nodes[children[0].targetNodeId];

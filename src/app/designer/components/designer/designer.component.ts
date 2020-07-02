@@ -157,16 +157,19 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     const endpointEntries = Object.entries(this.model.endpoints);
     for (let key of Object.keys(this.model.connections)) {
       connection = this.model.connections[key];
-      connection.endpoints.forEach(ep => {
-        this.jsPlumbInstance.connect({
-          source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
-            e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
-            entry[1].nodeId === connection.sourceNodeId)[0]),
-          target: this.jsPlumbInstance.getEndpoints(connection.targetNodeId).find(e =>
-            e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
-            entry[1].nodeId === connection.targetNodeId)[0])
+      // Only create a connection if both nodeIds are populated
+      if (connection.sourceNodeId && connection.targetNodeId){
+        connection.endpoints.forEach(ep => {
+          this.jsPlumbInstance.connect({
+            source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
+              e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
+              entry[1].nodeId === connection.sourceNodeId)[0]),
+            target: this.jsPlumbInstance.getEndpoints(connection.targetNodeId).find(e =>
+              e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
+              entry[1].nodeId === connection.targetNodeId)[0])
+          });
         });
-      });
+      }
     }
     this.modelPopulating = false;
   }
