@@ -10,7 +10,6 @@ export class ConfirmDeactivateGuard implements CanDeactivate<PipelinesEditorComp
     private dialog: MatDialog
     ){}
     canDeactivate(target: PipelinesEditorComponent) {
-        console.log("ConfirmDeactivateGuard -> canDeactivate -> target", target)
         if (target.hasChanges) {
             const dialogRef = this.dialog.open(ConfirmationModalComponent, {
                 width: '450px',

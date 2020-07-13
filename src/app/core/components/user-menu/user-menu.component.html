@@ -4,10 +4,8 @@
     </button>
     <mat-menu #projectMenu="matMenu">
       <button mat-menu-item *ngFor="let project of defaultUser.projects" (click)="changeDefaultProject(project.id)">
-        <!-- <div> -->
           <mat-icon color="primary">account_circle</mat-icon>
           <span class="spacer">{{project.displayName}}</span>
-        <!-- </div> -->
       </button>
     </mat-menu>
     <button mat-button [matMenuTriggerFor]="userMenu" aria-label="Navigation" class="nav-button">
@@ -17,21 +15,15 @@
     </button>
     <mat-menu #userMenu="matMenu">
       <button mat-menu-item *ngIf="defaultUser" [routerLink]="['/profile']" routerLinkActive="active">
-        <!-- <div> -->
           <mat-icon color="primary">account_circle</mat-icon>
           <span class="spacer">Profile</span>
-        <!-- </div> -->
       </button>
       <button  [routerLink]="['/users']" routerLinkActive="active" mat-menu-item *ngIf="defaultUser && defaultUser.role.toString() === 'admin'">
-        <!-- <div> -->
           <mat-icon color="primary">group</mat-icon>
           <span class="spacer">Users</span>
-        <!-- </div> -->
       </button>
       <button mat-menu-item *ngIf="defaultUser" (click)="openModal()">
-        <!-- <div> -->
           <mat-icon color="primary">power_off</mat-icon>
           <span class="log-out">Logout</span>
-        <!-- </div> -->
       </button>
     </mat-menu>

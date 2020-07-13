@@ -57,7 +57,6 @@ export class UserMenuComponent implements OnDestroy
     // Clone user so project only shows up after the update is complete
     const user = JSON.parse(JSON.stringify(this.defaultUser));
     user.defaultProjectId = projectId;
-    console.log("changeDefaultProject -> user.defaultProjectId", user.defaultProjectId)
     this.usersService.updateUser(user).subscribe((updatedUser) => {
       this.authService.setUserInfo(updatedUser);
     });
