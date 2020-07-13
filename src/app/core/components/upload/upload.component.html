@@ -1,5 +1,5 @@
 <div>
-  <nav-toolbar page="upload" title="Upload Jars" [user]="user">
+  <nav-toolbar>
     <button mat-raised-button color="primary" (click)="addFiles()" [disabled]="uploading" style="margin-right: 5px;">Upload</button>
     <button mat-raised-button color="primary" (click)="processJars()"
             [disabled]="uploading || (uploadedFiles.length === 0 && remoteJars.length === 0)" style="margin-right: 5px;">Process</button>
