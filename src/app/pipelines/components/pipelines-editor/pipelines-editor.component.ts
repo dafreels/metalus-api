@@ -93,6 +93,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           }
         });
       } else {
+        this.user = data;
         this.loadUIData();
       }
     }

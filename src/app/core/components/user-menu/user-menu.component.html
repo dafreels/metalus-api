@@ -3,11 +3,9 @@
       <mat-icon color="primary">expand_more</mat-icon>
     </button>
     <mat-menu #projectMenu="matMenu">
-      <button mat-menu-item *ngFor="let project of defaultUser.projects">
-        <div>
+      <button mat-menu-item *ngFor="let project of defaultUser.projects" (click)="changeDefaultProject(project.id)">
           <mat-icon color="primary">account_circle</mat-icon>
-          <span class="spacer"><a (click)="changeDefaultProject(project.id)">{{project.displayName}}</a></span>
-        </div>
+          <span class="spacer">{{project.displayName}}</span>
       </button>
     </mat-menu>
     <button mat-button [matMenuTriggerFor]="userMenu" aria-label="Navigation" class="nav-button">
@@ -16,22 +14,16 @@
       <mat-icon color="primary">expand_more</mat-icon>
     </button>
     <mat-menu #userMenu="matMenu">
-      <button mat-menu-item *ngIf="defaultUser">
-        <div>
+      <button mat-menu-item *ngIf="defaultUser" [routerLink]="['/profile']" routerLinkActive="active">
           <mat-icon color="primary">account_circle</mat-icon>
-          <span class="spacer"><a [routerLink]="['/profile']" routerLinkActive="active">Profile</a></span>
-        </div>
+          <span class="spacer">Profile</span>
       </button>
-      <button mat-menu-item *ngIf="defaultUser && defaultUser.role.toString() === 'admin'">
-        <div>
+      <button  [routerLink]="['/users']" routerLinkActive="active" mat-menu-item *ngIf="defaultUser && defaultUser.role.toString() === 'admin'">
           <mat-icon color="primary">group</mat-icon>
-          <span class="spacer"><a [routerLink]="['/users']" routerLinkActive="active">Users</a></span>
-        </div>
+          <span class="spacer">Users</span>
       </button>
-      <button mat-menu-item *ngIf="defaultUser">
-        <div>
+      <button mat-menu-item *ngIf="defaultUser" (click)="openModal()">
           <mat-icon color="primary">power_off</mat-icon>
-          <span class="log-out"><a  (click)="openModal()">Logout</a></span>
-        </div>
+          <span class="log-out">Logout</span>
       </button>
     </mat-menu>

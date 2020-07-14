@@ -1,5 +1,5 @@
 <div>
-  <nav-toolbar page="profile" title="Profile" [user]="user">
+  <nav-toolbar>
     <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change
       Password</button>
     <button mat-raised-button color="primary" (click)="addProject()" style="margin-right: 5px;">New Project</button>
@@ -36,10 +36,10 @@
               <mat-cell *matCellDef="let element">
                 <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button
                         color="primary" (click)="changeDefaultProject(element.id)">
-                  <mat-icon>toggle_on</mat-icon>
+                  <mat-icon>toggle_off</mat-icon>
                 </button>
                 <button *ngIf="element.id === user.defaultProjectId" mat-icon-button color="primary" disabled>
-                  <mat-icon>toggle_off</mat-icon>
+                  <mat-icon>toggle_on</mat-icon>
                 </button>
               </mat-cell>
             </ng-container>
