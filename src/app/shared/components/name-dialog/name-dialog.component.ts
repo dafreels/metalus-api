@@ -7,7 +7,8 @@ export interface NameDialogData {
 
 @Component({
   selector: 'app-name-dialog',
-  templateUrl: './name-dialog.component.html'
+  templateUrl: './name-dialog.component.html',
+  styleUrls: ['./name-dialog.component.scss'],
 })
 export class NameDialogComponent {
   constructor(
