@@ -12,11 +12,10 @@
 }
 
 .close-dialog {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  padding: 5px;
-  outline: none;
+  position: fixed;
+    right: 14%;
+    outline: none;
+  
 }
 
 button {

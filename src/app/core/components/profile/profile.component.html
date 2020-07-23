@@ -34,13 +34,7 @@
             <ng-container matColumnDef="default">
               <mat-header-cell *matHeaderCellDef> Default</mat-header-cell>
               <mat-cell *matCellDef="let element">
-                <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button
-                        color="primary" (click)="changeDefaultProject(element.id)">
-                  <mat-icon>toggle_off</mat-icon>
-                </button>
-                <button *ngIf="element.id === user.defaultProjectId" mat-icon-button color="primary" disabled>
-                  <mat-icon>toggle_on</mat-icon>
-                </button>
+                <mat-slide-toggle color="primary" (click)="changeDefaultProject(element.id)" class="Default" [disabled]="element.id === user.defaultProjectId" [checked]="element.id === user.defaultProjectId"></mat-slide-toggle>
               </mat-cell>
             </ng-container>
 
