@@ -10,7 +10,7 @@ import { CodeEditorModule } from '../code-editor/code-editor.module';
 import { StepInformationComponent } from './components/step-information/step-information.component';
 import {CoreModule} from "../core/core.module";
 import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
-import {ObjectMappingsComponent} from "./components/step-group-mappings/step-group-mappings.component";
+import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],

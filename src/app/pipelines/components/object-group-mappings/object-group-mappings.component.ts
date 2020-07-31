@@ -10,9 +10,9 @@ export interface PipelineMappingsData {
   typeAhead: string[];
 }
 @Component({
-  selector: 'step-group-mappings-modal',
-  templateUrl: './step-group-mappings.component.html',
-  styleUrls: ['./step-group=mappings.component.scss']
+  selector: 'object-group-mappings-modal',
+  templateUrl: './object-group-mappings.component.html',
+  styleUrls: ['./object-group-mappings.component.scss']
 })
 export class ObjectMappingsComponent {
   params: PipelineStepParam[];

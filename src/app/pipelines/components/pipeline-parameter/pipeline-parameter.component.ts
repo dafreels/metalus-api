@@ -9,7 +9,7 @@ import {generalDialogDimensions,} from 'src/app/shared/models/custom-dialog.mode
 import {BehaviorSubject} from 'rxjs';
 import {MatSelect} from '@angular/material';
 import {FormControl} from '@angular/forms';
-import {ObjectMappingsComponent} from "../step-group-mappings/step-group-mappings.component";
+import {ObjectMappingsComponent} from "../object-group-mappings/object-group-mappings.component";
 
 export interface SplitParameter {
   id: number;
