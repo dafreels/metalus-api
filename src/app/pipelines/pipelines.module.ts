@@ -10,7 +10,7 @@ import { CodeEditorModule } from '../code-editor/code-editor.module';
 import { StepInformationComponent } from './components/step-information/step-information.component';
 import {CoreModule} from "../core/core.module";
 import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
-import {StepGroupMappingsComponent} from "./components/step-group-mappings/step-group-mappings.component";
+import {ObjectMappingsComponent} from "./components/step-group-mappings/step-group-mappings.component";
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],
@@ -20,13 +20,13 @@ import {StepGroupMappingsComponent} from "./components/step-group-mappings/step-
     PipelinesEditorComponent,
     PipelineParameterComponent,
     PipelinesSelectorModalComponent,
-    StepGroupMappingsComponent,
+    ObjectMappingsComponent,
     StepInformationComponent,
   ],
   entryComponents: [
     CustomBranchDialogComponent,
     PipelinesSelectorModalComponent,
-    StepGroupMappingsComponent
+    ObjectMappingsComponent
   ],
 })
 export class PipelinesModule {}

@@ -14,11 +14,11 @@ export interface PipelineMappingsData {
   templateUrl: './step-group-mappings.component.html',
   styleUrls: ['./step-group=mappings.component.scss']
 })
-export class StepGroupMappingsComponent {
+export class ObjectMappingsComponent {
   params: PipelineStepParam[];
   stepType = 'step-group';
   constructor(
-    public dialogRef: MatDialogRef<StepGroupMappingsComponent>,
+    public dialogRef: MatDialogRef<ObjectMappingsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData,
     public dialog: MatDialog,) {
     // Parse data into something that can be displayed
