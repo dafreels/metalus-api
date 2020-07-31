@@ -89,7 +89,6 @@ export class PipelineParameterComponent implements OnInit {
     if (stepParameter) {
       this.parameter = stepParameter;
       if(this.parameter.type == 'object'&& !this.parameter.className){
-      console.log("PipelineParameterComponent -> setstepParameters -> this.parameter.name", this.parameter.name);
         
       }
       this.parameterName = stepParameter.name;
@@ -321,8 +320,6 @@ export class PipelineParameterComponent implements OnInit {
 
   openEditor(id: number) {
     const inputData = this.parameters.find((p) => p.id === id);
-    console.log("PipelineParameterComponent -> openEditor -> this.parameter", this.parameter);
-    
 
     if (!this.stepGroup.enabled) {
       switch (this.parameterType) {
@@ -374,7 +371,6 @@ export class PipelineParameterComponent implements OnInit {
           break;
       }
     } else if (this.stepGroup && this.parameter.name === 'pipelineMappings') {
-      console.log("PipelineParameterComponent -> openEditor -> this.parameter", this.parameter)
       let mappings = this.parameter.value || {};
       if (this.stepGroup.pipeline) {
         const pipelineMappings = SharedFunctions.generatePipelineMappings(this.stepGroup.pipeline);
@@ -396,12 +392,7 @@ export class PipelineParameterComponent implements OnInit {
         }
       });
     }  else if (this.parameter.type === 'object' && !this.parameter.className) {
-      console.log("PipelineParameterComponent -> openEditor -> this.parameter", this.parameter)
       let mappings = this.parameter.value || {};
-      // if (this.stepGroup.pipeline) {
-      //   const pipelineMappings = SharedFunctions.generatePipelineMappings(this.stepGroup.pipeline);
-      //   mappings = Object.assign({}, pipelineMappings, mappings);
-      // }
       const propertiesDialogResponse = this.displayDialogService.openDialog(
         StepGroupMappingsComponent,
         generalDialogDimensions,
