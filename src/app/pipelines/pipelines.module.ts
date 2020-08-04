@@ -11,9 +11,9 @@ import { StepInformationComponent } from './components/step-information/step-inf
 import {CoreModule} from "../core/core.module";
 import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
 import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
-
+import { NgJsonEditorModule } from 'ang-jsoneditor' 
 @NgModule({
-  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],
+  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
   exports: [StepInformationComponent],
   declarations: [
     CustomBranchDialogComponent,
