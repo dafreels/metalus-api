@@ -407,5 +407,4 @@ export class PipelineParameterComponent implements OnInit {
       });
     }
   }
-  
 }

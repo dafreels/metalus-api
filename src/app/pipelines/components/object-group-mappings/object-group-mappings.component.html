@@ -1,20 +1,20 @@
-<!-- <json-editor  [(record)]="params"></json-editor> -->
-<json-editor [options]="editorOptions" [data]="params" (change)="getData($event)"></json-editor>
-<!-- <div>
-  <mat-accordion>
-    <app-pipelines-parameter
-      *ngFor="let param of params"
-      [isABranchStep]="false"
-      [stepType]="stepType"
-      [stepParameters]="param"
-      [packageObjects]="data.packageObjects"
-      [stepSuggestions]="data.typeAhead"
-      [pipelines]="[]"
-      [pipelinesData]="[]"></app-pipelines-parameter>
-  </mat-accordion>
-</div> -->
-<!-- <span>
-  <button mat-raised-button color="primary" (click)="addParameter()" style="margin-right: 5px">Add Parameter</button>
-  <button mat-raised-button color="primary" (click)="saveDialog()" style="margin-right: 5px">Save</button>
-</span> -->
-<button mat-raised-button color="primary" (click)="cancelDialog()">Cancel</button>
+<mat-dialog-content>
+  <json-editor
+    [options]="editorOptions"
+    [data]="data.mappings"
+    (change)="getData($event)"
+  ></json-editor>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="saveDialog()"
+    style="margin-right: 5px;"
+  >
+    Save
+  </button>
+  <button mat-raised-button color="primary" (click)="cancelDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

@@ -19,15 +19,14 @@ export class ObjectMappingsComponent {
   params: PipelineStepParam[];
   stepType = 'step-group';
   public editorOptions: JsonEditorOptions;
-  @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
+  jsonData: any;
  
   constructor(
     public dialogRef: MatDialogRef<ObjectMappingsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData,
     public dialog: MatDialog,) {
-    // Parse data into something that can be displayed
     this.editorOptions = new JsonEditorOptions()
-    this.editorOptions.modes = ['code', 'text', 'tree', 'view'];
+    this.editorOptions.modes = ['code', 'tree'];
     const paramList = [];
     Object.keys(data.mappings).forEach(key => {
       paramList.push({
@@ -45,12 +44,7 @@ export class ObjectMappingsComponent {
   }
 
   saveDialog() {
-    // Convert this.params back into an object
-    const data = {};
-    this.params.forEach(param => {
-      data[param.name] = param.value;
-    });
-    this.dialogRef.close(data);
+    this.dialogRef.close(this.jsonData);
   }
 
   cancelDialog() {
@@ -77,7 +71,7 @@ export class ObjectMappingsComponent {
       }
     });
   }
-  getData(jsonEvent) {
-    console.log("ObjectMappingsComponent -> getData -> jsonEvent", jsonEvent)
+  getData(jsonData) {
+    this.jsonData = jsonData;
   }
 }
