@@ -1,9 +1,9 @@
-import {Component, Inject, ViewChild} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {PipelineStepParam} from "../../models/pipelines.model";
 import {NameDialogComponent} from "../../../shared/components/name-dialog/name-dialog.component";
 import {PackageObject} from "../../../core/package-objects/package-objects.model";
-import { JsonEditorOptions, JsonEditorComponent } from 'ang-jsoneditor';
+import {JsonEditorOptions} from 'ang-jsoneditor';
 
 export interface PipelineMappingsData {
   packageObjects: PackageObject[];
@@ -20,7 +20,7 @@ export class ObjectMappingsComponent {
   stepType = 'step-group';
   public editorOptions: JsonEditorOptions;
   jsonData: any;
- 
+
   constructor(
     public dialogRef: MatDialogRef<ObjectMappingsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData,

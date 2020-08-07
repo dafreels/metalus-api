@@ -107,7 +107,14 @@ export class SharedFunctions {
             values = value.split('||').map((s) => s.trim());
             values.forEach((v) => {
               if (v.indexOf('!') === 0) {
-                globals[v.replace(/[!{}]/g, '')] = '';
+                let global = v.replace(/[!{}]/g, '');
+                const dotIndex = global.indexOf('.');
+                if (dotIndex > -1) {
+                  global = global.substring(0, dotIndex);
+                }
+                if (!globals[global]) {
+                  globals[global] = '';
+                }
               }
             });
           }
