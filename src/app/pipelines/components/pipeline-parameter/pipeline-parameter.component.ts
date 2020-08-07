@@ -9,7 +9,7 @@ import {generalDialogDimensions,} from 'src/app/shared/models/custom-dialog.mode
 import {BehaviorSubject} from 'rxjs';
 import {MatSelect} from '@angular/material';
 import {FormControl} from '@angular/forms';
-import {StepGroupMappingsComponent} from "../step-group-mappings/step-group-mappings.component";
+import {ObjectMappingsComponent} from "../object-group-mappings/object-group-mappings.component";
 
 export interface SplitParameter {
   id: number;
@@ -374,7 +374,24 @@ export class PipelineParameterComponent implements OnInit {
         mappings = Object.assign({}, pipelineMappings, mappings);
       }
       const propertiesDialogResponse = this.displayDialogService.openDialog(
-        StepGroupMappingsComponent,
+        ObjectMappingsComponent,
+        generalDialogDimensions,
+        {
+          mappings,
+          typeAhead: this.stepSuggestions,
+          packageObjects: this.packageObjects
+        }
+      );
+      propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    }  else if (this.parameter.type === 'object' && !this.parameter.className) {
+      let mappings = this.parameter.value || {};
+      const propertiesDialogResponse = this.displayDialogService.openDialog(
+        ObjectMappingsComponent,
         generalDialogDimensions,
         {
           mappings,

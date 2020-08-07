@@ -1,0 +1,20 @@
+<mat-dialog-content>
+  <json-editor
+    [options]="editorOptions"
+    [data]="data.mappings"
+    (change)="getData($event)"
+  ></json-editor>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="saveDialog()"
+    style="margin-right: 5px;"
+  >
+    Save
+  </button>
+  <button mat-raised-button color="primary" (click)="cancelDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

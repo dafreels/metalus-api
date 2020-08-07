@@ -10,23 +10,23 @@ import { CodeEditorModule } from '../code-editor/code-editor.module';
 import { StepInformationComponent } from './components/step-information/step-information.component';
 import {CoreModule} from "../core/core.module";
 import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
-import {StepGroupMappingsComponent} from "./components/step-group-mappings/step-group-mappings.component";
-
+import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
+import { NgJsonEditorModule } from 'ang-jsoneditor' 
 @NgModule({
-  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule],
+  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
   exports: [StepInformationComponent],
   declarations: [
     CustomBranchDialogComponent,
     PipelinesEditorComponent,
     PipelineParameterComponent,
     PipelinesSelectorModalComponent,
-    StepGroupMappingsComponent,
+    ObjectMappingsComponent,
     StepInformationComponent,
   ],
   entryComponents: [
     CustomBranchDialogComponent,
     PipelinesSelectorModalComponent,
-    StepGroupMappingsComponent
+    ObjectMappingsComponent
   ],
 })
 export class PipelinesModule {}

@@ -1,5 +1,6 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import '~@angular/material/theming';
+@import "~jsoneditor/dist/jsoneditor.min.css";
 @include mat-core();
 // Define a theme.
 $primary: mat-palette($mat-deep-purple);
