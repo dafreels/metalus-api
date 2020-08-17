@@ -11,7 +11,10 @@ import { StepInformationComponent } from './components/step-information/step-inf
 import {CoreModule} from "../core/core.module";
 import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
 import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
-import { NgJsonEditorModule } from 'ang-jsoneditor' 
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { TreeEditorComponent } from './components/tree-editor/tree-editor.component' 
+import { TreeEditorPopupComponent } from './components/tree-editor/tree-editor-popup.component';
+import { TreeonloadDirective } from './components/tree-editor/treeonload.directive';
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
   exports: [StepInformationComponent],
@@ -22,11 +25,16 @@ import { NgJsonEditorModule } from 'ang-jsoneditor'
     PipelinesSelectorModalComponent,
     ObjectMappingsComponent,
     StepInformationComponent,
+    TreeEditorComponent,
+    TreeEditorPopupComponent,
+    TreeonloadDirective
   ],
   entryComponents: [
     CustomBranchDialogComponent,
     PipelinesSelectorModalComponent,
-    ObjectMappingsComponent
+    ObjectMappingsComponent,
+    TreeEditorComponent,
+    TreeEditorPopupComponent
   ],
 })
 export class PipelinesModule {}

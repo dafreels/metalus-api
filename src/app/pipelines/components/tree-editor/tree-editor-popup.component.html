@@ -1,0 +1,42 @@
+<h1 mat-dialog-title>{{ data.title }}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <label>Key</label>
+    <input
+      [disabled]="updateMode"
+      matInput
+      type="text"
+      [(ngModel)]="output.key"
+    />
+  </mat-form-field>
+  <ng-container *ngIf="canShowValue">
+    <ng-container [ngSwitch]="data.type">
+      <mat-checkbox *ngSwitchCase="'boolean'" [(ngModel)]="output.value">
+        {{ output.value }}
+      </mat-checkbox>
+      <mat-form-field *ngSwitchCase="'number'">
+        <mat-label>Value</mat-label>
+        <input matInput type="number" [(ngModel)]="output.value" />
+      </mat-form-field>
+      <mat-form-field **ngSwitchDefault>
+        <mat-label>Value</mat-label>
+        <input matInput type="text" [(ngModel)]="output.value" />
+      </mat-form-field>
+    </ng-container>
+    <mat-form-field *ngIf="data.type == undefined">
+      <mat-label>Value</mat-label>
+      <input matInput type="text" [(ngModel)]="output.value" />
+    </mat-form-field>
+  </ng-container>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [mat-dialog-close]="output"
+    cdkFocusInitial
+  >
+    OK
+  </button>
+</div>

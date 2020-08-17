@@ -43,6 +43,7 @@
     "jsoneditor": "^9.0.3",
     "jsplumb": "^2.12.8",
     "kraken-js": "^2.2.0",
+    "lodash": "^4.17.19",
     "lodash-es": "^4.17.15",
     "mingo": "^2.4.0",
     "mongodb": "^3.5.2",

@@ -15,6 +15,7 @@ import { ObjectEditorComponent } from './components/object-editor/object-editor.
 import { CloseDialogButtonComponent } from './components/close-dialog-button/close-dialog-button.component';
 import { MatSelectSearchComponent } from './components/mat-select-search/mat-select-search.component';
 import {PasswordDialogComponent} from "./components/password-dialog/password-dialog.component";
+import {MatTreeModule} from '@angular/material/tree';
 
 const commonModules = [
   FormsModule,
@@ -23,6 +24,7 @@ const commonModules = [
   RouterModule,
   DndModule,
   MaterialDesignFrameworkModule,
+  MatTreeModule
 ];
 
 @NgModule({
