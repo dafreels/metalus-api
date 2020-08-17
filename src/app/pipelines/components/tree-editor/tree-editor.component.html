@@ -28,6 +28,12 @@
           </button>
         </span>
       </ng-container>
+      <mat-checkbox
+        class="checklist-leaf-node"
+        [checked]="checklistSelection.isSelected(node)"
+        (change)="todoLeafItemSelectionToggle(node)"
+        >{{ node.item }}
+      </mat-checkbox>
     </mat-tree-node>
 
     <mat-tree-node
