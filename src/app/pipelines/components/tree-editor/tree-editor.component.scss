@@ -1,13 +1,22 @@
 mat-tree {
-    // background-color: #c2c2c2;
     border: 2px solid #673ab7;
-    // background-color: white;
     margin-bottom: 1rem;
     b.key {
         font-weight: 500;
         padding-right: 1rem;
     }
     span.length, span.value {
-        color:gray
+        color:gray;
     }
 }
+mat-tree-node {
+    .action {
+        visibility: hidden;
+      }
+      &:hover {
+        .action {
+          visibility: visible;
+        }
+      }
+    }
+    

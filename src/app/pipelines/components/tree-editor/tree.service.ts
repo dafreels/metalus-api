@@ -1,146 +1,133 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-
-/**
- * Node for to-do item
- */
-export class TodoItemNode {
-  children: TodoItemNode[];
+export interface IItemTypes {
+  name:string;
+  displayName:string
+}
+ export class TreeItemNode {
+  children: TreeItemNode[];
   item: string;
   type: string;
   path: string;
-  value: string|number|boolean;
+  value: string | number | boolean;
   length: number;
 }
 
-/** Flat to-do item node with expandable and level information */
-export class TodoItemFlatNode {
-  children: TodoItemFlatNode[];
+export class TreeItemFlatNode {
+  children: TreeItemFlatNode[];
   item: string;
   level: number;
   expandable: boolean;
   path: string;
-  type: string
-  value: string|number|boolean;
+  type: string;
+  value: string | number | boolean;
   length: number;
 }
-
-/**
- * The Json object for to-do list data.
- */
-const TREE_DATA = {
-  Groceries: {
-    'Test': true,
-    'TestFalse': false,
-    'Almond Meal flour': null,
-    'Organic eggs': null,
-    'Protein Powder': null,
-    'Fruits': {
-      Apple: null,
-      Berries: ['Blueberry', 'Raspberry'],
-      Orange: null,
-    },
-    'Avalable': false
-  },
-  Reminders: [
-    'Cook dinner',
-    'Read the Material Design spec',
-    'Upgrade Application to Angular',
-  ],
-};
-
-/**
- * Checklist database, it can build a tree structured Json object.
- * Each node in Json object represents a to-do item or a category.
- * If a node is a category, it has children items and new items can be added under the category.
- */
 @Injectable()
 export class ChecklistDatabase {
-  dataChange = new BehaviorSubject<TodoItemNode[]>([]);
+  dataChange = new BehaviorSubject<TreeItemNode[]>([]);
   rawData: any;
-  get data(): TodoItemNode[] {
+  get data(): TreeItemNode[] {
     return this.dataChange.value;
   }
 
   constructor() {
-    this.initialize(TREE_DATA);
   }
 
   initialize(rawData) {
-    // Build the tree nodes from Json object. The result is a list of `TodoItemNode` with nested
-    //     file node as children.
     this.rawData = rawData;
     const data = this.buildFileTree(rawData, 0);
-    // Notify the change.
     this.dataChange.next(data);
-    // console.log('ChecklistDatabase -> initialize -> data', data);
   }
 
-  /**
-   * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
-   * The return value is the list of `TodoItemNode`.
-   */
+  getRootTree() {
+      let node = new TreeItemNode();
+      if (Array.isArray(this.rawData)) {
+        node.type = 'array';
+        node.length = 0;
+        node.path = '[0]';
+      } else {
+        node.type = 'object';
+        node.length = 0;
+        node.path = '';
+      }
+      return node;
+  }
+  
   buildFileTree(
     obj: { [key: string]: any },
     level: number,
     path: string = ''
-  ): TodoItemNode[] {
-    return Object.keys(obj).reduce<TodoItemNode[]>((accumulator, key) => {
-      const value = obj[key];
-      const node = new TodoItemNode();
-      node.path = `${path}[${key}]`;
-      node.item = key;
+  ): TreeItemNode[] {
+    return Object.keys(obj).reduce<TreeItemNode[]>(
+      (accumulator, key) => {
+        const value = obj[key];
+        const node = new TreeItemNode();
+        node.path = `${path}[${key}]`;
+        node.item = key;
 
-      if (value != null) {
-        if (typeof value === 'object') {
-          node.children = this.buildFileTree(value, level + 1, node.path);
-          if(Array.isArray(value)) {
-            node.type = 'array';
-            node.length = value.length;
+        if (value != null) {
+          if (typeof value === 'object') {
+            node.children = this.buildFileTree(value, level + 1, node.path);
+            if (Array.isArray(value)) {
+              node.type = 'array';
+              node.length = value.length;
+            } else {
+              node.type = 'object';
+              node.length = Object.keys(value).length;
+            }
           } else {
-            node.type = 'object';
-            node.length = Object.keys(value).length
+            node.value = value;
+            node.type = typeof value;
           }
-        } else {
-          node.value = value
-          // node.item = value;
-          node.type = typeof value;
         }
-      }
 
-      return accumulator.concat(node);
-    }, []);
+        return accumulator.concat(node);
+      },[]);
   }
 
-  /** Add an item to to-do list */
-  insertItem(parent: TodoItemNode, name: string) {
+  insertItem(parent: TreeItemNode, name: string) {
     if (parent.children) {
-      parent.children.push({ item: name } as TodoItemNode);
+      parent.children.push({ item: name } as TreeItemNode);
       this.dataChange.next(this.data);
     }
   }
   insertPath(path: string, type: string, value: string, objKey = '') {
     let item = _.get(this.rawData, path);
-    
-    if(Array.isArray(item)) {
+    if (item) {
+      if (Array.isArray(item)) {
         item.push(value);
+      } else if (typeof item === 'object') {
+        item[objKey] = value;
+      }
+      this.rawData = _.set(this.rawData, path, item);
+    } else {
+      if (Array.isArray(this.rawData)) {
+        this.rawData.push(value);
+      } else if (typeof this.rawData === 'object') {
+        this.rawData[objKey] = value;
+      }
     }
-    else if(typeof item === 'object') {
-        item[objKey] = value
-    }
-    this.rawData = _.set(this.rawData, path, item);
     this.initialize(this.rawData);
-    console.log(
-      'insertPath -> _.get(this.rawData, path)',
-      _.get(this.rawData, path)
-    );
   }
-  types = [{ name: 'array' }, { name: 'object' }, { name: 'boolean' }, { name: 'string' }, { name: 'number' }];
-  insertArray(parent: TodoItemNode, name: string, type: string) {
+  types: IItemTypes[] = [
+    { displayName: 'Array', name: 'array' },
+    { displayName: 'Object', name: 'object' },
+    { displayName: 'Boolean', name: 'boolean' },
+    { displayName: 'String', name: 'string' },
+    { displayName: 'Number', name: 'number' },
+    { displayName: 'Pipeline', name: 'pipeline' },
+    { displayName: 'Golbal', name: 'global' },
+    { displayName: 'Runtime', name: 'runtime' },
+    { displayName: 'Mapped Runtime', name: 'mapped_runtime' },
+    { displayName: 'Step', name: 'step' },
+    { displayName: 'Secondary', name: 'secondary' },
+  ];
+  insertArray(parent: TreeItemNode, name: string, type: string) {
     switch (type) {
       case 'array':
-        parent.children.push(this.buildFileTree([], 1)[0] as TodoItemNode);
+        parent.children.push(this.buildFileTree([], 1)[0] as TreeItemNode);
         break;
     }
   }
@@ -148,7 +135,14 @@ export class ChecklistDatabase {
     this.rawData = _.set(this.rawData, path, value);
     this.initialize(this.rawData);
   }
-  updateItem(node: TodoItemNode, name: string) {
+
+  deleteItem(node: TreeItemFlatNode) {
+    // this.rawData =
+    _.unset(this.rawData, node.path);
+    this.initialize(this.rawData);
+  }
+
+  updateItem(node: TreeItemNode, name: string) {
     node.item = name;
     this.dataChange.next(this.data);
   }

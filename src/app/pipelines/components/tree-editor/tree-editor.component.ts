@@ -9,8 +9,9 @@ import {
 import { BehaviorSubject } from 'rxjs';
 import {
   ChecklistDatabase,
-  TodoItemFlatNode,
-  TodoItemNode,
+  TreeItemFlatNode,
+  TreeItemNode,
+  IItemTypes,
 } from './tree.service';
 import {
   MatDialogRef,
@@ -19,6 +20,8 @@ import {
 } from '@angular/material/dialog';
 import { PipelineMappingsData } from '../object-group-mappings/object-group-mappings.component';
 import { TreeEditorPopupComponent } from './tree-editor-popup.component';
+import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
+import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
 
 @Component({
   selector: 'app-tree-editor',
@@ -27,32 +30,25 @@ import { TreeEditorPopupComponent } from './tree-editor-popup.component';
   providers: [ChecklistDatabase],
 })
 export class TreeEditorComponent implements OnInit {
-  types = this._database.types; //[{ name: 'Array' }, { name: 'Object' }, { name: 'Boolean' }];
-  /** Map from flat node to nested node. This helps us finding the nested node to be modified */
-  flatNodeMap = new Map<TodoItemFlatNode, TodoItemNode>();
+  types = this._database.types; 
+  flatNodeMap = new Map<TreeItemFlatNode, TreeItemNode>();
 
-  /** Map from nested node to flattened node. This helps us to keep the same object for selection */
-  nestedNodeMap = new Map<TodoItemNode, TodoItemFlatNode>();
+  nestedNodeMap = new Map<TreeItemNode, TreeItemFlatNode>();
 
-  /** A selected parent node to be inserted */
-  selectedParent: TodoItemFlatNode | null = null;
+  selectedParent: TreeItemFlatNode | null = null;
 
-  /** The new item's name */
   newItemName = '';
 
-  treeControl: FlatTreeControl<TodoItemFlatNode>;
+  treeControl: FlatTreeControl<TreeItemFlatNode>;
 
-  treeFlattener: MatTreeFlattener<TodoItemNode, TodoItemFlatNode>;
+  treeFlattener: MatTreeFlattener<TreeItemNode, TreeItemFlatNode>;
 
-  dataSource: MatTreeFlatDataSource<TodoItemNode, TodoItemFlatNode>;
-  // dataSource: MatTreeFlatDataSource<any, any>;
+  dataSource: MatTreeFlatDataSource<TreeItemNode, TreeItemFlatNode>;
 
-  /** The selection for checklist */
-  checklistSelection = new SelectionModel<TodoItemFlatNode>(
+  checklistSelection = new SelectionModel<TreeItemFlatNode>(
     true /* multiple */
   );
   jsonData: any;
-  // data: any; //temporary
   selectedpath: string;
   constructor(
     private _database: ChecklistDatabase,
@@ -67,7 +63,7 @@ export class TreeEditorComponent implements OnInit {
       this.isExpandable,
       this.getChildren
     );
-    this.treeControl = new FlatTreeControl<TodoItemFlatNode>(
+    this.treeControl = new FlatTreeControl<TreeItemFlatNode>(
       this.getLevel,
       this.isExpandable
     );
@@ -81,41 +77,27 @@ export class TreeEditorComponent implements OnInit {
     });
   }
   ngOnInit() {
-    // this.dataSource.data = this.data.mappings;
-    // console.log('TreeEditorComponent -> ngOnInit -> this.data', this.data);
-    // this._database.initialize(this.data);
-    return;
-    if (
-      typeof this.data.mappings === 'object' &&
-      Object.keys(this.data.mappings).length
-    ) {
-      this._database.initialize(this.data);
-    } else {
-      this._database.initialize([{ name: 'Suresh' }]);
-    }
+    this._database.initialize({mappings: this.data.mappings});
   }
 
-  getLevel = (node: TodoItemFlatNode) => node.level;
+  getLevel = (node: TreeItemFlatNode) => node.level;
 
-  isExpandable = (node: TodoItemFlatNode) => node.expandable;
+  isExpandable = (node: TreeItemFlatNode) => node.expandable;
 
-  getChildren = (node: TodoItemNode): TodoItemNode[] => node.children;
+  getChildren = (node: TreeItemNode): TreeItemNode[] => node.children;
 
-  hasChild = (_: number, _nodeData: TodoItemFlatNode) =>
+  hasChild = (_: number, _nodeData: TreeItemFlatNode) =>
     ['array', 'object'].indexOf(_nodeData.type) >= 0; //_nodeData.expandable;
 
-  hasNoContent = (_: number, _nodeData: TodoItemFlatNode) =>
+  hasNoContent = (_: number, _nodeData: TreeItemFlatNode) =>
     _nodeData.item === '';
 
-  /**
-   * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
-   */
-  transformer = (node: TodoItemNode, level: number) => {
+  transformer = (node: TreeItemNode, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
     const flatNode =
       existingNode && existingNode.item === node.item
         ? existingNode
-        : new TodoItemFlatNode();
+        : new TreeItemFlatNode();
     flatNode.item = node.item;
     flatNode.value = node.value;
     flatNode.length = node.length;
@@ -128,8 +110,7 @@ export class TreeEditorComponent implements OnInit {
     return flatNode;
   };
 
-  /** Whether all the descendants of the node are selected. */
-  descendantsAllSelected(node: TodoItemFlatNode): boolean {
+  descendantsAllSelected(node: TreeItemFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =
       descendants.length > 0 &&
@@ -139,8 +120,7 @@ export class TreeEditorComponent implements OnInit {
     return descAllSelected;
   }
 
-  /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: TodoItemFlatNode): boolean {
+  descendantsPartiallySelected(node: TreeItemFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const result = descendants.some((child) =>
       this.checklistSelection.isSelected(child)
@@ -148,36 +128,31 @@ export class TreeEditorComponent implements OnInit {
     return result && !this.descendantsAllSelected(node);
   }
 
-  /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  todoItemSelectionToggle(node: TodoItemFlatNode): void {
+  todoItemSelectionToggle(node: TreeItemFlatNode): void {
     this.checklistSelection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.checklistSelection.isSelected(node)
       ? this.checklistSelection.select(...descendants)
       : this.checklistSelection.deselect(...descendants);
 
-    // Force update for the parent
     descendants.forEach((child) => this.checklistSelection.isSelected(child));
     this.checkAllParentsSelection(node);
   }
 
-  /** Toggle a leaf to-do item selection. Check all the parents to see if they changed */
-  todoLeafItemSelectionToggle(node: TodoItemFlatNode): void {
+  todoLeafItemSelectionToggle(node: TreeItemFlatNode): void {
     this.checklistSelection.toggle(node);
     this.checkAllParentsSelection(node);
   }
 
-  /* Checks all the parents when a leaf node is selected/unselected */
-  checkAllParentsSelection(node: TodoItemFlatNode): void {
-    let parent: TodoItemFlatNode | null = this.getParentNode(node);
+  checkAllParentsSelection(node: TreeItemFlatNode): void {
+    let parent: TreeItemFlatNode | null = this.getParentNode(node);
     while (parent) {
       this.checkRootNodeSelection(parent);
       parent = this.getParentNode(parent);
     }
   }
 
-  /** Check root node checked state and change it accordingly */
-  checkRootNodeSelection(node: TodoItemFlatNode): void {
+  checkRootNodeSelection(node: TreeItemFlatNode): void {
     const nodeSelected = this.checklistSelection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =
@@ -192,8 +167,7 @@ export class TreeEditorComponent implements OnInit {
     }
   }
 
-  /* Get the parent node of a node */
-  getParentNode(node: TodoItemFlatNode): TodoItemFlatNode | null {
+  getParentNode(node: TreeItemFlatNode): TreeItemFlatNode | null {
     const currentLevel = this.getLevel(node);
 
     if (currentLevel < 1) {
@@ -212,75 +186,74 @@ export class TreeEditorComponent implements OnInit {
     return null;
   }
 
-  /** Select the category so we can insert the new item. */
-  // addNewItem(node: TodoItemFlatNode) {
-  //   const parentNode = this.flatNodeMap.get(node);
-  //   this._database.insertItem(parentNode!, '');
-  //   this.treeControl.expand(node);
-  // }
+  addNewItemDefault(node: TreeItemFlatNode) {
+    const parentNode = this.flatNodeMap.get(node);
+    this._database.insertItem(parentNode!, '');
+    this.treeControl.expand(node);
+  }
 
-  addNewItem(node: TodoItemFlatNode, type: string, value: any = '') {
-    console.log(
-      'TreeEditorComponent -> addNewItem -> this.treeControl',
-      this.treeControl
-    );
-    if (node.type == 'array' && ['array', 'object'].indexOf(type) >= 0) {
-      if (type == 'array') {
+  addNewItem(node: TreeItemFlatNode, addType: IItemTypes, value: any = '') {
+    if (node.type == 'array' && ['array', 'object'].indexOf(addType.name) >= 0) {
+      if (addType.name == 'array') {
         value = [];
-      } else if (type == 'object') {
+      } else if (addType.name == 'object') {
         value = {};
       }
       this.selectedpath = node.path;
-      this._database.insertPath(node.path, type, value);
+      this._database.insertPath(node.path, addType.name, value);
       this.treeControl.expand(node);
       return;
     }
     const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
       width: '550px',
-      data: { title: type, type: type, parentType: node.type },
+      data: { title: `Add (${addType.displayName})`, type: addType.name, parentType: node.type  },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this._database.insertPath(node.path, type, result.value, result.key);
+        this._database.insertPath(node.path, addType.name, SharedFunctions.formatValue(result.value, addType.name), result.key);
         this.selectedpath = node.path;
       }
     });
   }
-  updateNodeValue(node: TodoItemFlatNode, value) {
+  updateNodeValue(node: TreeItemFlatNode,value) {
     this.selectedpath = node.path;
     this._database.updatePath(node.path, value);
   }
-  editNode(node: TodoItemFlatNode) {
-    console.log('TreeEditorComponent -> editNode -> node', node);
+  editNode(node: TreeItemFlatNode) {
     const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
       width: '550px',
-      data: { title: 'Update', type: node.type, node: node },
+      data: { title: 'Update', type: SharedFunctions.getType(node.item, node.type), node: node },
     });
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('TreeEditorComponent -> addNewItem -> result', result);
       this.selectedpath = node.path;
       if (result) {
-        this.updateNodeValue(node, result.value);
+        this.updateNodeValue( node,result.value);
       }
     });
   }
-  expandNode(node: TodoItemFlatNode) {
-    console.log('TreeEditorComponent -> expandNode -> node', node);
+  
+  deleteNode(node:TreeItemFlatNode) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '550px',
+      data: { message: `Would you like to delete ${node.item} ?` },
+    });
+    dialogRef.afterClosed().subscribe((confirmation) => {
+      if(confirmation){
+        this._database.deleteItem(node);
+      }
+    });
+  }
+  expandNode(node: TreeItemFlatNode) {
     if (this.selectedpath && this.selectedpath.indexOf(node.path) > -1) {
       this.treeControl.expand(node);
     }
   }
-  /** Save the node to database */
-  saveNode(node: TodoItemFlatNode, itemValue: string) {
-    const nestedNode = this.flatNodeMap.get(node);
-    this._database.updateItem(nestedNode!, itemValue);
-  }
+ 
   saveDialog() {
-    console.log("TreeEditorComponent -> saveDialog -> this._database.rawData", this._database.rawData)
-    // this.dialogRef.close(this.jsonData);
+    this.dialogRef.close(this._database.rawData.mappings);
   }
 
   cancelDialog() {
-    // this.dialogRef.close();
+    this.dialogRef.close();
   }
 }
