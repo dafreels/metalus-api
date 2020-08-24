@@ -10,6 +10,7 @@ import {BehaviorSubject} from 'rxjs';
 import {MatSelect} from '@angular/material';
 import {FormControl} from '@angular/forms';
 import {ObjectMappingsComponent} from "../object-group-mappings/object-group-mappings.component";
+import { TreeEditorComponent } from '../tree-editor/tree-editor.component';
 
 export interface SplitParameter {
   id: number;
@@ -374,7 +375,8 @@ export class PipelineParameterComponent implements OnInit {
         mappings = Object.assign({}, pipelineMappings, mappings);
       }
       const propertiesDialogResponse = this.displayDialogService.openDialog(
-        ObjectMappingsComponent,
+        // ObjectMappingsComponent,
+        TreeEditorComponent,
         generalDialogDimensions,
         {
           mappings,
