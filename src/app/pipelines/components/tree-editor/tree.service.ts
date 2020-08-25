@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-export interface IItemTypes {
+export interface IItemType {
   name:string;
-  displayName:string
+  displayName:string;
+  canHaveChild: boolean;
 }
  export class TreeItemNode {
   children: TreeItemNode[];
@@ -25,7 +26,7 @@ export class TreeItemFlatNode {
   length: number;
 }
 @Injectable()
-export class ChecklistDatabase {
+export class TreeDatabase {
   dataChange = new BehaviorSubject<TreeItemNode[]>([]);
   rawData: any;
   get data(): TreeItemNode[] {
@@ -111,18 +112,19 @@ export class ChecklistDatabase {
     }
     this.initialize(this.rawData);
   }
-  types: IItemTypes[] = [
-    { displayName: 'Array', name: 'array' },
-    { displayName: 'Object', name: 'object' },
-    { displayName: 'Boolean', name: 'boolean' },
-    { displayName: 'String', name: 'string' },
-    { displayName: 'Number', name: 'number' },
-    { displayName: 'Pipeline', name: 'pipeline' },
-    { displayName: 'Golbal', name: 'global' },
-    { displayName: 'Runtime', name: 'runtime' },
-    { displayName: 'Mapped Runtime', name: 'mapped_runtime' },
-    { displayName: 'Step', name: 'step' },
-    { displayName: 'Secondary', name: 'secondary' },
+  types: IItemType[] = [
+    { displayName: 'Array', name: 'array', canHaveChild: true },
+    { displayName: 'Object', name: 'object' , canHaveChild: true},
+    { displayName: 'Boolean', name: 'boolean' , canHaveChild: false},
+    { displayName: 'String', name: 'string' , canHaveChild: false},
+    { displayName: 'Number', name: 'number' , canHaveChild: false},
+    { displayName: 'Pipeline', name: 'pipeline' , canHaveChild: false},
+    { displayName: 'Golbal', name: 'global' , canHaveChild: false},
+    { displayName: 'Runtime', name: 'runtime' , canHaveChild: false},
+    { displayName: 'Mapped Runtime', name: 'mapped_runtime' , canHaveChild: false},
+    { displayName: 'Step', name: 'step' , canHaveChild: false},
+    { displayName: 'Secondary', name: 'secondary' , canHaveChild: false},
+    { displayName: 'Complex', name: 'complex' , canHaveChild: false},
   ];
   insertArray(parent: TreeItemNode, name: string, type: string) {
     switch (type) {

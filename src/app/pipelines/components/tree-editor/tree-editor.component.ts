@@ -1,17 +1,16 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { Injectable } from '@angular/core';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
 } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
 import {
-  ChecklistDatabase,
+  TreeDatabase,
   TreeItemFlatNode,
   TreeItemNode,
-  IItemTypes,
+  IItemType,
 } from './tree.service';
 import {
   MatDialogRef,
@@ -27,7 +26,7 @@ import { ConfirmationModalComponent } from 'src/app/shared/components/confirmati
   selector: 'app-tree-editor',
   templateUrl: './tree-editor.component.html',
   styleUrls: ['./tree-editor.component.scss'],
-  providers: [ChecklistDatabase],
+  providers: [TreeDatabase],
 })
 export class TreeEditorComponent implements OnInit {
   types = this._database.types; 
@@ -51,7 +50,7 @@ export class TreeEditorComponent implements OnInit {
   jsonData: any;
   selectedpath: string;
   constructor(
-    private _database: ChecklistDatabase,
+    private _database: TreeDatabase,
     public dialogRef: MatDialogRef<TreeEditorComponent>,
     public dialog: MatDialog,
      @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData
@@ -192,7 +191,7 @@ export class TreeEditorComponent implements OnInit {
     this.treeControl.expand(node);
   }
 
-  addNewItem(node: TreeItemFlatNode, addType: IItemTypes, value: any = '') {
+  addNewItem(node: TreeItemFlatNode, addType: IItemType, value: any = '') {
     if (node.type == 'array' && ['array', 'object'].indexOf(addType.name) >= 0) {
       if (addType.name == 'array') {
         value = [];
