@@ -15,6 +15,7 @@ import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { TreeEditorComponent } from './components/tree-editor/tree-editor.component' 
 import { TreeEditorPopupComponent } from './components/tree-editor/tree-editor-popup.component';
 import { TreeonloadDirective } from './components/tree-editor/treeonload.directive';
+import { TypeFormatterPipe } from './components/tree-editor/type-formatter.pipe';
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
   exports: [StepInformationComponent],
@@ -27,7 +28,8 @@ import { TreeonloadDirective } from './components/tree-editor/treeonload.directi
     StepInformationComponent,
     TreeEditorComponent,
     TreeEditorPopupComponent,
-    TreeonloadDirective
+    TreeonloadDirective,
+    TypeFormatterPipe
   ],
   entryComponents: [
     CustomBranchDialogComponent,

@@ -1,5 +1,13 @@
 <h1 mat-dialog-title>{{ data.title }}</h1>
 <div mat-dialog-content>
+  <mat-form-field *ngIf="updateMode">
+    <mat-label>Type</mat-label>
+    <mat-select [(ngModel)]="data.type">
+      <mat-option *ngFor="let type of types" [value]="type.name">{{
+        type.displayName
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
   <mat-form-field>
     <label>Key</label>
     <input
@@ -18,8 +26,43 @@
         <mat-label>Value</mat-label>
         <input matInput type="number" [(ngModel)]="output.value" />
       </mat-form-field>
+      <ng-container *ngSwitchCase="'complex'">
+        <div class="complex-item" *ngFor="let item of complexItems">
+          <mat-form-field>
+            <mat-label>Type</mat-label>
+            <mat-select [(ngModel)]="item.type">
+              <mat-option *ngFor="let type of complexTypes" [value]="type.name">{{
+                type.displayName
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf="item.type != 'boolean'">
+            <mat-label>Value</mat-label>
+            <input
+              matInput
+              [type]="item.type"
+              [disabled]="!item.type"
+              [(ngModel)]="item.value"
+            />
+          </mat-form-field>
+          <mat-checkbox *ngIf="item.type == 'boolean'" [(ngModel)]="item.value">
+            {{ item.value }}
+          </mat-checkbox>
+          <button mat-icon-button color="warn" (click)="deleteComplexItem(item)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        <button
+          mat-button
+          mat-raised-button
+          color="primary"
+          (click)="addComplexItem()"
+        >
+          +
+        </button>
+      </ng-container>
       <mat-form-field *ngSwitchDefault>
-        <mat-icon *ngIf = "specialCharacter" matPrefix>{{ specialCharacter }}</mat-icon>
+        <!-- <mat-icon *ngIf = "specialCharacter" matPrefix>{{ specialCharacter }}</mat-icon> -->
         <mat-label>Value</mat-label>
         <input matInput type="text" [(ngModel)]="output.value" />
       </mat-form-field>
@@ -36,7 +79,7 @@
     color="primary"
     (click)="saveDialog()"
     cdkFocusInitial
-    >
+  >
     OK
   </button>
 </div>

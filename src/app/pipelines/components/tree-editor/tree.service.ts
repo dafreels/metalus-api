@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-export interface IItemTypes {
-  name:string;
-  displayName:string
+export interface IItemType {
+  name: string;
+  displayName: string;
+  canHaveChild: boolean;
 }
- export class TreeItemNode {
+export class TreeItemNode {
   children: TreeItemNode[];
   item: string;
   type: string;
@@ -25,15 +26,14 @@ export class TreeItemFlatNode {
   length: number;
 }
 @Injectable()
-export class ChecklistDatabase {
+export class TreeDatabase {
   dataChange = new BehaviorSubject<TreeItemNode[]>([]);
   rawData: any;
   get data(): TreeItemNode[] {
     return this.dataChange.value;
   }
 
-  constructor() {
-  }
+  constructor() {}
 
   initialize(rawData) {
     this.rawData = rawData;
@@ -42,49 +42,48 @@ export class ChecklistDatabase {
   }
 
   getRootTree() {
-      let node = new TreeItemNode();
-      if (Array.isArray(this.rawData)) {
-        node.type = 'array';
-        node.length = 0;
-        node.path = '[0]';
-      } else {
-        node.type = 'object';
-        node.length = 0;
-        node.path = '';
-      }
-      return node;
+    let node = new TreeItemNode();
+    if (Array.isArray(this.rawData)) {
+      node.type = 'array';
+      node.length = 0;
+      node.path = '[0]';
+    } else {
+      node.type = 'object';
+      node.length = 0;
+      node.path = '';
+    }
+    return node;
   }
-  
+
   buildFileTree(
     obj: { [key: string]: any },
     level: number,
     path: string = ''
   ): TreeItemNode[] {
-    return Object.keys(obj).reduce<TreeItemNode[]>(
-      (accumulator, key) => {
-        const value = obj[key];
-        const node = new TreeItemNode();
-        node.path = `${path}[${key}]`;
-        node.item = key;
+    return Object.keys(obj).reduce<TreeItemNode[]>((accumulator, key) => {
+      const value = obj[key];
+      const node = new TreeItemNode();
+      node.path = `${path}[${key}]`;
+      node.item = key;
 
-        if (value != null) {
-          if (typeof value === 'object') {
-            node.children = this.buildFileTree(value, level + 1, node.path);
-            if (Array.isArray(value)) {
-              node.type = 'array';
-              node.length = value.length;
-            } else {
-              node.type = 'object';
-              node.length = Object.keys(value).length;
-            }
+      if (value != null) {
+        if (typeof value === 'object') {
+          node.children = this.buildFileTree(value, level + 1, node.path);
+          if (Array.isArray(value)) {
+            node.type = 'array';
+            node.length = value.length;
           } else {
-            node.value = value;
-            node.type = typeof value;
+            node.type = 'object';
+            node.length = Object.keys(value).length;
           }
+        } else {
+          node.value = value;
+          node.type = typeof value;
         }
+      }
 
-        return accumulator.concat(node);
-      },[]);
+      return accumulator.concat(node);
+    }, []);
   }
 
   insertItem(parent: TreeItemNode, name: string) {
@@ -111,18 +110,23 @@ export class ChecklistDatabase {
     }
     this.initialize(this.rawData);
   }
-  types: IItemTypes[] = [
-    { displayName: 'Array', name: 'array' },
-    { displayName: 'Object', name: 'object' },
-    { displayName: 'Boolean', name: 'boolean' },
-    { displayName: 'String', name: 'string' },
-    { displayName: 'Number', name: 'number' },
-    { displayName: 'Pipeline', name: 'pipeline' },
-    { displayName: 'Golbal', name: 'global' },
-    { displayName: 'Runtime', name: 'runtime' },
-    { displayName: 'Mapped Runtime', name: 'mapped_runtime' },
-    { displayName: 'Step', name: 'step' },
-    { displayName: 'Secondary', name: 'secondary' },
+  types: IItemType[] = [
+    { displayName: 'Array', name: 'array', canHaveChild: true },
+    { displayName: 'Object', name: 'object', canHaveChild: true },
+    { displayName: 'Boolean', name: 'boolean', canHaveChild: false },
+    { displayName: 'String', name: 'string', canHaveChild: false },
+    { displayName: 'Number', name: 'number', canHaveChild: false },
+    { displayName: 'Pipeline', name: 'pipeline', canHaveChild: false },
+    { displayName: 'Golbal', name: 'global', canHaveChild: false },
+    { displayName: 'Runtime', name: 'runtime', canHaveChild: false },
+    {
+      displayName: 'Mapped Runtime',
+      name: 'mapped_runtime',
+      canHaveChild: false,
+    },
+    { displayName: 'Step', name: 'step', canHaveChild: false },
+    { displayName: 'Secondary', name: 'secondary', canHaveChild: false },
+    { displayName: 'Complex', name: 'complex', canHaveChild: false },
   ];
   insertArray(parent: TreeItemNode, name: string, type: string) {
     switch (type) {
@@ -137,8 +141,18 @@ export class ChecklistDatabase {
   }
 
   deleteItem(node: TreeItemFlatNode) {
-    // this.rawData =
-    _.unset(this.rawData, node.path);
+    const parentPath = node.path.slice(0, node.path.lastIndexOf('['));
+    let parent = _.get(this.rawData, parentPath);
+    if (Array.isArray(parent)) {
+      const indexToDelete = +node.path.slice(
+        node.path.lastIndexOf('[') + 1,
+        node.path.length - 1
+      );
+      parent = parent.filter((item, index) => index != indexToDelete);
+      _.set(this.rawData, parentPath, parent);
+    } else {
+      _.unset(this.rawData, node.path);
+    }
     this.initialize(this.rawData);
   }
 
