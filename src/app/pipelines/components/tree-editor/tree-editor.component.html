@@ -22,9 +22,9 @@
         </span>
       </mat-checkbox>
       <ng-container *ngIf="node.type != 'boolean'">
-        <b class="key">{{ node.item }}:</b>
+        <b class="key">{{ node.item }}: </b>
         <span class="value">
-          {{ node.value  }}
+          {{ node.value  }} 
           <!-- | typeFormatter -->
             <button class="action" mat-icon-button (click)="editNode(node)">
               <mat-icon>edit</mat-icon>

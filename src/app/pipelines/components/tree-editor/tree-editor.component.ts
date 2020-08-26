@@ -238,6 +238,7 @@ export class TreeEditorComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((confirmation) => {
       if(confirmation){
+        const parentNode = this.flatNodeMap.get(node);
         this._database.deleteItem(node);
       }
     });

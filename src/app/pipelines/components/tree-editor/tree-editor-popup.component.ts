@@ -14,24 +14,26 @@ import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
   providers: [TreeDatabase],
 })
 export class TreeEditorPopupComponent {
-  complexSeparator = " || ";
+  complexSeparator = ' || ';
   buildComplexItemArray(value: any) {
-    this.complexItems = this.output.value.split(this.complexSeparator).map(this.transformComplexItem);
+    this.complexItems = this.output.value
+      .split(this.complexSeparator)
+      .map(this.transformComplexItem);
   }
   transformComplexItem(value: any) {
     const type = SharedFunctions.getType(value, null);
     if (!type) {
       if (isNaN(value)) {
         if (['true', 'false'].indexOf(value) >= 0) {
-          return {type: 'boolean', value: value === 'true'};
+          return { type: 'boolean', value: value === 'true' };
         } else {
-          return {type: 'string', value: value};
+          return { type: 'string', value: value };
         }
       } else {
-        return {type:'number', value: +value};
+        return { type: 'number', value: +value };
       }
     }
-    return {type, value: value.slice(1)};
+    return { type, value: value.slice(1) };
   }
   output: {
     key: string;
@@ -44,7 +46,10 @@ export class TreeEditorPopupComponent {
   canShowValue: boolean;
   specialCharacter: string;
   types: IItemType[] = this._treeDb.types.filter((item) => !item.canHaveChild);
-  customType: any;
+  complexTypes: IItemType[] = this._treeDb.types.filter(
+    (item) => !item.canHaveChild && item.name != 'complex'
+  );
+  customType: boolean;
   complexItems: {
     value: any;
     type: string;
@@ -58,20 +63,20 @@ export class TreeEditorPopupComponent {
     this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
     if (this.data.node) {
       this.output.value = this.data.node.value;
-      if (this.output.value.indexOf('||') >= 0) {
+      if (isNaN(this.output.value) && this.output.value.indexOf('||') >= 0) {
         this.data.type = 'complex';
         this.buildComplexItemArray(this.output.value);
       } else {
-        this.customType =
-          SharedFunctions.getType(this.data.node.value, '') ||
-          typeof this.data.node.value;
-        if (this.customType != 'number') {
+        let cType = SharedFunctions.getType(this.data.node.value, null);
+        if (cType) {
           this.specialCharacter = this.data.node.value[0];
+          this.customType = true;
           this.output.value = this.output.value.slice(1);
         }
-        this.output.key = data.node.item;
-        this.updateMode = true;
+        this.data.type = cType || typeof this.data.node.value;
       }
+      this.output.key = data.node.item;
+      this.updateMode = true;
     } else {
       if (data.type === 'array') {
         this.output.value = [];
@@ -86,10 +91,11 @@ export class TreeEditorPopupComponent {
         (item) => SharedFunctions.getLeadCharacter(item.type) + item.value
       );
       this.output.value = transformedItems.join(this.complexSeparator);
+    } else {
+      this.output.value = this.customType
+        ? SharedFunctions.getLeadCharacter(this.data.type) + this.output.value
+        : this.output.value;
     }
-    this.output.value = this.customType
-      ? SharedFunctions.getLeadCharacter(this.customType) + this.output.value
-      : this.output.value;
     this.dialogRef.close(this.output);
   }
   get isComplex() {

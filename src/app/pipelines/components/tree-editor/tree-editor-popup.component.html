@@ -1,8 +1,8 @@
 <h1 mat-dialog-title>{{ data.title }}</h1>
 <div mat-dialog-content>
   <mat-form-field *ngIf="updateMode">
-    <mat-select [(ngModel)]="customType">
-      <mat-label>Type</mat-label>
+    <mat-label>Type</mat-label>
+    <mat-select [(ngModel)]="data.type">
       <mat-option *ngFor="let type of types" [value]="type.name">{{
         type.displayName
       }}</mat-option>
@@ -29,9 +29,9 @@
       <ng-container *ngSwitchCase="'complex'">
         <div class="complex-item" *ngFor="let item of complexItems">
           <mat-form-field>
+            <mat-label>Type</mat-label>
             <mat-select [(ngModel)]="item.type">
-              <mat-label>Type</mat-label>
-              <mat-option *ngFor="let type of types" [value]="type.name">{{
+              <mat-option *ngFor="let type of complexTypes" [value]="type.name">{{
                 type.displayName
               }}</mat-option>
             </mat-select>
