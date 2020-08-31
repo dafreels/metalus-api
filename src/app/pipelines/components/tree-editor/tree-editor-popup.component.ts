@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, Input, Output } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import {
   TreeItemNode,
@@ -7,16 +7,20 @@ import {
   IItemType,
 } from './tree.service';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
+interface IComplexItem {
+  value: any;
+  type: string;
+}
+
 @Component({
-  selector: 'tree-editor-popup.component',
+  selector: 'tree-editor-popup',
   templateUrl: './tree-editor-popup.component.html',
   styleUrls: ['./tree-editor-popup.component.scss'],
-  providers: [TreeDatabase],
 })
-export class TreeEditorPopupComponent {
+export class TreeEditorPopupComponent implements OnInit {
   complexSeparator = ' || ';
   buildComplexItemArray(value: any) {
-    this.complexItems = this.output.value
+    this.complexItems = this.valueGS
       .split(this.complexSeparator)
       .map(this.transformComplexItem);
   }
@@ -35,13 +39,7 @@ export class TreeEditorPopupComponent {
     }
     return { type, value: value.slice(1) };
   }
-  output: {
-    key: string;
-    value: any;
-  } = {
-    key: null,
-    value: null,
-  };
+  valueGS: any;
   updateMode: boolean;
   canShowValue: boolean;
   specialCharacter: string;
@@ -50,53 +48,82 @@ export class TreeEditorPopupComponent {
     (item) => !item.canHaveChild && item.name != 'complex'
   );
   customType: boolean;
-  complexItems: {
-    value: any;
-    type: string;
-  }[] = [{ value: null, type: null }];
+  complexItems: IComplexItem[] = [];
+  data: { title: string; type: string; node: TreeItemFlatNode };
+  @Input() set node(node) {
+    this.data = {
+      title: '',
+      type: SharedFunctions.getType(node.item, node.type),
+      node: node,
+    };
+  }
   constructor(
     public dialogRef: MatDialogRef<TreeEditorPopupComponent>,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { title: string; type: string; node: TreeItemFlatNode },
+    // @Inject(MAT_DIALOG_DATA)
+    // public data: { title: string; type: string; node: TreeItemFlatNode },
     private _treeDb: TreeDatabase
-  ) {
+  ) {}
+  ngOnInit(): void {
+    this.setUIFormat();
+  }
+  private setUIFormat() {
     this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
     if (this.data.node) {
-      this.output.value = this.data.node.value;
-      if (isNaN(this.output.value) && this.output.value.indexOf('||') >= 0) {
+      this.valueGS = this.data.node.value;
+      if (typeof this.valueGS == 'string' && this.valueGS.indexOf('||') >= 0) {
         this.data.type = 'complex';
-        this.buildComplexItemArray(this.output.value);
+        if(this.valueGS.length != this.complexSeparator.length) {
+          this.buildComplexItemArray(this.valueGS);
+        }
       } else {
         let cType = SharedFunctions.getType(this.data.node.value, null);
         if (cType) {
           this.specialCharacter = this.data.node.value[0];
           this.customType = true;
-          this.output.value = this.output.value.slice(1);
+          this.valueGS = this.valueGS.slice(1);
         }
         this.data.type = cType || typeof this.data.node.value;
       }
-      this.output.key = data.node.item;
+      // this.output.key = this.data.node.item;
       this.updateMode = true;
     } else {
-      if (data.type === 'array') {
-        this.output.value = [];
-      } else if (data.type === 'object') {
-        this.output.value = {};
+      if (this.data.type === 'array') {
+        this.valueGS = [];
+      } else if (this.data.type === 'object') {
+        this.valueGS = {};
       }
     }
   }
-  saveDialog() {
+  typeChanged() {
+    this.valueGS = this.getCompatibleValue(this.data.type, this.valueGS);
+  }
+  getCompatibleValue(type, value) {
+    if(type == 'number') {
+      value = isNaN(value) ? 0 : +value;
+    } else if (type == 'boolean') {
+      value = false;
+    } else if(type != 'complex') {
+      value = typeof value == 'boolean' ? '': value + '';
+    }
+    return value;
+  }
+  complextItemTypeChanged(item:IComplexItem) {
+    item.value = this.getCompatibleValue(item.type, item.value);
+    this.updateNodeValue();
+  }
+  getActualValue(value) {
+    let transformedValue;
     if (this.isComplex) {
       const transformedItems = this.complexItems.map(
         (item) => SharedFunctions.getLeadCharacter(item.type) + item.value
       );
-      this.output.value = transformedItems.join(this.complexSeparator);
+      transformedValue = transformedItems.join(this.complexSeparator);
     } else {
-      this.output.value = this.customType
-        ? SharedFunctions.getLeadCharacter(this.data.type) + this.output.value
-        : this.output.value;
+      transformedValue = this.customType
+        ? SharedFunctions.getLeadCharacter(this.data.type) + value
+        : value;
     }
-    this.dialogRef.close(this.output);
+    return transformedValue;
   }
   get isComplex() {
     return this.data.type == 'complex';
@@ -104,7 +131,18 @@ export class TreeEditorPopupComponent {
   addComplexItem() {
     this.complexItems.push({ value: null, type: null });
   }
+  get canAddComplexItem() {
+    return this.complexItems.length
+      ? ['string', 'boolean', 'number'].indexOf(
+          this.complexItems[this.complexItems.length - 1].type
+        ) == -1
+      : true;
+  }
   deleteComplexItem(deleteItem) {
     this.complexItems = this.complexItems.filter((item) => item != deleteItem);
+    this.updateNodeValue();
+  }
+  updateNodeValue(value?) {
+    this._treeDb.updatePath(this.data.node.path, this.getActualValue(value));
   }
 }

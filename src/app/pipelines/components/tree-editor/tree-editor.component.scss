@@ -3,7 +3,8 @@ mat-tree {
     margin-bottom: 1rem;
     b.key {
         font-weight: 500;
-        padding-right: 1rem;
+        padding-right: 0.5rem;
+        margin-top: 6px;;
     }
     span.length, span.value {
         color:gray;
