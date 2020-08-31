@@ -13,34 +13,37 @@
       >
         {{ node.item }}
         <span class="value">
-            <button class="action" mat-icon-button (click)="editNode(node)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button class="action" mat-icon-button color="danger" (click)="deleteNode(node)">
-              <mat-icon>delete</mat-icon>
-            </button>
+          <button class="action" mat-icon-button (click)="editNode(node)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            class="action"
+            mat-icon-button
+            color="danger"
+            (click)="deleteNode(node)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
         </span>
       </mat-checkbox>
       <ng-container *ngIf="node.type != 'boolean'">
-        <b class="key">{{ node.item }}: </b>
-        <span class="value">
-          {{ node.value  }} 
-          <!-- | typeFormatter -->
-            <button class="action" mat-icon-button (click)="editNode(node)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button class="action" mat-icon-button color="danger" (click)="deleteNode(node)">
-              <mat-icon>delete</mat-icon>
-            </button>
-        </span>
+        <b class="key">{{ node.item }}: <button
+          class="action"
+          mat-icon-button
+          color="warn"
+          (click)="deleteNode(node)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button></b>
+        <div class="value">
+          <!-- {{ node.value  }}  -->
+          <tree-editor-popup [node]="node"></tree-editor-popup>
+          <!-- <button class="action" mat-icon-button (click)="editNode(node)">
+            <mat-icon>edit</mat-icon>
+          </button> -->
+          
+        </div>
       </ng-container>
-    </mat-tree-node>
-
-    <mat-tree-node
-      *matTreeNodeDef="let node; when: hasNoContent"
-      matTreeNodePadding
-    >
-      <button mat-icon-button disabled></button>
     </mat-tree-node>
 
     <mat-tree-node
@@ -81,7 +84,7 @@
     mat-raised-button
     color="primary"
     (click)="saveDialog()"
-    style="margin-right: 5px;"
+    style="margin-right: 5px"
   >
     Save
   </button>

@@ -16,6 +16,8 @@ import { TreeEditorComponent } from './components/tree-editor/tree-editor.compon
 import { TreeEditorPopupComponent } from './components/tree-editor/tree-editor-popup.component';
 import { TreeonloadDirective } from './components/tree-editor/treeonload.directive';
 import { TypeFormatterPipe } from './components/tree-editor/type-formatter.pipe';
+import { PromptComponent } from './components/tree-editor/prompt/prompt.component';
+import { TreeDatabase } from './components/tree-editor/tree.service';
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
   exports: [StepInformationComponent],
@@ -29,14 +31,17 @@ import { TypeFormatterPipe } from './components/tree-editor/type-formatter.pipe'
     TreeEditorComponent,
     TreeEditorPopupComponent,
     TreeonloadDirective,
-    TypeFormatterPipe
+    TypeFormatterPipe,
+    PromptComponent
   ],
   entryComponents: [
     CustomBranchDialogComponent,
     PipelinesSelectorModalComponent,
     ObjectMappingsComponent,
     TreeEditorComponent,
-    TreeEditorPopupComponent
+    TreeEditorPopupComponent,
+    PromptComponent
   ],
+  providers: [TreeDatabase]
 })
 export class PipelinesModule {}

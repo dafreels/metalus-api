@@ -21,15 +21,16 @@ import { PipelineMappingsData } from '../object-group-mappings/object-group-mapp
 import { TreeEditorPopupComponent } from './tree-editor-popup.component';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
 import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
+import { PromptComponent } from './prompt/prompt.component';
+
 
 @Component({
   selector: 'app-tree-editor',
   templateUrl: './tree-editor.component.html',
   styleUrls: ['./tree-editor.component.scss'],
-  providers: [TreeDatabase],
 })
 export class TreeEditorComponent implements OnInit {
-  types = this._database.types; 
+  types = this._database.types;
   flatNodeMap = new Map<TreeItemFlatNode, TreeItemNode>();
 
   nestedNodeMap = new Map<TreeItemNode, TreeItemFlatNode>();
@@ -53,8 +54,8 @@ export class TreeEditorComponent implements OnInit {
     private _database: TreeDatabase,
     public dialogRef: MatDialogRef<TreeEditorComponent>,
     public dialog: MatDialog,
-     @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData
-     )
+    @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData
+  ) 
   {
     this.treeFlattener = new MatTreeFlattener(
       this.transformer,
@@ -76,7 +77,7 @@ export class TreeEditorComponent implements OnInit {
     });
   }
   ngOnInit() {
-    this._database.initialize({mappings: this.data.mappings});
+    this._database.initialize({ mappings: this.data.mappings });
   }
 
   getLevel = (node: TreeItemFlatNode) => node.level;
@@ -191,55 +192,93 @@ export class TreeEditorComponent implements OnInit {
     this.treeControl.expand(node);
   }
 
-  addNewItem(node: TreeItemFlatNode, addType: IItemType, value: any = '') {
-    if (node.type == 'array' && ['array', 'object'].indexOf(addType.name) >= 0) {
-      if (addType.name == 'array') {
-        value = [];
-      } else if (addType.name == 'object') {
-        value = {};
+  addNewItem(node: TreeItemFlatNode, addType: IItemType) {
+    let defaultValue: any = '';
+    if (addType.name == 'array') {
+      defaultValue = [];
+    } else if (addType.name == 'object') {
+      defaultValue = {};
+    } else {
+      switch (addType.name) {
+        case 'complex':
+          defaultValue = ' || ';
+          break;
+        case 'number':
+          defaultValue = 0;
+          break;
+        case 'boolean':
+          defaultValue = false;
+          break;
+        default:
+          const leadCharacter = SharedFunctions.getLeadCharacter(
+            addType.name
+          );
+          defaultValue = leadCharacter;
       }
+    }
+    if (node.type == 'array') {
+      // && ['array', 'object'].indexOf(addType.name) >= 0
       this.selectedpath = node.path;
-      this._database.insertPath(node.path, addType.name, value);
+      this._database.insertPath(node.path, addType.name, defaultValue);
       this.treeControl.expand(node);
       return;
+    } else if (node.type == 'object') {
+      const dialogRef = this.dialog.open(PromptComponent, {
+        width: '400px',
+        data: {
+          title: `Add (${addType.displayName})`,
+          label: 'Property Name',
+          value: '',
+        },
+      });
+      dialogRef.afterClosed().subscribe((key) => {
+        if (key) {
+          this._database.insertPath(
+            node.path,
+            addType.name,
+            defaultValue,
+            key
+          );
+          this.selectedpath = node.path;
+        }
+      });
     }
-    const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
-      width: '550px',
-      data: { title: `Add (${addType.displayName})`, type: addType.name, parentType: node.type  },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this._database.insertPath(node.path, addType.name, SharedFunctions.formatValue(result.value, addType.name), result.key);
-        this.selectedpath = node.path;
-      }
-    });
+    // const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
+    //   width: '550px',
+    //   data: { title: `Add (${addType.displayName})`, type: addType.name, parentType: node.type  },
+    // });
   }
-  updateNodeValue(node: TreeItemFlatNode,value) {
+  updateNodeValue(node: TreeItemFlatNode, value) {
     this.selectedpath = node.path;
     this._database.updatePath(node.path, value);
   }
   editNode(node: TreeItemFlatNode) {
     const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
       width: '550px',
-      data: { title: 'Update', type: SharedFunctions.getType(node.item, node.type), node: node },
+      data: {
+        title: 'Update',
+        type: SharedFunctions.getType(node.item, node.type),
+        node: node,
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       this.selectedpath = node.path;
       if (result) {
-        this.updateNodeValue( node,result.value);
+        this.updateNodeValue(node, result.value);
       }
     });
   }
-  
-  deleteNode(node:TreeItemFlatNode) {
+
+  deleteNode(node: TreeItemFlatNode) {
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
       data: { message: `Would you like to delete ${node.item} ?` },
     });
     dialogRef.afterClosed().subscribe((confirmation) => {
-      if(confirmation){
+      if (confirmation) {
         const parentNode = this.flatNodeMap.get(node);
         this._database.deleteItem(node);
+        this.selectedpath = node.path;
       }
     });
   }
@@ -248,7 +287,7 @@ export class TreeEditorComponent implements OnInit {
       this.treeControl.expand(node);
     }
   }
- 
+
   saveDialog() {
     this.dialogRef.close(this._database.rawData.mappings);
   }

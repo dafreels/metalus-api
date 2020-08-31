@@ -35,25 +35,24 @@ export class TreeDatabase {
 
   constructor() {}
 
-  initialize(rawData) {
-    this.rawData = rawData;
-    const data = this.buildFileTree(rawData, 0);
-    this.dataChange.next(data);
+  initialize(data) {
+    this.rawData = data;
+    this.dataChange.next(this.buildFileTree(this.rawData, 0));
   }
 
-  getRootTree() {
-    let node = new TreeItemNode();
-    if (Array.isArray(this.rawData)) {
-      node.type = 'array';
-      node.length = 0;
-      node.path = '[0]';
-    } else {
-      node.type = 'object';
-      node.length = 0;
-      node.path = '';
-    }
-    return node;
-  }
+  // getRootTree() {
+  //   let node = new TreeItemNode();
+  //   if (Array.isArray(this.rawData)) {
+  //     node.type = 'array';
+  //     node.length = 0;
+  //     node.path = '[0]';
+  //   } else {
+  //     node.type = 'object';
+  //     node.length = 0;
+  //     node.path = '';
+  //   }
+  //   return node;
+  // }
 
   buildFileTree(
     obj: { [key: string]: any },
@@ -117,7 +116,7 @@ export class TreeDatabase {
     { displayName: 'String', name: 'string', canHaveChild: false },
     { displayName: 'Number', name: 'number', canHaveChild: false },
     { displayName: 'Pipeline', name: 'pipeline', canHaveChild: false },
-    { displayName: 'Golbal', name: 'global', canHaveChild: false },
+    { displayName: 'Global', name: 'global', canHaveChild: false },
     { displayName: 'Runtime', name: 'runtime', canHaveChild: false },
     {
       displayName: 'Mapped Runtime',
@@ -137,7 +136,6 @@ export class TreeDatabase {
   }
   updatePath(path, value) {
     this.rawData = _.set(this.rawData, path, value);
-    this.initialize(this.rawData);
   }
 
   deleteItem(node: TreeItemFlatNode) {

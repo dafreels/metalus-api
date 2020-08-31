@@ -1,8 +1,11 @@
 mat-form-field {
     width: 98%;
 }
-div.complex-item {
+div.complex-item,
+.single-item {
     display: flex;
+}
+div.complex-item {
     mat-checkbox {
         min-width: 46%;
         margin-top: 15px;
