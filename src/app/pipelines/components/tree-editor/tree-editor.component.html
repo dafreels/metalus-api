@@ -1,4 +1,6 @@
 <mat-dialog-content>
+  Code View<mat-slide-toggle [(ngModel)]="treeView"></mat-slide-toggle>Tree View
+  <ng-container *ngIf="treeView else codeView">
   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
     <mat-tree-node
       *matTreeNodeDef="let node"
@@ -6,7 +8,7 @@
       matTreeNodePadding
     >
       <button mat-icon-button disabled></button>
-      <mat-checkbox
+      <!-- <mat-checkbox
         [(ngModel)]="node.value"
         (change)="updateNodeValue(node, node.value)"
         *ngIf="node.type == 'boolean'"
@@ -25,23 +27,28 @@
             <mat-icon>delete</mat-icon>
           </button>
         </span>
-      </mat-checkbox>
-      <ng-container *ngIf="node.type != 'boolean'">
-        <b class="key">{{ node.item }}: <button
-          class="action"
-          mat-icon-button
-          color="warn"
-          (click)="deleteNode(node)"
-        >
-          <mat-icon>delete</mat-icon>
-        </button></b>
-        <div class="value">
-          <!-- {{ node.value  }}  -->
-          <tree-editor-popup [node]="node"></tree-editor-popup>
-          <!-- <button class="action" mat-icon-button (click)="editNode(node)">
+      </mat-checkbox> -->
+      <ng-container>
+        <!-- *ngIf="node.type != 'boolean'" -->
+        <div class="tree-item">
+          <b class="key"
+            >{{ node.item }}:
+            <button
+              class="action"
+              mat-icon-button
+              color="warn"
+              (click)="deleteNode(node)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button></b
+          >
+          <div class="value">
+            <!-- {{ node.value  }}  -->
+            <tree-editor-popup [node]="node"></tree-editor-popup>
+            <!-- <button class="action" mat-icon-button (click)="editNode(node)">
             <mat-icon>edit</mat-icon>
           </button> -->
-          
+          </div>
         </div>
       </ng-container>
     </mat-tree-node>
@@ -78,6 +85,7 @@
       </mat-menu>
     </mat-tree-node>
   </mat-tree>
+</ng-container>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button
@@ -92,3 +100,12 @@
     Cancel
   </button>
 </mat-dialog-actions>
+
+
+<ng-template #codeView>
+  <json-editor
+    [options]="editorOptions"
+    [data]="data.mappings"
+    (change)="setData($event)"
+  ></json-editor>
+</ng-template>

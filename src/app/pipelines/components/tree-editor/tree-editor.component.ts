@@ -22,6 +22,7 @@ import { TreeEditorPopupComponent } from './tree-editor-popup.component';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
 import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
 import { PromptComponent } from './prompt/prompt.component';
+import { JsonEditorOptions } from 'ang-jsoneditor';
 
 
 @Component({
@@ -32,7 +33,9 @@ import { PromptComponent } from './prompt/prompt.component';
 export class TreeEditorComponent implements OnInit {
   types = this._database.types;
   flatNodeMap = new Map<TreeItemFlatNode, TreeItemNode>();
-
+  treeView = true;
+  public editorOptions: JsonEditorOptions;
+  
   nestedNodeMap = new Map<TreeItemNode, TreeItemFlatNode>();
 
   selectedParent: TreeItemFlatNode | null = null;
@@ -78,6 +81,9 @@ export class TreeEditorComponent implements OnInit {
   }
   ngOnInit() {
     this._database.initialize({ mappings: this.data.mappings });
+    this.editorOptions = new JsonEditorOptions()
+    this.editorOptions.modes = ['code'];
+    this.editorOptions.mode = 'code';
   }
 
   getLevel = (node: TreeItemFlatNode) => node.level;
@@ -294,5 +300,8 @@ export class TreeEditorComponent implements OnInit {
 
   cancelDialog() {
     this.dialogRef.close();
+  }
+  setData(data){
+    this._database.initialize({mappings: data})
   }
 }

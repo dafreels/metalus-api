@@ -40,8 +40,7 @@ export class TreeEditorPopupComponent implements OnInit {
     return { type, value: value.slice(1) };
   }
   valueGS: any;
-  updateMode: boolean;
-  canShowValue: boolean;
+  // canShowValue: boolean;
   specialCharacter: string;
   types: IItemType[] = this._treeDb.types.filter((item) => !item.canHaveChild);
   complexTypes: IItemType[] = this._treeDb.types.filter(
@@ -67,7 +66,7 @@ export class TreeEditorPopupComponent implements OnInit {
     this.setUIFormat();
   }
   private setUIFormat() {
-    this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
+    // this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
     if (this.data.node) {
       this.valueGS = this.data.node.value;
       if (typeof this.valueGS == 'string' && this.valueGS.indexOf('||') >= 0) {
@@ -85,7 +84,6 @@ export class TreeEditorPopupComponent implements OnInit {
         this.data.type = cType || typeof this.data.node.value;
       }
       // this.output.key = this.data.node.item;
-      this.updateMode = true;
     } else {
       if (this.data.type === 'array') {
         this.valueGS = [];
@@ -129,7 +127,7 @@ export class TreeEditorPopupComponent implements OnInit {
     return this.data.type == 'complex';
   }
   addComplexItem() {
-    this.complexItems.push({ value: null, type: null });
+    this.complexItems.push({ value: '', type: null });
   }
   get canAddComplexItem() {
     return this.complexItems.length
