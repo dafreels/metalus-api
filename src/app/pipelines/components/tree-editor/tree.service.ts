@@ -8,7 +8,7 @@ export interface IItemType {
 }
 export class TreeItemNode {
   children: TreeItemNode[];
-  item: string;
+  item: string | number;
   type: string;
   path: string;
   value: string | number | boolean;
@@ -17,13 +17,14 @@ export class TreeItemNode {
 
 export class TreeItemFlatNode {
   children: TreeItemFlatNode[];
-  item: string;
+  item: string | number;
   level: number;
   expandable: boolean;
   path: string;
   type: string;
   value: string | number | boolean;
   length: number;
+  parentType: string;
 }
 @Injectable()
 export class TreeDatabase {
@@ -63,7 +64,7 @@ export class TreeDatabase {
       const value = obj[key];
       const node = new TreeItemNode();
       node.path = `${path}[${key}]`;
-      node.item = key;
+      node.item = Array.isArray(obj) ? +key : key;
 
       if (value != null) {
         if (typeof value === 'object') {
@@ -152,6 +153,25 @@ export class TreeDatabase {
       _.unset(this.rawData, node.path);
     }
     this.initialize(this.rawData);
+  }
+  updateKey(node: TreeItemFlatNode, key: any) {
+    const parentPath = node.path.slice(0, node.path.lastIndexOf('['));
+    let parent = _.get(this.rawData, parentPath);
+    if (Array.isArray(parent)) {
+      return;
+      const indexToDelete = +node.path.slice(
+        node.path.lastIndexOf('[') + 1,
+        node.path.length - 1
+      );
+      parent = parent.filter((item, index) => index != indexToDelete);
+      _.set(this.rawData, parentPath, parent);
+    } else {
+      let currentContent = _.get(this.rawData, node.path);
+      parent[key] = currentContent;
+      _.set(this.rawData, parentPath, parent);
+      _.unset(this.rawData, node.path);
+    }
+    // this.initialize(this.rawData);
   }
 
   updateItem(node: TreeItemNode, name: string) {

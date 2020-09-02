@@ -80,7 +80,7 @@ export class TreeEditorComponent implements OnInit {
     });
   }
   ngOnInit() {
-    this._database.initialize({ mappings: this.data.mappings });
+    this._database.initialize({ mappings:  this.data.mappings}); 
     this.editorOptions = new JsonEditorOptions()
     this.editorOptions.modes = ['code'];
     this.editorOptions.mode = 'code';
@@ -105,7 +105,8 @@ export class TreeEditorComponent implements OnInit {
         ? existingNode
         : new TreeItemFlatNode();
     flatNode.item = node.item;
-    flatNode.value = node.value;
+    flatNode.parentType = typeof node.item == 'number' ? 'array':'object';
+  flatNode.value = node.value;
     flatNode.length = node.length;
     flatNode.path = node.path;
     flatNode.type = node.type;
@@ -259,18 +260,20 @@ export class TreeEditorComponent implements OnInit {
     this._database.updatePath(node.path, value);
   }
   editNode(node: TreeItemFlatNode) {
-    const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
-      width: '550px',
+    console.log("TreeEditorComponent -> editNode -> node", node)
+    const dialogRef = this.dialog.open(PromptComponent, {
+      width: '400px',
       data: {
-        title: 'Update',
-        type: SharedFunctions.getType(node.item, node.type),
-        node: node,
+        title: `Update Property`,
+        label: 'Property Name',
+        value: node.item,
       },
     });
-    dialogRef.afterClosed().subscribe((result) => {
-      this.selectedpath = node.path;
-      if (result) {
-        this.updateNodeValue(node, result.value);
+    dialogRef.afterClosed().subscribe((key) => {
+      if (key && key != node.item) {
+        this.selectedpath = node.path;
+        node.item = key;
+        this._database.updateKey(node, key);
       }
     });
   }
@@ -296,6 +299,7 @@ export class TreeEditorComponent implements OnInit {
 
   saveDialog() {
     this.dialogRef.close(this._database.rawData.mappings);
+    console.log("TreeEditorComponent -> saveDialog -> database.rawData.mappings",this._database.rawData)
   }
 
   cancelDialog() {

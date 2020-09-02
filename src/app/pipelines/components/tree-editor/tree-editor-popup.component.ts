@@ -74,6 +74,7 @@ export class TreeEditorPopupComponent implements OnInit {
         if(this.valueGS.length != this.complexSeparator.length) {
           this.buildComplexItemArray(this.valueGS);
         }
+        this.valueGS = '';
       } else {
         let cType = SharedFunctions.getType(this.data.node.value, null);
         if (cType) {
@@ -94,6 +95,8 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   typeChanged() {
     this.valueGS = this.getCompatibleValue(this.data.type, this.valueGS);
+    console.log("TreeEditorPopupComponent -> typeChanged -> this.data.type, this.valueGS", this.data.type, this.valueGS)
+    this.updateNodeValue(this.valueGS);
   }
   getCompatibleValue(type, value) {
     if(type == 'number') {
@@ -110,17 +113,16 @@ export class TreeEditorPopupComponent implements OnInit {
     this.updateNodeValue();
   }
   getActualValue(value) {
-    let transformedValue;
-    if (this.isComplex) {
+    let transformedValue = value;
+    if (this.data.type == 'complex') {
       const transformedItems = this.complexItems.map(
         (item) => SharedFunctions.getLeadCharacter(item.type) + item.value
       );
       transformedValue = transformedItems.join(this.complexSeparator);
-    } else {
-      transformedValue = this.customType
-        ? SharedFunctions.getLeadCharacter(this.data.type) + value
-        : value;
+    } else if(['boolean', 'string', 'number'].indexOf(this.data.type) == -1) {
+      transformedValue = SharedFunctions.getLeadCharacter(this.data.type) + value;
     }
+    console.log("TreeEditorPopupComponent -> getActualValue -> transformedValue", transformedValue)
     return transformedValue;
   }
   get isComplex() {
