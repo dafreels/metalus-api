@@ -260,7 +260,6 @@ export class TreeEditorComponent implements OnInit {
     this._database.updatePath(node.path, value);
   }
   editNode(node: TreeItemFlatNode) {
-    console.log("TreeEditorComponent -> editNode -> node", node)
     const dialogRef = this.dialog.open(PromptComponent, {
       width: '400px',
       data: {
@@ -299,7 +298,6 @@ export class TreeEditorComponent implements OnInit {
 
   saveDialog() {
     this.dialogRef.close(this._database.rawData.mappings);
-    console.log("TreeEditorComponent -> saveDialog -> database.rawData.mappings",this._database.rawData)
   }
 
   cancelDialog() {

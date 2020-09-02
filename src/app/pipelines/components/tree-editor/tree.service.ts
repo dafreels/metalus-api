@@ -159,12 +159,6 @@ export class TreeDatabase {
     let parent = _.get(this.rawData, parentPath);
     if (Array.isArray(parent)) {
       return;
-      const indexToDelete = +node.path.slice(
-        node.path.lastIndexOf('[') + 1,
-        node.path.length - 1
-      );
-      parent = parent.filter((item, index) => index != indexToDelete);
-      _.set(this.rawData, parentPath, parent);
     } else {
       let currentContent = _.get(this.rawData, node.path);
       parent[key] = currentContent;

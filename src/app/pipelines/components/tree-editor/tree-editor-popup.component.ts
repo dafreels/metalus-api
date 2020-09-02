@@ -95,7 +95,6 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   typeChanged() {
     this.valueGS = this.getCompatibleValue(this.data.type, this.valueGS);
-    console.log("TreeEditorPopupComponent -> typeChanged -> this.data.type, this.valueGS", this.data.type, this.valueGS)
     this.updateNodeValue(this.valueGS);
   }
   getCompatibleValue(type, value) {
@@ -122,7 +121,6 @@ export class TreeEditorPopupComponent implements OnInit {
     } else if(['boolean', 'string', 'number'].indexOf(this.data.type) == -1) {
       transformedValue = SharedFunctions.getLeadCharacter(this.data.type) + value;
     }
-    console.log("TreeEditorPopupComponent -> getActualValue -> transformedValue", transformedValue)
     return transformedValue;
   }
   get isComplex() {
