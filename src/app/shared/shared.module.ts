@@ -16,6 +16,9 @@ import { CloseDialogButtonComponent } from './components/close-dialog-button/clo
 import { MatSelectSearchComponent } from './components/mat-select-search/mat-select-search.component';
 import {PasswordDialogComponent} from "./components/password-dialog/password-dialog.component";
 import {MatTreeModule} from '@angular/material/tree';
+import { ACE_CONFIG, AceConfigInterface, AceModule } from 'ngx-ace-wrapper';
+
+const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
 const commonModules = [
   FormsModule,
@@ -24,7 +27,8 @@ const commonModules = [
   RouterModule,
   DndModule,
   MaterialDesignFrameworkModule,
-  MatTreeModule
+  MatTreeModule,
+  AceModule
 ];
 
 @NgModule({
@@ -56,5 +60,9 @@ const commonModules = [
     WaitModalComponent,
     ObjectEditorComponent,
   ],
+  providers: [
+    { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG }
+    
+  ]
 })
 export class SharedModule {}

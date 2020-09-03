@@ -2,10 +2,8 @@ mat-tree {
   border: 2px solid #673ab7;
   margin-bottom: 1rem;
   b.key {
-    // min-width: 100px;
     font-weight: 500;
     padding-right: 0.5rem;
-    margin-top: 6px;
   }
   span.length,
   span.value {
@@ -29,13 +27,9 @@ mat-tree-node {
     }
   }
 }
-
-:host ::ng-deep json-editor,
-:host ::ng-deep json-editor .jsoneditor,
-:host ::ng-deep json-editor > div,
- :host ::ng-deep json-editor jsoneditor-outer {
+.code-div {
+  width: 100%;
   height: 500px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
-// .ace_editor.ace-jsoneditor {
-//   min-height: 500px;
-// }

@@ -1,5 +1,5 @@
 <mat-dialog-content>
-  <div align = "end"><b>Code View<mat-slide-toggle [(ngModel)]="treeView"></mat-slide-toggle>Tree View </b></div>
+  <div align = "end"><b>Code View<mat-slide-toggle [(ngModel)]="treeView" (change)="viewChanged()"></mat-slide-toggle>Tree View </b></div>
   <ng-container *ngIf="treeView; else codeView">
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
       <mat-tree-node
@@ -81,9 +81,11 @@
 </mat-dialog-actions>
 
 <ng-template #codeView>
-  <json-editor
-    [options]="editorOptions"
-    [data]="data.mappings"
-    (change)="setData($event)"
-  ></json-editor>
+  <div class="code-div">
+    <ace
+      [mode]="'json'"
+      [theme]="'solarized_light'"
+      [(value)]="codeViewData"
+    ></ace>
+  </div>
 </ng-template>
