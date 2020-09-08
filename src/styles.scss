@@ -66,3 +66,16 @@ mat-table {
   font-weight: bold;
   font-size: larger;
 }
+
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 35px !important;
+}
+@mixin mix-app-theme($theme) {
+  $primary: map-get($theme, primary);
+  .mat-button-toggle-checked {
+    background-color: mat-color($primary);
+    color: white !important;
+  }
+}
+@include mix-app-theme($theme);

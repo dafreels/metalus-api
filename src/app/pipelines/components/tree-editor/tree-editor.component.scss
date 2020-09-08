@@ -19,12 +19,11 @@ mat-tree-node {
       visibility: visible;
     }
   }
+  .action-delete {
+    margin-top: 23px;
+  }
   .tree-item {
     display: flex;
-    b.key {
-      margin-top: 25px;
-      flex:1 0 25%;
-    }
   }
 }
 .code-div {
@@ -32,4 +31,14 @@ mat-tree-node {
   height: 500px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+.code-view {
+  padding: 10px 0;
+  mat-slide-toggle {
+    margin: 0 0.5rem;
+  }
+}
+
+mat-button-toggle-group {
+  margin-right: 1rem;
 }

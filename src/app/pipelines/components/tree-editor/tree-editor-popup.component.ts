@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, Input, Output } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 import {
   TreeItemNode,
   TreeItemFlatNode,
@@ -7,6 +7,7 @@ import {
   IItemType,
 } from './tree.service';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
+import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
 interface IComplexItem {
   value: any;
   type: string;
@@ -58,6 +59,7 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   constructor(
     public dialogRef: MatDialogRef<TreeEditorPopupComponent>,
+    public dialog: MatDialog,
     // @Inject(MAT_DIALOG_DATA)
     // public data: { title: string; type: string; node: TreeItemFlatNode },
     private _treeDb: TreeDatabase
@@ -84,7 +86,6 @@ export class TreeEditorPopupComponent implements OnInit {
         }
         this.data.type = cType || typeof this.data.node.value;
       }
-      // this.output.key = this.data.node.item;
     } else {
       if (this.data.type === 'array') {
         this.valueGS = [];
@@ -126,8 +127,10 @@ export class TreeEditorPopupComponent implements OnInit {
   get isComplex() {
     return this.data.type == 'complex';
   }
-  addComplexItem() {
-    this.complexItems.push({ value: '', type: null });
+  addComplexItem(atIndex) {
+    let newItem = { value: '', type: null };
+    // this.complexItems.push({ value: '', type: null });
+    this.complexItems.splice(atIndex,0, newItem);
   }
   get canAddComplexItem() {
     return this.complexItems.length
@@ -142,5 +145,16 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   updateNodeValue(value?) {
     this._treeDb.updatePath(this.data.node.path, this.getActualValue(value));
+  }
+  deleteNode() {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '550px',
+      data: { message: `Would you like to delete ${this.node.item} ?` },
+    });
+    dialogRef.afterClosed().subscribe((confirmation) => {
+      if (confirmation) {
+        this._treeDb.deleteItem(this.node);
+      }
+    });
   }
 }

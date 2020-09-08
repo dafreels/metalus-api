@@ -30,6 +30,7 @@ export class TreeItemFlatNode {
 export class TreeDatabase {
   dataChange = new BehaviorSubject<TreeItemNode[]>([]);
   rawData: any;
+  selectedpath: string;
   get data(): TreeItemNode[] {
     return this.dataChange.value;
   }
@@ -40,20 +41,6 @@ export class TreeDatabase {
     this.rawData = data;
     this.dataChange.next(this.buildFileTree(this.rawData, 0));
   }
-
-  // getRootTree() {
-  //   let node = new TreeItemNode();
-  //   if (Array.isArray(this.rawData)) {
-  //     node.type = 'array';
-  //     node.length = 0;
-  //     node.path = '[0]';
-  //   } else {
-  //     node.type = 'object';
-  //     node.length = 0;
-  //     node.path = '';
-  //   }
-  //   return node;
-  // }
 
   buildFileTree(
     obj: { [key: string]: any },
@@ -113,9 +100,6 @@ export class TreeDatabase {
   types: IItemType[] = [
     { displayName: 'Array', name: 'array', canHaveChild: true },
     { displayName: 'Object', name: 'object', canHaveChild: true },
-    { displayName: 'Boolean', name: 'boolean', canHaveChild: false },
-    { displayName: 'String', name: 'string', canHaveChild: false },
-    { displayName: 'Number', name: 'number', canHaveChild: false },
     { displayName: 'Pipeline', name: 'pipeline', canHaveChild: false },
     { displayName: 'Global', name: 'global', canHaveChild: false },
     { displayName: 'Runtime', name: 'runtime', canHaveChild: false },
@@ -127,6 +111,9 @@ export class TreeDatabase {
     { displayName: 'Step', name: 'step', canHaveChild: false },
     { displayName: 'Secondary', name: 'secondary', canHaveChild: false },
     { displayName: 'Complex', name: 'complex', canHaveChild: false },
+    { displayName: 'Boolean', name: 'boolean', canHaveChild: false },
+    { displayName: 'String', name: 'string', canHaveChild: false },
+    { displayName: 'Number', name: 'number', canHaveChild: false },
   ];
   insertArray(parent: TreeItemNode, name: string, type: string) {
     switch (type) {
@@ -140,6 +127,7 @@ export class TreeDatabase {
   }
 
   deleteItem(node: TreeItemFlatNode) {
+    this.selectedpath = node.path;
     const parentPath = node.path.slice(0, node.path.lastIndexOf('['));
     let parent = _.get(this.rawData, parentPath);
     if (Array.isArray(parent)) {
@@ -155,14 +143,21 @@ export class TreeDatabase {
     this.initialize(this.rawData);
   }
   updateKey(node: TreeItemFlatNode, key: any) {
+    this.selectedpath = node.path;
     const parentPath = node.path.slice(0, node.path.lastIndexOf('['));
+    const currentKey = node.item;
     let parent = _.get(this.rawData, parentPath);
     if (Array.isArray(parent)) {
       return;
     } else {
       let currentContent = _.get(this.rawData, node.path);
       parent[key] = currentContent;
-      _.set(this.rawData, parentPath, parent);
+      let newParent = {};
+      Object.keys(parent).map((index) => {
+        const newIndex = index == node.item ? key : index;
+        newParent[newIndex] = parent[index];
+      });
+      _.set(this.rawData, parentPath, newParent);
       _.unset(this.rawData, node.path);
     }
     // this.initialize(this.rawData);

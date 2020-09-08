@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>{{ data.title }}</h1>
+<!-- <h1 mat-dialog-title>{{ data.title }}</h1> -->
 <div mat-dialog-content [ngClass]="{ 'single-item': data.type != 'complex' }">
   <ng-container [ngSwitch]="data.type">
     <mat-slide-toggle
@@ -18,16 +18,7 @@
       />
     </mat-form-field>
     <ng-container *ngSwitchCase="'complex'">
-      <br />
-      <button
-        mat-icon-button
-        class="complex-add"
-        *ngIf="canAddComplexItem"
-        (click)="addComplexItem()"
-      >
-        <mat-icon>add</mat-icon>
-      </button>
-      <div class="complex-item" *ngFor="let item of complexItems">
+      <div class="complex-item" *ngFor="let item of complexItems;let i=index">
         <ng-container [ngSwitch]="item.type">
           <mat-form-field *ngSwitchCase="'number'">
             <mat-label>Value</mat-label>
@@ -64,10 +55,19 @@
               <mat-option
                 *ngFor="let type of complexTypes"
                 [value]="type.name"
-                >{{ type.displayName }}</mat-option
-              >
+                [disabled]="(complexItems.length-1 > i) && (type.name | isGenericType)"
+                >
+                {{ type.displayName }}
+              </mat-option>
             </mat-select>
           </mat-form-field>
+          <button
+            mat-icon-button
+            [disabled]="(item.type | isGenericType)"
+            (click)="addComplexItem(i + 1)"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
           <button
             mat-icon-button
             color="warn"
@@ -105,15 +105,13 @@
       }}</mat-option>
     </mat-select>
   </mat-form-field>
-</div>
-<!-- <div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
   <button
-    mat-raised-button
-    color="primary"
-    (click)="saveDialog()"
-    cdkFocusInitial
+    class="action-delete"
+    mat-icon-button
+    color="warn"
+    (click)="deleteNode(node)"
   >
-    OK
+    <mat-icon>delete</mat-icon>
   </button>
-</div> -->
+</div>
+

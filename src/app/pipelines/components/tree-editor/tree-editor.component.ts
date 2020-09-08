@@ -217,7 +217,7 @@ export class TreeEditorComponent implements OnInit {
     }
     if (node.type == 'array') {
       // && ['array', 'object'].indexOf(addType.name) >= 0
-      this.selectedpath = node.path;
+      this._database.selectedpath = node.path;
       this._database.insertPath(node.path, addType.name, defaultValue);
       this.treeControl.expand(node);
       return;
@@ -233,31 +233,18 @@ export class TreeEditorComponent implements OnInit {
       dialogRef.afterClosed().subscribe((key) => {
         if (key) {
           this._database.insertPath(node.path, addType.name, defaultValue, key);
-          this.selectedpath = node.path;
+          this._database.selectedpath = node.path;
         }
       });
     }
   }
   updateNodeValue(node: TreeItemFlatNode, value) {
-    this.selectedpath = node.path;
+    this._database.selectedpath = node.path;
     this._database.updatePath(node.path, value);
   }
-  editNode(node: TreeItemFlatNode) {
-    const dialogRef = this.dialog.open(PromptComponent, {
-      width: '400px',
-      data: {
-        title: `Update Property`,
-        label: 'Property Name',
-        value: node.item,
-      },
-    });
-    dialogRef.afterClosed().subscribe((key) => {
-      if (key && key != node.item) {
-        this.selectedpath = node.path;
-        node.item = key;
-        this._database.updateKey(node, key);
-      }
-    });
+  editNode(node: TreeItemFlatNode, value: string) {
+    this._database.updateKey(node, value);
+    node.item = value;
   }
 
   deleteNode(node: TreeItemFlatNode) {
@@ -269,12 +256,12 @@ export class TreeEditorComponent implements OnInit {
       if (confirmation) {
         const parentNode = this.flatNodeMap.get(node);
         this._database.deleteItem(node);
-        this.selectedpath = node.path;
+        this._database.selectedpath = node.path;
       }
     });
   }
   expandNode(node: TreeItemFlatNode) {
-    if (this.selectedpath && this.selectedpath.indexOf(node.path) > -1) {
+    if (this._database.selectedpath && this._database.selectedpath.indexOf(node.path) > -1) {
       this.treeControl.expand(node);
     }
   }
