@@ -40,8 +40,7 @@ export class TreeEditorPopupComponent implements OnInit {
     return { type, value: value.slice(1) };
   }
   valueGS: any;
-  updateMode: boolean;
-  canShowValue: boolean;
+  // canShowValue: boolean;
   specialCharacter: string;
   types: IItemType[] = this._treeDb.types.filter((item) => !item.canHaveChild);
   complexTypes: IItemType[] = this._treeDb.types.filter(
@@ -67,7 +66,7 @@ export class TreeEditorPopupComponent implements OnInit {
     this.setUIFormat();
   }
   private setUIFormat() {
-    this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
+    // this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
     if (this.data.node) {
       this.valueGS = this.data.node.value;
       if (typeof this.valueGS == 'string' && this.valueGS.indexOf('||') >= 0) {
@@ -75,6 +74,7 @@ export class TreeEditorPopupComponent implements OnInit {
         if(this.valueGS.length != this.complexSeparator.length) {
           this.buildComplexItemArray(this.valueGS);
         }
+        this.valueGS = '';
       } else {
         let cType = SharedFunctions.getType(this.data.node.value, null);
         if (cType) {
@@ -85,7 +85,6 @@ export class TreeEditorPopupComponent implements OnInit {
         this.data.type = cType || typeof this.data.node.value;
       }
       // this.output.key = this.data.node.item;
-      this.updateMode = true;
     } else {
       if (this.data.type === 'array') {
         this.valueGS = [];
@@ -96,6 +95,7 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   typeChanged() {
     this.valueGS = this.getCompatibleValue(this.data.type, this.valueGS);
+    this.updateNodeValue(this.valueGS);
   }
   getCompatibleValue(type, value) {
     if(type == 'number') {
@@ -112,16 +112,14 @@ export class TreeEditorPopupComponent implements OnInit {
     this.updateNodeValue();
   }
   getActualValue(value) {
-    let transformedValue;
-    if (this.isComplex) {
+    let transformedValue = value;
+    if (this.data.type == 'complex') {
       const transformedItems = this.complexItems.map(
         (item) => SharedFunctions.getLeadCharacter(item.type) + item.value
       );
       transformedValue = transformedItems.join(this.complexSeparator);
-    } else {
-      transformedValue = this.customType
-        ? SharedFunctions.getLeadCharacter(this.data.type) + value
-        : value;
+    } else if(['boolean', 'string', 'number'].indexOf(this.data.type) == -1) {
+      transformedValue = SharedFunctions.getLeadCharacter(this.data.type) + value;
     }
     return transformedValue;
   }
@@ -129,7 +127,7 @@ export class TreeEditorPopupComponent implements OnInit {
     return this.data.type == 'complex';
   }
   addComplexItem() {
-    this.complexItems.push({ value: null, type: null });
+    this.complexItems.push({ value: '', type: null });
   }
   get canAddComplexItem() {
     return this.complexItems.length

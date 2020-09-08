@@ -1,13 +1,26 @@
 mat-form-field {
     width: 98%;
 }
+mat-slide-toggle {
+    min-width: 195px;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+button.complex-add {
+    margin-top: -15px;
+    margin-left: -13px;
+    margin-bottom: 15px;
+}
 div.complex-item,
 .single-item {
     display: flex;
+    div {
+        flex: 1 0 50%;
+    }
 }
 div.complex-item {
-    mat-checkbox {
-        min-width: 46%;
+    mat-checkbox, mat-slide-toggle {
+        min-width: 43%;
         margin-top: 15px;
     }
 }

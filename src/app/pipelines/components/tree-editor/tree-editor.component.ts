@@ -22,7 +22,7 @@ import { TreeEditorPopupComponent } from './tree-editor-popup.component';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
 import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
 import { PromptComponent } from './prompt/prompt.component';
-
+import { JsonEditorOptions } from 'ang-jsoneditor';
 
 @Component({
   selector: 'app-tree-editor',
@@ -32,6 +32,7 @@ import { PromptComponent } from './prompt/prompt.component';
 export class TreeEditorComponent implements OnInit {
   types = this._database.types;
   flatNodeMap = new Map<TreeItemFlatNode, TreeItemNode>();
+  treeView = true;
 
   nestedNodeMap = new Map<TreeItemNode, TreeItemFlatNode>();
 
@@ -55,8 +56,7 @@ export class TreeEditorComponent implements OnInit {
     public dialogRef: MatDialogRef<TreeEditorComponent>,
     public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: PipelineMappingsData
-  ) 
-  {
+  ) {
     this.treeFlattener = new MatTreeFlattener(
       this.transformer,
       this.getLevel,
@@ -99,6 +99,7 @@ export class TreeEditorComponent implements OnInit {
         ? existingNode
         : new TreeItemFlatNode();
     flatNode.item = node.item;
+    flatNode.parentType = typeof node.item == 'number' ? 'array' : 'object';
     flatNode.value = node.value;
     flatNode.length = node.length;
     flatNode.path = node.path;
@@ -210,9 +211,7 @@ export class TreeEditorComponent implements OnInit {
           defaultValue = false;
           break;
         default:
-          const leadCharacter = SharedFunctions.getLeadCharacter(
-            addType.name
-          );
+          const leadCharacter = SharedFunctions.getLeadCharacter(addType.name);
           defaultValue = leadCharacter;
       }
     }
@@ -233,38 +232,30 @@ export class TreeEditorComponent implements OnInit {
       });
       dialogRef.afterClosed().subscribe((key) => {
         if (key) {
-          this._database.insertPath(
-            node.path,
-            addType.name,
-            defaultValue,
-            key
-          );
+          this._database.insertPath(node.path, addType.name, defaultValue, key);
           this.selectedpath = node.path;
         }
       });
     }
-    // const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
-    //   width: '550px',
-    //   data: { title: `Add (${addType.displayName})`, type: addType.name, parentType: node.type  },
-    // });
   }
   updateNodeValue(node: TreeItemFlatNode, value) {
     this.selectedpath = node.path;
     this._database.updatePath(node.path, value);
   }
   editNode(node: TreeItemFlatNode) {
-    const dialogRef = this.dialog.open(TreeEditorPopupComponent, {
-      width: '550px',
+    const dialogRef = this.dialog.open(PromptComponent, {
+      width: '400px',
       data: {
-        title: 'Update',
-        type: SharedFunctions.getType(node.item, node.type),
-        node: node,
+        title: `Update Property`,
+        label: 'Property Name',
+        value: node.item,
       },
     });
-    dialogRef.afterClosed().subscribe((result) => {
-      this.selectedpath = node.path;
-      if (result) {
-        this.updateNodeValue(node, result.value);
+    dialogRef.afterClosed().subscribe((key) => {
+      if (key && key != node.item) {
+        this.selectedpath = node.path;
+        node.item = key;
+        this._database.updateKey(node, key);
       }
     });
   }
@@ -294,5 +285,17 @@ export class TreeEditorComponent implements OnInit {
 
   cancelDialog() {
     this.dialogRef.close();
+  }
+  setData(data) {
+    this._database.initialize({ mappings: data });
+  }
+  get codeViewData() {
+    return JSON.stringify(this._database.rawData.mappings, null, 4);
+  }
+  set codeViewData(data) {
+    this.setData(JSON.parse(data));
+  }
+  viewChanged() {
+    this.setData(this._database.rawData.mappings);
   }
 }
