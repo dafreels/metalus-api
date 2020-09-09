@@ -48,7 +48,7 @@ export class TreeEditorPopupComponent implements OnInit {
     (item) => !item.canHaveChild && item.name != 'complex'
   );
   customType: boolean;
-  complexItems: IComplexItem[] = [];
+  complexItems: IComplexItem[] = [{type:null, value:''}];
   data: { title: string; type: string; node: TreeItemFlatNode };
   @Input() set node(node) {
     this.data = {
@@ -149,11 +149,11 @@ export class TreeEditorPopupComponent implements OnInit {
   deleteNode() {
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
-      data: { message: `Would you like to delete ${this.node.item} ?` },
+      data: { message: `Would you like to delete ${this.data.node.item} ?` },
     });
     dialogRef.afterClosed().subscribe((confirmation) => {
       if (confirmation) {
-        this._treeDb.deleteItem(this.node);
+        this._treeDb.deleteItem(this.data.node);
       }
     });
   }

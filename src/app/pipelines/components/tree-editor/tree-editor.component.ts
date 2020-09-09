@@ -248,6 +248,7 @@ export class TreeEditorComponent implements OnInit {
   }
 
   deleteNode(node: TreeItemFlatNode) {
+    console.log("TreeEditorPopupComponent -> deleteNode -> node", node);
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
       data: { message: `Would you like to delete ${node.item} ?` },

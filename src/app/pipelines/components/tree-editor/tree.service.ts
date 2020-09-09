@@ -30,7 +30,7 @@ export class TreeItemFlatNode {
 export class TreeDatabase {
   dataChange = new BehaviorSubject<TreeItemNode[]>([]);
   rawData: any;
-  selectedpath: string;
+  selectedpath: string = '[mappings]';//default expanded
   get data(): TreeItemNode[] {
     return this.dataChange.value;
   }

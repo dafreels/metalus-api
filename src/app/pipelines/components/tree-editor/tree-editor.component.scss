@@ -19,9 +19,6 @@ mat-tree-node {
       visibility: visible;
     }
   }
-  .action-delete {
-    margin-top: 23px;
-  }
   .tree-item {
     display: flex;
   }
@@ -41,4 +38,10 @@ mat-tree-node {
 
 mat-button-toggle-group {
   margin-right: 1rem;
+}
+
+mat-tree-node.expandable {
+  margin-right: 11rem;
+  display: flex;
+  justify-content: space-between;
 }
