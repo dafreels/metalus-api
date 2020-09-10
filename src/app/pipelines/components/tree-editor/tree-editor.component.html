@@ -80,7 +80,7 @@
             {{ '{' + node.length + '}' }}</span
           >
         </div>
-        <div class="actions" *ngIf="node.level!=0">
+        <div class="actions">
           <button mat-icon-button [matMenuTriggerFor]="typeMenu">
             <mat-icon>add</mat-icon>
           </button>
@@ -94,6 +94,7 @@
             </button>
           </mat-menu>
           <button
+            *ngIf="node.level!=0"
             class="action-delete"
             mat-icon-button
             color="warn"
