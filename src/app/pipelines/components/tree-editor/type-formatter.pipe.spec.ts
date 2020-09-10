@@ -1,8 +1,8 @@
-import { TypeFormatterPipe } from './type-formatter.pipe';
+import { IsGenericType } from './type-formatter.pipe';
 
-describe('TypeFormatterPipe', () => {
+describe('IsGenericType', () => {
   it('create an instance', () => {
-    const pipe = new TypeFormatterPipe();
+    const pipe = new IsGenericType();
     expect(pipe).toBeTruthy();
   });
 });

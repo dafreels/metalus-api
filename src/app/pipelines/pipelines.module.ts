@@ -15,7 +15,7 @@ import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { TreeEditorComponent } from './components/tree-editor/tree-editor.component' 
 import { TreeEditorPopupComponent } from './components/tree-editor/tree-editor-popup.component';
 import { TreeonloadDirective } from './components/tree-editor/treeonload.directive';
-import { TypeFormatterPipe } from './components/tree-editor/type-formatter.pipe';
+import { IsGenericType } from './components/tree-editor/type-formatter.pipe';
 import { PromptComponent } from './components/tree-editor/prompt/prompt.component';
 import { TreeDatabase } from './components/tree-editor/tree.service';
 @NgModule({
@@ -31,7 +31,7 @@ import { TreeDatabase } from './components/tree-editor/tree.service';
     TreeEditorComponent,
     TreeEditorPopupComponent,
     TreeonloadDirective,
-    TypeFormatterPipe,
+    IsGenericType,
     PromptComponent
   ],
   entryComponents: [
