@@ -18,6 +18,13 @@ import {PasswordDialogComponent} from "./components/password-dialog/password-dia
 import {MatTreeModule} from '@angular/material/tree';
 import { ACE_CONFIG, AceConfigInterface, AceModule } from 'ngx-ace-wrapper';
 
+import { TreeEditorComponent } from '../shared/components/tree-editor/tree-editor.component' 
+import { TreeEditorPopupComponent } from '../shared/components/tree-editor/tree-editor-popup.component';
+import { TreeonloadDirective } from '../shared/components/tree-editor/treeonload.directive';
+import { IsGenericType } from '../shared/components/tree-editor/type-formatter.pipe';
+import { PromptComponent } from '../shared/components/tree-editor/prompt/prompt.component';
+import { TreeDatabase } from '../shared/components/tree-editor/tree.service';
+
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
 const commonModules = [
@@ -44,6 +51,11 @@ const commonModules = [
     ObjectEditorComponent,
     CloseDialogButtonComponent,
     MatSelectSearchComponent,
+    TreeEditorComponent,
+    TreeEditorPopupComponent,
+    TreeonloadDirective,
+    IsGenericType,
+    PromptComponent
   ],
   exports: [
     ...commonModules,
@@ -59,10 +71,13 @@ const commonModules = [
     PropertiesEditorModalComponent,
     WaitModalComponent,
     ObjectEditorComponent,
+    TreeEditorComponent,
+    TreeEditorPopupComponent,
+    PromptComponent
   ],
   providers: [
-    { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG }
-    
+    { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG, },
+    TreeDatabase
   ]
 })
 export class SharedModule {}
