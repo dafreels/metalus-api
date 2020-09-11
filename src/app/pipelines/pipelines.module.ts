@@ -12,12 +12,12 @@ import {CoreModule} from "../core/core.module";
 import {CustomBranchDialogComponent} from "./components/custom-branch-step/custom-branch-dialog.component";
 import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
 import { NgJsonEditorModule } from 'ang-jsoneditor';
-import { TreeEditorComponent } from './components/tree-editor/tree-editor.component' 
-import { TreeEditorPopupComponent } from './components/tree-editor/tree-editor-popup.component';
-import { TreeonloadDirective } from './components/tree-editor/treeonload.directive';
-import { IsGenericType } from './components/tree-editor/type-formatter.pipe';
-import { PromptComponent } from './components/tree-editor/prompt/prompt.component';
-import { TreeDatabase } from './components/tree-editor/tree.service';
+import { TreeEditorComponent } from '../shared/components/tree-editor/tree-editor.component' 
+import { TreeEditorPopupComponent } from '../shared/components/tree-editor/tree-editor-popup.component';
+import { TreeonloadDirective } from '../shared/components/tree-editor/treeonload.directive';
+import { IsGenericType } from '../shared/components/tree-editor/type-formatter.pipe';
+import { PromptComponent } from '../shared/components/tree-editor/prompt/prompt.component';
+import { TreeDatabase } from '../shared/components/tree-editor/tree.service';
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
   exports: [StepInformationComponent],

@@ -23,7 +23,7 @@ import { BehaviorSubject } from 'rxjs';
 import { MatSelect } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
-import { TreeEditorComponent } from '../tree-editor/tree-editor.component';
+import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
 
 export interface SplitParameter {
   id: number;

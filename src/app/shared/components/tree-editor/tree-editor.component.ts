@@ -15,14 +15,15 @@ import {
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
-  MatDialog,
+  MatDialog 
 } from '@angular/material/dialog';
-import { PipelineMappingsData } from '../object-group-mappings/object-group-mappings.component';
+// import { PipelineMappingsData } from '../pipelines/object-group-mappings/object-group-mappings.component';
 import { TreeEditorPopupComponent } from './tree-editor-popup.component';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
 import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
 import { PromptComponent } from './prompt/prompt.component';
 import { JsonEditorOptions } from 'ang-jsoneditor';
+import { PipelineMappingsData } from 'src/app/pipelines/components/object-group-mappings/object-group-mappings.component';
 
 @Component({
   selector: 'app-tree-editor',
