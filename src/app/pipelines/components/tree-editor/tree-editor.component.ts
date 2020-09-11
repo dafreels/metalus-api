@@ -105,7 +105,8 @@ export class TreeEditorComponent implements OnInit {
     flatNode.path = node.path;
     flatNode.type = node.type;
     flatNode.level = level;
-    flatNode.expandable = !!node.children ? !!node.children.length : false;
+    flatNode.expandable = ['array', 'object'].indexOf(node.type) >= 0;
+    //!!node.children ? !!node.children.length : false;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -248,7 +249,6 @@ export class TreeEditorComponent implements OnInit {
   }
 
   deleteNode(node: TreeItemFlatNode) {
-    console.log("TreeEditorPopupComponent -> deleteNode -> node", node);
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
       data: { message: `Would you like to delete ${node.item} ?` },

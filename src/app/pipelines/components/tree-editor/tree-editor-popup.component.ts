@@ -43,7 +43,7 @@ export class TreeEditorPopupComponent implements OnInit {
   valueGS: any;
   // canShowValue: boolean;
   specialCharacter: string;
-  types: IItemType[] = this._treeDb.types.filter((item) => !item.canHaveChild);
+  types: IItemType[] = this._treeDb.types; //.filter((item) => !item.canHaveChild);
   complexTypes: IItemType[] = this._treeDb.types.filter(
     (item) => !item.canHaveChild && item.name != 'complex'
   );
@@ -53,7 +53,7 @@ export class TreeEditorPopupComponent implements OnInit {
   @Input() set node(node) {
     this.data = {
       title: '',
-      type: SharedFunctions.getType(node.item, node.type),
+      type: SharedFunctions.getType(node.item, node.type) || node.type,
       node: node,
     };
   }
@@ -69,7 +69,7 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   private setUIFormat() {
     // this.canShowValue = ['array', 'object'].indexOf(this.data.type) == -1;
-    if (this.data.node) {
+    if (this.data.node && !this.data.node.expandable) {
       this.valueGS = this.data.node.value;
       if (typeof this.valueGS == 'string' && this.valueGS.indexOf('||') >= 0) {
         this.data.type = 'complex';
@@ -86,25 +86,30 @@ export class TreeEditorPopupComponent implements OnInit {
         }
         this.data.type = cType || typeof this.data.node.value;
       }
-    } else {
-      if (this.data.type === 'array') {
-        this.valueGS = [];
-      } else if (this.data.type === 'object') {
-        this.valueGS = {};
-      }
-    }
+    } 
+    // else {
+    //   if (this.data.type === 'array') {
+    //     this.valueGS = [];
+    //   } else if (this.data.type === 'object') {
+    //     this.valueGS = {};
+    //   }
+    // }
   }
   typeChanged() {
     this.valueGS = this.getCompatibleValue(this.data.type, this.valueGS);
     this.updateNodeValue(this.valueGS);
   }
   getCompatibleValue(type, value) {
-    if(type == 'number') {
+    if(type == 'array') {
+      value = [];
+    } else if(type == 'object')  {
+      value = {};
+    } else if(type == 'number') {
       value = isNaN(value) ? 0 : +value;
     } else if (type == 'boolean') {
       value = false;
     } else if(type != 'complex') {
-      value = typeof value == 'boolean' ? '': value + '';
+      value = value ? typeof value == 'boolean' ? '': value + '':'';
     }
     return value;
   }
@@ -114,7 +119,9 @@ export class TreeEditorPopupComponent implements OnInit {
   }
   getActualValue(value) {
     let transformedValue = value;
-    if (this.data.type == 'complex') {
+    if(typeof value == 'object') {
+      return value;
+    } else if (this.data.type == 'complex') {
       const transformedItems = this.complexItems.map(
         (item) => SharedFunctions.getLeadCharacter(item.type) + item.value
       );
@@ -156,5 +163,9 @@ export class TreeEditorPopupComponent implements OnInit {
         this._treeDb.deleteItem(this.data.node);
       }
     });
+  }
+  editNodePropertyName(node: TreeItemFlatNode, value: string) {
+    this._treeDb.updateKey(node, value);
+    node.item = value;
   }
 }

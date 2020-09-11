@@ -1,111 +1,143 @@
 <!-- <h1 mat-dialog-title>{{ data.title }}</h1> -->
 <div mat-dialog-content [ngClass]="{ 'single-item': data.type != 'complex' }">
-  <ng-container [ngSwitch]="data.type">
-    <mat-slide-toggle
-      *ngSwitchCase="'boolean'"
-      (change)="updateNodeValue($event.checked)"
-      [(ngModel)]="valueGS"
-    >
-      {{ valueGS }}
-    </mat-slide-toggle>
-    <mat-form-field *ngSwitchCase="'number'">
-      <mat-label>Value</mat-label>
-      <input
-        matInput
-        type="number"
-        (change)="updateNodeValue($event.target.value)"
-        [(ngModel)]="valueGS"
-      />
-    </mat-form-field>
-    <ng-container *ngSwitchCase="'complex'">
-      <div class="complex-item" *ngFor="let item of complexItems;let i=index">
-        <ng-container [ngSwitch]="item.type">
-          <mat-form-field *ngSwitchCase="'number'">
-            <mat-label>Value</mat-label>
-            <input
-              matInput
-              type="number"
-              (change)="updateNodeValue()"
-              [(ngModel)]="item.value"
-            />
-          </mat-form-field>
-          <mat-form-field *ngSwitchDefault>
-            <mat-label>Value</mat-label>
-            <input
-              matInput
-              type="text"
-              [disabled]="!item.type"
-              [(ngModel)]="item.value"
-              (change)="this.updateNodeValue()"
-            />
-          </mat-form-field>
-          <mat-slide-toggle
-            *ngSwitchCase="'boolean'"
-            (change)="this.updateNodeValue()"
-            [(ngModel)]="item.value"
-          >
-            {{ item.value }}
-          </mat-slide-toggle>
-          <mat-form-field>
-            <mat-label>Type</mat-label>
-            <mat-select
-              [(ngModel)]="item.type"
-              (ngModelChange)="complextItemTypeChanged(item)"
-            >
-              <mat-option
-                *ngFor="let type of complexTypes"
-                [value]="type.name"
-                [disabled]="(complexItems.length-1 > i) && (type.name | isGenericType)"
-                >
-                {{ type.displayName }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <button
-            mat-icon-button
-            [disabled]="(item.type | isGenericType)"
-            (click)="addComplexItem(i + 1)"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            color="warn"
-            (click)="deleteComplexItem(item)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </ng-container>
-      </div>
-    </ng-container>
-    <mat-form-field *ngSwitchDefault>
-      <!-- <mat-icon *ngIf = "specialCharacter" matPrefix>{{ specialCharacter }}</mat-icon> -->
-      <mat-label>Value</mat-label>
+  <div class="key">
+    <mat-form-field>
+      <mat-label>Property</mat-label>
       <input
         matInput
         type="text"
-        (change)="updateNodeValue($event.target.value)"
-        [(ngModel)]="valueGS"
+        [disabled]="data.node.parentType == 'array'"
+        (change)="editNodePropertyName(data.node, $event.target.value)"
+        [value]="data.node.item"
       />
     </mat-form-field>
-  </ng-container>
-  <mat-form-field *ngIf="data.type == undefined">
-    <input
-      matInput
-      type="text"
-      (change)="updateNodeValue($event.target.value)"
-      [(ngModel)]="valueGS"
-    />
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Type</mat-label>
-    <mat-select [(ngModel)]="data.type" (ngModelChange)="typeChanged()">
-      <mat-option *ngFor="let type of types" [value]="type.name">{{
-        type.displayName
-      }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  </div>
+  <div class="value">
+    <ng-container *ngIf="!data.node.expandable">
+      <ng-container [ngSwitch]="data.type">
+        <mat-slide-toggle
+          *ngSwitchCase="'boolean'"
+          (change)="updateNodeValue($event.checked)"
+          [(ngModel)]="valueGS"
+        >
+          {{ valueGS }}
+        </mat-slide-toggle>
+        <mat-form-field *ngSwitchCase="'number'">
+          <mat-label>Value</mat-label>
+          <input
+            matInput
+            type="number"
+            (change)="updateNodeValue($event.target.value)"
+            [(ngModel)]="valueGS"
+          />
+        </mat-form-field>
+        <ng-container *ngSwitchCase="'complex'">
+          <div
+            class="complex-item"
+            *ngFor="let item of complexItems; let i = index"
+          >
+            <ng-container [ngSwitch]="item.type">
+              <mat-form-field *ngSwitchCase="'number'">
+                <mat-label>Value</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  (change)="updateNodeValue()"
+                  [(ngModel)]="item.value"
+                />
+              </mat-form-field>
+              <mat-form-field *ngSwitchDefault>
+                <mat-label>Value</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  [disabled]="!item.type"
+                  [(ngModel)]="item.value"
+                  (change)="this.updateNodeValue()"
+                />
+              </mat-form-field>
+              <mat-slide-toggle
+                *ngSwitchCase="'boolean'"
+                (change)="this.updateNodeValue()"
+                [(ngModel)]="item.value"
+              >
+                {{ item.value }}
+              </mat-slide-toggle>
+              <mat-form-field>
+                <mat-label>Type</mat-label>
+                <mat-select
+                  [(ngModel)]="item.type"
+                  (ngModelChange)="complextItemTypeChanged(item)"
+                >
+                  <mat-option
+                    *ngFor="let type of complexTypes"
+                    [value]="type.name"
+                    [disabled]="
+                      complexItems.length - 1 > i && (type.name | isGenericType)
+                    "
+                  >
+                    {{ type.displayName }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button
+                mat-icon-button
+                [disabled]="item.type | isGenericType"
+                (click)="addComplexItem(i + 1)"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteComplexItem(item)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-container>
+          </div>
+        </ng-container>
+        <mat-form-field *ngSwitchDefault>
+          <!-- <mat-icon *ngIf = "specialCharacter" matPrefix>{{ specialCharacter }}</mat-icon> -->
+          <mat-label>Value</mat-label>
+          <input
+            matInput
+            type="text"
+            (change)="updateNodeValue($event.target.value)"
+            [(ngModel)]="valueGS"
+          />
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field *ngIf="data.type == undefined">
+        <input
+          matInput
+          type="text"
+          (change)="updateNodeValue($event.target.value)"
+          [(ngModel)]="valueGS"
+        />
+      </mat-form-field>
+    </ng-container>
+    <mat-form-field>
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="data.type" (ngModelChange)="typeChanged()">
+        <mat-option *ngFor="let type of types" [value]="type.name">
+          {{ type.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  
+  
+  <div class="count" *ngIf="data.node.expandable">
+    <span class="length" *ngIf="data.node.type == 'array'">
+      [{{ data.type.length }}]</span
+    >
+    <span class="length" *ngIf="data.node.type == 'object'">
+      {{ '{' + data.node.length + '}' }}</span
+    >
+  </div>
   <button
+    *ngIf="!data.node.expandable"
     class="action-delete"
     mat-icon-button
     color="warn"
@@ -114,4 +146,3 @@
     <mat-icon>delete</mat-icon>
   </button>
 </div>
-

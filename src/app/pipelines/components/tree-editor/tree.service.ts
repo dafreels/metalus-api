@@ -56,6 +56,7 @@ export class TreeDatabase {
       if (value != null) {
         if (typeof value === 'object') {
           node.children = this.buildFileTree(value, level + 1, node.path);
+          node.value = null;
           if (Array.isArray(value)) {
             node.type = 'array';
             node.length = value.length;
@@ -123,7 +124,11 @@ export class TreeDatabase {
     }
   }
   updatePath(path, value) {
+    const canReload = typeof _.get(this.rawData, path) == 'object' || typeof value == 'object';
     this.rawData = _.set(this.rawData, path, value);
+    if(canReload) {
+      this.initialize(this.rawData)
+    }
   }
 
   deleteItem(node: TreeItemFlatNode) {

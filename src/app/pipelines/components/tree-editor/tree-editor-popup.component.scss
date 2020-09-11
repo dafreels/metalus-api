@@ -14,8 +14,12 @@ button.complex-add {
 div.complex-item,
 .single-item {
     display: flex;
-    div {
+    div.key {
+        flex: 1 0 30%;
+    }
+    div.value {
         flex: 1 0 50%;
+        display: inherit;
     }
 }
 div.complex-item {
@@ -26,4 +30,8 @@ div.complex-item {
 }
 .hidden {
     display: none;
+}
+
+div.count {
+    margin-top: 1rem;
 }
