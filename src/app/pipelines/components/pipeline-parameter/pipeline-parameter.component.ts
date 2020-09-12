@@ -1,16 +1,29 @@
-import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild,} from '@angular/core';
-import {Pipeline, PipelineData, PipelineStepParam,} from '../../models/pipelines.model';
-import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
-import {ObjectEditorComponent} from '../../../shared/components/object-editor/object-editor.component';
-import {PackageObject} from '../../../core/package-objects/package-objects.model';
-import {SharedFunctions} from '../../../shared/utils/shared-functions';
-import {generalDialogDimensions,} from 'src/app/shared/models/custom-dialog.model';
-import {BehaviorSubject} from 'rxjs';
-import {MatSelect} from '@angular/material';
-import {FormControl} from '@angular/forms';
-import {ObjectMappingsComponent} from "../object-group-mappings/object-group-mappings.component";
-import { TreeEditorComponent } from '../tree-editor/tree-editor.component';
+import { DisplayDialogService } from '../../../shared/services/display-dialog.service';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
+import {
+  Pipeline,
+  PipelineData,
+  PipelineStepParam,
+} from '../../models/pipelines.model';
+import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
+import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
+import { PackageObject } from '../../../core/package-objects/package-objects.model';
+import { SharedFunctions } from '../../../shared/utils/shared-functions';
+import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
+import { BehaviorSubject } from 'rxjs';
+import { MatSelect } from '@angular/material';
+import { FormControl } from '@angular/forms';
+import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
+import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
 
 export interface SplitParameter {
   id: number;
@@ -32,7 +45,7 @@ export interface StepGroupProperty {
   templateUrl: './pipeline-parameter.component.html',
   styleUrls: ['./pipeline-parameter.component.scss'],
 })
-export class PipelineParameterComponent implements OnInit {
+export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() pipelinesData: PipelineData[];
   @Input() stepType: string;
   @Input() stepSuggestions: string[];
@@ -40,6 +53,7 @@ export class PipelineParameterComponent implements OnInit {
   @Input() pipelines: Pipeline[];
   @Input() isABranchStep: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
+  propertiesDialogResponse: any;
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     if (stepParameter.value && typeof stepParameter.value === 'string') {
@@ -134,9 +148,14 @@ export class PipelineParameterComponent implements OnInit {
                 value = e.trim();
                 type = SharedFunctions.getType(value, stepParameter.type);
               }
-              if (value &&
-                (type === 'global' || type === 'step' || type === 'secondary'
-                  || type === 'runtime' || type === 'mapped_runtime')) {
+              if (
+                value &&
+                (type === 'global' ||
+                  type === 'step' ||
+                  type === 'secondary' ||
+                  type === 'runtime' ||
+                  type === 'mapped_runtime')
+              ) {
                 value = value.substring(1);
               }
               return {
@@ -145,7 +164,9 @@ export class PipelineParameterComponent implements OnInit {
                 type,
                 name: stepParameter.name,
                 suggestions:
-                  type === 'step' || type === 'secondary' ? this.stepSuggestions.map((s) => s) : [],
+                  type === 'step' || type === 'secondary'
+                    ? this.stepSuggestions.map((s) => s)
+                    : [],
               };
             });
           } else {
@@ -176,15 +197,27 @@ export class PipelineParameterComponent implements OnInit {
   parameter: PipelineStepParam;
   private id = 0;
 
-  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
+  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<
+    string[]
+  >(null);
   @ViewChild('singleSelect', { static: false }) singleSelect: MatSelect;
 
-  public filteredStepGroup: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
+  public filteredStepGroup: BehaviorSubject<string[]> = new BehaviorSubject<
+    string[]
+  >(null);
   public stepGroupControl: FormControl = new FormControl('');
   public stepGroupFilterCtrl: FormControl = new FormControl();
 
-  constructor(private changeDetector: ChangeDetectorRef,
-    private displayDialogService: DisplayDialogService) {}
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private displayDialogService: DisplayDialogService
+  ) {}
+  
+  ngOnDestroy() {
+    if (this.propertiesDialogResponse) {
+      this.propertiesDialogResponse.close();
+    }
+  }
 
   ngOnInit(): void {
     this.filteredStepResponse.next(this.stepSuggestions);
@@ -193,7 +226,11 @@ export class PipelineParameterComponent implements OnInit {
     pipelinesName.length === 0
       ? (this.hasNoStepGroup = false)
       : (this.hasNoStepGroup = true);
-    if ((this.parameters[0].name === 'pipeline' || this.parameters[0].name === 'pipelineId') && this.parameters[0].value) {
+    if (
+      (this.parameters[0].name === 'pipeline' ||
+        this.parameters[0].name === 'pipelineId') &&
+      this.parameters[0].value
+    ) {
       this.stepGroupControl.setValue(this.parameters[0].value.slice(1));
     }
     this.filteredStepGroup.next(pipelinesName);
@@ -210,7 +247,8 @@ export class PipelineParameterComponent implements OnInit {
   private filterList(
     arrayToBeFiltered,
     control: FormControl,
-    arraySubject: BehaviorSubject<string[] | Pipeline[]>) {
+    arraySubject: BehaviorSubject<string[] | Pipeline[]>
+  ) {
     if (!arrayToBeFiltered) {
       return;
     }
@@ -230,12 +268,17 @@ export class PipelineParameterComponent implements OnInit {
 
   handleChange(id: number, selectedparameter?: SplitParameter) {
     this.parameter.type = this.parameterType;
-    const paramType = selectedparameter ? selectedparameter.type.toLocaleLowerCase() : this.parameterType;
+    const paramType = selectedparameter
+      ? selectedparameter.type.toLocaleLowerCase()
+      : this.parameterType;
     if (selectedparameter && paramType === 'pipeline') {
-      const inputData = this.parameters.find((parameter) => parameter.id === id);
+      const inputData = this.parameters.find(
+        (parameter) => parameter.id === id
+      );
       inputData.value = this.stepGroupControl.value;
       this.stepGroup.pipeline = this.pipelines.find(
-        (pipeline) => pipeline.name === this.stepGroupControl.value);
+        (pipeline) => pipeline.name === this.stepGroupControl.value
+      );
       this.handleChange(id);
       if (this.stepGroup.pipeline) {
         this.parameters[0].value = this.stepGroup.pipeline.name;
@@ -265,9 +308,13 @@ export class PipelineParameterComponent implements OnInit {
       if (typeof p.value === 'object') {
         parameterValue = p.value;
       } else if (count === 0) {
-        parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${p.value}`;
+        parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${
+          p.value
+        }`;
       } else {
-        parameterValue = `${parameterValue} || ${SharedFunctions.getLeadCharacter(p.type)}${p.value}`;
+        parameterValue = `${parameterValue} || ${SharedFunctions.getLeadCharacter(
+          p.type
+        )}${p.value}`;
       }
       if (p.type === 'boolean' || p.type === 'integer') {
         this.parameter.type = p.type;
@@ -276,10 +323,13 @@ export class PipelineParameterComponent implements OnInit {
       }
       count += 1;
     });
-    if (this.parameter.type === 'boolean' && ['true', 'false'].indexOf(parameterValue) >= 0) {
-      this.parameter.value = (parameterValue === 'true');
+    if (
+      this.parameter.type === 'boolean' &&
+      ['true', 'false'].indexOf(parameterValue) >= 0
+    ) {
+      this.parameter.value = parameterValue === 'true';
     } else if (this.parameter.type === 'integer' && Number(parameterValue)) {
-      this.parameter.value = Number(parameterValue)
+      this.parameter.value = Number(parameterValue);
     } else {
       this.parameter.value = parameterValue;
     }
@@ -293,7 +343,10 @@ export class PipelineParameterComponent implements OnInit {
   }
 
   removeClause(id: number) {
-    this.parameters.splice(this.parameters.findIndex((p) => p.id === id), 1);
+    this.parameters.splice(
+      this.parameters.findIndex((p) => p.id === id),
+      1
+    );
     this.handleChange(id);
   }
 
@@ -308,9 +361,13 @@ export class PipelineParameterComponent implements OnInit {
 
   disableEditorButton(param: SplitParameter) {
     if (this.stepGroup.enabled) {
-      return (this.parameter.name === 'pipeline' && this.parameterType !== 'pipeline') ||
+      return (
+        (this.parameter.name === 'pipeline' &&
+          this.parameterType !== 'pipeline') ||
         (this.parameter.name === 'pipelineId' && param.type !== 'text') ||
-        (this.parameter.name === 'pipeline' && this.parameterType === 'pipeline');
+        (this.parameter.name === 'pipeline' &&
+          this.parameterType === 'pipeline')
+      );
     } else {
       return this.parameterType !== 'object' && this.parameterType !== 'script';
     }
@@ -371,26 +428,28 @@ export class PipelineParameterComponent implements OnInit {
     } else if (this.stepGroup && this.parameter.name === 'pipelineMappings') {
       let mappings = this.parameter.value || {};
       if (this.stepGroup.pipeline) {
-        const pipelineMappings = SharedFunctions.generatePipelineMappings(this.stepGroup.pipeline);
+        const pipelineMappings = SharedFunctions.generatePipelineMappings(
+          this.stepGroup.pipeline
+        );
         mappings = Object.assign({}, pipelineMappings, mappings);
       }
-      const propertiesDialogResponse = this.displayDialogService.openDialog(
+      this.propertiesDialogResponse = this.displayDialogService.openDialog(
         // ObjectMappingsComponent,
         TreeEditorComponent,
         generalDialogDimensions,
         {
           mappings,
           typeAhead: this.stepSuggestions,
-          packageObjects: this.packageObjects
+          packageObjects: this.packageObjects,
         }
       );
-      propertiesDialogResponse.afterClosed().subscribe((result) => {
+      this.propertiesDialogResponse.afterClosed().subscribe((result) => {
         if (result) {
           inputData.value = result;
           this.handleChange(id);
         }
       });
-    }  else if (this.parameter.type === 'object' && !this.parameter.className) {
+    } else if (this.parameter.type === 'object' && !this.parameter.className) {
       let mappings = this.parameter.value || {};
       const propertiesDialogResponse = this.displayDialogService.openDialog(
         ObjectMappingsComponent,
@@ -398,7 +457,7 @@ export class PipelineParameterComponent implements OnInit {
         {
           mappings,
           typeAhead: this.stepSuggestions,
-          packageObjects: this.packageObjects
+          packageObjects: this.packageObjects,
         }
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {

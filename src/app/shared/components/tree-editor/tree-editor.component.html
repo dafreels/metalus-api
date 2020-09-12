@@ -10,7 +10,7 @@
         <button mat-icon-button disabled></button>
         <ng-container>
           <div class="tree-item">
-            <div class="key">
+            <!-- <div class="key">
               <mat-form-field>
                 <mat-label>Property</mat-label>
                 <input
@@ -24,8 +24,9 @@
             </div>
             <div class="value">
               <tree-editor-popup [node]="node"></tree-editor-popup>
-            </div>
-            <!-- <button
+            </div> -->
+              <tree-editor-popup [node]="node"></tree-editor-popup>
+              <!-- <button
               class="action-delete"
               mat-icon-button
               color="warn"
@@ -61,9 +62,8 @@
                 treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
               }}
             </mat-icon>
-            
           </button>
-          <mat-form-field>
+          <!-- <mat-form-field>
             <mat-label>Property</mat-label>
             <input
               matInput
@@ -72,13 +72,8 @@
               (change)="editNode(node, $event.target.value)"
               [value]="node.item"
             />
-          </mat-form-field>
-          <span class="length" *ngIf="node.type == 'array'">
-            [{{ node.length }}]</span
-          >
-          <span class="length" *ngIf="node.type == 'object'">
-            {{ '{' + node.length + '}' }}</span
-          >
+          </mat-form-field> -->
+          <tree-editor-popup [node]="node"></tree-editor-popup>
         </div>
         <div class="actions">
           <button mat-icon-button [matMenuTriggerFor]="typeMenu">

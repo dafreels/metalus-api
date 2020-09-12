@@ -2,7 +2,7 @@
 <mat-dialog-content class="message">
   <mat-form-field>
     <mat-label>{{ data.label }}</mat-label>
-    <input matInput cdkFocusInitial [(ngModel)]="data.value" required name="Name" />
+    <input matInput [(ngModel)]="data.value" required name="Name" #userInput = "matInput" cdkFocusInitial>
   </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

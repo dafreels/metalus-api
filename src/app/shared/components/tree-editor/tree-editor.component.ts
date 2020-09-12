@@ -15,14 +15,15 @@ import {
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
-  MatDialog,
+  MatDialog 
 } from '@angular/material/dialog';
-import { PipelineMappingsData } from '../object-group-mappings/object-group-mappings.component';
+// import { PipelineMappingsData } from '../pipelines/object-group-mappings/object-group-mappings.component';
 import { TreeEditorPopupComponent } from './tree-editor-popup.component';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
 import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
 import { PromptComponent } from './prompt/prompt.component';
 import { JsonEditorOptions } from 'ang-jsoneditor';
+import { PipelineMappingsData } from 'src/app/pipelines/components/object-group-mappings/object-group-mappings.component';
 
 @Component({
   selector: 'app-tree-editor',
@@ -105,7 +106,8 @@ export class TreeEditorComponent implements OnInit {
     flatNode.path = node.path;
     flatNode.type = node.type;
     flatNode.level = level;
-    flatNode.expandable = !!node.children ? !!node.children.length : false;
+    flatNode.expandable = ['array', 'object'].indexOf(node.type) >= 0;
+    //!!node.children ? !!node.children.length : false;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -248,7 +250,6 @@ export class TreeEditorComponent implements OnInit {
   }
 
   deleteNode(node: TreeItemFlatNode) {
-    console.log("TreeEditorPopupComponent -> deleteNode -> node", node);
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
       data: { message: `Would you like to delete ${node.item} ?` },
