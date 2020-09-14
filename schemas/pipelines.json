@@ -53,6 +53,12 @@
             "step-group"
           ]
         },
+        "tags": {
+          "type": "array"
+        },
+        "stepGroupResult": {
+          "type": "string"
+        },
         "steps": {
           "type": "array",
           "items": {

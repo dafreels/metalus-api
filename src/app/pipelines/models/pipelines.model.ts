@@ -8,6 +8,8 @@ export interface Pipeline {
   steps: PipelineStep[];
   category?: PipelineCategory;
   layout?: object;
+  tags?: any;
+  stepGroupResult?: any;
 }
 
 export interface PipelineData {

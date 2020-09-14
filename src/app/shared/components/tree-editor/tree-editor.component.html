@@ -1,51 +1,24 @@
 <mat-dialog-content>
-  <!-- <div align = "end" class="code-view"><b>Code View<mat-slide-toggle [(ngModel)]="treeView" (change)="viewChanged()"></mat-slide-toggle>Tree View </b></div> -->
   <ng-container *ngIf="treeView; else codeView">
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
       <mat-tree-node
         *matTreeNodeDef="let node"
         matTreeNodeToggle
-        matTreeNodePadding
-      >
+        matTreeNodePadding>
         <button mat-icon-button disabled></button>
         <ng-container>
           <div class="tree-item">
-            <!-- <div class="key">
-              <mat-form-field>
-                <mat-label>Property</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  [disabled]="node.parentType == 'array'"
-                  (change)="editNode(node, $event.target.value)"
-                  [value]="node.item"
-                />
-              </mat-form-field>
-            </div>
-            <div class="value">
               <tree-editor-popup [node]="node"></tree-editor-popup>
-            </div> -->
-              <tree-editor-popup [node]="node"></tree-editor-popup>
-              <!-- <button
-              class="action-delete"
-              mat-icon-button
-              color="warn"
-              (click)="deleteNode(node)"
-            >
-              <mat-icon>delete</mat-icon>
-            </button> -->
           </div>
         </ng-container>
       </mat-tree-node>
-
       <!-- Expandable Node -->
       <mat-tree-node
         class="expandable"
         *matTreeNodeDef="let node; when: hasChild"
         matTreeNodePadding
         matTreeNodeToggle
-        (appTreeonload)="expandNode(node)"
-      >
+        (appTreeonload)="expandNode(node)">
       <div class="key" *ngIf="node.level==0">
         <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename">
           <mat-icon class="mat-icon-rtl-mirror">
@@ -63,28 +36,17 @@
               }}
             </mat-icon>
           </button>
-          <!-- <mat-form-field>
-            <mat-label>Property</mat-label>
-            <input
-              matInput
-              type="text"
-              [disabled]="node.parentType == 'array'"
-              (change)="editNode(node, $event.target.value)"
-              [value]="node.item"
-            />
-          </mat-form-field> -->
           <tree-editor-popup [node]="node"></tree-editor-popup>
         </div>
         <div class="actions">
-          <button mat-icon-button [matMenuTriggerFor]="typeMenu">
+          <button mat-icon-button color="primary" [matMenuTriggerFor]="typeMenu">
             <mat-icon>add</mat-icon>
           </button>
           <mat-menu #typeMenu="matMenu">
             <button
               mat-menu-item
               *ngFor="let type of types"
-              (click)="addNewItem(node, type)"
-            >
+              (click)="addNewItem(node, type)">
               <span>{{ type.displayName }}</span>
             </button>
           </mat-menu>
@@ -92,9 +54,8 @@
             *ngIf="node.level!=0"
             class="action-delete"
             mat-icon-button
-            color="warn"
-            (click)="deleteNode(node)"
-          >
+            color="primary"
+            (click)="deleteNode(node)">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -111,8 +72,7 @@
     mat-raised-button
     color="primary"
     (click)="saveDialog()"
-    style="margin-right: 5px"
-  >
+    style="margin-right: 5px">
     Save
   </button>
   <button mat-raised-button color="primary" (click)="cancelDialog()">

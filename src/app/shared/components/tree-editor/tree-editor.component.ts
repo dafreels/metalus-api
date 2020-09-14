@@ -1,29 +1,13 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { SelectionModel } from '@angular/cdk/collections';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import {
-  MatTreeFlatDataSource,
-  MatTreeFlattener,
-} from '@angular/material/tree';
-import { BehaviorSubject } from 'rxjs';
-import {
-  TreeDatabase,
-  TreeItemFlatNode,
-  TreeItemNode,
-  IItemType,
-} from './tree.service';
-import {
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatDialog 
-} from '@angular/material/dialog';
-// import { PipelineMappingsData } from '../pipelines/object-group-mappings/object-group-mappings.component';
-import { TreeEditorPopupComponent } from './tree-editor-popup.component';
-import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
-import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
-import { PromptComponent } from './prompt/prompt.component';
-import { JsonEditorOptions } from 'ang-jsoneditor';
-import { PipelineMappingsData } from 'src/app/pipelines/components/object-group-mappings/object-group-mappings.component';
+import {Component, Inject, OnInit} from '@angular/core';
+import {SelectionModel} from '@angular/cdk/collections';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {MatTreeFlatDataSource, MatTreeFlattener,} from '@angular/material/tree';
+import {IItemType, TreeDatabase, TreeItemFlatNode, TreeItemNode,} from './tree.service';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {SharedFunctions} from 'src/app/shared/utils/shared-functions';
+import {ConfirmationModalComponent} from 'src/app/shared/components/confirmation/confirmation-modal.component';
+import {PromptComponent} from './prompt/prompt.component';
+import {PipelineMappingsData} from 'src/app/pipelines/components/object-group-mappings/object-group-mappings.component';
 
 @Component({
   selector: 'app-tree-editor',

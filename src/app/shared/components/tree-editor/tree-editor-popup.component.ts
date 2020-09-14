@@ -1,13 +1,9 @@
-import { Component, OnInit, Inject, Input, Output } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
-import {
-  TreeItemNode,
-  TreeItemFlatNode,
-  TreeDatabase,
-  IItemType,
-} from './tree.service';
-import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
-import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
+import {Component, Input, OnInit} from '@angular/core';
+import {MatDialog, MatDialogRef} from '@angular/material';
+import {IItemType, TreeDatabase, TreeItemFlatNode,} from './tree.service';
+import {SharedFunctions} from 'src/app/shared/utils/shared-functions';
+import {ConfirmationModalComponent} from 'src/app/shared/components/confirmation/confirmation-modal.component';
+
 interface IComplexItem {
   value: any;
   type: string;
@@ -20,7 +16,7 @@ interface IComplexItem {
 })
 export class TreeEditorPopupComponent implements OnInit {
   complexSeparator = ' || ';
-  buildComplexItemArray(value: any) {
+  buildComplexItemArray() {
     this.complexItems = this.valueGS
       .split(this.complexSeparator)
       .map(this.transformComplexItem);
@@ -43,18 +39,19 @@ export class TreeEditorPopupComponent implements OnInit {
   valueGS: any;
   // canShowValue: boolean;
   specialCharacter: string;
-  types: IItemType[] = this._treeDb.types; //.filter((item) => !item.canHaveChild);
+  types: IItemType[] = this._treeDb.types;
   complexTypes: IItemType[] = this._treeDb.types.filter(
-    (item) => !item.canHaveChild && item.name != 'complex'
+    (item) => !item.canHaveChild && item.name !== 'complex'
   );
   customType: boolean;
   complexItems: IComplexItem[] = [{type:null, value:''}];
-  data: { title: string; type: string; node: TreeItemFlatNode };
+  data: { title: string; type: string; node: TreeItemFlatNode; complex: boolean; };
   @Input() set node(node) {
     this.data = {
       title: '',
       type: SharedFunctions.getType(node.item, node.type) || node.type,
       node: node,
+      complex: false,
     };
   }
   constructor(
@@ -72,9 +69,10 @@ export class TreeEditorPopupComponent implements OnInit {
     if (this.data.node && !this.data.node.expandable) {
       this.valueGS = this.data.node.value;
       if (typeof this.valueGS == 'string' && this.valueGS.indexOf('||') >= 0) {
-        this.data.type = 'complex';
+        this.data.type = SharedFunctions.getType(this.data.node.value, null);
+        this.data.complex = true;
         if(this.valueGS.length != this.complexSeparator.length) {
-          this.buildComplexItemArray(this.valueGS);
+          this.buildComplexItemArray();
         }
         this.valueGS = '';
       } else {
@@ -86,14 +84,7 @@ export class TreeEditorPopupComponent implements OnInit {
         }
         this.data.type = cType || typeof this.data.node.value;
       }
-    } 
-    // else {
-    //   if (this.data.type === 'array') {
-    //     this.valueGS = [];
-    //   } else if (this.data.type === 'object') {
-    //     this.valueGS = {};
-    //   }
-    // }
+    }
   }
   typeChanged() {
     this.valueGS = this.getCompatibleValue(this.data.type, this.valueGS);
@@ -121,7 +112,7 @@ export class TreeEditorPopupComponent implements OnInit {
     let transformedValue = value;
     if(typeof value == 'object') {
       return value;
-    } else if (this.data.type == 'complex') {
+    } else if (this.data.complex) {
       const transformedItems = this.complexItems.map(
         (item) => SharedFunctions.getLeadCharacter(item.type) + item.value
       );
@@ -132,12 +123,21 @@ export class TreeEditorPopupComponent implements OnInit {
     return transformedValue;
   }
   get isComplex() {
-    return this.data.type == 'complex';
+    return this.data.complex;
   }
   addComplexItem(atIndex) {
-    let newItem = { value: '', type: null };
-    // this.complexItems.push({ value: '', type: null });
-    this.complexItems.splice(atIndex,0, newItem);
+    let newItem = { value: '', type: 'string' };
+    if (atIndex === -1) {
+      this.valueGS = this.data.node.value;
+      this.buildComplexItemArray();
+      this.valueGS = '';
+      this.data.type = SharedFunctions.getType(this.data.node.value, null);
+      this.data.complex = true;
+      this.complexItems.push(newItem);
+      this.updateNodeValue()
+    } else {
+      this.complexItems.splice(atIndex, 0, newItem);
+    }
   }
   get canAddComplexItem() {
     return this.complexItems.length

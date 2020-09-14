@@ -111,7 +111,6 @@ export class TreeDatabase {
     },
     { displayName: 'Step', name: 'step', canHaveChild: false },
     { displayName: 'Secondary', name: 'secondary', canHaveChild: false },
-    { displayName: 'Complex', name: 'complex', canHaveChild: false },
     { displayName: 'Boolean', name: 'boolean', canHaveChild: false },
     { displayName: 'String', name: 'string', canHaveChild: false },
     { displayName: 'Number', name: 'number', canHaveChild: false },

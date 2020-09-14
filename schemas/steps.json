@@ -101,6 +101,9 @@
               },
               "parameterType": {
                 "type": "string"
+              },
+              "description": {
+                "type": "string"
               }
             }
           }

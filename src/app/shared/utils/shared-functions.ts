@@ -5,8 +5,6 @@ import {
 import {Subscription} from "rxjs";
 
 export class SharedFunctions {
-         private static leadCharacters: string[] = ['@', '!', '#', '$'];
-
          static getType(value, defaultType) {
            let type = defaultType;
            if (value) {

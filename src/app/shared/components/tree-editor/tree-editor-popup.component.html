@@ -1,6 +1,5 @@
-<!-- <h1 mat-dialog-title>{{ data.title }}</h1> -->
-<div mat-dialog-content [ngClass]="{ 'single-item': data.type != 'complex' }">
-  <div class="key">
+<div mat-dialog-content [ngClass]="{ 'single-item': true }">
+  <div>
     <mat-form-field>
       <mat-label>Property</mat-label>
       <input
@@ -12,14 +11,13 @@
       />
     </mat-form-field>
   </div>
-  <div class="value">
+  <div [ngClass]="{ 'value': !data.complex }">
     <ng-container *ngIf="!data.node.expandable">
-      <ng-container [ngSwitch]="data.type">
+      <ng-container [ngSwitch]="data.complex ? 'complex' : data.type">
         <mat-slide-toggle
           *ngSwitchCase="'boolean'"
           (change)="updateNodeValue($event.checked)"
-          [(ngModel)]="valueGS"
-        >
+          [(ngModel)]="valueGS">
           {{ valueGS }}
         </mat-slide-toggle>
         <mat-form-field *ngSwitchCase="'number'">
@@ -34,8 +32,7 @@
         <ng-container *ngSwitchCase="'complex'">
           <div
             class="complex-item"
-            *ngFor="let item of complexItems; let i = index"
-          >
+            *ngFor="let item of complexItems; let i = index">
             <ng-container [ngSwitch]="item.type">
               <mat-form-field *ngSwitchCase="'number'">
                 <mat-label>Value</mat-label>
@@ -53,52 +50,44 @@
                   type="text"
                   [disabled]="!item.type"
                   [(ngModel)]="item.value"
-                  (change)="this.updateNodeValue()"
-                />
+                  (change)="this.updateNodeValue()"/>
               </mat-form-field>
               <mat-slide-toggle
                 *ngSwitchCase="'boolean'"
                 (change)="this.updateNodeValue()"
-                [(ngModel)]="item.value"
-              >
+                [(ngModel)]="item.value">
                 {{ item.value }}
               </mat-slide-toggle>
               <mat-form-field>
                 <mat-label>Type</mat-label>
                 <mat-select
                   [(ngModel)]="item.type"
-                  (ngModelChange)="complextItemTypeChanged(item)"
-                >
+                  (ngModelChange)="complextItemTypeChanged(item)">
                   <mat-option
                     *ngFor="let type of complexTypes"
                     [value]="type.name"
-                    [disabled]="
-                      complexItems.length - 1 > i && (type.name | isGenericType)
-                    "
-                  >
+                    [disabled]=" complexItems.length - 1 > i && (type.name | isGenericType)">
                     {{ type.displayName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
               <button
                 mat-icon-button
+                color="primary"
                 [disabled]="item.type | isGenericType"
-                (click)="addComplexItem(i + 1)"
-              >
+                (click)="addComplexItem(i + 1)">
                 <mat-icon>add</mat-icon>
               </button>
               <button
                 mat-icon-button
-                color="warn"
-                (click)="deleteComplexItem(item)"
-              >
+                color="primary"
+                (click)="deleteComplexItem(item)">
                 <mat-icon>delete</mat-icon>
               </button>
             </ng-container>
           </div>
         </ng-container>
         <mat-form-field *ngSwitchDefault>
-          <!-- <mat-icon *ngIf = "specialCharacter" matPrefix>{{ specialCharacter }}</mat-icon> -->
           <mat-label>Value</mat-label>
           <input
             matInput
@@ -117,7 +106,7 @@
         />
       </mat-form-field>
     </ng-container>
-    <mat-form-field>
+    <mat-form-field *ngIf="data.type === undefined || !data.complex">
       <mat-label>Type</mat-label>
       <mat-select [(ngModel)]="data.type" (ngModelChange)="typeChanged()">
         <mat-option *ngFor="let type of types" [value]="type.name">
@@ -126,23 +115,25 @@
       </mat-select>
     </mat-form-field>
   </div>
-  
-  
   <div class="count" *ngIf="data.node.expandable">
     <span class="length" *ngIf="data.node.type == 'array'">
-      [{{ data.node.length }}]</span
-    >
+      [{{ data.node.length }}]</span>
     <span class="length" *ngIf="data.node.type == 'object'">
-      {{ '{' + data.node.length + '}' }}</span
-    >
+      {{ '{' + data.node.length + '}' }}</span>
   </div>
+  <button *ngIf="!data.node.expandable && !data.complex"
+    mat-icon-button
+    color="primary"
+    [disabled]="data.type | isGenericType"
+    (click)="addComplexItem(-1)">
+    <mat-icon>add</mat-icon>
+  </button>
   <button
-    *ngIf="!data.node.expandable"
+    *ngIf="!data.node.expandable && !data.complex"
     class="action-delete"
     mat-icon-button
-    color="warn"
-    (click)="deleteNode()"
-  >
+    color="primary"
+    (click)="deleteNode()">
     <mat-icon>delete</mat-icon>
   </button>
 </div>
