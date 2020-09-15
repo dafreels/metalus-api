@@ -1,7 +1,7 @@
-<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result'">
+<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result'" [expanded]="expandPanel">
   <mat-expansion-panel-header>
     <mat-panel-title>
-      <mat-icon color="primary" [matTooltip]="parameter.description" style="margin-rightt: 3px">
+      <mat-icon color="primary" [matTooltip]="parameter.description" style="margin-right: 3px">
         info
       </mat-icon>
       {{ parameterName }}

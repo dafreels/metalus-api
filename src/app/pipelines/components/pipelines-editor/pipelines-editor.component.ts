@@ -29,6 +29,9 @@ import {
   DesignerElementOutput,
   DesignerModel
 } from "../../../designer/designer-constants";
+import {StepGroupResultModalComponent} from "../step-group-result-modal/step-group-result-modal.component";
+import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
+import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 
 @Component({
   selector: 'app-pipelines-editor',
@@ -68,7 +71,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     private pipelinesService: PipelinesService,
     private packageObjectsService: PackageObjectsService,
     public dialog: MatDialog,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private displayDialogService: DisplayDialogService) {
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(this.authService.userItemSelection.subscribe(data => {
       const newPipeline = this.generatePipeline();
@@ -962,6 +966,30 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     });
   }
 
+  showStepGroupResult() {
+    const param = {
+      type: 'text',
+      name: 'output',
+      value: this.selectedPipeline.stepGroupResult,
+      description: 'The final result that will be set as the primary when the step-group completes'
+    };
+    const stepGroupResultDialogResponse = this.displayDialogService.openDialog(
+      StepGroupResultModalComponent,
+      generalDialogDimensions,
+      {
+        param,
+        packageObjects: this.packageObjects,
+        typeAhead: this.selectedPipeline.steps.map(step => step.id),
+        pipelinesData: this.pipelinesData
+      }
+    );
+    stepGroupResultDialogResponse.afterClosed().subscribe((result) => {
+      if (result && result.value && `${result.value}`.trim().length > 0) {
+        this.selectedPipeline.stepGroupResult = result.value;
+      }
+    });
+  }
+
   private handleError(error, dialogRef) {
     let message;
     if (error.error instanceof ErrorEvent) {
@@ -990,6 +1018,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       id: this.selectedPipeline.id,
       name: this.selectedPipeline.name,
       category: this.selectedPipeline.category,
+      stepGroupResult: this.selectedPipeline.stepGroupResult,
       project: null,
       layout: {},
       steps: [],

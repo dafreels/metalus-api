@@ -1,0 +1,12 @@
+<app-pipelines-parameter
+  isABranchStep="false"
+  stepType="pipeline"
+  [stepSuggestions]="data.typeAhead"
+  [stepParameters]="data.param"
+  [packageObjects]="data.packageObjects"
+  [pipelines]="[]"
+  expandPanel="true"
+  [pipelinesData]="data.pipelinesData"></app-pipelines-parameter>
+<div mat-dialog-actions class="ok-button-div">
+  <button mat-raised-button (click)="closeDialog()" color="primary">OK</button>
+</div>

@@ -39,12 +39,20 @@
               </button>
             </span>
               <span class="pipeline-id">ID: {{selectedPipeline.id}}</span>
-              <mat-form-field>
-                <mat-select required [(ngModel)]="selectedPipeline.category">
-                  <mat-option value="pipeline">Pipeline</mat-option>
-                  <mat-option value="step-group">Step Group</mat-option>
-                </mat-select>
-              </mat-form-field>
+              <span>
+                <mat-form-field>
+                  <mat-select required [(ngModel)]="selectedPipeline.category">
+                    <mat-option value="pipeline">Pipeline</mat-option>
+                    <mat-option value="step-group">Step Group</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button mat-icon-button
+                        color="primary"
+                        [disabled]="selectedPipeline.category === 'pipeline'"
+                        (click)="showStepGroupResult()">
+                  <mat-icon>settings</mat-icon>
+                </button>
+              </span>
             </div>
             <span>
             <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
@@ -68,7 +76,7 @@
         </mat-card>
       </div>
       <!-- <app-tree-editor></app-tree-editor> -->
-      
+
       <app-designer
         [addElementSubject]="dndSubject"
         (designerDropEvent)="addStep($event)"

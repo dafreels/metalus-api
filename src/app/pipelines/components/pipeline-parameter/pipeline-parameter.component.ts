@@ -53,6 +53,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() pipelines: Pipeline[];
   @Input() isABranchStep: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
+  @Input() expandPanel: boolean = false;
   propertiesDialogResponse: any;
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
@@ -212,7 +213,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private displayDialogService: DisplayDialogService
   ) {}
-  
+
   ngOnDestroy() {
     if (this.propertiesDialogResponse) {
       this.propertiesDialogResponse.close();
