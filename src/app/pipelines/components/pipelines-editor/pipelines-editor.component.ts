@@ -289,6 +289,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       language: undefined,
       className: undefined,
       parameterType: undefined,
+      description: 'Execute this step if the provided value is missing or empty'
     };
     this.selectedStep.params.unshift(executeIfEmpty);
     this.selectedStep.type.toLocaleLowerCase() === 'branch'

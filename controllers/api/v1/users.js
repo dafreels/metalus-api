@@ -318,7 +318,7 @@ module.exports = function (router) {
         }
       }
     } catch (err) {
-      next(err);
+      // Do nothing since it is a valid state to not have a project directory when uploading remote jars
     }
     if (remoteJars && remoteJars.trim().length > 0) {
       remoteJars.split(",").forEach(f => jarFiles.push(f));
