@@ -98,7 +98,8 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'The id of the pipeline to execute. Either this parameter or the pipeline parameter must be set.'
       },
       {
         name: 'pipeline',
@@ -107,7 +108,8 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'The pipeline to execute. Either this parameter or the pipelineId parameter must be set. This may be a mapped value or a pipeline object.'
       },
       {
         name: 'useParentGlobals',
@@ -116,7 +118,8 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'Indicates whether the calling pipeline globals should be merged with the pipelineMappings.'
       },
       {
         name: 'pipelineMappings',
@@ -125,7 +128,8 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'The values to use as the globals for the pipeline. Values may be mapped from the outer pipeline context.'
       }
     ]
   };
