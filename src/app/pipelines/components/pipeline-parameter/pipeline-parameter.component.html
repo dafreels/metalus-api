@@ -1,4 +1,4 @@
-<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result'" [expanded]="expandPanel">
+<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result' || isAStepGroupResult" [expanded]="expandPanel">
   <mat-expansion-panel-header>
     <mat-panel-title>
       <mat-icon color="primary" [matTooltip]="parameter.description" style="margin-right: 3px">
@@ -114,7 +114,9 @@
     <button *ngIf="!stepGroup.enabled && parameter.name !== 'pipelineMappings'"
             mat-raised-button color="primary" (click)="addClause()"
             style="width: 100%;"
-            [disabled]=" parameterType === 'object' || parameterType === 'script' || parameterType === 'result'">
+            [disabled]="(parameters[parameters.length - 1].type | isGenericType) ||
+             complexParameter ||
+            (parameterType === 'result' && !isAStepGroupResult)">
       <mat-icon aria-label="Add OR Clause">add</mat-icon>
     </button>
   </div>

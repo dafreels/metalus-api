@@ -18,7 +18,7 @@ import {PasswordDialogComponent} from "./components/password-dialog/password-dia
 import {MatTreeModule} from '@angular/material/tree';
 import { ACE_CONFIG, AceConfigInterface, AceModule } from 'ngx-ace-wrapper';
 
-import { TreeEditorComponent } from '../shared/components/tree-editor/tree-editor.component' 
+import { TreeEditorComponent } from '../shared/components/tree-editor/tree-editor.component'
 import { TreeEditorPopupComponent } from '../shared/components/tree-editor/tree-editor-popup.component';
 import { TreeonloadDirective } from '../shared/components/tree-editor/treeonload.directive';
 import { IsGenericType } from '../shared/components/tree-editor/type-formatter.pipe';
@@ -62,6 +62,7 @@ const commonModules = [
     ...materialDesignModules,
     CloseDialogButtonComponent,
     MatSelectSearchComponent,
+    IsGenericType,
   ],
   entryComponents: [
     NameDialogComponent,

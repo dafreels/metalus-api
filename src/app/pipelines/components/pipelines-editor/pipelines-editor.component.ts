@@ -529,8 +529,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
 
   handleElementAction(action: DesignerElementAction) {
     if (action.action === 'showPipeline') {
-      // TODO Show something to the user letting them know we can't determine the pipelineId
       if (action.element.data['type'] === 'step-group') {
+        // TODO Show something to the user letting them know we can't determine the pipelineId
         const pipeline = this.getPipeline(<PipelineStep>action.element.data);
         if (pipeline) {
           const model = this.generateModelFromPipeline(pipeline);
@@ -543,6 +543,29 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       }
     } else if (action.action === 'refreshStep') {
       this.refreshStepMetadata(action.element.data['id']);
+    } else if (action.action === 'mapStepGroupOutput') {
+      let param = this.selectedStep.params.find(p => p.type === 'result');
+      if (!param) {
+        param = {
+          required: false,
+          defaultValue: undefined,
+          language: undefined,
+          className: undefined,
+          parameterType: undefined,
+          type: 'result',
+          name: 'output',
+          value: undefined,
+          description: 'The final result that will be set as the primary when the step-group completes'
+        };
+        this.selectedStep.params.push(param);
+      }
+      const stepGroupResultDialogResponse =
+        this.openStepGroupResultModal(param, this.getPipeline(<PipelineStep>action.element.data));
+      stepGroupResultDialogResponse.afterClosed().subscribe((result) => {
+        if (result && result.value && `${result.value}`.trim().length > 0) {
+          param.value = result.value;
+        }
+      });
     }
   }
 
@@ -556,12 +579,19 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       }];
     if (step.type === 'step-group') {
       actions.push({
-        displayName: 'Show pipeline',
-        action: 'showPipeline',
-        enableFunction: () => {
-          return this.getPipeline(step);
+          displayName: 'Map Step Group Result',
+          action: 'mapStepGroupOutput',
+          enableFunction: () => {
+            return this.getPipeline(this.selectedStep);
+          },
         },
-      });
+        {
+          displayName: 'Show pipeline',
+          action: 'showPipeline',
+          enableFunction: () => {
+            return this.getPipeline(this.selectedStep);
+          },
+        });
     }
     return {
       name: step.id,
@@ -973,21 +1003,25 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       value: this.selectedPipeline.stepGroupResult,
       description: 'The final result that will be set as the primary when the step-group completes'
     };
-    const stepGroupResultDialogResponse = this.displayDialogService.openDialog(
-      StepGroupResultModalComponent,
-      generalDialogDimensions,
-      {
-        param,
-        packageObjects: this.packageObjects,
-        typeAhead: this.selectedPipeline.steps.map(step => step.id),
-        pipelinesData: this.pipelinesData
-      }
-    );
+    const stepGroupResultDialogResponse =this.openStepGroupResultModal(param, this.selectedPipeline);
     stepGroupResultDialogResponse.afterClosed().subscribe((result) => {
       if (result && result.value && `${result.value}`.trim().length > 0) {
         this.selectedPipeline.stepGroupResult = result.value;
       }
     });
+  }
+
+  openStepGroupResultModal(param, pipeline) {
+    return this.displayDialogService.openDialog(
+      StepGroupResultModalComponent,
+      generalDialogDimensions,
+      {
+        param,
+        packageObjects: this.packageObjects,
+        typeAhead: pipeline.steps.map(step => step.id),
+        pipelinesData: this.pipelinesData
+      }
+    );
   }
 
   private handleError(error, dialogRef) {
@@ -1059,6 +1093,14 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     if (step.params && step.params.find(p => p.name === 'executeIfEmpty')) {
       const index = step.params.findIndex(p => p.name === 'executeIfEmpty');
       step.params.splice(index, 1);
+    }
+    if (step.type === 'step-group' && step.params && step.params.find(p => p.type === 'result')) {
+      const index = step.params.findIndex(p => p.type === 'result');
+      if (!step.params[index].value ||
+        (typeof step.params[index].value === 'string' &&
+          step.params[index].value.trim().length <= 1)) {
+        step.params.splice(index, 1);
+      }
     }
     PipelinesEditorComponent.adjustStepParameterType(step);
     if (pipeline.steps.findIndex((s) => s.id === step.id) === -1) {

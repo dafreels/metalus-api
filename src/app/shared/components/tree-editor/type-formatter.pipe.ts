@@ -1,5 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'isGenericType'
@@ -7,7 +6,7 @@ import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
 export class IsGenericType implements PipeTransform {
 
   transform(value: any, ...args: any[]): boolean {
-    return ['string', 'boolean', 'number'].indexOf(value) >=0;
+    return ['string', 'boolean', 'number', 'text', 'integer'].indexOf(value) >= 0;
   }
 
 }

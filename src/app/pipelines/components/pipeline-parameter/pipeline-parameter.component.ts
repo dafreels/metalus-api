@@ -52,6 +52,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() packageObjects: PackageObject[];
   @Input() pipelines: Pipeline[];
   @Input() isABranchStep: boolean;
+  @Input() isAStepGroupResult: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
   propertiesDialogResponse: any;
@@ -82,7 +83,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     }
-    if (stepParameter.value && typeof stepParameter.value === 'string') {
+    if (stepParameter.type !== 'result' && stepParameter.value && typeof stepParameter.value === 'string') {
       if (stepParameter.value.startsWith('&')) {
         this.parameterType = 'pipeline';
       }
