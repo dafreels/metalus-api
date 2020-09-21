@@ -68,12 +68,13 @@
         <mat-select required [(ngModel)]="param.type" (selectionChange)="handleChange(param.id, param)">
           <mat-option value="text">Static</mat-option>
           <mat-option value="global">Global</mat-option>
-          <mat-option *ngIf="stepSuggestions.length > 0" value="step">Step Response</mat-option>
-          <mat-option *ngIf="stepSuggestions.length > 0" value="secondary">Secondary Step Response</mat-option>
+          <mat-option *ngIf="stepSuggestions && stepSuggestions.length > 0" value="step">Step Response</mat-option>
+          <mat-option *ngIf="stepSuggestions && stepSuggestions.length > 0" value="secondary">Secondary Step Response</mat-option>
           <mat-option value="runtime">Runtime</mat-option>
           <mat-option value="mapped_runtime">Mapped Runtime</mat-option>
           <mat-option value="integer">Integer</mat-option>
           <mat-option value="boolean">Boolean</mat-option>
+          <mat-option value="scalascript">ScalaScript</mat-option>
           <mat-option
             *ngIf=" !stepGroup.enabled && isAScriptParameter && parameters.length === 1"
             value="script">Script</mat-option>
@@ -120,4 +121,10 @@
       <mat-icon aria-label="Add OR Clause">add</mat-icon>
     </button>
   </div>
+  <br/>
+  <mat-form-field class="parameter-type" *ngIf="showParamType">
+    <mat-label>Parameter Type</mat-label>
+    <input matInput type="text" [(ngModel)]="parameterType" />
+  </mat-form-field>
 </mat-expansion-panel>
+ 

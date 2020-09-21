@@ -24,6 +24,7 @@ import { MatSelect } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
 import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
+import { ScalaScrpitComponent } from 'src/app/shared/scala-scrpit/scala-scrpit.component';
 
 export interface SplitParameter {
   id: number;
@@ -55,9 +56,14 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() isAStepGroupResult: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
+  @Input() showParamType:boolean = false;
   propertiesDialogResponse: any;
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
+    console.log(
+      'PipelineParameterComponent -> setstepParameters -> stepParameter',
+      stepParameter
+    );
     if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
@@ -83,7 +89,11 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     }
-    if (stepParameter.type !== 'result' && stepParameter.value && typeof stepParameter.value === 'string') {
+    if (
+      stepParameter.type !== 'result' &&
+      stepParameter.value &&
+      typeof stepParameter.value === 'string'
+    ) {
       if (stepParameter.value.startsWith('&')) {
         this.parameterType = 'pipeline';
       }
@@ -224,7 +234,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.filteredStepResponse.next(this.stepSuggestions);
 
-    const pipelinesName = this.pipelines.map((pipeline) => pipeline.name);
+    const pipelinesName = this.pipelines
+      ? this.pipelines.map((pipeline) => pipeline.name)
+      : [];
     pipelinesName.length === 0
       ? (this.hasNoStepGroup = false)
       : (this.hasNoStepGroup = true);
@@ -371,14 +383,21 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           this.parameterType === 'pipeline')
       );
     } else {
-      return this.parameterType !== 'object' && this.parameterType !== 'script';
+      return (
+        this.parameterType !== 'object' &&
+        this.parameterType !== 'script' &&
+        this.parameterType! == 'scalascript'
+      );
     }
   }
 
   openEditor(id: number) {
     const inputData = this.parameters.find((p) => p.id === id);
+    console.log('openEditor -> inputData', inputData);
 
+    console.log('openEditor -> this.stepGroup', this.stepGroup);
     if (!this.stepGroup.enabled) {
+      console.log('openEditor -> parameterType', this.parameterType);
       switch (this.parameterType) {
         case 'script':
           const scriptDialogData = {
@@ -461,6 +480,24 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           typeAhead: this.stepSuggestions,
           packageObjects: this.packageObjects,
         }
+      );
+      propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    }
+    console.log(
+      "openEditor -> inputData.type === 'scalascript'",
+      inputData.type === 'scalascript'
+    );
+    if (inputData.type === 'scalascript') {
+      inputData.value = this.parameter.value || '';
+      const propertiesDialogResponse = this.displayDialogService.openDialog(
+        ScalaScrpitComponent,
+        generalDialogDimensions,
+        inputData
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {
         if (result) {
