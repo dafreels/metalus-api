@@ -6,7 +6,7 @@
       </mat-icon>
       {{ parameterName }}
     </mat-panel-title>
-  </mat-expansion-panel-header>
+</mat-expansion-panel-header>
   <div *ngFor="let param of parameters">
     <span>
       <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
@@ -105,7 +105,7 @@
           <mat-option value="sql">SQL</mat-option>
         </mat-select>
       </mat-form-field>
-      <button style="width: 10%" *ngIf="param.id === 0 || stepGroup.enabled" mat-icon-button color="primary"
+      <button style="width: 10%" *ngIf="(param.id === 0 || stepGroup.enabled) && !scalaParamType" mat-icon-button color="primary"
               (click)="openEditor(param.id)" [disabled]="disableEditorButton(param)">
       <mat-icon aria-label="Open Editor">edit</mat-icon>
     </button>
@@ -122,9 +122,9 @@
     </button>
   </div>
   <br/>
-  <mat-form-field class="parameter-type" *ngIf="showParamType">
+  <mat-form-field class="parameter-type" *ngIf="scalaParamType">
     <mat-label>Parameter Type</mat-label>
-    <input matInput type="text" [(ngModel)]="parameterType" />
+    <input matInput type="text" [(ngModel)]="parameter.customType" />
   </mat-form-field>
 </mat-expansion-panel>
- 
+

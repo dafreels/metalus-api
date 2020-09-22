@@ -6,17 +6,35 @@
       <mat-label>New Param Name</mat-label>
       <input matInput type="text" [(ngModel)]="newParamName" />
     </mat-form-field>
-    <button mat-raised-button color="primary" [disabled]="!newParamName" (click)="addParameter()">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!newParamName"
+      (click)="addParameter()"
+    >
       <mat-icon>add</mat-icon>
     </button>
   </div>
 </div>
-<app-pipelines-parameter
-  *ngFor="let parameter of parameters"
-  [stepParameters]="parameter"
-  (parameterUpdate)="parameterUpdated($event, parameter)"
-  [showParamType]="true">
-</app-pipelines-parameter>
+<div class="parameter" *ngFor="let parameter of parameters">
+  <app-pipelines-parameter
+    [stepParameters]="parameter"
+    (parameterUpdate)="parameterUpdated($event, parameter)"
+    [scalaParamType]="true"
+  >
+  </app-pipelines-parameter>
+  <div class="actions">
+    <button
+      class="action-delete"
+      mat-icon-button
+      color="primary"
+      (click)="deleteParameter(parameter)"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+<h4>Body</h4>
 <div class="code-div">
   <ace
     [mode]="'json'"
@@ -24,7 +42,7 @@
     [(value)]="codeViewData"
   ></ace>
 </div>
-{{output}}
+{{ output }}
 <mat-dialog-actions align="end">
   <button
     mat-raised-button

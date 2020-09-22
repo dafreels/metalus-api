@@ -20,7 +20,7 @@ import { PackageObject } from '../../../core/package-objects/package-objects.mod
 import { SharedFunctions } from '../../../shared/utils/shared-functions';
 import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
 import { BehaviorSubject } from 'rxjs';
-import { MatSelect } from '@angular/material';
+import { MatDialog, MatSelect } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
 import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
@@ -34,6 +34,7 @@ export interface SplitParameter {
   language?: string;
   className?: string;
   suggestions?: string[];
+  customType?: string;
 }
 
 export interface StepGroupProperty {
@@ -47,7 +48,7 @@ export interface StepGroupProperty {
   styleUrls: ['./pipeline-parameter.component.scss'],
 })
 export class PipelineParameterComponent implements OnInit, OnDestroy {
-  @Input() pipelinesData: PipelineData[];
+  @Input() pipelinesData: PipelineData[] = [];
   @Input() stepType: string;
   @Input() stepSuggestions: string[];
   @Input() packageObjects: PackageObject[];
@@ -56,14 +57,11 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() isAStepGroupResult: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
-  @Input() showParamType:boolean = false;
+  @Input() scalaParamType:boolean = false;
   propertiesDialogResponse: any;
+  
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
-    console.log(
-      'PipelineParameterComponent -> setstepParameters -> stepParameter',
-      stepParameter
-    );
     if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
@@ -222,7 +220,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private displayDialogService: DisplayDialogService
+    private displayDialogService: DisplayDialogService,
   ) {}
 
   ngOnDestroy() {
@@ -393,11 +391,8 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
 
   openEditor(id: number) {
     const inputData = this.parameters.find((p) => p.id === id);
-    console.log('openEditor -> inputData', inputData);
 
-    console.log('openEditor -> this.stepGroup', this.stepGroup);
     if (!this.stepGroup.enabled) {
-      console.log('openEditor -> parameterType', this.parameterType);
       switch (this.parameterType) {
         case 'script':
           const scriptDialogData = {
@@ -488,10 +483,6 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         }
       });
     }
-    console.log(
-      "openEditor -> inputData.type === 'scalascript'",
-      inputData.type === 'scalascript'
-    );
     if (inputData.type === 'scalascript') {
       inputData.value = this.parameter.value || '';
       const propertiesDialogResponse = this.displayDialogService.openDialog(

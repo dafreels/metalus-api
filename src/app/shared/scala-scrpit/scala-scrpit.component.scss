@@ -6,4 +6,10 @@
     height: 500px;
     margin-top: 10px;
     margin-bottom: 10px;
-  }
+}
+div.parameter {
+    display: flex;
+    app-pipelines-parameter {
+        flex: 1 0 80%;
+    }
+}

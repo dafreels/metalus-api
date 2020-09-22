@@ -18,24 +18,22 @@ export class ScalaScrpitComponent implements OnInit {
   codeViewData: string = '';
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() stepSuggestions: string[];
-  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<
-    string[]
-  >(null);
+  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
 
   constructor(
     public dialogRef: MatDialogRef<ScalaScrpitComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    console.log('ScalaScrpitComponent -> data', data, data.value.split(')').length);
     if (data.value.split(')').length >= 2) {
       const paramsString = data.value.split('').slice(1, data.value.indexOf(')')).join('');
       this.codeViewData = data.value.split('').slice(data.value.indexOf(')')+2).join('');
       this.parameters = paramsString.split(',').map((item, index) => {
         return {
           id: index,
-          value: item.split(':')[1],
-          type: item.split(':')[2],
           name: item.split(':')[0],
+          value: this.formatedValue(item.split(':')[1]),
+          customType: item.split(':')[2],
+          type: this.getType(item.split(':')[1])
         };
       });
     }
@@ -46,10 +44,14 @@ export class ScalaScrpitComponent implements OnInit {
     this.parameters.push({
       id: this.parameters.length,
       value: '',
-      type: 'string',
+      type: 'text',
+      customType: '',
       name: this.newParamName,
     });
     this.newParamName = '';
+  }
+  deleteParameter(parameter) {
+    this.parameters = this.parameters.filter(param=>param!=parameter)
   }
   parameterUpdated($event, param) {
     console.log(
@@ -59,21 +61,33 @@ export class ScalaScrpitComponent implements OnInit {
     );
   }
   saveDialog() {
-    console.log(
-      'ScalaScrpitComponent -> saveDialog -> this.output',
-      this.output
-    );
     this.dialogRef.close(this.output);
   }
   get output() {
     const params = this.parameters.reduce((acc, item) => {
       return acc
-        ? `${acc},${item.name}:${item.value}:${item.type}`
-        : `${item.name}:${item.value}:${item.type}`;
+        ? `${acc},${item.name}:${item.value}:${item.customType}`
+        : `${item.name}:${item.value}:${item.customType}`;
     }, '');
     return `(${params}) ${this.codeViewData}`;
   }
   cancelDialog() {
     this.dialogRef.close();
+  }
+  getType(value){
+    if(value == 'true' || value == 'false') {
+      return 'boolean';
+    }else if(!isNaN(value)){
+      return 'number';
+    }
+    return 'text';
+  }
+  formatedValue(value){
+    if(value == 'true' || value == 'false') {
+      return value == 'true' ? true:false;
+    } else if(!isNaN(value)){
+      return +value;
+    }
+    return value;
   }
 }
