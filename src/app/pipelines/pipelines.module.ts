@@ -19,7 +19,7 @@ import {StepGroupResultModalComponent} from "./components/step-group-result-moda
   declarations: [
     CustomBranchDialogComponent,
     PipelinesEditorComponent,
-    PipelineParameterComponent,
+    // PipelineParameterComponent,
     PipelinesSelectorModalComponent,
     ObjectMappingsComponent,
     StepInformationComponent,

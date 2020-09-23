@@ -20,10 +20,11 @@ import { PackageObject } from '../../../core/package-objects/package-objects.mod
 import { SharedFunctions } from '../../../shared/utils/shared-functions';
 import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
 import { BehaviorSubject } from 'rxjs';
-import { MatSelect } from '@angular/material';
+import { MatDialog, MatSelect } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
 import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
+import { ScalaScrpitComponent } from 'src/app/shared/scala-scrpit/scala-scrpit.component';
 
 export interface SplitParameter {
   id: number;
@@ -33,6 +34,7 @@ export interface SplitParameter {
   language?: string;
   className?: string;
   suggestions?: string[];
+  customType?: string;
 }
 
 export interface StepGroupProperty {
@@ -46,7 +48,7 @@ export interface StepGroupProperty {
   styleUrls: ['./pipeline-parameter.component.scss'],
 })
 export class PipelineParameterComponent implements OnInit, OnDestroy {
-  @Input() pipelinesData: PipelineData[];
+  @Input() pipelinesData: PipelineData[] = [];
   @Input() stepType: string;
   @Input() stepSuggestions: string[];
   @Input() packageObjects: PackageObject[];
@@ -55,7 +57,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() isAStepGroupResult: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
+  @Input() scalaParamType: boolean = false;
   propertiesDialogResponse: any;
+
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     if (stepParameter.value && typeof stepParameter.value === 'string') {
@@ -83,7 +87,11 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     }
-    if (stepParameter.type !== 'result' && stepParameter.value && typeof stepParameter.value === 'string') {
+    if (
+      stepParameter.type !== 'result' &&
+      stepParameter.value &&
+      typeof stepParameter.value === 'string'
+    ) {
       if (stepParameter.value.startsWith('&')) {
         this.parameterType = 'pipeline';
       }
@@ -224,7 +232,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.filteredStepResponse.next(this.stepSuggestions);
 
-    const pipelinesName = this.pipelines.map((pipeline) => pipeline.name);
+    const pipelinesName = this.pipelines
+      ? this.pipelines.map((pipeline) => pipeline.name)
+      : [];
     pipelinesName.length === 0
       ? (this.hasNoStepGroup = false)
       : (this.hasNoStepGroup = true);
@@ -362,6 +372,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   }
 
   disableEditorButton(param: SplitParameter) {
+    if(param.type === 'scalascript'){
+      return false;
+    }
     if (this.stepGroup.enabled) {
       return (
         (this.parameter.name === 'pipeline' &&
@@ -371,7 +384,10 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           this.parameterType === 'pipeline')
       );
     } else {
-      return this.parameterType !== 'object' && this.parameterType !== 'script';
+      return (
+        this.parameterType !== 'object' &&
+        this.parameterType !== 'script'
+      );
     }
   }
 
@@ -427,6 +443,19 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           });
           break;
       }
+    } else if (inputData.type === 'scalascript') {
+      inputData.value = this.parameter.value || '';
+      const propertiesDialogResponse = this.displayDialogService.openDialog(
+        ScalaScrpitComponent,
+        generalDialogDimensions,
+        inputData
+      );
+      propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
     } else if (this.stepGroup && this.parameter.name === 'pipelineMappings') {
       let mappings = this.parameter.value || {};
       if (this.stepGroup.pipeline) {
