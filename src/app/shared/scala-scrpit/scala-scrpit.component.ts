@@ -24,7 +24,7 @@ export class ScalaScrpitComponent implements OnInit {
     public dialogRef: MatDialogRef<ScalaScrpitComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    if (data.value.split(')').length >= 2) {
+    if (typeof data.value =='string' && data.value.split(')').length >= 2) {
       const paramsString = data.value.split('').slice(1, data.value.indexOf(')')).join('');
       this.codeViewData = data.value.split('').slice(data.value.indexOf(')')+2).join('');
       this.parameters = paramsString.split(',').map((item, index) => {
@@ -52,13 +52,6 @@ export class ScalaScrpitComponent implements OnInit {
   }
   deleteParameter(parameter) {
     this.parameters = this.parameters.filter(param=>param!=parameter)
-  }
-  parameterUpdated($event, param) {
-    console.log(
-      'ScalaScrpitComponent -> parameterUpdated -> $event, param',
-      $event,
-      param
-    );
   }
   saveDialog() {
     this.dialogRef.close(this.output);

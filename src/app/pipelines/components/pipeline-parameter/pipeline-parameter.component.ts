@@ -57,9 +57,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() isAStepGroupResult: boolean;
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
-  @Input() scalaParamType:boolean = false;
+  @Input() scalaParamType: boolean = false;
   propertiesDialogResponse: any;
-  
+
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     if (stepParameter.value && typeof stepParameter.value === 'string') {
@@ -220,7 +220,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private displayDialogService: DisplayDialogService,
+    private displayDialogService: DisplayDialogService
   ) {}
 
   ngOnDestroy() {
@@ -372,6 +372,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   }
 
   disableEditorButton(param: SplitParameter) {
+    if(param.type === 'scalascript'){
+      return false;
+    }
     if (this.stepGroup.enabled) {
       return (
         (this.parameter.name === 'pipeline' &&
@@ -383,8 +386,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else {
       return (
         this.parameterType !== 'object' &&
-        this.parameterType !== 'script' &&
-        this.parameterType! == 'scalascript'
+        this.parameterType !== 'script'
       );
     }
   }
@@ -441,6 +443,19 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           });
           break;
       }
+    } else if (inputData.type === 'scalascript') {
+      inputData.value = this.parameter.value || '';
+      const propertiesDialogResponse = this.displayDialogService.openDialog(
+        ScalaScrpitComponent,
+        generalDialogDimensions,
+        inputData
+      );
+      propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
     } else if (this.stepGroup && this.parameter.name === 'pipelineMappings') {
       let mappings = this.parameter.value || {};
       if (this.stepGroup.pipeline) {
@@ -475,20 +490,6 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           typeAhead: this.stepSuggestions,
           packageObjects: this.packageObjects,
         }
-      );
-      propertiesDialogResponse.afterClosed().subscribe((result) => {
-        if (result) {
-          inputData.value = result;
-          this.handleChange(id);
-        }
-      });
-    }
-    if (inputData.type === 'scalascript') {
-      inputData.value = this.parameter.value || '';
-      const propertiesDialogResponse = this.displayDialogService.openDialog(
-        ScalaScrpitComponent,
-        generalDialogDimensions,
-        inputData
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {
         if (result) {

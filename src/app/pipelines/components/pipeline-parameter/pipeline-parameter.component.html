@@ -74,15 +74,15 @@
           <mat-option value="mapped_runtime">Mapped Runtime</mat-option>
           <mat-option value="integer">Integer</mat-option>
           <mat-option value="boolean">Boolean</mat-option>
-          <mat-option value="scalascript">ScalaScript</mat-option>
+          <mat-option value="scalascript" *ngIf="!scalaParamType">ScalaScript</mat-option>
           <mat-option
-            *ngIf=" !stepGroup.enabled && isAScriptParameter && parameters.length === 1"
+            *ngIf=" !stepGroup.enabled && isAScriptParameter && parameters.length === 1 && !scalaParamType"
             value="script">Script</mat-option>
           <mat-option
             *ngIf="!stepGroup.enabled && parameters.length === 1 && isABranchStep"
             value="result">Result</mat-option>
           <mat-option
-            *ngIf="isAnObjectParameter && parameters.length === 1" value="object">Object</mat-option>
+            *ngIf="isAnObjectParameter && parameters.length === 1 && !scalaParamType" value="object">Object</mat-option>
           <mat-option
             *ngIf="
               parameter.name === 'pipeline' &&

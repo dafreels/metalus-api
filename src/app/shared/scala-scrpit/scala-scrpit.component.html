@@ -19,7 +19,6 @@
 <div class="parameter" *ngFor="let parameter of parameters">
   <app-pipelines-parameter
     [stepParameters]="parameter"
-    (parameterUpdate)="parameterUpdated($event, parameter)"
     [scalaParamType]="true"
   >
   </app-pipelines-parameter>
@@ -42,7 +41,7 @@
     [(value)]="codeViewData"
   ></ace>
 </div>
-{{ output }}
+<!-- {{ output }} -->
 <mat-dialog-actions align="end">
   <button
     mat-raised-button
