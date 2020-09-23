@@ -24,7 +24,7 @@ import { MatDialog, MatSelect } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
 import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
-import { ScalaScrpitComponent } from 'src/app/shared/scala-scrpit/scala-scrpit.component';
+import { ScalaScriptComponent } from 'src/app/shared/scala-scrpit/scala-script.component';
 
 export interface SplitParameter {
   id: number;
@@ -394,7 +394,20 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   openEditor(id: number) {
     const inputData = this.parameters.find((p) => p.id === id);
 
-    if (!this.stepGroup.enabled) {
+    if (inputData.type === 'scalascript') {
+      inputData.value = this.parameter.value || '';
+      const propertiesDialogResponse = this.displayDialogService.openDialog(
+        ScalaScriptComponent,
+        generalDialogDimensions,
+        inputData
+      );
+      propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    } else if (!this.stepGroup.enabled) {
       switch (this.parameterType) {
         case 'script':
           const scriptDialogData = {
@@ -443,19 +456,6 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           });
           break;
       }
-    } else if (inputData.type === 'scalascript') {
-      inputData.value = this.parameter.value || '';
-      const propertiesDialogResponse = this.displayDialogService.openDialog(
-        ScalaScrpitComponent,
-        generalDialogDimensions,
-        inputData
-      );
-      propertiesDialogResponse.afterClosed().subscribe((result) => {
-        if (result) {
-          inputData.value = result;
-          this.handleChange(id);
-        }
-      });
     } else if (this.stepGroup && this.parameter.name === 'pipelineMappings') {
       let mappings = this.parameter.value || {};
       if (this.stepGroup.pipeline) {

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScalaScrpitComponent } from './scala-scrpit.component';
+import { ScalaScriptComponent } from './scala-script.component';
 
 describe('ScalaScrpitComponent', () => {
-  let component: ScalaScrpitComponent;
-  let fixture: ComponentFixture<ScalaScrpitComponent>;
+  let component: ScalaScriptComponent;
+  let fixture: ComponentFixture<ScalaScriptComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScalaScrpitComponent ]
+      declarations: [ ScalaScriptComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ScalaScrpitComponent);
+    fixture = TestBed.createComponent(ScalaScriptComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,27 +1,24 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { BehaviorSubject } from 'rxjs';
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {
   SplitParameter,
   StepGroupProperty,
 } from 'src/app/pipelines/components/pipeline-parameter/pipeline-parameter.component';
 
 @Component({
-  selector: 'app-scala-scrpit',
-  templateUrl: './scala-scrpit.component.html',
-  styleUrls: ['./scala-scrpit.component.scss'],
+  selector: 'app-scala-script',
+  templateUrl: './scala-script.component.html',
+  styleUrls: ['./scala-script.component.scss'],
 })
-export class ScalaScrpitComponent implements OnInit {
+export class ScalaScriptComponent implements OnInit {
   parameters: SplitParameter[] = [];
   newParamName = '';
-  complexParameter = false;
   codeViewData: string = '';
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() stepSuggestions: string[];
-  public filteredStepResponse: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(null);
 
   constructor(
-    public dialogRef: MatDialogRef<ScalaScrpitComponent>,
+    public dialogRef: MatDialogRef<ScalaScriptComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     if (typeof data.value =='string' && data.value.split(')').length >= 2) {
@@ -57,10 +54,12 @@ export class ScalaScrpitComponent implements OnInit {
     this.dialogRef.close(this.output);
   }
   get output() {
+    let customType;
     const params = this.parameters.reduce((acc, item) => {
+      customType = item.customType ? `:${item.customType}` : '';
       return acc
-        ? `${acc},${item.name}:${item.value}:${item.customType}`
-        : `${item.name}:${item.value}:${item.customType}`;
+        ? `${acc},${item.name}:${item.value}${customType}`
+        : `${item.name}:${item.value}${customType}`;
     }, '');
     return `(${params}) ${this.codeViewData}`;
   }
@@ -77,7 +76,7 @@ export class ScalaScrpitComponent implements OnInit {
   }
   formatedValue(value){
     if(value == 'true' || value == 'false') {
-      return value == 'true' ? true:false;
+      return value == 'true';
     } else if(!isNaN(value)){
       return +value;
     }

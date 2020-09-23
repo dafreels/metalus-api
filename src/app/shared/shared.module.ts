@@ -24,7 +24,7 @@ import { TreeonloadDirective } from '../shared/components/tree-editor/treeonload
 import { IsGenericType } from '../shared/components/tree-editor/type-formatter.pipe';
 import { PromptComponent } from '../shared/components/tree-editor/prompt/prompt.component';
 import { TreeDatabase } from '../shared/components/tree-editor/tree.service';
-import { ScalaScrpitComponent } from './scala-scrpit/scala-scrpit.component';
+import { ScalaScriptComponent } from './scala-scrpit/scala-script.component';
 import { PipelineParameterComponent } from '../pipelines/components/pipeline-parameter/pipeline-parameter.component';
 import { ParameterEditorComponent } from './scala-scrpit/parameter-editor/parameter-editor.component';
 
@@ -59,7 +59,7 @@ const commonModules = [
     TreeonloadDirective,
     IsGenericType,
     PromptComponent,
-    ScalaScrpitComponent,
+    ScalaScriptComponent,
     PipelineParameterComponent,
     ParameterEditorComponent
   ],
@@ -82,7 +82,7 @@ const commonModules = [
     TreeEditorComponent,
     TreeEditorPopupComponent,
     PromptComponent,
-    ScalaScrpitComponent,
+    ScalaScriptComponent,
   ],
   providers: [
     { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG, },
