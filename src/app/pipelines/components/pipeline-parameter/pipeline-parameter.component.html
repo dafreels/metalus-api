@@ -110,6 +110,10 @@
       <mat-icon aria-label="Open Editor">edit</mat-icon>
     </button>
     </span>
+    <mat-form-field class="parameter-type" *ngIf="param.type === 'step' || param.type === 'secondary'">
+      <mat-label>Extra Path</mat-label>
+      <input matInput type="text" [(ngModel)]="param.extraPath" (change)="handleChange(param.id, param)"/>
+    </mat-form-field>
   </div>
   <div class="add-button">
     <button *ngIf="!stepGroup.enabled && parameter.name !== 'pipelineMappings'"

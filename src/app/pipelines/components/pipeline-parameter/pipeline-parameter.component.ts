@@ -1,30 +1,17 @@
-import { DisplayDialogService } from '../../../shared/services/display-dialog.service';
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-  OnDestroy,
-} from '@angular/core';
-import {
-  Pipeline,
-  PipelineData,
-  PipelineStepParam,
-} from '../../models/pipelines.model';
-import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
-import { ObjectEditorComponent } from '../../../shared/components/object-editor/object-editor.component';
-import { PackageObject } from '../../../core/package-objects/package-objects.model';
-import { SharedFunctions } from '../../../shared/utils/shared-functions';
-import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
-import { BehaviorSubject } from 'rxjs';
-import { MatDialog, MatSelect } from '@angular/material';
-import { FormControl } from '@angular/forms';
-import { ObjectMappingsComponent } from '../object-group-mappings/object-group-mappings.component';
-import { TreeEditorComponent } from '../../../shared/components/tree-editor/tree-editor.component';
-import { ScalaScriptComponent } from 'src/app/shared/scala-scrpit/scala-script.component';
+import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import {Pipeline, PipelineData, PipelineStepParam,} from '../../models/pipelines.model';
+import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
+import {ObjectEditorComponent} from '../../../shared/components/object-editor/object-editor.component';
+import {PackageObject} from '../../../core/package-objects/package-objects.model';
+import {SharedFunctions} from '../../../shared/utils/shared-functions';
+import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
+import {BehaviorSubject} from 'rxjs';
+import {MatSelect} from '@angular/material';
+import {FormControl} from '@angular/forms';
+import {ObjectMappingsComponent} from '../object-group-mappings/object-group-mappings.component';
+import {TreeEditorComponent} from '../../../shared/components/tree-editor/tree-editor.component';
+import {ScalaScriptComponent} from 'src/app/shared/scala-scrpit/scala-script.component';
 
 export interface SplitParameter {
   id: number;
@@ -35,6 +22,7 @@ export interface SplitParameter {
   className?: string;
   suggestions?: string[];
   customType?: string;
+  extraPath?: string;
 }
 
 export interface StepGroupProperty {
@@ -147,7 +135,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           if (stepParameter.value) {
             let value;
             let type;
+            let extraPath;
             this.parameters = stepParameter.value.split('||').map((e) => {
+              extraPath = undefined;
               const isAPipeline = this.pipelinesData.find(
                 (pipeline) => `&${pipeline.id}` === e
               );
@@ -161,12 +151,16 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
               if (
                 value &&
                 (type === 'global' ||
-                  type === 'step' ||
-                  type === 'secondary' ||
                   type === 'runtime' ||
                   type === 'mapped_runtime')
               ) {
                 value = value.substring(1);
+              } else if (value && type === 'step' || type === 'secondary') {
+                value = value.substring(1);
+                if (value.indexOf('.') > -1) {
+                  extraPath = value.substring(value.indexOf('.') + 1);
+                  value = value.substring(0, value.indexOf('.'));
+                }
               }
               return {
                 id: this.id++,
@@ -177,6 +171,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
                   type === 'step' || type === 'secondary'
                     ? this.stepSuggestions.map((s) => s)
                     : [],
+                extraPath,
               };
             });
           } else {
@@ -315,18 +310,21 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     }
     let parameterValue = '';
     let count = 0;
+    let extraPath;
     // TODO May need to ensure we don't mix primitives like boolean and integer
     this.parameters.forEach((p) => {
+      if (p.extraPath) {
+        extraPath = p.extraPath;
+      } else {
+        extraPath = undefined;
+      }
       if (typeof p.value === 'object') {
         parameterValue = p.value;
       } else if (count === 0) {
-        parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${
-          p.value
-        }`;
+        parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${p.value}.${extraPath}`;
       } else {
-        parameterValue = `${parameterValue} || ${SharedFunctions.getLeadCharacter(
-          p.type
-        )}${p.value}`;
+        parameterValue =
+          `${parameterValue} || ${SharedFunctions.getLeadCharacter(p.type)}${p.value}.${extraPath}`;
       }
       if (p.type === 'boolean' || p.type === 'integer') {
         this.parameter.type = p.type;
