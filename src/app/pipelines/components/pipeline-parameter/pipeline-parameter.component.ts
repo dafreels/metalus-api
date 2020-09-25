@@ -11,7 +11,7 @@ import {MatSelect} from '@angular/material';
 import {FormControl} from '@angular/forms';
 import {ObjectMappingsComponent} from '../object-group-mappings/object-group-mappings.component';
 import {TreeEditorComponent} from '../../../shared/components/tree-editor/tree-editor.component';
-import {ScalaScriptComponent} from 'src/app/shared/scala-scrpit/scala-script.component';
+import {ScalaScriptComponent} from 'src/app/shared/scala-script/scala-script.component';
 
 export interface SplitParameter {
   id: number;
@@ -74,6 +74,8 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       this.parameterType = 'object';
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
+    } else if (stepParameter.type === 'list') {
+      this.parameterType = 'list';
     }
     if (
       stepParameter.type !== 'result' &&
@@ -305,7 +307,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         param.suggestions = [];
       }
 
-      this.complexParameter = paramType === 'object' || paramType === 'script';
+      this.complexParameter = paramType === 'object' || paramType === 'script' || paramType === 'list';
       this.parameters[paramIndex] = param;
     }
     let parameterValue = '';
@@ -318,6 +320,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       } else {
         extraPath = undefined;
       }
+      if (paramType === 'list' && typeof p.value !== 'object') {
+        p.value = [p.value];
+      }
       if (typeof p.value === 'object') {
         parameterValue = p.value;
       } else if (count === 0) {
@@ -326,7 +331,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         parameterValue =
           `${parameterValue} || ${SharedFunctions.getLeadCharacter(p.type)}${p.value}.${extraPath}`;
       }
-      if (p.type === 'boolean' || p.type === 'integer') {
+      if (p.type === 'boolean' || p.type === 'integer' || p.type === 'list') {
         this.parameter.type = p.type;
       } else if (count > 1) {
         this.parameter.type = 'text';
@@ -373,6 +378,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     if(param.type === 'scalascript'){
       return false;
     }
+    if(param.type === 'list'){
+      return false;
+    }
     if (this.stepGroup.enabled) {
       return (
         (this.parameter.name === 'pipeline' &&
@@ -384,7 +392,8 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else {
       return (
         this.parameterType !== 'object' &&
-        this.parameterType !== 'script'
+        this.parameterType !== 'script' &&
+        this.parameterType !== 'list'
       );
     }
   }
@@ -400,6 +409,23 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         inputData
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    } else if (inputData.type === 'list') {
+      let mappings = this.parameter.value || [];
+      this.propertiesDialogResponse = this.displayDialogService.openDialog(
+        TreeEditorComponent,
+        generalDialogDimensions,
+        {
+          mappings,
+          typeAhead: this.stepSuggestions,
+          packageObjects: this.packageObjects,
+        }
+      );
+      this.propertiesDialogResponse.afterClosed().subscribe((result) => {
         if (result) {
           inputData.value = result;
           this.handleChange(id);

@@ -75,6 +75,7 @@
           <mat-option value="integer">Integer</mat-option>
           <mat-option value="boolean">Boolean</mat-option>
           <mat-option value="scalascript" *ngIf="!scalaParamType">ScalaScript</mat-option>
+          <mat-option value="list" *ngIf="parameters.length === 1 && !scalaParamType">List</mat-option>
           <mat-option
             *ngIf=" !stepGroup.enabled && isAScriptParameter && parameters.length === 1 && !scalaParamType"
             value="script">Script</mat-option>
