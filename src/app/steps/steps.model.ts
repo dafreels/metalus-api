@@ -50,7 +50,7 @@ export class StaticSteps {
     params: [
       {
         name: 'forkByValues',
-        type: 'text',
+        type: 'list',
         required: true,
         defaultValue: undefined,
         parameterType: undefined,
