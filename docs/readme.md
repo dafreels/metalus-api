@@ -4,24 +4,24 @@ runtime artifacts. [Step Libraries](https://github.com/Acxiom/metalus/docs/step-
 metadata used by the UI.
 
 # Table of Contents
-* [Contributing](https://github.com/dafreels/metalus-api/blob/develop/docs/contributing.md)
-* [Getting Started](https://github.com/dafreels/metalus-api/blob/develop/docs/getting-started.md)
-    * [Upload](https://github.com/dafreels/metalus-api/blob/develop/docs/upload.md)
-        * [Remote Jars](https://github.com/dafreels/metalus-api/blob/develop/docs/upload.md#remote-jars)
-        * [Local Jars](https://github.com/dafreels/metalus-api/blob/develop/docs/upload.md#local-jars)
-    * [API](https://github.com/dafreels/metalus-api/blob/develop/docs/api.md)
-* [Navigation Bar](https://github.com/dafreels/metalus-api/blob/develop/docs/navigation-bar.md)
-* [Users](https://github.com/dafreels/metalus-api/blob/develop/docs/users.md)
-    * [Profile](https://github.com/dafreels/metalus-api/blob/develop/docs/profile.md)
-    * [Projects](https://github.com/dafreels/metalus-api/blob/develop/docs/projects.md)
-* [Landing Page](https://github.com/dafreels/metalus-api/blob/develop/docs/getting-started.md#landing-screen)
-* [Pipeline Editor](https://github.com/dafreels/metalus-api/blob/develop/docs/pipeline-editor.md)
-    * Control Panel
-    * Step Selector
-        * Flow Control
-        * Step Groups
-    * Step Parameters
-    * Designer
+* [Contributing](contributing.md)
+* [Getting Started](getting-started.md)
+    * [Upload](upload.md)
+        * [Remote Jars](upload.md#remote-jars)
+        * [Local Jars](upload.md#local-jars)
+    * [API](api.md)
+* [Navigation Bar](navigation-bar.md)
+* [Users](users.md)
+    * [Profile](profile.md)
+    * [Projects](projects.md)
+* [Landing Page](getting-started.md#landing-screen)
+* [Pipeline Editor](pipeline-editor.md)
+    * [Control Panel](pipeline-editor.md#control-panel)
+    * [Step Selector](pipeline-editor.md#step-selector)
+        * [Flow Control](pipeline-editor.md#flow-control-steps)
+        * [Step Groups](pipeline-editor.md#step-groups)
+    * [Step Parameters](pipeline-editor.md#step-parameters)
+    * [Designer](pipeline-editor.md#designer)
         * Step Actions
 * Object/List Editor
 * Scalascript Editor
