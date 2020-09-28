@@ -11,7 +11,7 @@ metadata used by the UI.
         * [Local Jars](upload.md#local-jars)
     * [API](api.md)
 * [Navigation Bar](navigation-bar.md)
-* Users
+* [Users](users.md)
     * [Profile](profile.md)
     * [Projects](projects.md)
 * [Landing Page](getting-started.md#landing-screen)
