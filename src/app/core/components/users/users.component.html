@@ -26,6 +26,14 @@
             <mat-header-cell *matHeaderCellDef> Default ProjectId </mat-header-cell>
             <mat-cell *matCellDef="let user"> {{user.defaultProjectId}} </mat-cell>
           </ng-container>
+          <ng-container matColumnDef="editUser">
+            <mat-header-cell *matHeaderCellDef>Edit User</mat-header-cell>
+            <mat-cell *matCellDef="let user">
+              <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="grey" (click)="editUser(user)">
+                <mat-icon color="primary">edit</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
           <ng-container matColumnDef="removeUser">
             <mat-header-cell *matHeaderCellDef>Remove User</mat-header-cell>
             <mat-cell *matCellDef="let user">

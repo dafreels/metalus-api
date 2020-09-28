@@ -19,7 +19,7 @@ export class UsersComponent implements OnInit {
   currentUser: User;
   users: User[];
   public dataSource = new MatTableDataSource<User>()
-  public displayedColumns = ['id', 'displayName', 'username', 'role', 'defaultProjectId','removeUser']
+  public displayedColumns = ['id', 'displayName', 'username', 'role', 'defaultProjectId', 'editUser', 'removeUser']
   constructor(private authService: AuthService,
               private usersService: UsersService,
               private displayDialogService: DisplayDialogService,
