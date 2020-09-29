@@ -75,7 +75,7 @@ The landing screen provides some simple counts about the metadata stored by the 
 * Steps
 * Object Schemas
 
-![Landing Screen](docs/images/landing_screen.png)
+![Landing Screen](images/landing_screen.png)
 
 Upon login or after each [metadata upload](upload.md), users will be brought back to this screen.
 
