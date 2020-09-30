@@ -1,9 +1,7 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {
-  SplitParameter,
-  StepGroupProperty,
-} from 'src/app/pipelines/components/pipeline-parameter/pipeline-parameter.component';
+import {StepGroupProperty,} from 'src/app/pipelines/components/pipeline-parameter/pipeline-parameter.component';
+import {PipelineStepParam} from "../../pipelines/models/pipelines.model";
 
 @Component({
   selector: 'app-scala-script',
@@ -11,11 +9,11 @@ import {
   styleUrls: ['./scala-script.component.scss'],
 })
 export class ScalaScriptComponent implements OnInit {
-  parameters: SplitParameter[] = [];
+  parameters: PipelineStepParam[] = [];
   newParamName = '';
   codeViewData: string = '';
   @Input() stepGroup: StepGroupProperty = { enabled: false };
-  @Input() stepSuggestions: string[];
+  stepSuggestions: string[];
 
   constructor(
     public dialogRef: MatDialogRef<ScalaScriptComponent>,
@@ -28,31 +26,40 @@ export class ScalaScriptComponent implements OnInit {
         return {
           id: index,
           name: item.split(':')[0],
-          value: this.formatedValue(item.split(':')[1]),
-          customType: item.split(':')[2],
+          value: this.formattedValue(item.split(':')[1]),
+          customType: item.split(':')[2] || '',
           type: this.getType(item.split(':')[1])
         };
       });
     }
+    this.stepSuggestions = data.stepSuggestions;
   }
 
   ngOnInit() {}
+
   addParameter() {
     this.parameters.push({
-      id: this.parameters.length,
       value: '',
       type: 'text',
       customType: '',
       name: this.newParamName,
+      required: true,
+      defaultValue: undefined,
+      language: undefined,
+      className: undefined,
+      parameterType: undefined,
     });
     this.newParamName = '';
   }
+
   deleteParameter(parameter) {
     this.parameters = this.parameters.filter(param=>param!=parameter)
   }
+
   saveDialog() {
     this.dialogRef.close(this.output);
   }
+
   get output() {
     let customType;
     const params = this.parameters.reduce((acc, item) => {
@@ -63,9 +70,11 @@ export class ScalaScriptComponent implements OnInit {
     }, '');
     return `(${params}) ${this.codeViewData}`;
   }
+
   cancelDialog() {
     this.dialogRef.close();
   }
+
   getType(value){
     if(value == 'true' || value == 'false') {
       return 'boolean';
@@ -74,7 +83,8 @@ export class ScalaScriptComponent implements OnInit {
     }
     return 'text';
   }
-  formatedValue(value){
+
+  formattedValue(value){
     if(value == 'true' || value == 'false') {
       return value == 'true';
     } else if(!isNaN(value)){

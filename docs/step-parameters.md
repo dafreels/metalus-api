@@ -82,3 +82,8 @@ presented that allows an extra path to be entered which will be used to access e
 
 There is also a special type named _Pipeline_ which will be available when the selected step is a step-group, and
 the parameter name is _pipeline_. The value will be a drop down listing all _step-group_ pipelines that are available.
+
+The List, Object, Script and Scalascript types enable the edit button which will open the specific editor. The list
+and object types will open the [object editor modal](object-editor.md), while the script type will open the 
+[code editor](code-editor.md) with the syntax preselected based on the _language_ attribute of the step metadata. The
+scalascript type will open the [scalascript editor modal](scala-script-editor.md).

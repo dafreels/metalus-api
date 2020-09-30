@@ -106,6 +106,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       this.parameterName = stepParameter.name;
       switch (stepParameter.type.toLowerCase()) {
         case 'object':
+        case 'scalascript':
         case 'script':
           this.complexParameter = true;
           this.parameters = [
@@ -307,7 +308,13 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         param.suggestions = [];
       }
 
-      this.complexParameter = paramType === 'object' || paramType === 'script' || paramType === 'list';
+      if (paramType === 'object' || paramType === 'script' ||
+        paramType === 'list' || paramType === 'scalascript') {
+        this.complexParameter = true;
+        this.parameterType = paramType;
+      } else {
+        this.complexParameter = false;
+      }
       this.parameters[paramIndex] = param;
     }
     let parameterValue = '';
@@ -316,9 +323,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     // TODO May need to ensure we don't mix primitives like boolean and integer
     this.parameters.forEach((p) => {
       if (p.extraPath) {
-        extraPath = p.extraPath;
+        extraPath = `.${p.extraPath}`;
       } else {
-        extraPath = undefined;
+        extraPath = '';
       }
       if (paramType === 'list' && typeof p.value !== 'object') {
         p.value = [p.value];
@@ -326,10 +333,10 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       if (typeof p.value === 'object') {
         parameterValue = p.value;
       } else if (count === 0) {
-        parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${p.value}.${extraPath}`;
+        parameterValue = `${SharedFunctions.getLeadCharacter(p.type)}${p.value}${extraPath}`;
       } else {
         parameterValue =
-          `${parameterValue} || ${SharedFunctions.getLeadCharacter(p.type)}${p.value}.${extraPath}`;
+          `${parameterValue} || ${SharedFunctions.getLeadCharacter(p.type)}${p.value}${extraPath}`;
       }
       if (p.type === 'boolean' || p.type === 'integer' || p.type === 'list') {
         this.parameter.type = p.type;
@@ -378,7 +385,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     if(param.type === 'scalascript'){
       return false;
     }
-    if(param.type === 'list'){
+    if(param.type === 'list' || param.type === 'object'){
       return false;
     }
     if (this.stepGroup.enabled) {
@@ -406,11 +413,15 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       const propertiesDialogResponse = this.displayDialogService.openDialog(
         ScalaScriptComponent,
         generalDialogDimensions,
-        inputData
+        {
+          data: inputData,
+          stepSuggestions: this.stepSuggestions,
+        }
       );
       propertiesDialogResponse.afterClosed().subscribe((result) => {
         if (result) {
           inputData.value = result;
+          this.parameterType = 'scalascript';
           this.handleChange(id);
         }
       });
@@ -426,6 +437,29 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         }
       );
       this.propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    } if (inputData.type === 'object') { // TODO All objects will use this for now
+      let mappings = this.parameter.value || {};
+      if (this.parameter.name === 'pipelineMappings' && this.stepGroup.pipeline) {
+        const pipelineMappings = SharedFunctions.generatePipelineMappings(
+          this.stepGroup.pipeline
+        );
+        mappings = Object.assign({}, pipelineMappings, mappings);
+      }
+      const propertiesDialogResponse = this.displayDialogService.openDialog(
+        TreeEditorComponent,
+        generalDialogDimensions,
+        {
+          mappings,
+          typeAhead: this.stepSuggestions,
+          packageObjects: this.packageObjects,
+        }
+      );
+      propertiesDialogResponse.afterClosed().subscribe((result) => {
         if (result) {
           inputData.value = result;
           this.handleChange(id);
@@ -480,47 +514,6 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           });
           break;
       }
-    } else if (this.stepGroup && this.parameter.name === 'pipelineMappings') {
-      let mappings = this.parameter.value || {};
-      if (this.stepGroup.pipeline) {
-        const pipelineMappings = SharedFunctions.generatePipelineMappings(
-          this.stepGroup.pipeline
-        );
-        mappings = Object.assign({}, pipelineMappings, mappings);
-      }
-      this.propertiesDialogResponse = this.displayDialogService.openDialog(
-        // ObjectMappingsComponent,
-        TreeEditorComponent,
-        generalDialogDimensions,
-        {
-          mappings,
-          typeAhead: this.stepSuggestions,
-          packageObjects: this.packageObjects,
-        }
-      );
-      this.propertiesDialogResponse.afterClosed().subscribe((result) => {
-        if (result) {
-          inputData.value = result;
-          this.handleChange(id);
-        }
-      });
-    } else if (this.parameter.type === 'object' && !this.parameter.className) {
-      let mappings = this.parameter.value || {};
-      const propertiesDialogResponse = this.displayDialogService.openDialog(
-        ObjectMappingsComponent,
-        generalDialogDimensions,
-        {
-          mappings,
-          typeAhead: this.stepSuggestions,
-          packageObjects: this.packageObjects,
-        }
-      );
-      propertiesDialogResponse.afterClosed().subscribe((result) => {
-        if (result) {
-          inputData.value = result;
-          this.handleChange(id);
-        }
-      });
     }
   }
 }
