@@ -5,10 +5,10 @@
 # Metalus (Managed ETL)
 Provides a web interface for managing projects built using the [Metalus Pipeline Library](https://github.com/Acxiom/metalus).
 
-## [UI Documentation](https://github.com/dafreels/metalus-api/blob/develop/docs/docs/readme.md)
+## [UI Documentation](https://github.com/dafreels/metalus-api/blob/develop/docs/readme.md)
 The user interface enables building the runtime Metalus configuration objects.
 
-## [Contributing](https://github.com/dafreels/metalus-api/blob/develop/docs/docs/contributing.md)
+## [Contributing](https://github.com/dafreels/metalus-api/blob/develop/docs/contributing.md)
 Instructions for contributing to Metalus Studio.
 
 ## [Docker Images](https://hub.docker.com/r/dafreels/metalus-studio)
