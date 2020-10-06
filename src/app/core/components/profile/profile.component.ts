@@ -78,7 +78,7 @@ export class ProfileComponent implements OnInit {
   addProject() {
     const dialogRef = this.dialog.open(NameDialogComponent, {
       width: '25%',
-      height: '25%',
+      height: '212px',
       data: { name: '' },
     });
     dialogRef.afterClosed().subscribe((result) => {

@@ -129,7 +129,7 @@ export class UploadComponent implements OnInit {
   processJars() {
     const dialogRef = this.dialog.open(PasswordDialogComponent, {
       width: '25%',
-      height: '25%',
+      height: '212px',
       data: { password: '' },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -146,7 +146,10 @@ export class UploadComponent implements OnInit {
           waitDialogRef.close();
           this.router.navigate(['landing']);
         },
-          (error) => this.handleError(error, dialogRef));
+          (error) => {
+            this.handleError(error, dialogRef);
+            waitDialogRef.close();
+          });
       }
     });
   }

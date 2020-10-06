@@ -7,7 +7,8 @@ export interface PasswordDialogData {
 
 @Component({
   selector: 'app-name-dialog',
-  templateUrl: './password-dialog.component.html'
+  templateUrl: './password-dialog.component.html',
+  styles: ['mat-form-field {width: 100%}']
 })
 export class PasswordDialogComponent {
   constructor(
