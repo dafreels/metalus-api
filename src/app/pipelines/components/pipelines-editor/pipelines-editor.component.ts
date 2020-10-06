@@ -332,7 +332,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     } else {
       dialogRef = this.dialog.open(NameDialogComponent, {
         width: '25%',
-        height: '25%',
+        height: '212px',
         data: {name: ''},
       });
     }
@@ -852,7 +852,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   private handleCopyPipeline() {
     const dialogRef = this.dialog.open(NameDialogComponent, {
       width: '25%',
-      height: '25%',
+      height: '212px',
       data: { name: `Copy of ${this.selectedPipeline.name}` },
     });
     this.subscriptions.push(dialogRef.afterClosed().subscribe((result) => {
