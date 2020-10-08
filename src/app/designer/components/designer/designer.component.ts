@@ -241,7 +241,6 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     node.style.top = `${this.model.nodes[nodeId].y - 32}px`;
 
     this.htmlNodeLookup[nodeId] = node;
-
     // Add the input connector
     if (data.input) {
       const endpoint = this.jsPlumbInstance.addEndpoint(node, DesignerConstants.DEFAULT_TARGET_ENDPOINT);
@@ -253,20 +252,16 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     // Add the output connectors
     if (data.outputs && data.outputs.length > 0) {
       let rotations = [];
-      if (data.outputs.length === 1 || data.outputs.length % 2 !== 0) {
+      if (data.outputs.length === 5 || data.outputs.length % 2 !== 0) {
         rotations.push(0);
       }
       let rotationStep = 180 / data.outputs.length;
       let iteration = rotations.length;
-      let rotationIncrement = rotationStep;
+      let rotationIncrement = 0;//rotationStep;
       do {
         rotations.push(rotationIncrement);
-        rotationIncrement += rotationStep;
-        if (rotationIncrement > 89) {
-          rotationStep = -rotationStep;
-          rotationIncrement = 360 + rotationStep;
-        }
         iteration += 1;
+        rotationIncrement = 360 - iteration*rotationStep;
       } while (iteration < data.outputs.length);
 
       let i = 0;
