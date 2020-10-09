@@ -252,18 +252,15 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     // Add the output connectors
     if (data.outputs && data.outputs.length > 0) {
       let rotations = [];
-      if (data.outputs.length === 5 || data.outputs.length % 2 !== 0) {
-        rotations.push(0);
-      }
-      let rotationStep = 180 / data.outputs.length;
-      let iteration = rotations.length;
-      let rotationIncrement = 0;//rotationStep;
-      do {
-        rotations.push(rotationIncrement);
-        iteration += 1;
-        rotationIncrement = 360 - iteration*rotationStep;
-      } while (iteration < data.outputs.length);
-
+      let rotationStep = 180 / (data.outputs.length-1);
+      rotationStep = rotationStep > 90 ? 90: rotationStep;
+      let currentPosition = 270; // Right Side Fixed Position
+      data.outputs.forEach(() => {
+        rotations.push(currentPosition);
+        currentPosition = currentPosition + rotationStep;
+        currentPosition = currentPosition >= 360 ? currentPosition - 360 : currentPosition;
+      }); 
+      rotations= rotations.reverse();
       let i = 0;
       let endpoint;
       data.outputs.forEach(output => {
