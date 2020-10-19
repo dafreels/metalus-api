@@ -416,15 +416,26 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       height: '90%',
       data: { code: '', language: 'json', allowSave: true },
     });
-    this.subscriptions.push(dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.code.trim().length > 0) {
-        const pipeline = JSON.parse(result.code);
-        delete pipeline._id;
-        this._pipeline = pipeline;
-        this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
-        this.loadPipelineToDesigner();
-      }
-    }));
+    this.subscriptions.push(
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result && result.code.trim().length > 0) {
+          try {
+            const pipeline = JSON.parse(result.code);
+            delete pipeline._id;
+            this._pipeline = pipeline;
+            this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
+            this.loadPipelineToDesigner();
+          } catch (error) {
+            const dialogRef = this.dialog.open(ErrorModalComponent, {
+              width: '450px',
+              data: {
+                messages: ['Unable to parse the JSON', error],
+              },
+            });
+          }
+        }
+      })
+    );
   }
 
   savePipeline() {
