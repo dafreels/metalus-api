@@ -6,6 +6,6 @@ sections that each serve a specific purpose.
 * [Step Selector](step-selector.md)
 * [Control Panel](pipeline-editor-control-panel.md)
 * [Designer](pipeline-editor-designer.md)
-* [Step Parameters](#step-parameters)
+* [Step Parameters](step-parameters.md)
 
 ![Pipeline Editor](images/pipeline_editor_screen.png)

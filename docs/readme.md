@@ -1,7 +1,7 @@
 # Metalus Studio UI
 The Metalus Studio UI provides tools that enable developers to create [Metalus Pipeline Library](https://github.com/Acxiom/metalus) 
-runtime artifacts. [Step Libraries](https://github.com/Acxiom/metalus/docs/step-libraries.md) are the primary source of the 
-metadata used by the UI. Users should read the [Pipeline Mappings](https://github.com/Acxiom/metalus/blob/develop/docs/parameter-mapping.md) documentation before using Metalus Studio.
+runtime artifacts. [Step Libraries](https://github.com/Acxiom/metalus/blob/master/docs/step-libraries.md) are the primary source of the 
+metadata used by the UI. Users should read the [Pipeline Mappings](https://github.com/Acxiom/metalus/blob/master/docs/parameter-mapping.md) documentation before using Metalus Studio.
 
 # Table of Contents
 * [Contributing](contributing.md)

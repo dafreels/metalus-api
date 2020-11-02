@@ -32,4 +32,15 @@ module.exports = (grunt) => {
     'curl-dir:metalusUtils',
     'extract-metalus-utils',
   ]);
+
+  grunt.registerTask('genDocsLocal', [
+    'clean:localDocs',
+    'markdown:local',
+    'copy:localDocImages'
+  ]);
+
+  grunt.registerTask('genDocsDocker', [
+    'markdown:docker',
+    'copy:dockerDocImages'
+  ]);
 };

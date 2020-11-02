@@ -1,6 +1,6 @@
 # Step Selector
 The _step selector_ provides easy access to all steps available to be chosen. Steps will be dragged from
-the _step selector_ to the [designer](#designer). Other than the preloaded steps, all other steps will be
+the _step selector_ to the [designer](pipeline-editor-designer.md). Other than the preloaded steps, all other steps will be
 provided from the step library.
 ## Filter
 A filter text box allows the user to type in a name/command to reduce the list of steps. The drop down 
@@ -26,7 +26,7 @@ The user will also be required to define at least one result before the step can
 ## Step Groups
 When the Pipeline Editor loads, the pipeline metadata will be scanned for _step-group_ pipelines. An entry
 in the _Step Groups_ will be created that can be dragged to the designer. The pipeline will be preloaded
-allowing the _pipelineMappings_ to be mapped. Premapped step groups should be used instead of the blank
+allowing the _pipelineMappings_ to be mapped. Pre-mapped step groups should be used instead of the blank
 _Step Group_ found with the [Flow Control Steps](#flow-control-steps).
 
 ![Step Group Steps](images/step_group_steps.png)

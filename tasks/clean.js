@@ -8,6 +8,9 @@ module.exports = (grunt) => {
     },
     metalus: {
       src: ['metalus-utils']
+    },
+    localDocs: {
+      src: ['docs/html']
     }
   };
 };
