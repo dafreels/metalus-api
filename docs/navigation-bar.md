@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Navigation Bar
 The navigations bar will always appear at the top of the screen and contains several key components.
 

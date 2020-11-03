@@ -6,13 +6,6 @@
       <mat-icon color="primary">home</mat-icon>
       <span class="spacer">Home</span>
   </a>
-  <!--      <button mat-menu-item [disabled]="currentPage === 'applications-editor'">-->
-  <!--        <div>-->
-  <!--          <mat-icon color="primary">dashboards</mat-icon>-->
-  <!--          <span class="spacer"><a [routerLink]="['/applications-editor']"-->
-  <!--                                  routerLinkActive="active">Applications Editor</a></span>-->
-  <!--        </div>-->
-  <!--      </button>-->
   <a mat-menu-item [routerLink]="['/pipelines-editor']"
   routerLinkActive="active">
       <mat-icon color="primary">more_vert</mat-icon>
@@ -22,10 +15,12 @@
       <mat-icon color="primary">group</mat-icon>
       <span class="spacer">Upload Metadata</span>
   </a>
-<!--  <button mat-menu-item [disabled]="currentPage === 'steps-editor'">-->
-<!--    <div>-->
-<!--      <mat-icon color="primary">apps</mat-icon>-->
-<!--      <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>-->
-<!--    </div>-->
-<!--  </button>-->
+  <a mat-menu-item  [routerLink]="['/upload']" routerLinkActive="active">
+      <mat-icon color="primary">group</mat-icon>
+      <span class="spacer">Upload Metadata</span>
+  </a>
+  <button mat-menu-item (click)="openHelp()">
+    <mat-icon color="primary">help</mat-icon>
+    <span class="spacer">Help</span>
+  </button>
 </mat-menu>

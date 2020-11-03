@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Profile
 The profile screen allows a user to manage different aspects of the account.
 

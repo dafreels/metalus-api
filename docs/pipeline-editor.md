@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Pipeline Editor
 The _Pipeline Editor_ screen provides tools for building and maintaining Metalus pipelines. The screen consists of several
 sections that each serve a specific purpose.

@@ -14,6 +14,7 @@ import {UserMenuComponent} from "./components/user-menu/user-menu.component";
 import {UploadComponent} from "./components/upload/upload.component";
 import {NavToolbarComponent} from "./components/nav-toolbar/nav-toolbar.component";
 import { LogOutComponent } from './components/log-out/log-out.component';
+import {HelpComponent} from "./components/help/help.component";
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import { LogOutComponent } from './components/log-out/log-out.component';
   declarations: [
     ChangePasswordValidatorDirective,
     ChangePasswordModalComponent,
+    HelpComponent,
     LandingComponent,
     LoginComponent,
     NavMenuComponent,
@@ -37,11 +39,13 @@ import { LogOutComponent } from './components/log-out/log-out.component';
   ],
   entryComponents: [
     ChangePasswordModalComponent,
-    UsersModalComponent,
-    LogOutComponent
+    HelpComponent,
+    LogOutComponent,
+    UsersModalComponent
   ],
   exports: [
     ChangePasswordModalComponent,
+    HelpComponent,
     LandingComponent,
     LoginComponent,
     NavMenuComponent,

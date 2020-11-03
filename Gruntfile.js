@@ -33,14 +33,9 @@ module.exports = (grunt) => {
     'extract-metalus-utils',
   ]);
 
-  grunt.registerTask('genDocsLocal', [
+  grunt.registerTask('genDocs', [
     'clean:localDocs',
     'markdown:local',
     'copy:localDocImages'
-  ]);
-
-  grunt.registerTask('genDocsDocker', [
-    'markdown:docker',
-    'copy:dockerDocImages'
   ]);
 };

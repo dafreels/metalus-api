@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Upload Metadata
 Before working with pipelines or applications, metadata must be uploaded for the 
 step libraries that will be used in the final application. After the initial upload, 

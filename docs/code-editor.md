@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Code Editor
 Metalus Studio provides an integrated code editor based on the [ACE Code](https://ace.c9.io/) editor. Syntax will
 be selected based on the information available. The editor appears as a modal or embedded throughout the UI.

@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Scalascript Editor
 The _scalascript_ editor is a specialized component which gives pipeline designers the ability to embed scala
 script code within a mapping. Prior to this feature, a developer would either need to create a custom step

@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Step Selector
 The _step selector_ provides easy access to all steps available to be chosen. Steps will be dragged from
 the _step selector_ to the [designer](pipeline-editor-designer.md). Other than the preloaded steps, all other steps will be

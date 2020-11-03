@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Control Panel
 The control panel provides access to the specific properties of the pipeline including the name and type. The gear
 icon next to the type drop down will be enabled if the pipeline is a _step-group_. Clicking the icon will display the 

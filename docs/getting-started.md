@@ -1,3 +1,5 @@
+[Home](readme.md)
+
 # Getting Started
 ## Mongo Setup
 Mongo is the recommended backend for production usage. The default database name is _metalus_.
