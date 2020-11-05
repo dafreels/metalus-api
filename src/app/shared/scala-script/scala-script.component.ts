@@ -19,9 +19,10 @@ export class ScalaScriptComponent implements OnInit {
     public dialogRef: MatDialogRef<ScalaScriptComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    if (typeof data.value =='string' && data.value.split(')').length >= 2) {
-      const paramsString = data.value.split('').slice(1, data.value.indexOf(')')).join('');
-      this.codeViewData = data.value.split('').slice(data.value.indexOf(')')+2).join('');
+    const inputData = data.data;
+    if (typeof inputData.value === 'string' && inputData.value.split(')').length >= 2) {
+      const paramsString = inputData.value.split('').slice(1, inputData.value.indexOf(')')).join('');
+      this.codeViewData = inputData.value.split('').slice(inputData.value.indexOf(')')+2).join('');
       this.parameters = paramsString.split(',').map((item, index) => {
         return {
           id: index,
