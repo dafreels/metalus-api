@@ -1,16 +1,13 @@
-import { PipelinesService } from './../../../pipelines/services/pipelines.service';
-import { Component, OnInit } from '@angular/core';
-import { StepsService } from '../../../steps/steps.service';
-import { Step } from '../../../steps/steps.model';
-import { Pipeline } from '../../../pipelines/models/pipelines.model';
-import { ApplicationsService } from '../../../applications/applications.service';
-import { Application } from '../../../applications/applications.model';
-import { PackageObjectsService } from '../../package-objects/package-objects.service';
-import { PackageObject } from '../../package-objects/package-objects.model';
+import {PipelinesService} from '../../../pipelines/services/pipelines.service';
+import {Component, OnInit} from '@angular/core';
+import {StepsService} from '../../../steps/steps.service';
+import {ApplicationsService} from '../../../applications/applications.service';
+import {PackageObjectsService} from '../../package-objects/package-objects.service';
 
 @Component({
   selector: 'app-landing-page',
   templateUrl: './landing.component.html',
+  styleUrls: ['./landing.component.scss']
 })
 export class LandingComponent implements OnInit {
   applicationCount = 0;
@@ -22,28 +19,22 @@ export class LandingComponent implements OnInit {
     private applicationService: ApplicationsService,
     private packageObjectsService: PackageObjectsService,
     private pipelinesService: PipelinesService,
-    private stepsService: StepsService
-  ) {}
+    private stepsService: StepsService,
+    ) {}
 
   ngOnInit(): void {
-    this.applicationService
-      .getApplications()
-      .subscribe((applications: Application[]) => {
-        this.applicationCount = applications.length;
-      });
+    this.loadCounts();
+  }
 
-    this.packageObjectsService
-      .getPackageObjects()
-      .subscribe((packageObjects: PackageObject[]) => {
-        this.packageObjectCount = packageObjects.length;
-      });
+  private loadCounts() {
+    this.applicationService.getApplications()
+      .subscribe(applications => this.applicationCount = applications.length);
 
-    this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
-      this.pipelineCount = pipelines.length;
-    });
+    this.packageObjectsService.getPackageObjects()
+      .subscribe(packageObjects => this.packageObjectCount = packageObjects.length);
 
-    this.stepsService.getSteps().subscribe((steps: Step[]) => {
-      this.stepCount = steps.length;
-    });
+    this.pipelinesService.getPipelines().subscribe(pipelines => this.pipelineCount = pipelines.length);
+
+    this.stepsService.getSteps().subscribe(steps => this.stepCount = steps.length);
   }
 }

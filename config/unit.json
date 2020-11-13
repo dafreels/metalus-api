@@ -3,5 +3,24 @@
   "dataDir": "testData",
   "databaseServer": "localhost",
   "databaseName": "unit_test",
-  "databaseSSL": false
+  "databaseSSL": false,
+  "middleware": {
+    "isAuthenticated": {
+      "enabled": true,
+      "priority": 111,
+      "module": {
+        "name":"path:./lib/auth",
+        "method": "isAuthenticated"
+
+      }
+    },
+    "injectUser": {
+      "enabled": true,
+      "priority": 112,
+      "module": {
+        "name":"path:./lib/auth",
+        "method": "injectUser"
+      }
+    }
+  }
 }

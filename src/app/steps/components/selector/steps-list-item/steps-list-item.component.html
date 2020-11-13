@@ -1,0 +1,11 @@
+<mat-list-item class="step-list-item" *ngFor="let step of steps" matTooltip="{{step.description}}"
+               matTooltipPosition="right"
+               (click)="handleStepSelection(step)"
+               [dndDraggable]="step"
+               [dndDisableIf]="!draggableSteps"
+               [dndEffectAllowed]="dropEffect">
+      <div class="step-list-container" dndDragImageRef>
+            <mat-icon color="primary">{{getStepIcon(step)}}</mat-icon>
+            <span class="step-list-text">{{step.displayName}}</span>
+      </div>
+</mat-list-item>

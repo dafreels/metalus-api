@@ -1,0 +1,51 @@
+<div>
+  <nav-toolbar>
+    <button mat-raised-button color="primary" (click)="addUser()" style="margin-right: 5px;">New</button>
+  </nav-toolbar>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <mat-table [dataSource]="users" class="mat-elevation-z2">
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="displayName">
+            <mat-header-cell *matHeaderCellDef> Display Name </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.displayName}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="username">
+            <mat-header-cell *matHeaderCellDef> User Name </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.username}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="role">
+            <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.role}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="defaultProjectId">
+            <mat-header-cell *matHeaderCellDef> Default ProjectId </mat-header-cell>
+            <mat-cell *matCellDef="let user"> {{user.defaultProjectId}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="editUser">
+            <mat-header-cell *matHeaderCellDef>Edit User</mat-header-cell>
+            <mat-cell *matCellDef="let user">
+              <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="grey" (click)="editUser(user)">
+                <mat-icon color="primary">edit</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="removeUser">
+            <mat-header-cell *matHeaderCellDef>Remove User</mat-header-cell>
+            <mat-cell *matCellDef="let user">
+              <button *ngIf="user?.id !== currentUser?.id" mat-icon-button color="grey" (click)="removeUser(user)">
+                <mat-icon color="primary">delete</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

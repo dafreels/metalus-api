@@ -1,6 +1,46 @@
-/* You can add global styles to this file, and also import other style files */
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/theming';
+@import "~jsoneditor/dist/jsoneditor.min.css";
+@include mat-core();
+// Define a theme.
+$primary: mat-palette($mat-deep-purple);
+$accent:  mat-palette($mat-amber, A200, A100, A400);
+$theme: mat-light-theme($primary, $accent);
+// Include all theme styles for the components.
+@include angular-material-theme($theme);
 
+body {
+  font-family: 'Roboto';
+  background: rgb(240, 240, 240);
+  .mt-1{
+    margin-top: 1rem;
+  }
+  .mt-2{
+    margin-top: 2rem;
+  }
+}
+
+mat-table {
+  margin-right: 6rem;
+  mat-header-row {
+    .mat-header-cell {
+      background-color: mat-color($primary);
+      color: white;
+      font-size: medium;
+    }
+  }
+}
+.mat-menu-item {
+  .mat-icon {
+  display: inline-block;
+  }
+  a {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;   
+  }
+}
 .designer-node-step-group {
   background-color: #bebebe;
 }
@@ -14,3 +54,28 @@
   display: flex;
   flex-direction: column;
 }
+
+// Nav bar styles
+.topnav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-weight: bold;
+  font-size: larger;
+}
+
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 35px !important;
+}
+@mixin mix-app-theme($theme) {
+  $primary: map-get($theme, primary);
+  .mat-button-toggle-checked {
+    background-color: mat-color($primary);
+    color: white !important;
+  }
+}
+@include mix-app-theme($theme);

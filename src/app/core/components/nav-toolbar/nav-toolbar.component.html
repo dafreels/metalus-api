@@ -1,0 +1,11 @@
+<div class="topnav">
+  <span class="menu-left">
+    <nav-menu [currentPage]="page"></nav-menu>
+    <span class="page-title">{{title}}
+    <mat-icon color="primary" (click)="openHelp(page)">help</mat-icon></span>
+  </span>
+  <span class="menu-right">
+    <ng-content></ng-content>
+    <user-menu></user-menu>
+  </span>
+</div>

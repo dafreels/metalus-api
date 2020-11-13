@@ -4,21 +4,14 @@
     <div class="object-language">
       <mat-form-field class="object-select">
         <mat-label>Select Object: </mat-label>
-        <mat-select
-          required
-          [(ngModel)]="data.schemaName"
-          (selectionChange)="handleSchemaSelection($event.value)"
-        >
-          <mat-option *ngFor="let po of data.pkgObjs" [value]="po.id">{{
-            po.id
-          }}</mat-option>
+        <mat-select required [(ngModel)]="data.schemaName" (selectionChange)="handleSchemaSelection($event.value)">
+          <mat-option *ngFor="let po of data.pkgObjs" [value]="po.id">{{po.id}}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
   </mat-card-content>
   <mat-card-actions> </mat-card-actions>
 </mat-card>
-<button mat-raised-button mat-dialog-close>Close</button>
 
 <json-schema-form
   loadExternalAssets="true"

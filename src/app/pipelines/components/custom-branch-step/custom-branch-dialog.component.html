@@ -1,0 +1,39 @@
+<div>
+  <mat-form-field style="width: 100%">
+    <mat-select
+      placeholder="Select a Base Step" required (selectionChange)="handleStepSelected()" [(ngModel)]="selectedStepId">
+      <mat-option *ngFor="let step of steps" [value]="step.id">{{step.displayName}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div class="form-layout">
+  <mat-form-field>
+    <input matInput placeholder="Name" [disabled]="!stepSelected" [(ngModel)]="step.id" required name="Name" id="Name"
+           minlength="4"/>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Display Name" [disabled]="!stepSelected" [(ngModel)]="step.displayName" required
+           name="displayName" id="displayName" minlength="4"/>
+  </mat-form-field>
+  <mat-form-field>
+    <textarea matInput placeholder="Description" [disabled]="!stepSelected" [(ngModel)]="step.description" name="description"
+              required minlength="5"></textarea>
+  </mat-form-field>
+  <!-- Result Parameters panel -->
+  <span *ngFor="let param of resultParams" style="white-space: nowrap">
+    <mat-form-field>
+    <input matInput placeholder="Name" [(ngModel)]="param.name" required name="Name" id="ParamName"
+           minlength="4"/>
+      <button style="margin-left: 5px;" mat-icon-button color="primary" (click)="removeParam(param.id)">
+        <mat-icon aria-label="Remove Param">delete</mat-icon>
+      </button>
+  </mat-form-field>
+  </span>
+</div>
+<span>
+  <button mat-raised-button color="primary" (click)="addResult()" [disabled]="!stepSelected"
+          style="margin-right: 5px">Add Result</button>
+  <button mat-raised-button color="primary" (click)="saveDialog()" style="margin-right: 5px"
+          [disabled]="!stepSelected || !validate()">Save</button>
+  <button mat-raised-button color="primary" (click)="cancelDialog()">Cancel</button>
+</span>

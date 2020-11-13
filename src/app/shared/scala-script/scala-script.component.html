@@ -1,0 +1,52 @@
+<div class="parameters">
+  <h4>Parameters</h4>
+  <div class="add-param" align="end">
+    <mat-form-field>
+      <mat-label>New Param Name</mat-label>
+      <input matInput type="text" [(ngModel)]="newParamName" />
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!newParamName"
+      (click)="addParameter()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>
+<div class="parameter" *ngFor="let parameter of parameters">
+  <app-pipelines-parameter
+    [stepParameters]="parameter"
+    [scalaParamType]="true"
+  [stepSuggestions]="stepSuggestions">
+  </app-pipelines-parameter>
+  <div class="actions">
+    <button
+      class="action-delete"
+      mat-icon-button
+      color="primary"
+      (click)="deleteParameter(parameter)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+<h4>Body</h4>
+<div class="code-div">
+  <ace
+    [mode]="'scala'"
+    [theme]="'solarized_light'"
+    [(value)]="codeViewData"></ace>
+</div>
+<!-- {{ output }} -->
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="saveDialog()"
+    style="margin-right: 5px">
+    Save
+  </button>
+  <button mat-raised-button color="primary" (click)="cancelDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

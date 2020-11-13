@@ -1,41 +1,5 @@
-<div>
-  <div>
-    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Navigation">
-      <mat-icon>list</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item>
-        <div>
-          <mat-icon color="primary">home</mat-icon>
-          <span class="spacer"><a [routerLink]="['/']" routerLinkActive="active">Home</a></span>
-        </div>
-      </button>
-      <button mat-menu-item>
-        <div>
-          <mat-icon color="primary">dashboards</mat-icon>
-          <span class="spacer"><a [routerLink]="['/applications-editor']"
-                                  routerLinkActive="active">Applications Editor</a></span>
-        </div>
-      </button>
-      <button mat-menu-item>
-        <div>
-          <mat-icon color="primary">more_vert</mat-icon>
-          <span class="spacer"><a [routerLink]="['/pipelines-editor']"
-                                  routerLinkActive="active">Pipelines Editor</a></span>
-        </div>
-      </button>
-      <button mat-menu-item>
-        <div>
-          <mat-icon color="primary">apps</mat-icon>
-          <span class="spacer"><a [routerLink]="['/steps-editor']" routerLinkActive="active">Steps Editor</a></span>
-        </div>
-      </button>
-    </mat-menu>
-  </div>
-  <div>
-    <router-outlet></router-outlet>
-  </div>
-</div>
+
+<router-outlet></router-outlet>
 
 <!-- Helpful links
 Icons: https://material.io/resources/icons/?style=baseline

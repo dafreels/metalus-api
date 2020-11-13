@@ -1,0 +1,18 @@
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Navigation">
+  <mat-icon>list</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+  <a mat-menu-item [routerLink]="['/']" routerLinkActive="active">
+      <mat-icon color="primary">home</mat-icon>
+      <span class="spacer">Home</span>
+  </a>
+  <a mat-menu-item [routerLink]="['/pipelines-editor']"
+  routerLinkActive="active">
+      <mat-icon color="primary">more_vert</mat-icon>
+      <span class="spacer">Pipelines Editor</span>
+  </a>
+  <a mat-menu-item  [routerLink]="['/upload']" routerLinkActive="active">
+      <mat-icon color="primary">group</mat-icon>
+      <span class="spacer">Upload Metadata</span>
+  </a>
+</mat-menu>

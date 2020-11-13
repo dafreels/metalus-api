@@ -1,0 +1,91 @@
+<mat-dialog-content>
+  <ng-container *ngIf="treeView; else codeView">
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <mat-tree-node
+        *matTreeNodeDef="let node"
+        matTreeNodeToggle
+        matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+        <ng-container>
+          <div class="tree-item">
+              <tree-editor-popup [node]="node"></tree-editor-popup>
+          </div>
+        </ng-container>
+      </mat-tree-node>
+      <!-- Expandable Node -->
+      <mat-tree-node
+        class="expandable"
+        *matTreeNodeDef="let node; when: hasChild"
+        matTreeNodePadding
+        matTreeNodeToggle
+        (appTreeonload)="expandNode(node)">
+      <div class="key" *ngIf="node.level==0">
+        <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{
+              treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
+            }}
+          </mat-icon>
+        </button>
+      </div>
+        <div class="key" *ngIf="node.level!=0">
+          <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{
+                treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
+              }}
+            </mat-icon>
+          </button>
+          <tree-editor-popup [node]="node"></tree-editor-popup>
+        </div>
+        <div class="actions">
+          <button mat-icon-button color="primary" [matMenuTriggerFor]="typeMenu">
+            <mat-icon>add</mat-icon>
+          </button>
+          <mat-menu #typeMenu="matMenu">
+            <button
+              mat-menu-item
+              *ngFor="let type of types"
+              (click)="addNewItem(node, type)">
+              <span>{{ type.displayName }}</span>
+            </button>
+          </mat-menu>
+          <button
+            *ngIf="node.level!=0"
+            class="action-delete"
+            mat-icon-button
+            color="primary"
+            (click)="deleteNode(node)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </mat-tree-node>
+    </mat-tree>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <mat-button-toggle-group [(ngModel)]="treeView" (change)="viewChanged()">
+    <mat-button-toggle [value]="true">Visual</mat-button-toggle>
+    <mat-button-toggle [value]="false">JSON</mat-button-toggle>
+  </mat-button-toggle-group>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="saveDialog()"
+    style="margin-right: 5px">
+    Save
+  </button>
+  <button mat-raised-button color="primary" (click)="cancelDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>
+
+<ng-template #codeView>
+  <div class="code-div">
+    <ace
+      [mode]="'json'"
+      [theme]="'solarized_light'"
+      [(value)]="codeViewData"
+    ></ace>
+  </div>
+</ng-template>

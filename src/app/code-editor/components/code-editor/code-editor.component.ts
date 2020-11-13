@@ -22,5 +22,6 @@ export class CodeEditorComponent {
   constructor(
     public dialogRef: MatDialogRef<CodeEditorComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CodeEditorDialogData
-  ) {}
+  ) {
+  }
 }

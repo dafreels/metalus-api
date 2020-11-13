@@ -6,6 +6,9 @@
     <mat-icon color="primary">{{data.icon}}</mat-icon>
   </div>
 </div>
+<div class="actions">
+  <mat-icon color="warn"  (click)="removeNode()">delete</mat-icon>
+</div>
 <div [matMenuTriggerFor]="nodeMenu">
   <mat-menu #nodeMenu="matMenu">
     <button mat-menu-item (click)="removeNode()">Remove</button>

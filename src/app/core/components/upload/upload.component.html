@@ -1,0 +1,129 @@
+<div>
+  <nav-toolbar>
+    <button mat-raised-button color="primary" (click)="addFiles()" [disabled]="uploading" style="margin-right: 5px;">Upload</button>
+    <button mat-raised-button color="primary" (click)="processJars()"
+            [disabled]="uploading || (uploadedFiles.length === 0 && remoteJars.length === 0)" style="margin-right: 5px;">Process</button>
+  </nav-toolbar>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <mat-tab-group>
+          <mat-tab label="Upload Jars">
+            <mat-form-field class="chip-field">
+              <mat-card-subtitle>Additional Repositories</mat-card-subtitle>
+              <mat-chip-list #additionalReposList>
+                <mat-chip *ngFor="let repo of additionalRepos"
+                          selectable="true"
+                          removable="true"
+                          (removed)="removeAdditionalRepo(repo)">
+                  {{repo}}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input
+                  [matChipInputFor]="additionalReposList"
+                  [formControl]="additionalReposCtrl"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="true"
+                  (matChipInputTokenEnd)="addAdditionalRepo($event)">
+              </mat-chip-list>
+            </mat-form-field>
+            <mat-form-field class="chip-field">
+              <mat-card-subtitle>Remote Jars</mat-card-subtitle>
+              <mat-chip-list #remoteJarsList>
+                <mat-chip *ngFor="let jar of remoteJars"
+                          selectable="true"
+                          removable="true"
+                          (removed)="removeRemoteJar(jar)">
+                  {{jar}}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input
+                  [matChipInputFor]="remoteJarsList"
+                  [formControl]="remoteJarsCtrl"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="true"
+                  (matChipInputTokenEnd)="addRemoteJar($event)">
+              </mat-chip-list>
+            </mat-form-field>
+            <div class="mt-2">
+              <mat-card-subtitle>Local Jars</mat-card-subtitle>
+              <mat-table [dataSource]="uploadedFiles" class="mat-elevation-z2">
+                <ng-container matColumnDef="name">
+                  <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                  <mat-cell *matCellDef="let file">{{file.name}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="path">
+                  <mat-header-cell *matHeaderCellDef>Path</mat-header-cell>
+                  <mat-cell *matCellDef="let file">{{file.path}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="size">
+                  <mat-header-cell *matHeaderCellDef>Size</mat-header-cell>
+                  <mat-cell *matCellDef="let file">{{file.size}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="createdDate">
+                  <mat-header-cell *matHeaderCellDef>Created Date</mat-header-cell>
+                  <mat-cell *matCellDef="let file">{{file.createdDate}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="modifiedDate">
+                  <mat-header-cell *matHeaderCellDef>Modified Date</mat-header-cell>
+                  <mat-cell *matCellDef="let file">{{file.modifiedDate}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="delete">
+                  <mat-header-cell *matHeaderCellDef>Delete</mat-header-cell>
+                  <mat-cell *matCellDef="let file">
+                    <button mat-icon-button color="primary" (click)="removeFile(file.name)">
+                      <mat-icon color="primary">delete</mat-icon>
+                    </button>
+                  </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+            </div>
+            <input type="file" #file style="display: none" (change)="onFilesAdded()" multiple/>
+            <mat-list>
+              <mat-list-item *ngFor="let file of files">
+                <h4 mat-line>{{file.name}}</h4>
+                <mat-progress-bar
+                  *ngIf="progress"
+                  mode="determinate"
+                  [value]="progress[file.name].progress | async"
+                ></mat-progress-bar>
+              </mat-list-item>
+            </mat-list>
+            <mat-card-subtitle style="padding-top: 3.0em;">Special Instructions</mat-card-subtitle>
+            <mat-slide-toggle checked="false" color="primary" [(ngModel)]="skipSteps" [disabled]="skipPipelines" class="skip-toggle">Skip Steps</mat-slide-toggle>
+            <mat-slide-toggle checked="false" color="primary" [(ngModel)]="skipPipelines" [disabled]="skipSteps" class="skip-toggle">Skip Pipelines</mat-slide-toggle>
+          </mat-tab>
+          <mat-tab label="Manual Upload">
+            <mat-card>
+              <mat-card-content>
+                Download the latest version of Metalus Utils:
+                https://github.com/Acxiom/metalus/releases/tag/release_1_6_6<br/>
+                Upload Command:<br/>
+                <textarea cols="100" rows="15">
+              [path-to-metalus-utils]/metalus-utils/bin/metadata-extractor.sh \
+            --api-url http://[host]]:8000 \
+            --jar-files [path-to-jar-file] \
+            --no-auth-download true \
+            --authorization.class com.acxiom.pipeline.api.SessionAuthorization \
+            --authorization.username [username] \
+            --authorization.password [password] \
+            --authorization.authUrl http://[host]:8000/api/v1/users/login \
+            --staging-dir staging
+            </textarea>
+              </mat-card-content>
+            </mat-card>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

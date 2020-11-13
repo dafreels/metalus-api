@@ -1,6 +1,9 @@
 {
   "storageType": "file",
   "middleware": {
+    "multipart": {
+      "enabled": false
+    },
     "json": {
       "enabled": true,
       "priority": 30,
@@ -10,7 +13,7 @@
         "method": "json",
         "arguments": [
           {
-            "limit": "2mb"
+            "limit": "10mb"
           }
         ]
       }
@@ -70,6 +73,23 @@
         "arguments": [
           "path:./dist/metalus/index.html"
         ]
+      }
+    },
+    "isAuthenticated": {
+      "enabled": true,
+      "priority": 111,
+      "module": {
+        "name":"path:./lib/auth",
+        "method": "isAuthenticated"
+
+      }
+    },
+    "injectUser": {
+      "enabled": true,
+      "priority": 112,
+      "module": {
+        "name":"path:./lib/auth",
+        "method": "injectUser"
       }
     }
   }

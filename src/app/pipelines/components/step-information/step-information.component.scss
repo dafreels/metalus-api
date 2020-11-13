@@ -1,0 +1,16 @@
+.pipeline-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-label {
+  font-size: x-small;
+  font-weight: bold;
+  color: #808080;
+}
+
+.step-description {
+  font-size: x-small;
+  color: #808080;
+  text-overflow: ellipsis;
+}

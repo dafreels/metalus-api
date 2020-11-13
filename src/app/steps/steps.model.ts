@@ -1,7 +1,10 @@
+import {Project} from "../shared/models/users.models";
+
 export interface Step {
   id: string,
   displayName: string,
   description: string,
+  project?: Project;
   type: string,
   category: string,
   tags?: string[],
@@ -21,6 +24,7 @@ export interface Param {
   language: string,
   className: string,
   parameterType: string
+  description?: string
 }
 
 export interface StepResults {
@@ -46,7 +50,7 @@ export class StaticSteps {
     params: [
       {
         name: 'forkByValues',
-        type: 'text',
+        type: 'list',
         required: true,
         defaultValue: undefined,
         parameterType: undefined,
@@ -72,6 +76,14 @@ export class StaticSteps {
     category: 'FlowControl',
     params: []
   };
+  static CUSTOM_BRANCH_STEP: Step = {
+    id: '6344948a-2032-472b-873c-064e6530989e',
+    type: 'branch',
+    displayName: 'Custom Branch',
+    description: 'Custom branch control',
+    category: 'FlowControl',
+    params: []
+  };
   static STEP_GROUP: Step = {
     id: 'f09b3b9c-82ac-56de-8dc8-f57c063dd4aa',
     type: 'step-group',
@@ -86,7 +98,8 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'The id of the pipeline to execute. Either this parameter or the pipeline parameter must be set.'
       },
       {
         name: 'pipeline',
@@ -95,7 +108,18 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'The pipeline to execute. Either this parameter or the pipelineId parameter must be set. This may be a mapped value or a pipeline object.'
+      },
+      {
+        name: 'useParentGlobals',
+        type: 'boolean',
+        required: false,
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined,
+        description: 'Indicates whether the calling pipeline globals should be merged with the pipelineMappings.'
       },
       {
         name: 'pipelineMappings',
@@ -104,7 +128,8 @@ export class StaticSteps {
         defaultValue: undefined,
         parameterType: undefined,
         className: undefined,
-        language: undefined
+        language: undefined,
+        description: 'The values to use as the globals for the pipeline. Values may be mapped from the outer pipeline context.'
       }
     ]
   };

@@ -2,5 +2,7 @@
   margin-top: 15px;
   display: flex;
   flex-direction: column;
-  min-height: 140px;
+}
+mat-dialog-content.message{
+  max-height: 57%;
 }

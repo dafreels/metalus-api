@@ -1,8 +1,9 @@
+import { ObjectEditorComponent } from './../object-editor/object-editor.component';
+import { DisplayDialogService } from './../../services/display-dialog.service';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SharedFunctions } from '../../utils/shared-functions';
-import { ObjectEditorComponent } from '../object-editor/object-editor.component';
-import { MatDialog } from '@angular/material/dialog';
 import { PackageObject } from '../../../core/package-objects/package-objects.model';
+import { generalDialogDimensions } from '../../models/custom-dialog.model';
 
 export interface GlobalParameter {
   id: number;
@@ -23,7 +24,7 @@ export class PropertiesEditorComponent {
   globalParameters: GlobalParameter[] = [];
   id = 0;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private displayDialogService: DisplayDialogService) {}
 
   @Input()
   set globals(global: any) {
@@ -46,6 +47,7 @@ export class PropertiesEditorComponent {
       case 'secondary':
       case 'global':
       case 'runtime':
+      case 'mapped_runtime':
       case 'string':
         value = '';
         break;
@@ -77,12 +79,16 @@ export class PropertiesEditorComponent {
 
   openEditor(id: number) {
     const inputData = this.globalParameters.find((p) => p.id === id);
-    const dialogRef = this.dialog.open(ObjectEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: { userObject: inputData.value, pkgObjs: this.packageObjects },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
+    const editorDialogData = {
+      userObject: inputData.value,
+      pkgObjs: this.packageObjects,
+    };
+    const editorDialogResponse = this.displayDialogService.openDialog(
+      ObjectEditorComponent,
+      generalDialogDimensions,
+      editorDialogData
+    );
+    editorDialogResponse.afterClosed().subscribe((result) => {
       if (result) {
         inputData.value = result.userObject;
         this.globalParameters = [...this.globalParameters];

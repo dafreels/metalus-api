@@ -1,21 +1,34 @@
+[Home](readme.md)
+
 # Step Selector
-The step selector provides a mechanism for navigating the steps library. Different views and filters are provided
-which help with navigation. The Steps and Pipelines Editors use the selector to provide a common navigation control. 
-
+The _step selector_ provides easy access to all steps available to be chosen. Steps will be dragged from
+the _step selector_ to the [designer](pipeline-editor-designer.md). Other than the preloaded steps, all other steps will be
+provided from the step library.
 ## Filter
-The filter text box will filter the steps, by name in a case insensitive manner. The filter value is not linked between the list and tree views.
+A filter text box allows the user to type in a name/command to reduce the list of steps. The drop down 
+allows filtering steps by tags.
 
-![Filter Example](images/step-selector-list-filter.png "Filter Example")
-## Tags
-The tags drop down allows selecting one or more tags. Any step that matches any selected tag will be shown. The drop down is populated using
-the tags field from the steps loaded from the API.
+![Tags Dropdown](images/tags_dropdown.png)  
+## Flow Control Steps
+A set of steps that provide flow control have been provided under the _Flow Control_ expansion panel.
 
-![Tags Example](images/step-selector-tag.png "Tags Example")
-## Tree
-The tree view provides a traditional tree view for navigating the steps. The tree is grouped using the category field.
+![Flow Control](images/flow_control_steps.png)
+### Fork/Join
+The fork/join steps provide support for the fork/join logic.
+### Step Group
+The _Step Group_ step provides a blank step for defining a step group. This step should be used only if the 
+[Step Groups panel](#step-groups) doesn't have a specific step. Using this step may prevent viewing the
+step group pipeline.
+### Custom Branch
+The custom branch step allows creating a dynamic branch step without having to provide the step as code. A modal
+will be displayed for this step that allows picking a base step and providing a name, display name and description.
+The user will also be required to define at least one result before the step can be saved.
 
-![Tree Example](images/step-selector-tree.png "Tree Example")
-## List
-The list provides a simple flat list of steps with no grouping.
+![Custom Branch Modal](images/custom_branch_modal.png)
+## Step Groups
+When the Pipeline Editor loads, the pipeline metadata will be scanned for _step-group_ pipelines. An entry
+in the _Step Groups_ will be created that can be dragged to the designer. The pipeline will be preloaded
+allowing the _pipelineMappings_ to be mapped. Pre-mapped step groups should be used instead of the blank
+_Step Group_ found with the [Flow Control Steps](#flow-control-steps).
 
-![List Example](images/step-selector-list.png "List Example")
+![Step Group Steps](images/step_group_steps.png)

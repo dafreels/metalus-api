@@ -1,33 +1,35 @@
-import { PipelinesService } from './../../../pipelines/services/pipelines.service';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Application, Execution } from '../../applications.model';
+import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
+import {PipelinesService} from '../../../pipelines/services/pipelines.service';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Application, Execution} from '../../applications.model';
+import {ApplicationsService} from '../../applications.service';
+import {Pipeline} from '../../../pipelines/models/pipelines.model';
+import {SharedFunctions} from '../../../shared/utils/shared-functions';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {FormControl} from '@angular/forms';
+import {MatChipInputEvent} from '@angular/material/chips';
+import {SparkConfEditorComponent} from '../spark-conf-editor/spark-conf-editor.component';
+import {Subject} from 'rxjs';
+import {PropertiesEditorModalComponent} from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
+import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
+import {PackageObject} from '../../../core/package-objects/package-objects.model';
+import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
+import {ComponentsEditorComponent} from '../components-editor/components-editor.component';
+import {ExecutionEditorComponent} from '../execution-editor/execution-editor.component';
+import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
+import {DesignerComponent} from "../../../designer/components/designer/designer.component";
 import {
-  DesignerComponent,
+  DesignerConstants,
   DesignerElement,
   DesignerElementAction,
-  DesignerElementAddOutput,
-  DesignerModel,
-} from '../../../designer/components/designer/designer.component';
-import { ApplicationsService } from '../../applications.service';
-import { Pipeline } from '../../../pipelines/models/pipelines.model';
-import { SharedFunctions } from '../../../shared/utils/shared-functions';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { FormControl } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { SparkConfEditorComponent } from '../spark-conf-editor/spark-conf-editor.component';
-import { MatDialog } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { PropertiesEditorModalComponent } from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
-import { PackageObjectsService } from '../../../core/package-objects/package-objects.service';
-import { PackageObject } from '../../../core/package-objects/package-objects.model';
-import { CodeEditorComponent } from '../../../code-editor/components/code-editor/code-editor.component';
-import { ComponentsEditorComponent } from '../components-editor/components-editor.component';
-import { ExecutionEditorComponent } from '../execution-editor/execution-editor.component';
+  DesignerElementAddOutput, DesignerElementOutput,
+  DesignerModel
+} from "../../../designer/designer-constants";
 
 @Component({
   selector: 'app-applications-editor',
   templateUrl: './applications-editor.component.html',
-  styleUrls: ['./applications-editor.component.scss']
+  styleUrls: ['./applications-editor.component.scss'],
 })
 export class ApplicationsEditorComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
@@ -38,12 +40,8 @@ export class ApplicationsEditorComponent implements OnInit {
   pipelines: Pipeline[];
   packageObjects: PackageObject[];
   executionLookup = {};
-  addExecutionSubject: Subject<DesignerElement> = new Subject<
-    DesignerElement
-  >();
-  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<
-    DesignerElementAddOutput
-  >();
+  addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
 
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -54,7 +52,7 @@ export class ApplicationsEditorComponent implements OnInit {
     private applicationsService: ApplicationsService,
     private pipelinesService: PipelinesService,
     private packageObjectsService: PackageObjectsService,
-    public dialog: MatDialog
+    private displayDialogService: DisplayDialogService
   ) {}
 
   ngOnInit(): void {
@@ -93,6 +91,7 @@ export class ApplicationsEditorComponent implements OnInit {
       globals: {},
       id: '',
       name: '',
+      project: null,
       pipelineListener: {
         className: 'com.acxiom.pipeline.DefaultPipelineListener',
         parameters: {},
@@ -143,8 +142,6 @@ export class ApplicationsEditorComponent implements OnInit {
     // const executions = {};
     this.selectedApplication.executions.forEach((execution) => {
       this.createModelNode(model, execution, -1, -1);
-      // nodeId = `designer-node-${model.nodeSeq++}`;
-      // executions[execution.id] = execution;
     });
     // Create connections
     const connectedNodes = [];
@@ -180,11 +177,11 @@ export class ApplicationsEditorComponent implements OnInit {
       !this.selectedApplication.layout ||
       Object.keys(this.selectedApplication.layout).length === 0
     ) {
-      DesignerComponent.performAutoLayout(
-        this.executionLookup,
-        connectedNodes,
-        model
-      );
+      // DesignerComponent.performAutoLayout(
+      //   this.executionLookup,
+      //   connectedNodes,
+      //   model
+      // );
     }
     this.designerModel = model;
   }
@@ -193,16 +190,18 @@ export class ApplicationsEditorComponent implements OnInit {
     switch (action.action) {
       case 'editExecution':
         const originalId = action.element.data['id'];
-        const dialogRef = this.dialog.open(ExecutionEditorComponent, {
-          width: '75%',
-          height: '90%',
-          data: {
-            packageObjects: this.packageObjects,
-            pipelines: this.pipelines,
-            execution: action.element.data,
-          },
-        });
-        dialogRef.afterClosed().subscribe((result) => {
+        const elementActionDialogData = {
+          packageObjects: this.packageObjects,
+          pipelines: this.pipelines,
+          execution: action.element.data,
+        };
+        const elementActionDialog = this.displayDialogService.openDialog(
+          ExecutionEditorComponent,
+          generalDialogDimensions,
+          elementActionDialogData
+        );
+
+        elementActionDialog.afterClosed().subscribe((result) => {
           if (result && result.id !== originalId) {
             action.element.name = result.id;
           }
@@ -285,49 +284,52 @@ export class ApplicationsEditorComponent implements OnInit {
   }
 
   openSparkConfEditor() {
-    this.dialog.open(SparkConfEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: this.selectedApplication,
-    });
+    const sparkConfEditorDialog = this.displayDialogService.openDialog(
+      SparkConfEditorComponent,
+      generalDialogDimensions,
+      this.selectedApplication
+    );
   }
 
   openPropertiesEditor(mode: string) {
-    this.dialog.open(PropertiesEditorModalComponent, {
-      width: '75%',
-      height: '90%',
-      data: {
-        allowSpecialParameters: false,
-        packageObjects: this.packageObjects,
-        propertiesObject:
-          mode === 'globals'
-            ? this.selectedApplication.globals
-            : this.selectedApplication.applicationProperties,
-      },
-    });
+    const propertiesEditorDialogData = {
+      allowSpecialParameters: false,
+      packageObjects: this.packageObjects,
+      propertiesObject:
+        mode === 'globals'
+          ? this.selectedApplication.globals
+          : this.selectedApplication.applicationProperties,
+    };
+    const propertiesEditorDialog = this.displayDialogService.openDialog(
+      PropertiesEditorModalComponent,
+      generalDialogDimensions,
+      propertiesEditorDialogData
+    );
   }
 
   openComponentsEditor() {
-    this.dialog.open(ComponentsEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: {
-        properties: this.selectedApplication,
-        packageObjects: this.packageObjects,
-      },
-    });
+    const componentEditorDialogData = {
+      properties: this.selectedApplication,
+      packageObjects: this.packageObjects,
+    };
+    const componentsEditorDialog = this.displayDialogService.openDialog(
+      ComponentsEditorComponent,
+      generalDialogDimensions,
+      componentEditorDialogData
+    );
   }
 
   exportApplication() {
-    this.dialog.open(CodeEditorComponent, {
-      width: '75%',
-      height: '90%',
-      data: {
-        code: JSON.stringify(this.generateApplication(), null, 4),
-        language: 'json',
-        allowSave: false,
-      },
-    });
+    const exportApplicationDialogData = {
+      code: JSON.stringify(this.generateApplication(), null, 4),
+      language: 'json',
+      allowSave: false,
+    };
+    const exportApplicationDialog = this.displayDialogService.openDialog(
+      CodeEditorComponent,
+      generalDialogDimensions,
+      exportApplicationDialogData
+    );
   }
 
   newExecution() {
@@ -511,7 +513,7 @@ export class ApplicationsEditorComponent implements OnInit {
     const outputs = [];
     executions.forEach((exec) => {
       if (exec.parents && exec.parents.indexOf(execution.id) !== -1) {
-        outputs.push(exec.id);
+        outputs.push(new DesignerElementOutput(exec.id, 'normal', DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
       }
     });
     return outputs;

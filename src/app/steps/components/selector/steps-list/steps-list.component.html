@@ -1,29 +1,8 @@
 <mat-card>
   <mat-card-content>
-        <span>
-        <!-- TODO Add sort button here -->
-        <mat-form-field><input #filter matInput placeholder="Filter"
-                               (input)="filterList(filter.value, tagSelect.value)"></mat-form-field>
-          <mat-form-field>
-            <mat-label>Tags</mat-label>
-            <mat-select #tagSelect multiple (selectionChange)="filterList(filter.value, tagSelect.value)">
-              <mat-option *ngFor="let tag of tags" [value]="tag">{{tag}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-      </span>
     <div class="step-list-container">
       <mat-action-list class="step-list">
-        <mat-list-item class="step-list-item" *ngFor="let step of filterSteps" matTooltip="{{step.description}}"
-                       matTooltipPosition="right"
-                       (click)="handleStepSelection(step)"
-                       [dndDraggable]="step"
-                       [dndDisableIf]="!draggableSteps"
-                       [dndEffectAllowed]="dropEffect">
-          <mat-icon color="primary">{{getStepIcon(step)}}</mat-icon>
-          <span class="step-list-text">
-            {{step.displayName}}
-          </span>
-        </mat-list-item>
+        <app-steps-list-item [steps]="steps" (stepItemSelection)="handleStepSelection($event)" [draggableSteps]="draggableSteps"></app-steps-list-item>
       </mat-action-list>
     </div>
   </mat-card-content>

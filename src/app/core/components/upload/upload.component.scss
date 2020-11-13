@@ -1,0 +1,18 @@
+.chip-field {
+  width: 95%;
+  center: true;
+}
+
+mat-table {
+  mat-header-row {
+    mat-header-cell {
+      color: white;
+      font-size: medium;
+    }
+  }
+}
+
+.skip-toggle {
+  padding-right: 3.0em;
+}
+

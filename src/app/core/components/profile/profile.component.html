@@ -1,0 +1,58 @@
+<div>
+  <nav-toolbar>
+    <button mat-raised-button color="primary" (click)="startPasswordChange()" style="margin-right: 5px;">Change
+      Password</button>
+    <button mat-raised-button color="primary" (click)="addProject()" style="margin-right: 5px;">New Project</button>
+  </nav-toolbar>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>User Information</mat-card-title>
+        <div class="user-info mat-elevation-z2">
+          <span class="label">Id</span>
+          <span>{{user.id}}</span>
+          <span class="label">Username</span>
+          <span>{{user.username}}</span>
+          <span class="label">Display Name</span>
+          <span>{{user.displayName}}</span>
+          <span class="label">Role</span>
+          <span>{{user.role}}</span>
+        </div>
+        <div class="mt-2">
+          <mat-card-title>Projects</mat-card-title>
+          <mat-table [dataSource]="user.projects" class="mat-elevation-z2">
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef> Id</mat-header-cell>
+              <mat-cell *matCellDef="let element">{{element.id}}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="displayName">
+              <mat-header-cell *matHeaderCellDef> Display Name</mat-header-cell>
+              <mat-cell *matCellDef="let element"> {{element.displayName}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="default">
+              <mat-header-cell *matHeaderCellDef> Default</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <mat-slide-toggle color="primary" (click)="changeDefaultProject(element.id)" class="Default" [disabled]="element.id === user.defaultProjectId" [checked]="element.id === user.defaultProjectId"></mat-slide-toggle>
+              </mat-cell>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="remove">
+              <mat-header-cell *matHeaderCellDef> Remove</mat-header-cell>
+              <mat-cell *matCellDef="let element">
+                <button *ngIf="element.id !== user.defaultProjectId" mat-icon-button color="grey"
+                        (click)="removeProject(element.id)">
+                  <mat-icon color="primary">delete</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

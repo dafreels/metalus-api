@@ -1,0 +1,26 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>Information</mat-panel-title>
+    <mat-panel-description>
+      <span class="step-description">{{selectedStep.displayName}}</span>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <div class="pipeline-form">
+      <span class="step-label">ID:</span>
+      <span class="step-description">{{selectedStep.stepId}}</span>
+    <span class="step-label">Name:</span>
+    <span class="step-description">{{selectedStep.displayName}}</span>
+    <span class="step-label">Tags:</span>
+    <span class="step-description">{{selectedStep.tags?.join()}}</span>
+    <span class="step-label">Category:</span>
+    <span class="step-description">{{selectedStep.category}}</span>
+    <span class="step-label">Engine Meta Command:</span>
+    <span class="step-description">{{selectedStep.engineMeta?.spark}}</span>
+    <span class="step-label">Engine Meta Package:</span>
+    <span class="step-description">{{selectedStep.engineMeta?.pkg}}</span>
+    <span class="step-label">Description:</span>
+    <mat-form-field>
+      <textarea matInput [ngModel]="selectedStep.description" name="description" disabled="true"></textarea>
+    </mat-form-field>
+  </div>
+</mat-expansion-panel>

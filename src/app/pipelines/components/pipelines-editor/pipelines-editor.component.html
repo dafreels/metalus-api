@@ -1,243 +1,125 @@
-<div class="pipelines-editor-layout">
-  <div class="steps-editor-sidebar">
-    <div class="pipeline-panel">
-      <mat-card>
-        <mat-card-content>
-          <div class="pipeline-form">
-            <mat-form-field>
-              <input
-                matInput
-                placeholder="Id"
-                [(ngModel)]="selectedPipeline.id"
-                name="id"
-                disabled="true"
-              />
-            </mat-form-field>
-            <mat-form-field>
-              <input
-                matInput
-                placeholder="Name"
-                [(ngModel)]="selectedPipeline.name"
-                required
-                name="name"
-              />
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Type</mat-label>
-              <mat-select required [(ngModel)]="selectedPipeline.category">
-                <mat-option value="pipeline">Pipeline</mat-option>
-                <mat-option value="step-group">Step Group</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </mat-card-content>
-      </mat-card>
+<div>
+  <nav-toolbar>
+    <span>
+      <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newPipeline()">New</button>
+    <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
+            style="margin-right: 5px;">Load</button>
+    <mat-menu #pipelineMenu="matMenu">
+      <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id" (click)="loadPipeline(pipeline.id)">
+        {{ pipeline.name }}
+      </button>
+    </mat-menu>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="copyPipeline()"
+            [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Copy</button>
+    <button mat-button color="primary" (click)="importPipeline()">Import</button>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="exportPipeline()">Export</button>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="deletePipeline()"
+            [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Delete</button>
+    </span>
+  </nav-toolbar>
+  <div class="pipelines-editor-layout">
+    <div class="steps-editor-sidebar">
+      <app-steps-selector
+        [steps]="steps"
+        [draggableSteps]="true"
+      ></app-steps-selector>
     </div>
-    <app-steps-selector
-      [steps]="steps"
-      [draggableSteps]="true"
-    ></app-steps-selector>
-  </div>
-  <div class="designer-content">
-    <div class="pipeline-panel">
-      <mat-card>
-        <mat-card-content class="button-content">
-          <button
-            mat-raised-button
-            color="primary"
-            [matMenuTriggerFor]="pipelineMenu"
-            style="margin-right: 5px;"
-          >
-            Load
-          </button>
-          <mat-menu #pipelineMenu="matMenu">
-            <button
-              mat-menu-item
-              *ngFor="let pipeline of pipelines"
-              [id]="pipeline.id"
-              (click)="loadPipeline(pipeline.id)"
-            >
-              {{ pipeline.name }}
+    <div class="designer-content">
+      <div class="pipeline-panel">
+        <mat-card>
+          <mat-card-content class="header-content">
+            <div class="pipeline-data">
+            <span>
+              <mat-form-field *ngIf="editName">
+                <input matInput placeholder=" Pipeline Name" [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
+              </mat-form-field>
+              <span class="pipeline-name" *ngIf="!editName">{{selectedPipeline.name}}</span>
+              <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </span>
+              <span class="pipeline-id">ID: {{selectedPipeline.id}}</span>
+              <span>
+                <mat-form-field>
+                  <mat-select required [(ngModel)]="selectedPipeline.category">
+                    <mat-option value="pipeline">Pipeline</mat-option>
+                    <mat-option value="step-group">Step Group</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <button mat-icon-button
+                        color="primary"
+                        [disabled]="selectedPipeline.category === 'pipeline'"
+                        (click)="showStepGroupResult()">
+                  <mat-icon>settings</mat-icon>
+                </button>
+              </span>
+            </div>
+            <span>
+            <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
+              <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
+              <span>{{errors.length}} Errors Detected</span>
+            </span>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()"
+                    [disabled]="errors.length > 0">
+              Save
             </button>
-          </mat-menu>
-          <button
-            mat-raised-button
-            color="primary"
-            style="margin-right: 5px;"
-            (click)="newPipeline()"
-          >
-            New
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            style="margin-right: 5px;"
-            (click)="savePipeline()"
-          >
-            Save
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            style="margin-right: 5px;"
-            (click)="cancelPipelineChange()"
-          >
-            Cancel
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            style="margin-right: 5px;"
-            (click)="deletePipeline()"
-            [disabled]="
-              !this.selectedPipeline.id ||
-              this.selectedPipeline.id.trim().length === 0
-            "
-          >
-            Delete
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            style="margin-right: 5px;"
-            (click)="copyPipeline()"
-            [disabled]="
-              !this.selectedPipeline.id ||
-              this.selectedPipeline.id.trim().length === 0
-            "
-          >
-            Copy
-          </button>
-          <button
-            mat-raised-button
-            color="primary"
-            style="margin-right: 5px;"
-            (click)="exportPipeline()"
-          >
-            Export
-          </button>
-          <button mat-raised-button color="primary" (click)="importPipeline()">
-            Import
-          </button>
-        </mat-card-content>
-      </mat-card>
+            <button mat-button color="primary" style="margin-right: 5px;"
+                    (click)="cancelPipelineChange()">Cancel</button>
+            <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0" (click)="autoLayout()">
+              Autolayout
+            </button>
+              <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0 || !selectedPipeline || selectedPipeline.steps.length === 0" (click)="refreshStepMetadata('')">
+              Refresh Steps
+            </button>
+          </span>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <app-designer
+        [addElementSubject]="dndSubject"
+        (designerDropEvent)="addStep($event)"
+        (elementSelected)="stepSelected($event)"
+        (elementAction)="handleElementAction($event)"
+        [dataModel]="designerModel"
+        #designerElement
+        (modelChanged)="modelChange($event)"></app-designer>
     </div>
-    <div class="pipeline-panel">
+    <div class="information-panel">
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>Information</mat-panel-title>
-                <mat-panel-description>{{
-                  selectedStep.displayName
-                }}</mat-panel-description>
-              </mat-expansion-panel-header>
-              <div class="pipeline-form">
-                <mat-form-field>
-                  <input
-                    matInput
-                    placeholder="Step Id"
-                    [ngModel]="selectedStep.stepId"
-                    name="stepId"
-                    disabled="true"
-                  />
-                </mat-form-field>
-                <mat-form-field
-                  ><input
-                    matInput
-                    placeholder="Name"
-                    [ngModel]="selectedStep.displayName"
-                    disabled="true"
-                    name="displayName"
-                  />
-                </mat-form-field>
-                <mat-form-field
-                  ><textarea
-                    matInput
-                    placeholder="Description"
-                    [ngModel]="selectedStep.description"
-                    name="description"
-                    disabled="true"
-                  ></textarea
-                ></mat-form-field>
-                <mat-form-field
-                  ><input
-                    matInput
-                    placeholder="Category"
-                    required
-                    [ngModel]="selectedStep.category"
-                    name="category"
-                    disabled="true"
-                  />
-                </mat-form-field>
-                <mat-form-field *ngIf="selectedStep.engineMeta"
-                  ><input
-                    matInput
-                    placeholder="Engine Meta Command"
-                    [ngModel]="selectedStep.engineMeta.spark"
-                    name="stepCommand"
-                    disabled="true"
-                  />
-                </mat-form-field>
-                <mat-form-field *ngIf="selectedStep.engineMeta"
-                  ><input
-                    matInput
-                    placeholder="Engine Meta Package"
-                    [(ngModel)]="selectedStep.engineMeta.pkg"
-                    name="stepPackage"
-                    disabled="true"
-                  />
-                </mat-form-field>
-              </div>
-            </mat-expansion-panel>
-            <mat-expansion-panel>
+            <app-step-information [selectedStep]="selectedStep"></app-step-information>
+            <mat-expansion-panel style="margin-top: 5px;">
               <mat-expansion-panel-header>
                 <mat-panel-title>Parameters</mat-panel-title>
-                <mat-panel-description>{{
-                  selectedStep.displayName
-                }}</mat-panel-description>
+                <mat-panel-description>
+                  <span class="step-description">{{selectedStep.displayName}}</span>
+                </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="pipeline-form">
-                <mat-form-field>
-                  <input
-                    matInput
-                    placeholder="Id"
-                    [(ngModel)]="selectedStep.id"
-                    name="id"
-                    (change)="handleIdChange()"
-                  />
-                </mat-form-field>
+                <span>
+                  <mat-form-field *ngIf="editStepId">
+                    <input matInput placeholder=" Pipeline Name" [(ngModel)]="selectedStep.id" required
+                           (focusout)="disableStepIdEdit()" (change)="handleIdChange()"/>
+                  </mat-form-field>
+                  <span class="pipeline-name" *ngIf="!editStepId">{{selectedStep.id}}</span>
+                  <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editStepId" (click)="enableStepIdEdit()">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </span>
                 <mat-accordion>
                   <app-pipelines-parameter
-                    [stepParameters]="{
-                      name: 'executeIfEmpty',
-                      value: selectedStep.executeIfEmpty || ' ',
-                      type: 'text',
-                      required: false,
-                      defaultValue: undefined,
-                      language: undefined,
-                      className: undefined,
-                      parameterType: undefined
-                    }"
-                    [packageObjects]="packageObjects"
-                    [stepSuggestions]="typeAhead"
-                    [pipelines]="stepGroups"
-                    (parameterUpdate)="
-                      handleParameterUpdate('executeIfEmpty', $event)
-                    "
-                  ></app-pipelines-parameter>
-                  <app-pipelines-parameter
-                    *ngFor="let param of selectedStep.params"
+                    *ngFor="let param of selectedStep?.params"
+                    [isABranchStep]="isABranchStep"
+                    [stepType]="selectedStep.type"
                     [stepParameters]="param"
                     [stepGroup]="stepGroup"
                     [packageObjects]="packageObjects"
                     [stepSuggestions]="typeAhead"
                     [pipelines]="stepGroups"
-                    (parameterUpdate)="
-                      handleParameterUpdate(param.name, $event)
-                    "
-                  ></app-pipelines-parameter>
+                    [pipelinesData]="pipelinesData"
+                    (parameterUpdate)="handleParameterUpdate(param.name, $event)"></app-pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>
@@ -245,12 +127,5 @@
         </mat-card-content>
       </mat-card>
     </div>
-    <app-designer
-      [addElementSubject]="dndSubject"
-      (designerDropEvent)="addStep($event)"
-      (elementSelected)="stepSelected($event)"
-      (elementAction)="handleElementAction($event)"
-      [dataModel]="designerModel"
-    ></app-designer>
   </div>
 </div>
