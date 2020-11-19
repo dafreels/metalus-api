@@ -9,7 +9,6 @@ import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model
 import {BehaviorSubject} from 'rxjs';
 import {MatSelect} from '@angular/material';
 import {FormControl} from '@angular/forms';
-import {ObjectMappingsComponent} from '../object-group-mappings/object-group-mappings.component';
 import {TreeEditorComponent} from '../../../shared/components/tree-editor/tree-editor.component';
 import {ScalaScriptComponent} from 'src/app/shared/scala-script/scala-script.component';
 
@@ -442,7 +441,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           this.handleChange(id);
         }
       });
-    } if (inputData.type === 'object') { // TODO All objects will use this for now
+    } else if (inputData.type === 'object') { // TODO All objects will use this for now
       let mappings = this.parameter.value || {};
       if (this.parameter.name === 'pipelineMappings' && this.stepGroup.pipeline) {
         const pipelineMappings = SharedFunctions.generatePipelineMappings(

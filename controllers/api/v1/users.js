@@ -157,7 +157,7 @@ module.exports = function (router) {
     const index = updateUser.projects.findIndex(p => p.id === projectId);
     updateUser.projects.splice(index, 1);
     const newuser = await userModel.update(updateUser.id, updateUser);
-    await deleteProjectData(userId, projectId, getProjectJarsBaseDir(req));
+    await deleteProjectData(userId, projectId, `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`);
     res.status(200).json(newuser);
   });
 
@@ -170,7 +170,7 @@ module.exports = function (router) {
     }
     const existingUser = await userModel.getUser(userId);
     for await (const project of existingUser.projects) {
-      await deleteProjectData(userId, project.id, getProjectJarsBaseDir(req));
+      await deleteProjectData(userId, project.id, `${getProjectJarsBaseDir(req)}/${userId}`);
     }
     await userModel.delete(userId);
     res.sendStatus(204);
