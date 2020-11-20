@@ -7,11 +7,13 @@ import { DesignerModule } from '../designer/designer.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
 import {ExecutionEditorComponent} from "./components/execution-editor/execution-editor.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import {CoreModule} from "../core/core.module";
 
 @NgModule({
   imports: [
     SharedModule,
     CodeEditorModule,
+    CoreModule,
     DesignerModule,
     DragDropModule
   ],

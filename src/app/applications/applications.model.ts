@@ -34,6 +34,11 @@ export interface Execution extends BaseApplicationProperties {
   mergeGlobals: boolean;
 }
 
+export interface ExecutionTemplate extends Execution {
+  name: string;
+  description: string;
+}
+
 export interface BaseApplicationProperties {
   pipelines?: Pipeline[];
   globals: object;

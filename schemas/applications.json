@@ -31,7 +31,8 @@
               }
             },
             "name": {
-              "type": "string"
+              "type": "string",
+              "minLength": 3
             },
             "sparkConf": {
               "type": "object",
@@ -127,7 +128,8 @@
               "type": "array",
               "items": {
                 "type": "string"
-              }
+              },
+              "minLength": 0
             },
             "initialPipelineId": {
               "type": "string"
@@ -153,7 +155,8 @@
           "items": {
             "type": "object",
             "$ref": "pipelines.json#/definitions/pipelines"
-          }
+          },
+          "minLength": 0
         },
         "globals": {
           "type": "object"

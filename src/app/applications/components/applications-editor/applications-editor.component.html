@@ -1,83 +1,155 @@
+
 <div>
-  <div class="button-div">
-    <mat-card>
-      <mat-card-content>
-        <button mat-raised-button color="primary" [matMenuTriggerFor]="applicationMenu"
-                style="margin-right: 5px;">Load
-        </button>
-        <mat-menu #applicationMenu="matMenu">
-          <button mat-menu-item *ngFor="let application of applications" [id]="application.id"
-                  (click)="loadApplication(application.id)">{{application.name}}</button>
-        </mat-menu>
-        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newApplication()">New</button>
-        <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="exportApplication()">Export</button>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div>
-    <mat-card>
-      <mat-card-content>
-        <div class="form-layout">
-          <mat-form-field>
-            <input matInput placeholder="Id" [(ngModel)]="selectedApplication.id" name="id" disabled="true">
-          </mat-form-field>
-          <mat-form-field>
-            <input matInput placeholder="Name" [(ngModel)]="selectedApplication.name" required name="name">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-chip-list #stepPackagesList>
-              <mat-chip *ngFor="let pkg of selectedApplication.stepPackages"
-                        selectable="true"
-                        removable="true"
-                        (removed)="removeStepPackage(pkg)">
-                {{pkg}}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
-              <input
-                placeholder="Step Packages"
-                [matChipInputFor]="stepPackagesList"
-                [formControl]="stepPackageCtrl"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="true"
-                (matChipInputTokenEnd)="addStepPackage($event)">
-            </mat-chip-list>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-chip-list #requiredParametersList>
-              <mat-chip *ngFor="let param of selectedApplication.requiredParameters"
-                        selectable="true"
-                        removable="true"
-                        (removed)="removeRequiredParameter(param)">
-                {{param}}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
-              <input
-                placeholder="Required Parameters"
-                [matChipInputFor]="requiredParametersList"
-                [formControl]="requiredParametersCtrl"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                [matChipInputAddOnBlur]="true"
-                (matChipInputTokenEnd)="addRequiredParameter($event)">
-            </mat-chip-list>
-          </mat-form-field>
-          <div class="button-div">
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newExecution()">
-              <mat-icon aria-label="Add a new execution">add</mat-icon>
+  <nav-toolbar>
+    <span>
+      <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newApplication()">New</button>
+    <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
+            style="margin-right: 5px;">Load</button>
+    <mat-menu #pipelineMenu="matMenu">
+      <button mat-menu-item *ngFor="let application of applications" [id]="application.id" (click)="loadApplication(application.id)">
+        {{ application.name }}
+      </button>
+    </mat-menu>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="copyApplication()"
+            [disabled]=" !this.selectedApplication.id || this.selectedApplication.id.trim().length === 0">Copy</button>
+    <button mat-button color="primary" (click)="importApplication()">Import</button>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="exportApplication()">Export</button>
+    <button mat-button color="primary" style="margin-right: 5px;" (click)="deleteApplication()"
+            [disabled]=" !this.selectedApplication.id || this.selectedApplication.id.trim().length === 0">Delete</button>
+    </span>
+  </nav-toolbar>
+  <!-- Main editor layout -->
+  <div class="grid-container">
+    <!-- Control Panel -->
+    <div class="control-panel">
+      <mat-card>
+        <mat-card-content class="header-content">
+          <div class="application-data">
+            <span>
+            <mat-form-field *ngIf="editName">
+              <input matInput placeholder=" Application Name" [(ngModel)]="selectedApplication.name" required
+                     (focusout)="disableNameEdit()"/>
+            </mat-form-field>
+            <span class="application-name" *ngIf="!editName">{{selectedApplication.name}}</span>
+            <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
+              <mat-icon>edit</mat-icon>
             </button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openSparkConfEditor()">Spark Conf</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('globals')">Globals</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPropertiesEditor('appProperties')">Application Properties</button>
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openComponentsEditor()">Components</button>
+          </span>
+            <span class="pipeline-id">ID: {{selectedApplication.id}}</span>
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div #canvas>
-    <app-designer [dataModel]="designerModel"
-    (elementAction)="handleElementAction($event)"
-    [addElementSubject]="addExecutionSubject"
-    [addElementOutput]="addExecutionOutput"></app-designer>
+          <span>
+            <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
+              <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
+              <span>{{errors.length}} Errors Detected</span>
+            </span>
+            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="saveApplication()"
+                    [disabled]="errors.length > 0">Save</button>
+            <button mat-button color="primary" style="margin-right: 5px;"
+                    (click)="cancelApplicationChange()">Cancel</button>
+            <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0"
+                    (click)="autoLayout()">Autolayout</button>
+          </span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <!-- Execution Toolbar Panel -->
+    <div class="execution-toolbar-panel">
+      <mat-card>
+        <mat-card-content>
+          <mat-action-list class="execution-list">
+            <mat-list-item class="execution-list-item" *ngFor="let template of executionTemplates" matTooltip="{{template.description}}"
+                           matTooltipPosition="right"
+                           [dndDraggable]="template"
+                           [dndDisableIf]="!draggable"
+                           [dndEffectAllowed]="dropEffect">
+              <div class="execution-list-container" dndDragImageRef>
+                <mat-icon color="primary">transform</mat-icon>
+                <span class="execution-list-text">{{template.name}}</span>
+              </div>
+            </mat-list-item>
+          </mat-action-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <!-- Designer Panel -->
+    <div class="designer-panel" #canvas>
+      <mat-card>
+        <mat-card-content>
+          <app-designer [dataModel]="designerModel"
+                        (designerDropEvent)="addExecution($event)"
+                        (elementAction)="handleElementAction($event)"
+                        (elementSelected)="handleExecutionSelection($event)"
+                        [addElementSubject]="addExecutionSubject"
+                        [addElementOutput]="addExecutionOutput">
+          </app-designer>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <!-- Execution Editor Panel -->
+    <div class="execution-panel">
+      <mat-card>
+        <mat-card-content>
+          <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Execution Information</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="form-layout">
+                <mat-form-field>
+                  <input matInput placeholder="Id"
+                         [(ngModel)]="selectedExecution.id"
+                         (change)="handleExecutionIdChange()"
+                         name="id">
+                </mat-form-field>
+              </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Pipelines</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="pipeline-container">
+                <h3>Available</h3>
+                <div
+                  cdkDropList
+                  #availableList="cdkDropList"
+                  [cdkDropListData]="availablePipelines"
+                  [cdkDropListConnectedTo]="[selectedList]"
+                  class="pipeline-list"
+                  (cdkDropListDropped)="dropPipeline($event)">
+                  <div class="pipeline-box" *ngFor="let pipeline of availablePipelines" cdkDrag>{{pipeline.name}}</div>
+                </div>
+              </div>
+              <div class="pipeline-container">
+                <h3>Selected</h3>
+                <div
+                  cdkDropList
+                  #selectedList="cdkDropList"
+                  [cdkDropListData]="selectedPipelines"
+                  [cdkDropListConnectedTo]="[availableList]"
+                  class="pipeline-list"
+                  (cdkDropListDropped)="dropPipeline($event)">
+                  <div class="pipeline-box" *ngFor="let pipeline of selectedPipelines" cdkDrag>
+                    {{pipeline.name}}
+<!--                    <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPipelinePropertiesEditor(pipeline.id)">-->
+<!--                      <mat-icon>edit</mat-icon>-->
+<!--                    </button>-->
+                  </div>
+                </div>
+              </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Globals</mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Class Overrides</mat-panel-title>
+              </mat-expansion-panel-header>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 </div>
-

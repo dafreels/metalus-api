@@ -1,7 +1,7 @@
 import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {PipelinesService} from '../../../pipelines/services/pipelines.service';
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {Application, Execution} from '../../applications.model';
+import {Application, Execution, ExecutionTemplate} from '../../applications.model';
 import {ApplicationsService} from '../../applications.service';
 import {Pipeline} from '../../../pipelines/models/pipelines.model';
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
@@ -25,6 +25,14 @@ import {
   DesignerElementAddOutput, DesignerElementOutput,
   DesignerModel
 } from "../../../designer/designer-constants";
+import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
+import {MatDialog} from "@angular/material/dialog";
+import {DndDropEvent, DropEffect} from "ngx-drag-drop";
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import * as Ajv from "ajv";
+import {StepsService} from "../../../steps/steps.service";
+import {AuthService} from "../../../shared/services/auth.service";
+import {User} from "../../../shared/models/users.models";
 
 @Component({
   selector: 'app-applications-editor',
@@ -35,25 +43,63 @@ export class ApplicationsEditorComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
   originalApplication: Application;
   selectedApplication: Application;
+  selectedExecution: ExecutionTemplate;
+  selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
   applications: Application[];
   pipelines: Pipeline[];
+  availablePipelines: Pipeline[] = [];
+  selectedPipelines: Pipeline[] = [];
   packageObjects: PackageObject[];
+  applicationValidator;
+  executionTemplates: ExecutionTemplate[] = [{
+    name: 'Blank',
+    description: 'A blank execution template',
+    globals: {},
+    id: 'Blank_Execution',
+    initialPipelineId: '',
+    mergeGlobals: false,
+    parents: [],
+    pipelineListener: {
+      className: 'com.acxiom.pipeline.DefaultPipelineListener',
+      parameters: {},
+    },
+    pipelineParameters: [],
+    securityManager: {
+      className: 'com.acxiom.pipeline.DefaultPipelineSecurityManager',
+      parameters: {},
+    },
+    stepMapper: {
+      className: 'com.acxiom.pipeline.DefaultPipelineStepMapper',
+      parameters: {},
+    },
+  }];
+  dropEffect: DropEffect = 'copy';
+  draggable = true;
   executionLookup = {};
   addExecutionSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
   addExecutionOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
+
+  editName: boolean = false;
+  errors = [];
 
   // Chip fields
   separatorKeysCodes: number[] = [ENTER, COMMA];
   stepPackageCtrl = new FormControl();
   requiredParametersCtrl = new FormControl();
 
+  user: User;
+
   constructor(
     private applicationsService: ApplicationsService,
     private pipelinesService: PipelinesService,
+    private stepsService: StepsService,
     private packageObjectsService: PackageObjectsService,
-    private displayDialogService: DisplayDialogService
-  ) {}
+    private displayDialogService: DisplayDialogService,
+    private dialog: MatDialog,
+    private authService: AuthService) {
+    this.user = this.authService.getUserInfo();
+  }
 
   ngOnInit(): void {
     this.newApplication();
@@ -82,6 +128,18 @@ export class ApplicationsEditorComponent implements OnInit {
           this.packageObjects = [];
         }
       });
+    this.applicationsService.getApplicationSchema().subscribe((applicationSchema) => {
+      const ajv = new Ajv({allErrors: true});
+      this.pipelinesService.getPipelineSchema().subscribe((pipelineSchema) => {
+        this.stepsService.getStepSchema().subscribe((stepSchema) => {
+          this.applicationValidator = ajv
+            .addSchema(stepSchema, 'stepSchema')
+            .addSchema(pipelineSchema, 'pipelineSchema')
+            .addSchema(applicationSchema)
+            .compile(applicationSchema.definitions.applications);
+        });
+      });
+    });
   }
 
   newApplication() {
@@ -128,6 +186,7 @@ export class ApplicationsEditorComponent implements OnInit {
     this.selectedApplication = JSON.parse(
       JSON.stringify(this.originalApplication)
     );
+    this.selectedExecution = this.createBlankExecution();
   }
 
   loadApplication(id: string) {
@@ -186,33 +245,96 @@ export class ApplicationsEditorComponent implements OnInit {
     this.designerModel = model;
   }
 
+  validateApplication() {
+    const errors = [];
+    const newApplication = this.generateApplication();
+    if (!this.applicationValidator(newApplication)) {
+      if (this.applicationValidator.errors && this.applicationValidator.errors.length > 0) {
+        this.applicationValidator.errors.forEach((err) => {
+          errors.push({
+            component: 'application',
+            field: err.dataPath.substring(1),
+            message: err.message
+          });
+        });
+      }
+    }
+    this.errors = errors;
+  }
+
   handleElementAction(action: DesignerElementAction) {
     switch (action.action) {
-      case 'editExecution':
-        const originalId = action.element.data['id'];
-        const elementActionDialogData = {
-          packageObjects: this.packageObjects,
-          pipelines: this.pipelines,
-          execution: action.element.data,
-        };
-        const elementActionDialog = this.displayDialogService.openDialog(
-          ExecutionEditorComponent,
-          generalDialogDimensions,
-          elementActionDialogData
-        );
-
-        elementActionDialog.afterClosed().subscribe((result) => {
-          if (result && result.id !== originalId) {
-            action.element.name = result.id;
-          }
-        });
-        break;
+      // case 'editExecution':
+      //   const originalId = action.element.data['id'];
+      //   const elementActionDialogData = {
+      //     packageObjects: this.packageObjects,
+      //     pipelines: this.pipelines,
+      //     execution: action.element.data,
+      //   };
+      //   const elementActionDialog = this.displayDialogService.openDialog(
+      //     ExecutionEditorComponent,
+      //     generalDialogDimensions,
+      //     elementActionDialogData
+      //   );
+      //
+      //   elementActionDialog.afterClosed().subscribe((result) => {
+      //     if (result && result.id !== originalId) {
+      //       action.element.name = result.id;
+      //     }
+      //   });
+      //   break;
       case 'addOutput':
         this.addExecutionOutput.next({
           element: action.element,
           output: `output-${new Date().getTime()}`,
         });
     }
+  }
+
+  handleExecutionSelection(event: DesignerElement) {
+    const execution = event.data as ExecutionTemplate;
+    let pipelines = [];
+    const executionPipelines = execution.pipelines || [];
+    // pipelineIds override pipelines
+    let pipeline;
+    if (execution.pipelineIds && execution.pipelineIds.length > 0) {
+      execution.pipelineIds.forEach((id) => {
+        // See if the execution pipelines have the pipeline we need
+        executionPipelines.forEach((pipe) => {
+          if (pipe.id === id) {
+            pipeline = pipe;
+          }
+        });
+        // Grab it from the global pipelines
+        if (!pipeline) {
+          this.pipelines.forEach((pipe) => {
+            if (pipe.id === id) {
+              pipeline = pipe;
+            }
+          });
+        }
+        pipelines.push(pipeline);
+        pipeline = null;
+      });
+    } else {
+      pipelines = execution.pipelines || [];
+    }
+
+    // Use the embedded pipelines instead of the global pipelines
+    this.availablePipelines = this.pipelines.filter((globalPipeline) => {
+      let existingPipeline = false;
+      if (pipelines) {
+        pipelines.forEach((pipe) => {
+          if (globalPipeline.id === pipe.id) {
+            existingPipeline = true;
+          }
+        });
+      }
+      return !existingPipeline;
+    });
+    this.selectedPipelines = pipelines;
+    this.selectedElement = event;
+    this.selectedExecution = execution;
   }
 
   removeStepPackage(pkg: string) {
@@ -319,23 +441,49 @@ export class ApplicationsEditorComponent implements OnInit {
     );
   }
 
+  deleteApplication() {
+
+  }
+
+  importApplication() {
+
+  }
+
+  copyApplication() {
+
+  }
+
   exportApplication() {
     const exportApplicationDialogData = {
       code: JSON.stringify(this.generateApplication(), null, 4),
       language: 'json',
       allowSave: false,
     };
-    const exportApplicationDialog = this.displayDialogService.openDialog(
+    this.displayDialogService.openDialog(
       CodeEditorComponent,
       generalDialogDimensions,
       exportApplicationDialogData
     );
   }
 
-  newExecution() {
-    const execution: Execution = {
+  showErrors() {
+    const messages = [];
+    this.errors.forEach((err) => {
+      messages.push(`${err.component} ${err.field}: ${err.message}`);
+    });
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: { messages },
+    });
+  }
+
+  createBlankExecution() {
+    return {
       globals: {},
-      id: 'New_Execution',
+      id: '',
+      name: '',
+      description: 'Empty execution',
       initialPipelineId: '',
       mergeGlobals: false,
       parents: [],
@@ -353,16 +501,38 @@ export class ApplicationsEditorComponent implements OnInit {
         parameters: {},
       },
     };
+  }
+
+  addExecution(event: DndDropEvent) {
     let element = this.createDesignerElement(
-      execution,
+      event.data,
       this.selectedApplication.executions
     );
-    const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
-    element.layout = {
-      x: 100 + canvasRect.x,
-      y: 150 + canvasRect.y,
-    };
+    element.event = event;
     this.addExecutionSubject.next(element);
+  }
+
+  handleExecutionIdChange() {
+    if (this.selectedElement) {
+      this.selectedElement.name = this.selectedExecution.id;
+    }
+  }
+
+  dropPipeline(event: CdkDragDrop<Pipeline[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    }
   }
 
   private generateApplication() {
@@ -373,7 +543,6 @@ export class ApplicationsEditorComponent implements OnInit {
     const connectionKeys = Object.keys(this.designerModel.connections);
     let execution;
     let pipeline;
-    let stepGroup;
     let stepParameter;
     let connection;
     Object.keys(this.designerModel.nodes).forEach((key) => {
@@ -395,8 +564,8 @@ export class ApplicationsEditorComponent implements OnInit {
       if (execution.pipelineIds) {
         execution.pipelineIds.forEach((id) => {
           if (pipelineIds.indexOf(id) === -1) {
-            pipeline = this.pipelines.find((pipeline) => pipeline.id === id);
-            pipelines.push(pipeline);
+            pipeline = this.pipelines.find((p) => p.id === id);
+            // pipelines.push(pipeline);
             pipelineIds.push(id);
             pipeline.steps.forEach((step) => {
               if (step.type === 'step-group') {
@@ -414,9 +583,7 @@ export class ApplicationsEditorComponent implements OnInit {
                     pipelines
                   );
                 } else {
-                  stepParameter = step.params.find(
-                    (p) => p.name === 'pipeline'
-                  );
+                  stepParameter = step.params.find((p) => p.name === 'pipeline');
                   if (
                     stepParameter &&
                     stepParameter.type === 'pipeline' &&
@@ -439,6 +606,7 @@ export class ApplicationsEditorComponent implements OnInit {
     this.selectedApplication.pipelines = pipelines;
     this.selectedApplication.executions = executions;
     this.selectedApplication.layout = layout;
+    this.selectedApplication.project = this.user.projects.find(p => p.id === this.user.defaultProjectId);
     return this.selectedApplication;
   }
 
@@ -495,11 +663,11 @@ export class ApplicationsEditorComponent implements OnInit {
       event: null,
       style: null,
       actions: [
-        {
-          displayName: 'Edit',
-          action: 'editExecution',
-          enableFunction: () => true,
-        },
+        // {
+        //   displayName: 'Edit',
+        //   action: 'editExecution',
+        //   enableFunction: () => true,
+        // },
         {
           displayName: 'Add Output',
           action: 'addOutput',
@@ -517,5 +685,26 @@ export class ApplicationsEditorComponent implements OnInit {
       }
     });
     return outputs;
+  }
+
+  disableNameEdit() {
+    this.editName = false;
+    this.validateApplication();
+  }
+
+  enableNameEdit() {
+    this.editName = true;
+  }
+
+  autoLayout() {
+
+  }
+
+  saveApplication() {
+
+  }
+
+  cancelApplicationChange() {
+
   }
 }

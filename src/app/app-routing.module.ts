@@ -15,9 +15,10 @@ import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, canDeactivate:[ConfirmDeactivateGuard]},
   {path: '', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
-  {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService]},
+  {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService],
+    data :{ page:"applications-editor", title:"Applications Editor"}},
   {path: 'steps-editor', component: StepsEditorComponent, canActivate: [AuthGuardService]},
-  {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService],  canDeactivate:[ConfirmDeactivateGuard],
+  {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService], canDeactivate:[ConfirmDeactivateGuard],
     data :{ page:"pipelines-editor", title:"Pipelines Editor"}},
   {path: 'landing', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService],
     data :{ page:"landing", title:"Home"}},
