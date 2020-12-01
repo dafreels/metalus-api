@@ -33,6 +33,7 @@ import * as Ajv from "ajv";
 import {StepsService} from "../../../steps/steps.service";
 import {AuthService} from "../../../shared/services/auth.service";
 import {User} from "../../../shared/models/users.models";
+import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-editor.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -60,6 +61,7 @@ export class ApplicationsEditorComponent implements OnInit {
     initialPipelineId: '',
     mergeGlobals: false,
     parents: [],
+    pipelines: [],
     pipelineListener: {
       className: 'com.acxiom.pipeline.DefaultPipelineListener',
       parameters: {},
@@ -321,7 +323,7 @@ export class ApplicationsEditorComponent implements OnInit {
     }
 
     // Use the embedded pipelines instead of the global pipelines
-    this.availablePipelines = this.pipelines.filter((globalPipeline) => {
+    this.availablePipelines = (this.pipelines ? this.pipelines : []).filter((globalPipeline) => {
       let existingPipeline = false;
       if (pipelines) {
         pipelines.forEach((pipe) => {
@@ -706,5 +708,23 @@ export class ApplicationsEditorComponent implements OnInit {
 
   cancelApplicationChange() {
 
+  }
+
+  openGlobalsEditor(selectedExecution) {
+    if (!selectedExecution.globals) {
+      selectedExecution.globals = {};
+    }
+    const editorDialog = this.displayDialogService.openDialog(
+      TreeEditorComponent,
+      generalDialogDimensions,
+      {
+        mappings: selectedExecution.globals,
+        hideMappingParameters: true,
+      });
+    editorDialog.afterClosed().subscribe((result) => {
+      if (result) {
+        selectedExecution.globals = result;
+      }
+    });
   }
 }

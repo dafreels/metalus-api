@@ -1,11 +1,14 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 import * as _ from 'lodash';
+
 export interface IItemType {
   name: string;
   displayName: string;
   canHaveChild: boolean;
+  mapping: boolean;
 }
+
 export class TreeItemNode {
   children: TreeItemNode[];
   item: string | number;
@@ -26,6 +29,7 @@ export class TreeItemFlatNode {
   length: number;
   parentType: string;
 }
+
 @Injectable()
 export class TreeDatabase {
   dataChange = new BehaviorSubject<TreeItemNode[]>([]);
@@ -35,7 +39,8 @@ export class TreeDatabase {
     return this.dataChange.value;
   }
 
-  constructor() {}
+  constructor() {
+  }
 
   initialize(data) {
     this.rawData = data;
@@ -76,10 +81,11 @@ export class TreeDatabase {
 
   insertItem(parent: TreeItemNode, name: string) {
     if (parent.children) {
-      parent.children.push({ item: name } as TreeItemNode);
+      parent.children.push({item: name} as TreeItemNode);
       this.dataChange.next(this.data);
     }
   }
+
   insertPath(path: string, type: string, value: string, objKey = '') {
     let item = _.get(this.rawData, path);
     if (item) {
@@ -98,34 +104,30 @@ export class TreeDatabase {
     }
     this.initialize(this.rawData);
   }
+
   types: IItemType[] = [
-    { displayName: 'Array', name: 'array', canHaveChild: true },
-    { displayName: 'Object', name: 'object', canHaveChild: true },
-    { displayName: 'Pipeline', name: 'pipeline', canHaveChild: false },
-    { displayName: 'Global', name: 'global', canHaveChild: false },
-    { displayName: 'Runtime', name: 'runtime', canHaveChild: false },
+    {displayName: 'Array', name: 'array', canHaveChild: true, mapping: false},
+    {displayName: 'Object', name: 'object', canHaveChild: true, mapping: false},
+    {displayName: 'Pipeline', name: 'pipeline', canHaveChild: false, mapping: true},
+    {displayName: 'Global', name: 'global', canHaveChild: false, mapping: true},
+    {displayName: 'Runtime', name: 'runtime', canHaveChild: false, mapping: true},
     {
       displayName: 'Mapped Runtime',
       name: 'mapped_runtime',
       canHaveChild: false,
+      mapping: true,
     },
-    { displayName: 'Step', name: 'step', canHaveChild: false },
-    { displayName: 'Secondary', name: 'secondary', canHaveChild: false },
-    { displayName: 'Boolean', name: 'boolean', canHaveChild: false },
-    { displayName: 'String', name: 'string', canHaveChild: false },
-    { displayName: 'Number', name: 'number', canHaveChild: false },
+    {displayName: 'Step', name: 'step', canHaveChild: false, mapping: true},
+    {displayName: 'Secondary', name: 'secondary', canHaveChild: false, mapping: true},
+    {displayName: 'Boolean', name: 'boolean', canHaveChild: false, mapping: false},
+    {displayName: 'String', name: 'string', canHaveChild: false, mapping: false},
+    {displayName: 'Number', name: 'number', canHaveChild: false, mapping: false},
   ];
-  insertArray(parent: TreeItemNode, name: string, type: string) {
-    switch (type) {
-      case 'array':
-        parent.children.push(this.buildFileTree([], 1)[0] as TreeItemNode);
-        break;
-    }
-  }
+
   updatePath(path, value) {
     const canReload = typeof _.get(this.rawData, path) == 'object' || typeof value == 'object';
     this.rawData = _.set(this.rawData, path, value);
-    if(canReload) {
+    if (canReload) {
       this.initialize(this.rawData)
     }
   }
@@ -146,29 +148,23 @@ export class TreeDatabase {
     }
     this.initialize(this.rawData);
   }
+
   updateKey(node: TreeItemFlatNode, key: any) {
     this.selectedpath = node.path;
     const parentPath = node.path.slice(0, node.path.lastIndexOf('['));
-    const currentKey = node.item;
+    // const currentKey = node.item;
     let parent = _.get(this.rawData, parentPath);
     if (Array.isArray(parent)) {
       return;
     } else {
-      let currentContent = _.get(this.rawData, node.path);
-      parent[key] = currentContent;
+      parent[key] = _.get(this.rawData, node.path);
       let newParent = {};
-      Object.keys(parent).map((index) => {
+      Object.keys(parent).forEach((index) => {
         const newIndex = index == node.item ? key : index;
         newParent[newIndex] = parent[index];
       });
       _.set(this.rawData, parentPath, newParent);
       _.unset(this.rawData, node.path);
     }
-    // this.initialize(this.rawData);
-  }
-
-  updateItem(node: TreeItemNode, name: string) {
-    node.item = name;
-    this.dataChange.next(this.data);
   }
 }

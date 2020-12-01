@@ -23,8 +23,9 @@
     <!-- Control Panel -->
     <div class="control-panel">
       <mat-card>
-        <mat-card-content class="header-content">
-          <div class="application-data">
+        <mat-card-content>
+          <div class="header-content">
+            <div class="application-data">
             <span>
             <mat-form-field *ngIf="editName">
               <input matInput placeholder=" Application Name" [(ngModel)]="selectedApplication.name" required
@@ -35,9 +36,9 @@
               <mat-icon>edit</mat-icon>
             </button>
           </span>
-            <span class="pipeline-id">ID: {{selectedApplication.id}}</span>
-          </div>
-          <span>
+              <span class="pipeline-id">ID: {{selectedApplication.id}}</span>
+            </div>
+            <span>
             <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
               <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
               <span>{{errors.length}} Errors Detected</span>
@@ -49,6 +50,16 @@
             <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0"
                     (click)="autoLayout()">Autolayout</button>
           </span>
+          </div>
+          <div style="text-align: center">
+            <button mat-button color="primary" (click)="openSparkConfEditor()">Spark Settings</button>
+            |<button mat-button color="primary" (click)="openGlobalsEditor(selectedApplication)">Globals</button>
+            |<button mat-button color="primary">Class Overrides</button>
+            |<button mat-button color="primary">UDFs</button>
+            |<button mat-button color="primary">Custom Serializers</button>
+<!--            |<button mat-button color="primary">Pipeline Parameters</button>-->
+            |<button mat-button color="primary">Setup Properties</button>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
@@ -101,6 +112,20 @@
                          (change)="handleExecutionIdChange()"
                          name="id">
                 </mat-form-field>
+                <span>
+                  <button mat-raised-button color="primary" style="margin-right: 5px" (click)="openGlobalsEditor(selectedExecution)">Globals</button>
+                  <mat-slide-toggle color="primary" labelPosition="before"
+                                    [(ngModel)]="selectedExecution.mergeGlobals">
+                    Merge with Applications Globals?
+                  </mat-slide-toggle>
+                </span>
+                <mat-form-field>
+                  <mat-select required [(ngModel)]="selectedExecution.initialPipelineId">
+                    <mat-option *ngFor="let pipeline of selectedPipelines" value="pipeline.id">
+                      {{pipeline.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </mat-expansion-panel>
             <mat-expansion-panel>
@@ -124,28 +149,24 @@
                 <div
                   cdkDropList
                   #selectedList="cdkDropList"
-                  [cdkDropListData]="selectedPipelines"
+                  [cdkDropListData]="selectedExecution.pipelines"
                   [cdkDropListConnectedTo]="[availableList]"
                   class="pipeline-list"
                   (cdkDropListDropped)="dropPipeline($event)">
-                  <div class="pipeline-box" *ngFor="let pipeline of selectedPipelines" cdkDrag>
+                  <div class="pipeline-box" *ngFor="let pipeline of selectedExecution.pipelines" cdkDrag>
                     {{pipeline.name}}
-<!--                    <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="openPipelinePropertiesEditor(pipeline.id)">-->
-<!--                      <mat-icon>edit</mat-icon>-->
-<!--                    </button>-->
+                    <button mat-icon-button color="primary" style="margin-right: 5px;">
+                      <mat-icon>edit</mat-icon>
+                    </button>
                   </div>
                 </div>
               </div>
             </mat-expansion-panel>
             <mat-expansion-panel>
               <mat-expansion-panel-header>
-                <mat-panel-title>Globals</mat-panel-title>
-              </mat-expansion-panel-header>
-            </mat-expansion-panel>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
                 <mat-panel-title>Class Overrides</mat-panel-title>
               </mat-expansion-panel-header>
+              <app-components-editor [data]="selectedExecution"></app-components-editor>
             </mat-expansion-panel>
           </mat-accordion>
         </mat-card-content>

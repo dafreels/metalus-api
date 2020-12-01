@@ -34,7 +34,7 @@
             <ng-container matColumnDef="default">
               <mat-header-cell *matHeaderCellDef> Default</mat-header-cell>
               <mat-cell *matCellDef="let element">
-                <mat-slide-toggle color="primary" (click)="changeDefaultProject(element.id)" class="Default" [disabled]="element.id === user.defaultProjectId" [checked]="element.id === user.defaultProjectId"></mat-slide-toggle>
+                `<mat-slide-toggle color="primary" (click)="changeDefaultProject(element.id)" class="Default" [disabled]="element.id === user.defaultProjectId" [checked]="element.id === user.defaultProjectId"></mat-slide-toggle>`
               </mat-cell>
             </ng-container>
 

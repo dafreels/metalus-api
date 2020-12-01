@@ -9,6 +9,7 @@ export interface PipelineMappingsData {
   packageObjects: PackageObject[];
   mappings: object;
   typeAhead: string[];
+  hideMappingParameters?: boolean;
 }
 @Component({
   selector: 'object-group-mappings-modal',

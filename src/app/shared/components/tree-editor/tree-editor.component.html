@@ -8,7 +8,7 @@
         <button mat-icon-button disabled></button>
         <ng-container>
           <div class="tree-item">
-              <tree-editor-popup [node]="node"></tree-editor-popup>
+              <tree-editor-popup [node]="node" [hideMappings]="data.hideMappingParameters"></tree-editor-popup>
           </div>
         </ng-container>
       </mat-tree-node>
@@ -36,7 +36,7 @@
               }}
             </mat-icon>
           </button>
-          <tree-editor-popup [node]="node"></tree-editor-popup>
+          <tree-editor-popup [node]="node" [hideMappings]="data.hideMappingParameters"></tree-editor-popup>
         </div>
         <div class="actions">
           <button mat-icon-button color="primary" [matMenuTriggerFor]="typeMenu">

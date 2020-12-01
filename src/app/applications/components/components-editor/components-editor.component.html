@@ -7,25 +7,12 @@
         </mat-expansion-panel-header>
         <div class="form-layout">
           <mat-form-field>
-            <input matInput placeholder="Class Name" required [(ngModel)]="data.properties.pipelineListener.className"
-                   name="className">
+            <mat-label>Class Name</mat-label>
+            <input matInput required [(ngModel)]="localData.pipelineListener.className">
+            <button mat-button (click)="openEditor(localData.pipelineListener.parameters)">
+              <mat-icon aria-label="Open Editor">edit</mat-icon>
+            </button>
           </mat-form-field>
-          <div>
-          <span style="display: inline-flex; width: 90%">
-              <mat-form-field style="width: 99%">
-                <textarea matInput placeholder="Parameters"
-                          [ngModel]="data.properties.pipelineListener.parameters"
-                          disabled="true"
-                          name="parameters"></textarea>
-              </mat-form-field>
-          </span>
-            <span>
-              <button mat-raised-button color="primary"
-                      (click)="openEditor(data.properties.pipelineListener.parameters)">
-                <mat-icon aria-label="Open Editor">edit</mat-icon>
-              </button>
-          </span>
-          </div>
         </div>
       </mat-expansion-panel>
       <mat-expansion-panel>
@@ -34,25 +21,12 @@
         </mat-expansion-panel-header>
         <div class="form-layout">
           <mat-form-field>
-            <input matInput placeholder="Class Name" required [(ngModel)]="data.properties.securityManager.className"
-                   name="className">
+            <mat-label>Class Name</mat-label>
+            <input matInput required [(ngModel)]="localData.securityManager.className">
+            <button mat-button (click)="openEditor(localData.securityManager.parameters)">
+              <mat-icon aria-label="Open Editor">edit</mat-icon>
+            </button>
           </mat-form-field>
-          <div>
-          <span style="display: inline-flex; width: 90%">
-              <mat-form-field style="width: 99%">
-                <textarea matInput placeholder="Parameters"
-                          [ngModel]="data.properties.securityManager.parameters"
-                          disabled="true"
-                          name="parameters"></textarea>
-              </mat-form-field>
-          </span>
-            <span>
-              <button mat-raised-button color="primary"
-                      (click)="openEditor(data.properties.securityManager.parameters)">
-                <mat-icon aria-label="Open Editor">edit</mat-icon>
-              </button>
-          </span>
-          </div>
         </div>
       </mat-expansion-panel>
       <mat-expansion-panel>
@@ -61,57 +35,41 @@
         </mat-expansion-panel-header>
         <div class="form-layout">
           <mat-form-field>
-            <input matInput placeholder="Class Name" required [(ngModel)]="data.properties.stepMapper.className"
-                   name="className">
+            <mat-label>Class Name</mat-label>
+            <input matInput required [(ngModel)]="localData.stepMapper.className">
+            <button mat-button (click)="openEditor(localData.stepMapper.parameters)">
+              <mat-icon aria-label="Open Editor">edit</mat-icon>
+            </button>
           </mat-form-field>
-          <div>
-          <span style="display: inline-flex; width: 90%">
-              <mat-form-field style="width: 99%">
-                <textarea matInput placeholder="Parameters"
-                          [ngModel]="data.properties.stepMapper.parameters"
-                          disabled="true"
-                          name="parameters"></textarea>
-              </mat-form-field>
-          </span>
-            <span>
-              <button mat-raised-button color="primary"
-                      (click)="openEditor(data.properties.stepMapper.parameters)">
-                <mat-icon aria-label="Open Editor">edit</mat-icon>
-              </button>
-          </span>
-          </div>
         </div>
       </mat-expansion-panel>
-      <mat-expansion-panel *ngIf="data.properties.pipelineManager">
-        <mat-expansion-panel-header>
-          <mat-panel-title>Pipeline Manager</mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="form-layout">
-          <mat-form-field>
-            <input matInput placeholder="Class Name" required [(ngModel)]="data.properties.pipelineManager.className"
-                   name="className">
-          </mat-form-field>
-          <div>
-          <span style="display: inline-flex; width: 90%">
-              <mat-form-field style="width: 99%">
-                <textarea matInput placeholder="Parameters"
-                          [ngModel]="data.properties.pipelineManager.parameters"
-                          disabled="true"
-                          name="parameters"></textarea>
-              </mat-form-field>
-          </span>
-            <span>
-              <button mat-raised-button color="primary"
-                      (click)="openEditor(data.properties.pipelineManager.parameters)">
-                <mat-icon aria-label="Open Editor">edit</mat-icon>
-              </button>
-          </span>
-          </div>
-        </div>
-      </mat-expansion-panel>
+<!--      <mat-expansion-panel *ngIf="localData.pipelineManager">-->
+<!--        <mat-expansion-panel-header>-->
+<!--          <mat-panel-title>Pipeline Manager</mat-panel-title>-->
+<!--        </mat-expansion-panel-header>-->
+<!--        <div class="form-layout">-->
+<!--          <mat-form-field>-->
+<!--            <input matInput placeholder="Class Name" required [(ngModel)]="localData.pipelineManager.className"-->
+<!--                   name="className">-->
+<!--          </mat-form-field>-->
+<!--          <div>-->
+<!--          <span style="display: inline-flex; width: 90%">-->
+<!--              <mat-form-field style="width: 99%">-->
+<!--                <textarea matInput placeholder="Parameters"-->
+<!--                          [ngModel]="localData.pipelineManager.parameters"-->
+<!--                          disabled="true"-->
+<!--                          name="parameters"></textarea>-->
+<!--              </mat-form-field>-->
+<!--          </span>-->
+<!--            <span>-->
+<!--              <button mat-raised-button color="primary">-->
+<!--&lt;!&ndash;                      (click)="openEditor(localData.pipelineManager.parameters)">&ndash;&gt;-->
+<!--                <mat-icon aria-label="Open Editor">edit</mat-icon>-->
+<!--              </button>-->
+<!--          </span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </mat-expansion-panel>-->
     </mat-accordion>
   </mat-card-content>
 </mat-card>
-<div mat-dialog-actions class="button-div">
-  <button mat-raised-button color="warn" (click)="closeDialog()">OK</button>
-</div>

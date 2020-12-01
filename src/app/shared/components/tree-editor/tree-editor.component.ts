@@ -15,13 +15,11 @@ import {PipelineMappingsData} from 'src/app/pipelines/components/object-group-ma
   styleUrls: ['./tree-editor.component.scss'],
 })
 export class TreeEditorComponent implements OnInit {
-  types = this._database.types;
+  types;
   flatNodeMap = new Map<TreeItemFlatNode, TreeItemNode>();
   treeView = true;
 
   nestedNodeMap = new Map<TreeItemNode, TreeItemFlatNode>();
-
-  selectedParent: TreeItemFlatNode | null = null;
 
   newItemName = '';
 
@@ -36,6 +34,7 @@ export class TreeEditorComponent implements OnInit {
   );
   jsonData: any;
   selectedpath: string;
+
   constructor(
     private _database: TreeDatabase,
     public dialogRef: MatDialogRef<TreeEditorComponent>,
@@ -57,12 +56,15 @@ export class TreeEditorComponent implements OnInit {
       this.treeFlattener
     );
 
+    this.types = this._database.types.filter(t => !(t.mapping && data.hideMappingParameters));
+
     _database.dataChange.subscribe((data) => {
       this.dataSource.data = data;
     });
   }
+
   ngOnInit() {
-    this._database.initialize({ mappings: this.data.mappings });
+    this._database.initialize({mappings: this.data.mappings});
   }
 
   getLevel = (node: TreeItemFlatNode) => node.level;
@@ -224,10 +226,12 @@ export class TreeEditorComponent implements OnInit {
       });
     }
   }
+
   updateNodeValue(node: TreeItemFlatNode, value) {
     this._database.selectedpath = node.path;
     this._database.updatePath(node.path, value);
   }
+
   editNode(node: TreeItemFlatNode, value: string) {
     this._database.updateKey(node, value);
     node.item = value;
@@ -236,7 +240,7 @@ export class TreeEditorComponent implements OnInit {
   deleteNode(node: TreeItemFlatNode) {
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
-      data: { message: `Would you like to delete ${node.item} ?` },
+      data: {message: `Would you like to delete ${node.item} ?`},
     });
     dialogRef.afterClosed().subscribe((confirmation) => {
       if (confirmation) {
@@ -246,6 +250,7 @@ export class TreeEditorComponent implements OnInit {
       }
     });
   }
+
   expandNode(node: TreeItemFlatNode) {
     if (this._database.selectedpath && this._database.selectedpath.indexOf(node.path) > -1) {
       this.treeControl.expand(node);
@@ -259,15 +264,19 @@ export class TreeEditorComponent implements OnInit {
   cancelDialog() {
     this.dialogRef.close();
   }
+
   setData(data) {
-    this._database.initialize({ mappings: data });
+    this._database.initialize({mappings: data});
   }
+
   get codeViewData() {
     return JSON.stringify(this._database.rawData.mappings, null, 4);
   }
+
   set codeViewData(data) {
     this.setData(JSON.parse(data));
   }
+
   viewChanged() {
     this.setData(this._database.rawData.mappings);
   }
