@@ -54,11 +54,12 @@
           <div style="text-align: center">
             <button mat-button color="primary" (click)="openSparkConfEditor()">Spark Settings</button>
             |<button mat-button color="primary" (click)="openGlobalsEditor(selectedApplication)">Globals</button>
-            |<button mat-button color="primary">Class Overrides</button>
-            |<button mat-button color="primary">UDFs</button>
-            |<button mat-button color="primary">Custom Serializers</button>
+            |<button mat-button color="primary" disabled="true">Global Links</button>
+            |<button mat-button color="primary" disabled="true">Class Overrides</button>
+            |<button mat-button color="primary" disabled="true">UDFs</button>
+            |<button mat-button color="primary" disabled="true">Custom Serializers</button>
 <!--            |<button mat-button color="primary">Pipeline Parameters</button>-->
-            |<button mat-button color="primary">Setup Properties</button>
+            |<button mat-button color="primary" disabled="true">Setup Properties</button>
           </div>
         </mat-card-content>
       </mat-card>
@@ -101,7 +102,7 @@
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel [disabled]="!selectedExecution.id">
               <mat-expansion-panel-header>
                 <mat-panel-title>Execution Information</mat-panel-title>
               </mat-expansion-panel-header>
@@ -128,7 +129,7 @@
                 </mat-form-field>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel>
+            <mat-expansion-panel [disabled]="!selectedExecution.id">
               <mat-expansion-panel-header>
                 <mat-panel-title>Pipelines</mat-panel-title>
               </mat-expansion-panel-header>
@@ -155,14 +156,14 @@
                   (cdkDropListDropped)="dropPipeline($event)">
                   <div class="pipeline-box" *ngFor="let pipeline of selectedExecution.pipelines" cdkDrag>
                     {{pipeline.name}}
-                    <button mat-icon-button color="primary" style="margin-right: 5px;">
+                    <button mat-icon-button color="primary" (click)="openPipelineParametersEditor(selectedExecution, pipeline)" style="margin-right: 5px;">
                       <mat-icon>edit</mat-icon>
                     </button>
                   </div>
                 </div>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel>
+            <mat-expansion-panel [disabled]="!selectedExecution.id">
               <mat-expansion-panel-header>
                 <mat-panel-title>Class Overrides</mat-panel-title>
               </mat-expansion-panel-header>

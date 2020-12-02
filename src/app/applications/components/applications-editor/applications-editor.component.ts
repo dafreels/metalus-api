@@ -538,17 +538,18 @@ export class ApplicationsEditorComponent implements OnInit {
   }
 
   private generateApplication() {
+    const application = SharedFunctions.clone(this.selectedApplication);
     const pipelines = [];
     const pipelineIds = [];
     const executions = [];
     const layout = {};
     const connectionKeys = Object.keys(this.designerModel.connections);
     let execution;
-    let pipeline;
+    // let pipeline;
     let stepParameter;
     let connection;
     Object.keys(this.designerModel.nodes).forEach((key) => {
-      execution = this.designerModel.nodes[key].data.data;
+      execution = SharedFunctions.clone(this.designerModel.nodes[key].data.data);
       layout[execution.id] = {
         x: this.designerModel.nodes[key].x,
         y: this.designerModel.nodes[key].y,
@@ -563,12 +564,12 @@ export class ApplicationsEditorComponent implements OnInit {
           );
         }
       });
-      if (execution.pipelineIds) {
-        execution.pipelineIds.forEach((id) => {
-          if (pipelineIds.indexOf(id) === -1) {
-            pipeline = this.pipelines.find((p) => p.id === id);
-            // pipelines.push(pipeline);
-            pipelineIds.push(id);
+      if (execution.pipelines && execution.pipelines.length > 0) {
+        execution.pipelineIds = [];
+        execution.pipelines.forEach((pipeline) => {
+          execution.pipelineIds.push(pipeline.id);
+          if (pipelines.findIndex(p => p.id === pipeline.id) === -1) {
+            pipelines.push(pipeline);
             pipeline.steps.forEach((step) => {
               if (step.type === 'step-group') {
                 stepParameter = step.params.find(
@@ -603,13 +604,55 @@ export class ApplicationsEditorComponent implements OnInit {
             });
           }
         });
+        delete execution.pipelines;
       }
+      // if (execution.pipelineIds) {
+      //   execution.pipelineIds.forEach((id) => {
+      //     if (pipelineIds.indexOf(id) === -1) {
+      //       pipeline = this.pipelines.find((p) => p.id === id);
+      //       // pipelines.push(pipeline);
+      //       pipelineIds.push(id);
+      //       pipeline.steps.forEach((step) => {
+      //         if (step.type === 'step-group') {
+      //           stepParameter = step.params.find(
+      //             (p) => p.name === 'pipelineId'
+      //           );
+      //           if (
+      //             stepParameter &&
+      //             stepParameter.value &&
+      //             stepParameter.value.trim().length > 0
+      //           ) {
+      //             this.setGlobalPipeline(
+      //               stepParameter.value,
+      //               pipelineIds,
+      //               pipelines
+      //             );
+      //           } else {
+      //             stepParameter = step.params.find((p) => p.name === 'pipeline');
+      //             if (
+      //               stepParameter &&
+      //               stepParameter.type === 'pipeline' &&
+      //               stepParameter.value &&
+      //               stepParameter.value.trim().length > 0
+      //             ) {
+      //               this.setGlobalPipeline(
+      //                 stepParameter.value.substring(0),
+      //                 pipelineIds,
+      //                 pipelines
+      //               );
+      //             }
+      //           }
+      //         }
+      //       });
+      //     }
+      //   });
+      // }
     });
-    this.selectedApplication.pipelines = pipelines;
-    this.selectedApplication.executions = executions;
-    this.selectedApplication.layout = layout;
-    this.selectedApplication.project = this.user.projects.find(p => p.id === this.user.defaultProjectId);
-    return this.selectedApplication;
+    application.pipelines = pipelines;
+    application.executions = executions;
+    application.layout = layout;
+    application.project = this.user.projects.find(p => p.id === this.user.defaultProjectId);
+    return application;
   }
 
   private setGlobalPipeline(
@@ -726,5 +769,40 @@ export class ApplicationsEditorComponent implements OnInit {
         selectedExecution.globals = result;
       }
     });
+  }
+
+  openPipelineParametersEditor(selectedExecution: ExecutionTemplate, pipeline: Pipeline) {
+    if (!selectedExecution.pipelineParameters) {
+      selectedExecution.pipelineParameters = [];
+    }
+    let parameters = selectedExecution.pipelineParameters.find(p => p.pipelineId === pipeline.id);
+    if (!parameters) {
+      parameters = {
+        pipelineId: pipeline.id,
+        parameters: {},
+      };
+      selectedExecution.pipelineParameters.push(parameters);
+    }
+    pipeline.steps.forEach((step) => {
+      step.params.forEach((param) => {
+        if (param.value && typeof param.value === 'string') {
+          param.value.split('||').forEach((value) => {
+            if (value.trim().startsWith('$') || value.trim().startsWith('?')) {
+              const paramName = value.trim().substring(1);
+              if (!parameters.parameters[paramName]) {
+                parameters.parameters[paramName] = null;
+              }
+            }
+          });
+        }
+      });
+    });
+    this.displayDialogService.openDialog(
+      TreeEditorComponent,
+      generalDialogDimensions,
+      {
+        mappings: parameters.parameters,
+        hideMappingParameters: true,
+      });
   }
 }
