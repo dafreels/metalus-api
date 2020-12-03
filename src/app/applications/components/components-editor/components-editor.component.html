@@ -43,6 +43,27 @@
           </mat-form-field>
         </div>
       </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Spark Listeners</mat-panel-title>
+          <button mat-button (click)="addSparkListener()">
+            <mat-icon aria-label="Add Listener">add</mat-icon>
+          </button>
+        </mat-expansion-panel-header>
+        <div class="form-layout">
+          <mat-form-field *ngFor="let listener of sparkListeners">
+            <mat-label>Class Name</mat-label>
+            <input matInput required [(ngModel)]="listener.className" (change)="generateSparkListeners()">
+            <button mat-button (click)="openEditor(listener.parameters)">
+              <mat-icon aria-label="Open Editor">edit</mat-icon>
+            </button>
+            <button mat-button (click)="removeSparkListener(listener.id)">
+              <mat-icon aria-label="Remove Listener">delete</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
 <!--      <mat-expansion-panel *ngIf="localData.pipelineManager">-->
 <!--        <mat-expansion-panel-header>-->
 <!--          <mat-panel-title>Pipeline Manager</mat-panel-title>-->

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Application, ApplicationsResponse } from './applications.model';
+import {Application, ApplicationResponse, ApplicationsResponse} from './applications.model';
 import {Observable, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
+import {Pipeline, PipelineResponse} from "../pipelines/models/pipelines.model";
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,37 @@ export class ApplicationsService {
       .get('/schemas/applications.json', { observe: 'response' })
       .pipe(
         map((response) => response.body),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  addApplication(application: Application): Observable<Application> {
+    return this.http
+      .post<ApplicationResponse>('/api/v1/applications', application, {
+        observe: 'response',
+      })
+      .pipe(
+        map((response) => response.body.application),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  updateApplication(application: Application): Observable<Application> {
+    return this.http
+      .put<ApplicationResponse>(`/api/v1/applications/${application.id}`, application, {
+        observe: 'response',
+      })
+      .pipe(
+        map((response) => response.body.application),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  deleteApplication(application: Application): Observable<boolean> {
+    return this.http
+      .delete(`/api/v1/applications/${application.id}`, { observe: 'response' })
+      .pipe(
+        map((response) => true),
         catchError((err) => throwError(err))
       );
   }

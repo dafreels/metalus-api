@@ -1,6 +1,6 @@
 import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {PipelinesService} from '../../../pipelines/services/pipelines.service';
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Application, Execution, ExecutionTemplate} from '../../applications.model';
 import {ApplicationsService} from '../../applications.service';
 import {Pipeline} from '../../../pipelines/models/pipelines.model';
@@ -9,7 +9,7 @@ import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {FormControl} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {SparkConfEditorComponent} from '../spark-conf-editor/spark-conf-editor.component';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {PropertiesEditorModalComponent} from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
 import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
@@ -34,13 +34,15 @@ import {StepsService} from "../../../steps/steps.service";
 import {AuthService} from "../../../shared/services/auth.service";
 import {User} from "../../../shared/models/users.models";
 import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-editor.component";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
+import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 
 @Component({
   selector: 'app-applications-editor',
   templateUrl: './applications-editor.component.html',
   styleUrls: ['./applications-editor.component.scss'],
 })
-export class ApplicationsEditorComponent implements OnInit {
+export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
   originalApplication: Application;
   selectedApplication: Application;
@@ -91,6 +93,7 @@ export class ApplicationsEditorComponent implements OnInit {
   requiredParametersCtrl = new FormControl();
 
   user: User;
+  subscriptions: Subscription[] = [];
 
   constructor(
     private applicationsService: ApplicationsService,
@@ -144,6 +147,10 @@ export class ApplicationsEditorComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions = SharedFunctions.clearSubscriptions(this.subscriptions);
+  }
+
   newApplication() {
     this.originalApplication = {
       applicationProperties: {},
@@ -193,9 +200,7 @@ export class ApplicationsEditorComponent implements OnInit {
 
   loadApplication(id: string) {
     this.originalApplication = this.applications.find((app) => app.id === id);
-    this.selectedApplication = JSON.parse(
-      JSON.stringify(this.originalApplication)
-    );
+    this.selectedApplication = SharedFunctions.clone(this.originalApplication);
     // Create the model from the executions
     const model = DesignerComponent.newModel();
     // let nodeId;
@@ -203,6 +208,8 @@ export class ApplicationsEditorComponent implements OnInit {
     // const executions = {};
     this.selectedApplication.executions.forEach((execution) => {
       this.createModelNode(model, execution, -1, -1);
+      execution.pipelines = [];
+      execution.pipelineIds.forEach(pid => execution.pipelines.push(this.pipelines.find(p => p.id === pid)));
     });
     // Create connections
     const connectedNodes = [];
@@ -444,7 +451,36 @@ export class ApplicationsEditorComponent implements OnInit {
   }
 
   deleteApplication() {
-
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '450px',
+      height: '200px',
+      data: {
+        message: 'Are you sure you wish to permanently delete this application?',
+      },
+    });
+    this.subscriptions.push(dialogRef.afterClosed().subscribe(
+      (confirmation) => {
+        if (confirmation) {
+          const dialog = this.dialog.open(WaitModalComponent, {
+            width: '25%',
+            height: '25%',
+          });
+          this.subscriptions.push(this.applicationsService.deleteApplication(this.selectedApplication).subscribe(
+            () => {
+              const index = this.applications.findIndex(
+                (s) => s.id === this.selectedApplication.id
+              );
+              if (index > -1) {
+                this.applications.splice(index, 1);
+                this.newApplication();
+                // Change the reference to force the selector to refresh
+                this.applications = [...this.applications];
+              }
+              dialog.close();
+            },
+            (error) => this.handleError(error, dialog)));
+        }
+      }));
   }
 
   importApplication() {
@@ -512,6 +548,7 @@ export class ApplicationsEditorComponent implements OnInit {
     );
     element.event = event;
     this.addExecutionSubject.next(element);
+    this.validateApplication();
   }
 
   handleExecutionIdChange() {
@@ -535,6 +572,7 @@ export class ApplicationsEditorComponent implements OnInit {
         event.currentIndex
       );
     }
+    this.validateApplication();
   }
 
   private generateApplication() {
@@ -545,7 +583,6 @@ export class ApplicationsEditorComponent implements OnInit {
     const layout = {};
     const connectionKeys = Object.keys(this.designerModel.connections);
     let execution;
-    // let pipeline;
     let stepParameter;
     let connection;
     Object.keys(this.designerModel.nodes).forEach((key) => {
@@ -606,47 +643,6 @@ export class ApplicationsEditorComponent implements OnInit {
         });
         delete execution.pipelines;
       }
-      // if (execution.pipelineIds) {
-      //   execution.pipelineIds.forEach((id) => {
-      //     if (pipelineIds.indexOf(id) === -1) {
-      //       pipeline = this.pipelines.find((p) => p.id === id);
-      //       // pipelines.push(pipeline);
-      //       pipelineIds.push(id);
-      //       pipeline.steps.forEach((step) => {
-      //         if (step.type === 'step-group') {
-      //           stepParameter = step.params.find(
-      //             (p) => p.name === 'pipelineId'
-      //           );
-      //           if (
-      //             stepParameter &&
-      //             stepParameter.value &&
-      //             stepParameter.value.trim().length > 0
-      //           ) {
-      //             this.setGlobalPipeline(
-      //               stepParameter.value,
-      //               pipelineIds,
-      //               pipelines
-      //             );
-      //           } else {
-      //             stepParameter = step.params.find((p) => p.name === 'pipeline');
-      //             if (
-      //               stepParameter &&
-      //               stepParameter.type === 'pipeline' &&
-      //               stepParameter.value &&
-      //               stepParameter.value.trim().length > 0
-      //             ) {
-      //               this.setGlobalPipeline(
-      //                 stepParameter.value.substring(0),
-      //                 pipelineIds,
-      //                 pipelines
-      //               );
-      //             }
-      //           }
-      //         }
-      //       });
-      //     }
-      //   });
-      // }
     });
     application.pipelines = pipelines;
     application.executions = executions;
@@ -708,11 +704,6 @@ export class ApplicationsEditorComponent implements OnInit {
       event: null,
       style: null,
       actions: [
-        // {
-        //   displayName: 'Edit',
-        //   action: 'editExecution',
-        //   enableFunction: () => true,
-        // },
         {
           displayName: 'Add Output',
           action: 'addOutput',
@@ -746,11 +737,63 @@ export class ApplicationsEditorComponent implements OnInit {
   }
 
   saveApplication() {
+    const dialogRef = this.dialog.open(WaitModalComponent, {
+      width: '25%',
+      height: '25%',
+    });
+    const newApplication = this.generateApplication();
+    let observable;
+    if (
+      this.selectedApplication.id &&
+      this.pipelines.findIndex((p) => p.id === this.selectedApplication.id)
+    ) {
+      observable = this.applicationsService.updateApplication(newApplication);
+    } else {
+      observable = this.applicationsService.addApplication(newApplication);
+    }
+    this.subscriptions.push(observable.subscribe(
+      (application: Application) => {
+        // this.selectedApplication = application;
+        this.selectedApplication = JSON.parse(JSON.stringify(application));
+        let index = this.applications.findIndex(
+          (s) => s.id === this.selectedApplication.id
+        );
+        if (index === -1) {
+          this.applications.push(this.selectedApplication);
+        } else {
+          this.applications[index] = this.selectedApplication;
+        }
+        // Change the reference to force the selector to refresh
+        this.applications = [...this.applications];
+        dialogRef.close();
+      },
+      (error) => this.handleError(error, dialogRef)
+    ));
+  }
 
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: { messages: message.split('\n') },
+    });
   }
 
   cancelApplicationChange() {
-
+    if (this.selectedApplication.id) {
+      this.selectedApplication = this.applications.find(a => a.id === this.selectedApplication.id);
+    } else {
+      this.newApplication();
+    }
+    this.validateApplication();
   }
 
   openGlobalsEditor(selectedExecution) {
@@ -768,6 +811,7 @@ export class ApplicationsEditorComponent implements OnInit {
       if (result) {
         selectedExecution.globals = result;
       }
+      this.validateApplication();
     });
   }
 
@@ -797,12 +841,15 @@ export class ApplicationsEditorComponent implements OnInit {
         }
       });
     });
-    this.displayDialogService.openDialog(
+    const dialog = this.displayDialogService.openDialog(
       TreeEditorComponent,
       generalDialogDimensions,
       {
         mappings: parameters.parameters,
         hideMappingParameters: true,
       });
+    dialog.afterClosed().subscribe((result) => {
+      this.validateApplication();
+    });
   }
 }

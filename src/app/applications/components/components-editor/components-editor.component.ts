@@ -1,8 +1,12 @@
 import {Component, Input} from '@angular/core';
-import {BaseApplicationProperties} from '../../applications.model';
+import {BaseApplicationProperties, ClassInfo} from '../../applications.model';
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-editor.component";
+
+export interface SparkListener extends ClassInfo {
+  id: number;
+}
 
 @Component({
   selector: 'app-components-editor',
@@ -10,6 +14,8 @@ import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-e
 })
 export class ComponentsEditorComponent {
   localData: BaseApplicationProperties;
+  sparkListeners: SparkListener[] = [];
+  id = 0;
 
   constructor(private displayDialogService: DisplayDialogService) {}
 
@@ -34,22 +40,56 @@ export class ComponentsEditorComponent {
         parameters: {},
       };
     }
+    if (inputData.sparkListeners && inputData.sparkListeners.length > 0) {
+      inputData.sparkListeners.forEach((prop) => {
+        if (prop.className.trim().length > 0) {
+          this.sparkListeners.push({
+            id: this.id++,
+            className: prop.className,
+            parameters: prop.parameters,
+          });
+        }
+      });
+    }
     this.localData = inputData;
   }
 
   openEditor(parameters: object) {
-  //   // TODO Will need to associate any new object back to original
-  //   const editorDialogData = {
-  //     allowSpecialParameters: false,
-  //     packageObjects: this.data.packageObjects,
-  //     propertiesObject: parameters || {},
-  //   };
-    const editorDialog = this.displayDialogService.openDialog(
+    this.displayDialogService.openDialog(
       TreeEditorComponent,
       generalDialogDimensions,
       {
         mappings: parameters,
         hideMappingParameters: true,
     });
+  }
+
+  addSparkListener() {
+    this.sparkListeners.push({
+      id: this.id++,
+      className: '',
+      parameters: {},
+    });
+  }
+
+  removeSparkListener(id: number) {
+    const index = this.sparkListeners.findIndex((p) => p.id === id);
+    if (index > -1) {
+      this.sparkListeners.splice(index, 1);
+      this.generateSparkListeners();
+    }
+  }
+
+  generateSparkListeners() {
+    const listeners = [];
+    this.sparkListeners.forEach((prop) => {
+      if (prop.className.trim().length > 0) {
+        listeners.push({
+          className: prop.className,
+          parameters: prop.parameters,
+        });
+      }
+    });
+    this.localData.sparkListeners = listeners;
   }
 }

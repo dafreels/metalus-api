@@ -8,6 +8,10 @@ export interface ApplicationsResponse {
   applications: Application[];
 }
 
+export interface ApplicationResponse {
+  application: Application;
+}
+
 export interface Application extends BaseApplicationProperties {
   id: string;
   name: string;
@@ -45,6 +49,7 @@ export interface BaseApplicationProperties {
   pipelineListener: ClassInfo;
   securityManager: ClassInfo;
   stepMapper: ClassInfo;
+  sparkListeners?: ClassInfo[];
   pipelineParameters: PipelineParameter[];
 }
 
