@@ -488,7 +488,10 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   copyApplication() {
-
+    const application = SharedFunctions.clone(this.selectedApplication);
+    application.name = `${this.selectedApplication.name} (Copy)`;
+    delete application.id;
+    this.selectedApplication = application;
   }
 
   exportApplication() {
