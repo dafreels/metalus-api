@@ -15,7 +15,6 @@ import {PackageObjectsService} from '../../../core/package-objects/package-objec
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
 import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
 import {ComponentsEditorComponent} from '../components-editor/components-editor.component';
-import {ExecutionEditorComponent} from '../execution-editor/execution-editor.component';
 import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
 import {DesignerComponent} from "../../../designer/components/designer/designer.component";
 import {
@@ -36,6 +35,7 @@ import {User} from "../../../shared/models/users.models";
 import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-editor.component";
 import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
+import {UDFEditorComponent} from "../udf-editor/udf-editor.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -415,8 +415,16 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   openSparkConfEditor() {
-    const sparkConfEditorDialog = this.displayDialogService.openDialog(
+    this.displayDialogService.openDialog(
       SparkConfEditorComponent,
+      generalDialogDimensions,
+      this.selectedApplication
+    );
+  }
+
+  openUDFsEditor() {
+    this.displayDialogService.openDialog(
+      UDFEditorComponent,
       generalDialogDimensions,
       this.selectedApplication
     );
@@ -799,20 +807,25 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.validateApplication();
   }
 
-  openGlobalsEditor(selectedExecution) {
-    if (!selectedExecution.globals) {
+  openMapEditor(selectedExecution, attributeName = 'globals') {
+    let mappings;
+    if (attributeName === 'globals' && !selectedExecution.globals) {
       selectedExecution.globals = {};
+      mappings = selectedExecution.globals;
+    } else if (attributeName === 'applicationProperties' && !selectedExecution.applicationProperties) {
+      selectedExecution.applicationProperties = {};
+      mappings = selectedExecution.applicationProperties;
     }
     const editorDialog = this.displayDialogService.openDialog(
       TreeEditorComponent,
       generalDialogDimensions,
       {
-        mappings: selectedExecution.globals,
+        mappings: attributeName === 'globals' ? selectedExecution.globals : selectedExecution.applicationProperties,
         hideMappingParameters: true,
       });
     editorDialog.afterClosed().subscribe((result) => {
       if (result) {
-        selectedExecution.globals = result;
+        mappings = result;
       }
       this.validateApplication();
     });

@@ -53,13 +53,13 @@
           </div>
           <div style="text-align: center">
             <button mat-button color="primary" (click)="openSparkConfEditor()">Spark Settings</button>
-            |<button mat-button color="primary" (click)="openGlobalsEditor(selectedApplication)">Globals</button>
+            |<button mat-button color="primary" (click)="openMapEditor(selectedApplication)">Globals</button>
             |<button mat-button color="primary" disabled="true">Global Links</button>
             |<button mat-button color="primary" disabled="true">Class Overrides</button>
-            |<button mat-button color="primary" disabled="true">UDFs</button>
+            |<button mat-button color="primary" (click)="openUDFsEditor()">UDFs</button>
             |<button mat-button color="primary" disabled="true">Custom Serializers</button>
 <!--            |<button mat-button color="primary">Pipeline Parameters</button>-->
-            |<button mat-button color="primary" disabled="true">Setup Properties</button>
+            |<button mat-button color="primary" (click)="openMapEditor(selectedApplication, 'applicationProperties')">Setup Properties</button>
           </div>
         </mat-card-content>
       </mat-card>
@@ -114,7 +114,7 @@
                          name="id">
                 </mat-form-field>
                 <span>
-                  <button mat-raised-button color="primary" style="margin-right: 5px" (click)="openGlobalsEditor(selectedExecution)">Globals</button>
+                  <button mat-raised-button color="primary" style="margin-right: 5px" (click)="openMapEditor(selectedExecution)">Globals</button>
                   <mat-slide-toggle color="primary" labelPosition="before"
                                     [(ngModel)]="selectedExecution.mergeGlobals">
                     Merge with Applications Globals?

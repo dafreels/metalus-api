@@ -5,9 +5,9 @@ import { ComponentsEditorComponent } from './components/components-editor/compon
 import { SharedModule } from '../shared/shared.module';
 import { DesignerModule } from '../designer/designer.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
-import {ExecutionEditorComponent} from "./components/execution-editor/execution-editor.component";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {CoreModule} from "../core/core.module";
+import {UDFEditorComponent} from "./components/udf-editor/udf-editor.component";
 
 @NgModule({
   imports: [
@@ -20,13 +20,13 @@ import {CoreModule} from "../core/core.module";
   declarations: [
     ApplicationsEditorComponent,
     ComponentsEditorComponent,
-    ExecutionEditorComponent,
-    SparkConfEditorComponent
+    SparkConfEditorComponent,
+    UDFEditorComponent
   ],
   entryComponents: [
-    SparkConfEditorComponent,
     ComponentsEditorComponent,
-    ExecutionEditorComponent
+    SparkConfEditorComponent,
+    UDFEditorComponent
   ]
 })
 

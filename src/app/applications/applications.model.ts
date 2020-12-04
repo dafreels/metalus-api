@@ -22,6 +22,7 @@ export interface Application extends BaseApplicationProperties {
   executions: Execution[];
   requiredParameters: string[];
   pipelineManager: ClassInfo;
+  sparkUdfs?: ClassInfo[];
   layout?: object;
 }
 
