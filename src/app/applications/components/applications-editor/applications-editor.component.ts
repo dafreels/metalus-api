@@ -36,6 +36,7 @@ import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-e
 import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {UDFEditorComponent} from "../udf-editor/udf-editor.component";
+import {GlobalLinksEditorComponent} from "../global-links-editor/global-links-editor.components";
 
 @Component({
   selector: 'app-applications-editor',
@@ -206,10 +207,11 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     // let nodeId;
     this.executionLookup = {};
     // const executions = {};
+    const pipelineList = this.pipelines;
     this.selectedApplication.executions.forEach((execution) => {
       this.createModelNode(model, execution, -1, -1);
       execution.pipelines = [];
-      execution.pipelineIds.forEach(pid => execution.pipelines.push(this.pipelines.find(p => p.id === pid)));
+      execution.pipelineIds.forEach(pid => execution.pipelines.push(pipelineList.find(p => p.id === pid)));
     });
     // Create connections
     const connectedNodes = [];
@@ -865,6 +867,29 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         hideMappingParameters: true,
       });
     dialog.afterClosed().subscribe((result) => {
+      this.validateApplication();
+    });
+  }
+
+  openGlobalLinksEditor(selectedApplication: Application) {
+    let globalLinks = {};
+    if (selectedApplication.globals && selectedApplication.globals['GlobalLinks']) {
+      globalLinks = selectedApplication.globals['GlobalLinks'];
+    }
+    const editorDialog = this.displayDialogService.openDialog(
+      GlobalLinksEditorComponent,
+      generalDialogDimensions,
+      {
+        executions: selectedApplication.executions,
+        globalLinks
+      });
+    editorDialog.afterClosed().subscribe((result) => {
+      if (result) {
+        if (!selectedApplication.globals) {
+          selectedApplication.globals = {};
+        }
+        selectedApplication.globals['GlobalLinks'] = result;
+      }
       this.validateApplication();
     });
   }

@@ -1,0 +1,62 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Global Links</mat-card-title>
+    <div>
+      <button mat-button (click)="addGlobalLink()">
+        <mat-icon aria-label="Add Global Link">add</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+  <div *ngFor="let globalLink of globalLinks">
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput type="text" [(ngModel)]="globalLink.name"/>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Execution</mat-label>
+      <mat-select
+        [(ngModel)]="globalLink.execution">
+        <mat-option *ngFor="let execution of data.executions" [value]="execution">
+          {{ execution.id }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Pipeline</mat-label>
+      <mat-select
+        [(ngModel)]="globalLink.pipeline">
+        <mat-option *ngFor="let pipeline of globalLink.execution?.pipelines" [value]="pipeline">
+          {{ pipeline.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Step</mat-label>
+      <mat-select
+        [(ngModel)]="globalLink.step">
+        <mat-option *ngFor="let step of globalLink.pipeline?.steps" [value]="step">
+          {{ step.id }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-slide-toggle [(ngModel)]="globalLink.primary">Primary Return</mat-slide-toggle>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="removeGlobalLink(globalLink)">
+      <mat-icon>remove</mat-icon>
+    </button>
+  </div>
+  <mat-dialog-actions align="end">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="saveDialog()"
+      style="margin-right: 5px">
+      Save
+    </button>
+    <button mat-raised-button color="primary" (click)="closeDialog()">
+      Cancel
+    </button>
+  </mat-dialog-actions>
+</mat-card>

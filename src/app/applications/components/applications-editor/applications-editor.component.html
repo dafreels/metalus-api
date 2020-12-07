@@ -54,7 +54,8 @@
           <div style="text-align: center">
             <button mat-button color="primary" (click)="openSparkConfEditor()">Spark Settings</button>
             |<button mat-button color="primary" (click)="openMapEditor(selectedApplication)">Globals</button>
-            |<button mat-button color="primary" disabled="true">Global Links</button>
+            |<button mat-button color="primary" [disabled]="selectedApplication.executions?.length === 0"
+                     (click)="openGlobalLinksEditor(selectedApplication)">Global Links</button>
             |<button mat-button color="primary" disabled="true">Class Overrides</button>
             |<button mat-button color="primary" (click)="openUDFsEditor()">UDFs</button>
             |<button mat-button color="primary" disabled="true">Custom Serializers</button>
