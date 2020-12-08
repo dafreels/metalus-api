@@ -37,6 +37,7 @@ import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-mod
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {UDFEditorComponent} from "../udf-editor/udf-editor.component";
 import {GlobalLinksEditorComponent} from "../global-links-editor/global-links-editor.components";
+import {ComponentsEditorModalComponent} from "../components-editor/components-editor-modal.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -57,10 +58,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   packageObjects: PackageObject[];
   applicationValidator;
   executionTemplates: ExecutionTemplate[] = [{
-    name: 'Blank',
-    description: 'A blank execution template',
+    exposePipelineManager: false,
     globals: {},
-    id: 'Blank_Execution',
+    id: 'Blank',
     initialPipelineId: '',
     mergeGlobals: false,
     parents: [],
@@ -531,10 +531,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   createBlankExecution() {
     return {
+      exposePipelineManager: false,
       globals: {},
-      id: '',
-      name: '',
-      description: 'Empty execution',
+      id: 'Blank',
       initialPipelineId: '',
       mergeGlobals: false,
       parents: [],
@@ -890,6 +889,22 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         }
         selectedApplication.globals['GlobalLinks'] = result;
       }
+      this.validateApplication();
+    });
+  }
+
+  openClassOverridesEditor() {
+    const editorDialog = this.displayDialogService.openDialog(
+      ComponentsEditorModalComponent,
+      generalDialogDimensions,
+      this.selectedApplication);
+    editorDialog.afterClosed().subscribe((result) => {
+      // if (result) {
+      //   if (!selectedApplication.globals) {
+      //     selectedApplication.globals = {};
+      //   }
+      //   selectedApplication.globals['GlobalLinks'] = result;
+      // }
       this.validateApplication();
     });
   }

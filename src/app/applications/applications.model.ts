@@ -39,10 +39,7 @@ export interface Execution extends BaseApplicationProperties {
   mergeGlobals: boolean;
 }
 
-export interface ExecutionTemplate extends Execution {
-  name: string;
-  description: string;
-}
+export interface ExecutionTemplate extends Execution, ClassComponentProperties {}
 
 export interface BaseApplicationProperties {
   pipelines?: Pipeline[];
@@ -55,9 +52,11 @@ export interface BaseApplicationProperties {
 }
 
 export interface ClassComponentProperties {
+  exposePipelineManager: boolean;
   pipelineListener: ClassInfo;
   securityManager: ClassInfo;
   stepMapper: ClassInfo;
+  sparkListeners?: ClassInfo[];
   pipelineManager?: ClassInfo;
 }
 
