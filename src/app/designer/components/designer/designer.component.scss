@@ -4,6 +4,18 @@
   height: 100%;
 }
 
+h4.step-title{
+  padding: 15px;
+  padding-bottom: 0;
+}
+div.step-actions{ 
+  padding: 15px;
+  text-align: right;
+  button {
+    margin: 0 5px;
+  }
+}
+
 .designer-canvas {
   min-height: 500px;
   margin-top: 15px;

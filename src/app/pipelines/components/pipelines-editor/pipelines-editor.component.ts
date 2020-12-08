@@ -74,7 +74,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private displayDialogService: DisplayDialogService) {
     this.user = this.authService.getUserInfo();
-    this.subscriptions.push(this.authService.userItemSelection.subscribe(data => {
+    this.subscriptions.push(
+      this.authService.userItemSelection.subscribe(data => {
       const newPipeline = this.generatePipeline();
       // Cannot diff the pipeline since step orders could have changed
     if (data.defaultProjectId != this.user.defaultProjectId) {
