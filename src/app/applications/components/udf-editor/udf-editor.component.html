@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>UDFs</mat-card-title>
     <div>
-      <button mat-button (click)="addUDFs()">
+      <button matSuffix mat-button (click)="addUDFs()">
         <mat-icon aria-label="Add UDF">add</mat-icon>
       </button>
     </div>
@@ -12,10 +12,10 @@
       <mat-form-field *ngFor="let listener of udfs">
         <mat-label>Class Name</mat-label>
         <input matInput required [(ngModel)]="listener.className" (change)="generateUDFs()">
-        <button mat-button (click)="openEditor(listener.parameters)">
+        <button matSuffix mat-button (click)="openEditor(listener.parameters)">
           <mat-icon aria-label="Open Editor">edit</mat-icon>
         </button>
-        <button mat-button (click)="removeUDFs(listener.id)">
+        <button matSuffix mat-button (click)="removeUDFs(listener.id)">
           <mat-icon aria-label="Remove Listener">delete</mat-icon>
         </button>
       </mat-form-field>
