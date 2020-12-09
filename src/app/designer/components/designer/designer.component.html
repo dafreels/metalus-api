@@ -1,13 +1,12 @@
 <mat-card class="designer-card">
+  
   <ng-container *ngIf="selectedComponent?.instance.data">
-    <h4 class="step-title">
-      Selected Step: {{selectedComponent.instance.data.name}}
-    </h4>
-    <div class="step-actions">
-      <button mat-button color="primary" (click)="selectedComponent = null">De Select</button>
-      <a mat-button color="primary" (click)="removeNode()">Remove Step</a>
-      <button *ngFor="let action of selectedComponent.instance.data.actions" mat-button color="primary" (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
-    </div>
+    <mat-toolbar>
+      <!-- <span>Step: {{selectedComponent.instance.data.name}}</span> -->
+      <span class="example-spacer"></span>
+      <button mat-button color="primary" (click)="removeNode()">Remove Step</button>
+    <button *ngFor="let action of selectedComponent.instance.data.actions" mat-button color="primary" (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
+    </mat-toolbar>
   </ng-container>
   <mat-card-content class="designer-card">
     <div #canvas id="canvas" class="designer-canvas canvas canvas-wide jtk-surface jtk-surface-nopan"
