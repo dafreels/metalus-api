@@ -57,8 +57,7 @@
             |<button mat-button color="primary" [disabled]="selectedApplication.executions?.length === 0"
                      (click)="openGlobalLinksEditor(selectedApplication)">Global Links</button>
             |<button mat-button color="primary" (click)="openClassOverridesEditor()">Class Overrides</button>
-            |<button mat-button color="primary" (click)="openUDFsEditor()">UDFs</button>
-            |<button mat-button color="primary" disabled="true">Custom Serializers</button>
+            |<button mat-button color="primary" (click)="openUDCsEditor()">User Defined Classes</button>
 <!--            |<button mat-button color="primary">Pipeline Parameters</button>-->
             |<button mat-button color="primary" (click)="openMapEditor(selectedApplication, 'applicationProperties')">Setup Properties</button>
           </div>
@@ -103,25 +102,25 @@
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <mat-expansion-panel [disabled]="!selectedExecution.id">
+            <mat-expansion-panel [disabled]="!selectedExecution">
               <mat-expansion-panel-header>
                 <mat-panel-title>Execution Information</mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="form-layout">
-                <mat-form-field>
+              <div *ngIf="selectedExecution" class="form-layout">
+                <mat-form-field *ngIf="selectedExecution">
                   <input matInput placeholder="Id"
                          [(ngModel)]="selectedExecution.id"
                          (change)="handleExecutionIdChange()"
                          name="id">
                 </mat-form-field>
-                <span>
+                <span *ngIf="selectedExecution">
                   <button mat-raised-button color="primary" style="margin-right: 5px" (click)="openMapEditor(selectedExecution)">Globals</button>
                   <mat-slide-toggle color="primary" labelPosition="before"
                                     [(ngModel)]="selectedExecution.mergeGlobals">
                     Merge with Applications Globals?
                   </mat-slide-toggle>
                 </span>
-                <mat-form-field>
+                <mat-form-field *ngIf="selectedExecution">
                   <mat-select required [(ngModel)]="selectedExecution.initialPipelineId">
                     <mat-option *ngFor="let pipeline of selectedPipelines" value="pipeline.id">
                       {{pipeline.name}}
@@ -130,11 +129,11 @@
                 </mat-form-field>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel [disabled]="!selectedExecution.id">
+            <mat-expansion-panel [disabled]="!selectedExecution">
               <mat-expansion-panel-header>
                 <mat-panel-title>Pipelines</mat-panel-title>
               </mat-expansion-panel-header>
-              <div class="pipeline-container">
+              <div *ngIf="selectedExecution" class="pipeline-container">
                 <h3>Available</h3>
                 <div
                   cdkDropList
@@ -146,7 +145,7 @@
                   <div class="pipeline-box" *ngFor="let pipeline of availablePipelines" cdkDrag>{{pipeline.name}}</div>
                 </div>
               </div>
-              <div class="pipeline-container">
+              <div *ngIf="selectedExecution" class="pipeline-container">
                 <h3>Selected</h3>
                 <div
                   cdkDropList
@@ -155,7 +154,7 @@
                   [cdkDropListConnectedTo]="[availableList]"
                   class="pipeline-list"
                   (cdkDropListDropped)="dropPipeline($event)">
-                  <div class="pipeline-box" *ngFor="let pipeline of selectedExecution.pipelines" cdkDrag>
+                  <div class="pipeline-box" *ngFor="let pipeline of selectedExecution?.pipelines" cdkDrag>
                     {{pipeline.name}}
                     <button mat-icon-button color="primary" (click)="openPipelineParametersEditor(selectedExecution, pipeline)" style="margin-right: 5px;">
                       <mat-icon>edit</mat-icon>
@@ -164,11 +163,11 @@
                 </div>
               </div>
             </mat-expansion-panel>
-            <mat-expansion-panel [disabled]="!selectedExecution.id">
+            <mat-expansion-panel [disabled]="!selectedExecution">
               <mat-expansion-panel-header>
                 <mat-panel-title>Class Overrides</mat-panel-title>
               </mat-expansion-panel-header>
-              <app-components-editor [data]="selectedExecution"></app-components-editor>
+              <app-components-editor *ngIf="selectedExecution" [data]="selectedExecution"></app-components-editor>
             </mat-expansion-panel>
           </mat-accordion>
         </mat-card-content>

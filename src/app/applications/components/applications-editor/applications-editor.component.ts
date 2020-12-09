@@ -5,23 +5,19 @@ import {Application, Execution, ExecutionTemplate} from '../../applications.mode
 import {ApplicationsService} from '../../applications.service';
 import {Pipeline} from '../../../pipelines/models/pipelines.model';
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {FormControl} from '@angular/forms';
-import {MatChipInputEvent} from '@angular/material/chips';
 import {SparkConfEditorComponent} from '../spark-conf-editor/spark-conf-editor.component';
 import {Subject, Subscription} from 'rxjs';
-import {PropertiesEditorModalComponent} from '../../../shared/components/properties-editor/modal/properties-editor-modal.component';
 import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
 import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
-import {ComponentsEditorComponent} from '../components-editor/components-editor.component';
 import {generalDialogDimensions} from 'src/app/shared/models/custom-dialog.model';
 import {DesignerComponent} from "../../../designer/components/designer/designer.component";
 import {
   DesignerConstants,
   DesignerElement,
   DesignerElementAction,
-  DesignerElementAddOutput, DesignerElementOutput,
+  DesignerElementAddOutput,
+  DesignerElementOutput,
   DesignerModel
 } from "../../../designer/designer-constants";
 import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
@@ -58,6 +54,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   packageObjects: PackageObject[];
   applicationValidator;
   executionTemplates: ExecutionTemplate[] = [{
+    description: 'Blank Execution',
     exposePipelineManager: false,
     globals: {},
     id: 'Blank',
@@ -87,11 +84,6 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   editName: boolean = false;
   errors = [];
-
-  // Chip fields
-  separatorKeysCodes: number[] = [ENTER, COMMA];
-  stepPackageCtrl = new FormControl();
-  requiredParametersCtrl = new FormControl();
 
   user: User;
   subscriptions: Subscription[] = [];
@@ -196,7 +188,8 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.selectedApplication = JSON.parse(
       JSON.stringify(this.originalApplication)
     );
-    this.selectedExecution = this.createBlankExecution();
+    this.selectedExecution = null;
+    this.designerModel = DesignerComponent.newModel();
   }
 
   loadApplication(id: string) {
@@ -247,11 +240,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       !this.selectedApplication.layout ||
       Object.keys(this.selectedApplication.layout).length === 0
     ) {
-      // DesignerComponent.performAutoLayout(
-      //   this.executionLookup,
-      //   connectedNodes,
-      //   model
-      // );
+      // TODO Run autolayout
     }
     this.designerModel = model;
   }
@@ -348,74 +337,6 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.selectedExecution = execution;
   }
 
-  removeStepPackage(pkg: string) {
-    const index = this.selectedApplication.stepPackages.indexOf(pkg);
-    if (index > -1) {
-      this.selectedApplication.stepPackages.splice(index, 1);
-    }
-
-    if (
-      this.selectedApplication.stepPackages &&
-      this.selectedApplication.stepPackages.length === 0
-    ) {
-      delete this.selectedApplication.stepPackages;
-    }
-  }
-
-  addStepPackage(event: MatChipInputEvent) {
-    const input = event.input;
-    const value = event.value;
-
-    // Add our package
-    if ((value || '').trim()) {
-      if (!this.selectedApplication.stepPackages) {
-        this.selectedApplication.stepPackages = [];
-      }
-      this.selectedApplication.stepPackages.push(value.trim());
-    }
-
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
-
-    this.stepPackageCtrl.setValue(null);
-  }
-
-  removeRequiredParameter(param: string) {
-    const index = this.selectedApplication.requiredParameters.indexOf(param);
-    if (index > -1) {
-      this.selectedApplication.requiredParameters.splice(index, 1);
-    }
-
-    if (
-      this.selectedApplication.requiredParameters &&
-      this.selectedApplication.requiredParameters.length === 0
-    ) {
-      delete this.selectedApplication.requiredParameters;
-    }
-  }
-
-  addRequiredParameter(event: MatChipInputEvent) {
-    const input = event.input;
-    const value = event.value;
-
-    // Add our package
-    if ((value || '').trim()) {
-      if (!this.selectedApplication.requiredParameters) {
-        this.selectedApplication.requiredParameters = [];
-      }
-      this.selectedApplication.requiredParameters.push(value.trim());
-    }
-
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
-
-    this.requiredParametersCtrl.setValue(null);
-  }
-
   openSparkConfEditor() {
     this.displayDialogService.openDialog(
       SparkConfEditorComponent,
@@ -424,39 +345,11 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     );
   }
 
-  openUDFsEditor() {
+  openUDCsEditor() {
     this.displayDialogService.openDialog(
       UDFEditorComponent,
       generalDialogDimensions,
       this.selectedApplication
-    );
-  }
-
-  openPropertiesEditor(mode: string) {
-    const propertiesEditorDialogData = {
-      allowSpecialParameters: false,
-      packageObjects: this.packageObjects,
-      propertiesObject:
-        mode === 'globals'
-          ? this.selectedApplication.globals
-          : this.selectedApplication.applicationProperties,
-    };
-    const propertiesEditorDialog = this.displayDialogService.openDialog(
-      PropertiesEditorModalComponent,
-      generalDialogDimensions,
-      propertiesEditorDialogData
-    );
-  }
-
-  openComponentsEditor() {
-    const componentEditorDialogData = {
-      properties: this.selectedApplication,
-      packageObjects: this.packageObjects,
-    };
-    const componentsEditorDialog = this.displayDialogService.openDialog(
-      ComponentsEditorComponent,
-      generalDialogDimensions,
-      componentEditorDialogData
     );
   }
 
@@ -531,6 +424,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   createBlankExecution() {
     return {
+      description: 'Blank Execution',
       exposePipelineManager: false,
       globals: {},
       id: 'Blank',

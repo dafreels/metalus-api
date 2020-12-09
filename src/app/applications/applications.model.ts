@@ -23,12 +23,19 @@ export interface Application extends BaseApplicationProperties {
   requiredParameters: string[];
   pipelineManager: ClassInfo;
   sparkUdfs?: ClassInfo[];
+  json4sSerializers?: Json4sSerializers;
   layout?: object;
 }
 
 export interface SparkConf {
   kryoClasses: string[];
   setOptions: NameValuePair[];
+}
+
+export interface Json4sSerializers {
+  customSerializers?: ClassInfo[];
+  enumIdSerializers?: ClassInfo[];
+  enumNameSerializers?: ClassInfo[];
 }
 
 export interface Execution extends BaseApplicationProperties {
@@ -39,7 +46,9 @@ export interface Execution extends BaseApplicationProperties {
   mergeGlobals: boolean;
 }
 
-export interface ExecutionTemplate extends Execution, ClassComponentProperties {}
+export interface ExecutionTemplate extends Execution, ClassComponentProperties {
+  description: string;
+}
 
 export interface BaseApplicationProperties {
   pipelines?: Pipeline[];
