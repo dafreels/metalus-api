@@ -18,9 +18,9 @@ export enum CustomType {
 
 @Component({
   selector: 'udf-editor',
-  templateUrl: './udf-editor.component.html',
+  templateUrl: './udc-editor.component.html',
 })
-export class UDFEditorComponent {
+export class UdcEditorComponent {
 // Properties
   id = 0;
   udfs: UDCComponent[] = [];
@@ -29,7 +29,7 @@ export class UDFEditorComponent {
   nameSerializers: UDCComponent[] = [];
 
   constructor(
-    public dialogRef: MatDialogRef<UDFEditorComponent>,
+    public dialogRef: MatDialogRef<UdcEditorComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Application,
     private displayDialogService: DisplayDialogService) {
     if (data.sparkUdfs) {

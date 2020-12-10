@@ -7,7 +7,7 @@ import { DesignerModule } from '../designer/designer.module';
 import { CodeEditorModule } from '../code-editor/code-editor.module';
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {CoreModule} from "../core/core.module";
-import {UDFEditorComponent} from "./components/udf-editor/udf-editor.component";
+import {UdcEditorComponent} from "./components/udc-editor/udc-editor.component";
 import {GlobalLinksEditorComponent} from "./components/global-links-editor/global-links-editor.components";
 import {ComponentsEditorModalComponent} from "./components/components-editor/components-editor-modal.component";
 
@@ -25,14 +25,14 @@ import {ComponentsEditorModalComponent} from "./components/components-editor/com
     ComponentsEditorModalComponent,
     GlobalLinksEditorComponent,
     SparkConfEditorComponent,
-    UDFEditorComponent
+    UdcEditorComponent
   ],
   entryComponents: [
     ComponentsEditorComponent,
     ComponentsEditorModalComponent,
     GlobalLinksEditorComponent,
     SparkConfEditorComponent,
-    UDFEditorComponent
+    UdcEditorComponent
   ]
 })
 

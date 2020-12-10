@@ -31,7 +31,7 @@ import {User} from "../../../shared/models/users.models";
 import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-editor.component";
 import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
-import {UDFEditorComponent} from "../udf-editor/udf-editor.component";
+import {UdcEditorComponent} from "../udc-editor/udc-editor.component";
 import {GlobalLinksEditorComponent} from "../global-links-editor/global-links-editor.components";
 import {ComponentsEditorModalComponent} from "../components-editor/components-editor-modal.component";
 
@@ -347,7 +347,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   openUDCsEditor() {
     this.displayDialogService.openDialog(
-      UDFEditorComponent,
+      UdcEditorComponent,
       generalDialogDimensions,
       this.selectedApplication
     );
