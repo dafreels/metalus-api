@@ -18,9 +18,7 @@ export class DesignerNodeComponent {
 
   nodeClicked(event) {
     this.nodeSelected.emit(this.data);
-    if(event.shiftKey) {
-      this.trigger.openMenu();
-    }
+   
   }
 
   removeNode() {

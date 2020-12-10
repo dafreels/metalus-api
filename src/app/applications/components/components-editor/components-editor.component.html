@@ -9,7 +9,7 @@
           <mat-form-field>
             <mat-label>Class Name</mat-label>
             <input matInput required [(ngModel)]="localData.pipelineListener.className">
-            <button mat-button (click)="openEditor(localData.pipelineListener.parameters)">
+            <button matSuffix mat-button (click)="openEditor(localData.pipelineListener.parameters)">
               <mat-icon aria-label="Open Editor">edit</mat-icon>
             </button>
           </mat-form-field>
@@ -23,7 +23,7 @@
           <mat-form-field>
             <mat-label>Class Name</mat-label>
             <input matInput required [(ngModel)]="localData.securityManager.className">
-            <button mat-button (click)="openEditor(localData.securityManager.parameters)">
+            <button matSuffix mat-button (click)="openEditor(localData.securityManager.parameters)">
               <mat-icon aria-label="Open Editor">edit</mat-icon>
             </button>
           </mat-form-field>
@@ -37,7 +37,7 @@
           <mat-form-field>
             <mat-label>Class Name</mat-label>
             <input matInput required [(ngModel)]="localData.stepMapper.className">
-            <button mat-button (click)="openEditor(localData.stepMapper.parameters)">
+            <button matSuffix mat-button (click)="openEditor(localData.stepMapper.parameters)">
               <mat-icon aria-label="Open Editor">edit</mat-icon>
             </button>
           </mat-form-field>
@@ -54,7 +54,7 @@
           <mat-form-field *ngFor="let listener of sparkListeners">
             <mat-label>Class Name</mat-label>
             <input matInput required [(ngModel)]="listener.className" (change)="generateSparkListeners()">
-            <button mat-button (click)="openEditor(listener.parameters)">
+            <button matSuffix mat-button (click)="openEditor(listener.parameters)">
               <mat-icon aria-label="Open Editor">edit</mat-icon>
             </button>
             <button mat-button (click)="removeSparkListener(listener.id)">

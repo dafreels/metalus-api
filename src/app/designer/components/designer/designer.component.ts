@@ -66,6 +66,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     } else {
       this.model = DesignerComponent.newModel();
     }
+    this.selectedComponent = null;
   }
 
   ngAfterViewInit() {
@@ -108,6 +109,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     delete this.htmlNodeLookup[key];
     this.designerCanvas.viewContainerRef.remove(this.designerCanvas.viewContainerRef.indexOf(componentRef));
     this.broadCastModelChanges();
+    this.selectedComponent = null;
   }
 
   static newModel() {
@@ -366,5 +368,16 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       node.x = gnode.x + horizontalOffset - center;
       node.y = gnode.y + 32;
     });
+  }
+  removeNode() {
+    // this.trigger.closeMenu();
+    this.selectedComponent.instance.nodeRemoved.emit(this.selectedComponent.instance.data);
+  }
+
+  handleAction(action: string) {
+    this.selectedComponent.instance.nodeAction.emit({
+      action,
+      element: this.selectedComponent.instance.data
+    })
   }
 }
