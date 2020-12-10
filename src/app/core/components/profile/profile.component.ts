@@ -8,6 +8,7 @@ import {UsersService} from "../../../shared/services/users.service";
 import {NameDialogComponent} from "../../../shared/components/name-dialog/name-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
+import {NewProjectDialogComponent} from "./new-project/new-project.component";
 
 @Component({
   selector: 'app-profile',
@@ -76,24 +77,30 @@ export class ProfileComponent implements OnInit {
   }
 
   addProject() {
-    const dialogRef = this.dialog.open(NameDialogComponent, {
-      width: '25%',
-      height: '212px',
-      data: { name: '' },
+    const dialogRef = this.dialog.open(NewProjectDialogComponent, {
+      width: '30%',
+      height: '400px',
     });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.trim().length > 0) {
-        const name = result as string;
+      if (result && result.name.trim().length > 0) {
+        const name = result.name;
         let max = 0;
         // Clone user so project only shows up after the update is complete
         const user = JSON.parse(JSON.stringify(this.user));
         user.projects.forEach((prj) => {
           max = Math.max(max, parseInt(prj.id));
         });
+        const newProjectId = `${max + 1}`;
         user.projects.push({
-          id: `${max + 1}`,
+          id: newProjectId,
           displayName: name
         });
+        if (result.selectedTemplates && result.selectedTemplates.length > 0) {
+          user.metaDataLoad = {
+            projectId: newProjectId,
+            selectedTemplates: result.selectedTemplates,
+          };
+        }
         this.usersService.updateUser(user).subscribe(updatedUser => {
           this.authService.setUserInfo(updatedUser);
         });

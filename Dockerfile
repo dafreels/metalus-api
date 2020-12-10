@@ -11,6 +11,7 @@ COPY lib /opt/metalus/lib
 COPY models /opt/metalus/models
 COPY schemas /opt/metalus/schemas
 COPY src /opt/metalus/src
+COPY templates /opt/metalus/templates
 COPY index.js /opt/metalus/
 COPY package.json /opt/metalus/
 COPY package-lock.json /opt/metalus/

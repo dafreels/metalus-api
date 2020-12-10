@@ -15,6 +15,7 @@ import {UploadComponent} from "./components/upload/upload.component";
 import {NavToolbarComponent} from "./components/nav-toolbar/nav-toolbar.component";
 import { LogOutComponent } from './components/log-out/log-out.component';
 import {HelpComponent} from "./components/help/help.component";
+import {NewProjectDialogComponent} from "./components/profile/new-project/new-project.component";
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import {HelpComponent} from "./components/help/help.component";
     LoginComponent,
     NavMenuComponent,
     NavToolbarComponent,
+    NewProjectDialogComponent,
     PageNotFoundComponent,
     ProfileComponent,
     UploadComponent,
@@ -41,6 +43,7 @@ import {HelpComponent} from "./components/help/help.component";
     ChangePasswordModalComponent,
     HelpComponent,
     LogOutComponent,
+    NewProjectDialogComponent,
     UsersModalComponent
   ],
   exports: [
@@ -50,6 +53,7 @@ import {HelpComponent} from "./components/help/help.component";
     LoginComponent,
     NavMenuComponent,
     NavToolbarComponent,
+    NewProjectDialogComponent,
     PageNotFoundComponent,
     ProfileComponent,
     UploadComponent,

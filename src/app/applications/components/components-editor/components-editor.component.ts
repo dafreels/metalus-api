@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {BaseApplicationProperties, ClassInfo} from '../../applications.model';
+import {Application, BaseApplicationProperties, ClassComponentProperties, ClassInfo} from '../../applications.model';
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {TreeEditorComponent} from "../../../shared/components/tree-editor/tree-editor.component";
@@ -13,14 +13,14 @@ export interface SparkListener extends ClassInfo {
   templateUrl: './components-editor.component.html',
 })
 export class ComponentsEditorComponent {
-  localData: BaseApplicationProperties;
+  localData: ClassComponentProperties;
   sparkListeners: SparkListener[] = [];
   id = 0;
 
   constructor(private displayDialogService: DisplayDialogService) {}
 
   @Input()
-  set data(inputData: BaseApplicationProperties) {
+  set data(inputData: ClassComponentProperties) {
     if (!inputData.pipelineListener) {
       inputData.pipelineListener = {
         className: 'com.acxiom.pipeline.DefaultPipelineListener',
@@ -50,6 +50,14 @@ export class ComponentsEditorComponent {
           });
         }
       });
+    }
+    if (inputData.exposePipelineManager) {
+      inputData.pipelineManager = {
+        className: 'com.acxiom.pipeline.CachedPipelineManager',
+        parameters: {},
+      };
+    } else {
+      delete inputData.pipelineManager;
     }
     this.localData = inputData;
   }

@@ -134,7 +134,34 @@ module.exports = function (router) {
         // Password cannot be changed using this method
         updateUser.password = existingUser.password;
       }
+
+      let metaDataUpload = updateUser.metaDataLoad;
+      delete updateUser.metaDataLoad;
       const newuser = await userModel.update(updateUser.id, updateUser);
+      // Determine if any templates were selected and load the data
+      if (metaDataUpload) {
+        const templatesDir = getTemplatesDir(req);
+        const metadataUser = {
+          id: updateUser.id,
+          defaultProjectId: metaDataUpload.projectId,
+        };
+        for await (const template of metaDataUpload.selectedTemplates) {
+          const steps = JSON.parse(await mUtils.readfile(`${templatesDir}/${template}/steps.json`));
+          const pipelines = JSON.parse(await mUtils.readfile(`${templatesDir}/${template}/pipelines.json`));
+          if (steps.steps && steps.steps.length > 0) {
+            const stepsModel = new StepsModel();
+            await stepsModel.createMany(steps.steps, metadataUser);
+          }
+          if (steps.pkgObjs && steps.pkgObjs.length > 0) {
+            const pkgObjsModel = new PkgObjsModel();
+            await pkgObjsModel.createMany(steps.pkgObjs, metadataUser);
+          }
+          if (pipelines && pipelines.length > 0) {
+            const pipelinesModel = new PipelinesModel();
+            await pipelinesModel.createMany(pipelines, metadataUser);
+          }
+        }
+      }
       res.status(200).json(newuser);
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -388,4 +415,8 @@ async function deleteProjectData(userId, projectId, userJarDir) {
 
 function getProjectJarsBaseDir(req) {
   return req.app.kraken.get('baseJarsDir') || `${process.cwd()}/jars`;
+}
+
+function getTemplatesDir(req) {
+  return req.app.kraken.get('baseTemplatesDir') || `${process.cwd()}/templates`;
 }
