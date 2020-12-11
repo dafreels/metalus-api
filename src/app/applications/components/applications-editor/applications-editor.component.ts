@@ -34,6 +34,7 @@ import {ConfirmationModalComponent} from "../../../shared/components/confirmatio
 import {UdcEditorComponent} from "../udc-editor/udc-editor.component";
 import {GlobalLinksEditorComponent} from "../global-links-editor/global-links-editor.components";
 import {ComponentsEditorModalComponent} from "../components-editor/components-editor-modal.component";
+import {ExecutionsService} from "../../executions.service";
 
 @Component({
   selector: 'app-applications-editor',
@@ -90,6 +91,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   constructor(
     private applicationsService: ApplicationsService,
+    private executionsService: ExecutionsService,
     private pipelinesService: PipelinesService,
     private stepsService: StepsService,
     private packageObjectsService: PackageObjectsService,
@@ -115,6 +117,13 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
           this.applications = applications;
         } else {
           this.applications = [];
+        }
+      });
+    this.executionsService
+      .getExecutions()
+      .subscribe((executions: ExecutionTemplate[]) => {
+        if (executions) {
+          this.executionTemplates = this.executionTemplates.concat(executions);
         }
       });
     this.packageObjectsService
@@ -420,31 +429,6 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       height: '300px',
       data: { messages },
     });
-  }
-
-  createBlankExecution() {
-    return {
-      description: 'Blank Execution',
-      exposePipelineManager: false,
-      globals: {},
-      id: 'Blank',
-      initialPipelineId: '',
-      mergeGlobals: false,
-      parents: [],
-      pipelineListener: {
-        className: 'com.acxiom.pipeline.DefaultPipelineListener',
-        parameters: {},
-      },
-      pipelineParameters: [],
-      securityManager: {
-        className: 'com.acxiom.pipeline.DefaultPipelineSecurityManager',
-        parameters: {},
-      },
-      stepMapper: {
-        className: 'com.acxiom.pipeline.DefaultPipelineStepMapper',
-        parameters: {},
-      },
-    };
   }
 
   addExecution(event: DndDropEvent) {

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "executions.json",
+  "$ref": "#/definitions/executions",
+  "definitions": {
+    "executions": {
+      "allOf": [
+        {
+          "$ref": "applications.json#/definitions/Execution"
+        },
+        {
+          "required": [
+            "description"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "project": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "projectId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

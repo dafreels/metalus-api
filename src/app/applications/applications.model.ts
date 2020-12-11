@@ -8,6 +8,10 @@ export interface ApplicationsResponse {
   applications: Application[];
 }
 
+export interface ExecutionsResponse {
+  executions: ExecutionTemplate[];
+}
+
 export interface ApplicationResponse {
   application: Application;
 }

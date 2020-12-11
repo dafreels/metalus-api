@@ -1,0 +1,77 @@
+[
+  {
+    "id": "Blank",
+    "description": "Blank Execution",
+    "globals": {},
+    "initialPipelineId": "",
+    "mergeGlobals": false,
+    "parents": [],
+    "pipelineIds": [
+      "ONE",
+      "TWO"
+    ],
+    "pipelineListener": {
+      "className": "com.acxiom.pipeline.DefaultPipelineListener",
+      "parameters": {}
+    },
+    "pipelineParameters": [],
+    "securityManager": {
+      "className": "com.acxiom.pipeline.DefaultPipelineSecurityManager",
+      "parameters": {}
+    },
+    "stepMapper": {
+      "className": "com.acxiom.pipeline.DefaultPipelineStepMapper",
+      "parameters": {}
+    }
+  },
+  {
+    "id": "Real",
+    "description": "Real Execution Template",
+    "globals": {},
+    "initialPipelineId": "",
+    "mergeGlobals": true,
+    "parents": [],
+    "pipelineIds": [
+      "ONE",
+      "TWO"
+    ],
+    "pipelineListener": {
+      "className": "com.acxiom.pipeline.DefaultPipelineListener",
+      "parameters": {}
+    },
+    "pipelineParameters": [],
+    "securityManager": {
+      "className": "com.acxiom.pipeline.DefaultPipelineSecurityManager",
+      "parameters": {}
+    },
+    "stepMapper": {
+      "className": "com.acxiom.pipeline.DefaultPipelineStepMapper",
+      "parameters": {}
+    }
+  },
+  {
+    "id": "Three",
+    "description": "Execution Template #3",
+    "globals": {},
+    "initialPipelineId": "",
+    "mergeGlobals": false,
+    "parents": [],
+    "pipelineIds": [
+      "ONE",
+      "TWO"
+    ],
+    "pipelineListener": {
+      "className": "com.acxiom.pipeline.DefaultPipelineListener",
+      "parameters": {}
+    },
+    "pipelineParameters": [],
+    "securityManager": {
+      "className": "com.acxiom.pipeline.DefaultPipelineSecurityManager",
+      "parameters": {}
+    },
+    "stepMapper": {
+      "className": "com.acxiom.pipeline.DefaultPipelineStepMapper",
+      "parameters": {}
+    }
+  }
+]
