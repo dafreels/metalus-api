@@ -6,7 +6,7 @@
     <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
             style="margin-right: 5px;">Load</button>
     <mat-menu #pipelineMenu="matMenu">
-      <button mat-menu-item *ngFor="let application of applications" [id]="application.id" (click)="loadApplication(application.id)">
+      <button mat-menu-item *ngFor="let application of applications" [id]="application.id" (click)="loadApplication(application)">
         {{ application.name }}
       </button>
     </mat-menu>
@@ -58,7 +58,6 @@
                      (click)="openGlobalLinksEditor(selectedApplication)">Global Links</button>
             |<button mat-button color="primary" (click)="openClassOverridesEditor()">Class Overrides</button>
             |<button mat-button color="primary" (click)="openUDCsEditor()">User Defined Classes</button>
-<!--            |<button mat-button color="primary">Pipeline Parameters</button>-->
             |<button mat-button color="primary" (click)="openMapEditor(selectedApplication, 'applicationProperties')">Setup Properties</button>
           </div>
         </mat-card-content>
@@ -156,9 +155,20 @@
                   (cdkDropListDropped)="dropPipeline($event)">
                   <div class="pipeline-box" *ngFor="let pipeline of selectedExecution?.pipelines" cdkDrag>
                     {{pipeline.name}}
-                    <button mat-icon-button color="primary" (click)="openPipelineParametersEditor(selectedExecution, pipeline)" style="margin-right: 5px;">
+                    <span>
+                      <button mat-icon-button color="primary"
+                              matTooltip="Edit Execution Parameters"
+                              (click)="openPipelineParametersEditor(pipeline)"
+                              style="margin-right: 5px;">
                       <mat-icon>edit</mat-icon>
                     </button>
+                    <button mat-icon-button color="primary"
+                            matTooltip="Edit Global Parameters"
+                            (click)="openPipelineParametersEditor(pipeline, false)"
+                            style="margin-right: 5px;">
+                      <mat-icon>language</mat-icon>
+                    </button>
+                    </span>
                   </div>
                 </div>
               </div>

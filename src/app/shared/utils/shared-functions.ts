@@ -95,25 +95,25 @@ export class SharedFunctions {
 
   /**
    * Given a pipeline, this function will create an object that contains all of the attributes referenced
-   * as globals. Each attribute will be an empty string.
+   * using the special character. Each attribute will be an empty string.
    * @param pipeline The pipeline to parse
+   * @param special Optional character to use when finding parameters. Default is !
    */
-  static generatePipelineMappings(pipeline: Pipeline): object {
+  static generatePipelineMappings(pipeline: Pipeline, special = '!'): object {
     const globals = {};
     let values;
+    const regex = new RegExp(`[${special}{}]`, 'g');
     pipeline.steps.forEach((step) => {
       if (step.params && step.params.length > 0) {
         step.params.forEach((param) => {
           const value = param.value || param.defaultValue;
-          if (
-            value &&
+          if (value &&
             typeof value === 'string' &&
-            value.indexOf('!') > -1
-          ) {
+            value.indexOf(special) > -1) {
             values = value.split('||').map((s) => s.trim());
             values.forEach((v) => {
-              if (v.indexOf('!') === 0) {
-                let global = v.replace(/[!{}]/g, '');
+              if (v.indexOf(special) === 0) {
+                let global = v.replace(regex, '');
                 const dotIndex = global.indexOf('.');
                 if (dotIndex > -1) {
                   global = global.substring(0, dotIndex);

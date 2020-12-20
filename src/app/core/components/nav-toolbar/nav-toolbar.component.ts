@@ -33,7 +33,7 @@ export class NavToolbarComponent implements OnInit {
         data = 'pipeline-editor';
         break;
       case 'applications-editor':
-        data = 'applications-editor';
+        data = 'application-editor';
         break;
       case 'landing':
         data = 'index';

@@ -427,7 +427,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
             this.selectedPipeline = JSON.parse(JSON.stringify(pipeline));
             this.loadPipelineToDesigner();
           } catch (error) {
-            const dialogRef = this.dialog.open(ErrorModalComponent, {
+            this.dialog.open(ErrorModalComponent, {
               width: '450px',
               data: {
                 messages: ['Unable to parse the JSON', error],

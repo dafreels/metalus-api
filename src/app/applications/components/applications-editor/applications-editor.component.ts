@@ -43,6 +43,7 @@ import {ExecutionsService} from "../../executions.service";
 })
 export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
+  @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   originalApplication: Application;
   selectedApplication: Application;
   selectedExecution: ExecutionTemplate;
@@ -201,8 +202,8 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.designerModel = DesignerComponent.newModel();
   }
 
-  loadApplication(id: string) {
-    this.originalApplication = this.applications.find((app) => app.id === id);
+  loadApplication(application) {
+    this.originalApplication = application;
     this.selectedApplication = SharedFunctions.clone(this.originalApplication);
     // Create the model from the executions
     const model = DesignerComponent.newModel();
@@ -249,9 +250,19 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       !this.selectedApplication.layout ||
       Object.keys(this.selectedApplication.layout).length === 0
     ) {
-      // TODO Run autolayout
+        DesignerComponent.performAutoLayout(model, this.designerElement);
+        if (!this.selectedApplication.layout) {
+          this.selectedApplication.layout = {};
+        }
+        Object.keys(model.nodes).forEach(k => {
+          this.selectedApplication.layout[model.nodes[k].data.data.id] = {
+            x: model.nodes[k].x,
+            y: model.nodes[k].y,
+          };
+        });
     }
     this.designerModel = model;
+    this.validateApplication();
   }
 
   validateApplication() {
@@ -268,6 +279,38 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         });
       }
     }
+    const executionIds = [];
+    newApplication.executions.forEach((exe) => {
+      if (executionIds.indexOf(exe.id) !== -1) {
+        errors.push({
+          component: 'execution',
+          field: 'id',
+          message: `must be unique (${exe.id})`
+        });
+      }
+      if (exe.id === 'Blank') {
+        errors.push({
+          component: 'execution',
+          field: 'id',
+          message: 'must not be named Blank'
+        });
+      }
+      if (exe.id.trim().length === 0) {
+        errors.push({
+          component: 'execution',
+          field: 'id',
+          message: 'must not be empty'
+        });
+      }
+      if (exe.pipelineIds.length === 0) {
+        errors.push({
+          component: 'execution',
+          field: 'pipelines',
+          message: `requires at least one for (${exe.id})`
+        });
+      }
+      executionIds.push(exe.id);
+    });
     this.errors = errors;
   }
 
@@ -396,7 +439,33 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   importApplication() {
-
+    const importApplicationDialogData = {
+      code: JSON.stringify(this.generateApplication(), null, 4),
+      language: 'json',
+      allowSave: false,
+    };
+    const importDialog = this.displayDialogService.openDialog(
+      CodeEditorComponent,
+      generalDialogDimensions,
+      importApplicationDialogData
+    );
+    this.subscriptions.push(
+      importDialog.afterClosed().subscribe((result) => {
+        if (result && result.code.trim().length > 0) {
+          try {
+            const application = JSON.parse(result.code);
+            delete application._id;
+            this.loadApplication(application);
+          } catch (error) {
+            this.dialog.open(ErrorModalComponent, {
+              width: '450px',
+              data: {
+                messages: ['Unable to parse the JSON', error],
+              },
+            });
+          }
+        }
+      }));
   }
 
   copyApplication() {
@@ -623,7 +692,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   autoLayout() {
-
+    const application = this.generateApplication();
+    delete application.layout;
+    this.loadApplication(application);
   }
 
   saveApplication() {
@@ -687,13 +758,14 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   openMapEditor(selectedExecution, attributeName = 'globals') {
-    let mappings;
     if (attributeName === 'globals' && !selectedExecution.globals) {
-      selectedExecution.globals = {};
-      mappings = selectedExecution.globals;
+      let pipelineMappings = {};
+      selectedExecution.pipelines.forEach(pipeline => {
+        pipelineMappings = Object.assign(pipelineMappings, SharedFunctions.generatePipelineMappings(pipeline));
+      });
+      selectedExecution.globals = pipelineMappings;
     } else if (attributeName === 'applicationProperties' && !selectedExecution.applicationProperties) {
       selectedExecution.applicationProperties = {};
-      mappings = selectedExecution.applicationProperties;
     }
     const editorDialog = this.displayDialogService.openDialog(
       TreeEditorComponent,
@@ -704,38 +776,30 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       });
     editorDialog.afterClosed().subscribe((result) => {
       if (result) {
-        mappings = result;
+        if (attributeName === 'globals') {
+          selectedExecution.globals = result;
+        } else {
+          selectedExecution.applicationProperties = result;
+        }
       }
       this.validateApplication();
     });
   }
 
-  openPipelineParametersEditor(selectedExecution: ExecutionTemplate, pipeline: Pipeline) {
-    if (!selectedExecution.pipelineParameters) {
-      selectedExecution.pipelineParameters = [];
+  openPipelineParametersEditor(pipeline: Pipeline, execution: boolean = true) {
+    if (!this.selectedExecution.pipelineParameters) {
+      this.selectedExecution.pipelineParameters = [];
     }
-    let parameters = selectedExecution.pipelineParameters.find(p => p.pipelineId === pipeline.id);
+    let parameters = execution ? this.selectedExecution.pipelineParameters.find(p => p.pipelineId === pipeline.id) :
+    this.selectedApplication.pipelineParameters.find(p => p.pipelineId === pipeline.id);
     if (!parameters) {
       parameters = {
         pipelineId: pipeline.id,
-        parameters: {},
+        parameters: Object.assign(SharedFunctions.generatePipelineMappings(pipeline, '?'),
+          SharedFunctions.generatePipelineMappings(pipeline, '$')),
       };
-      selectedExecution.pipelineParameters.push(parameters);
+      this.selectedExecution.pipelineParameters.push(parameters);
     }
-    pipeline.steps.forEach((step) => {
-      step.params.forEach((param) => {
-        if (param.value && typeof param.value === 'string') {
-          param.value.split('||').forEach((value) => {
-            if (value.trim().startsWith('$') || value.trim().startsWith('?')) {
-              const paramName = value.trim().substring(1);
-              if (!parameters.parameters[paramName]) {
-                parameters.parameters[paramName] = null;
-              }
-            }
-          });
-        }
-      });
-    });
     const dialog = this.displayDialogService.openDialog(
       TreeEditorComponent,
       generalDialogDimensions,
