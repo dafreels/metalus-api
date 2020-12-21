@@ -120,6 +120,7 @@
                   </mat-slide-toggle>
                 </span>
                 <mat-form-field *ngIf="selectedExecution">
+                  <mat-label>Initial Pipeline Id</mat-label>
                   <mat-select required [(ngModel)]="selectedExecution.initialPipelineId">
                     <mat-option *ngFor="let pipeline of selectedPipelines" value="pipeline.id">
                       {{pipeline.name}}
