@@ -653,6 +653,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     execution: Execution,
     executions: Execution[]
   ): DesignerElement {
+    // TODO Ensure that pipelineIds get converted to pipelines
     return {
       name: execution.id,
       tooltip: execution.id,
@@ -849,5 +850,51 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       // }
       this.validateApplication();
     });
+  }
+
+  openPropertiesEditor() {
+    const mappings = this.generatedRequiredAndStepPackages();
+    if (this.selectedApplication.requiredParameters && this.selectedApplication.requiredParameters.length > 0) {
+      mappings['requiredParameters'] = this.selectedApplication.requiredParameters;
+    }
+    if (this.selectedApplication.stepPackages && this.selectedApplication.stepPackages.length > 0) {
+      mappings['stepPackages'] = this.selectedApplication.stepPackages;
+    }
+    const dialog = this.displayDialogService.openDialog(
+      TreeEditorComponent,
+      generalDialogDimensions,
+      {
+        mappings,
+        hideMappingParameters: true,
+      });
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.selectedApplication.requiredParameters = result.requiredParameters;
+        this.selectedApplication.stepPackages = result.stepPackages;
+        this.validateApplication();
+      }
+    });
+  }
+
+  private generatedRequiredAndStepPackages() {
+    const packages = [];
+    const requiredFields = [];
+    this.selectedApplication.executions.forEach((execution) => {
+      execution.pipelines.forEach((pipeline) => {
+        pipeline.steps.forEach((step) => {
+          packages.push(step.engineMeta.pkg);
+          step.params.forEach((param) => {
+            if (param.required && typeof param.value === 'string' &&
+              param.value.startsWith('!') && param.value.indexOf('||') === -1) {
+              requiredFields.push(param.value.substring(1));
+            }
+          });
+        });
+      });
+    });
+    return {
+      stepPackages: packages.filter((value, index, self) => self.indexOf(value) === index),
+      requiredParameters: requiredFields.filter((value, index, self) => self.indexOf(value) === index)
+    };
   }
 }

@@ -21,5 +21,7 @@ An additional row of links are available for editing the application level prope
 * Setup Properties: These properties provide a location to place data that may need to be used when setting up the
   execution plan. These properties will not be available during execution. The default ApplicationDriverSetup does not use these
   properties.
+* Required Properties: This link will open the object editor and allow modifying the required parameters, and the step
+  packages. An attempt will be made to set the defaults for each if they do not exist.
 
 ![Control Panel](images/application_control_panel.png)
