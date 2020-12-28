@@ -11,12 +11,15 @@ import {ProfileComponent} from "./core/components/profile/profile.component";
 import {UsersComponent} from "./core/components/users/users.component";
 import {UploadComponent} from "./core/components/upload/upload.component";
 import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard';
+import { CustomParameterEditorComponent } from './pipelines/components/custom-parameter-editor/custom-parameter-editor.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, canDeactivate:[ConfirmDeactivateGuard]},
   {path: '', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService],
     data :{ page:"applications-editor", title:"Applications Editor"}},
+  {path: 'parameter-editor', component: CustomParameterEditorComponent, canActivate: [AuthGuardService],
+    data :{ page:"parameter-editor", title:"Parameter Editor"}},
   {path: 'steps-editor', component: StepsEditorComponent, canActivate: [AuthGuardService]},
   {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService], canDeactivate:[ConfirmDeactivateGuard],
     data :{ page:"pipelines-editor", title:"Pipelines Editor"}},

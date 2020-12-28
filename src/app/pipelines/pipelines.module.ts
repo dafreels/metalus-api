@@ -12,6 +12,7 @@ import {CustomBranchDialogComponent} from "./components/custom-branch-step/custo
 import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
 import {NgJsonEditorModule} from 'ang-jsoneditor';
 import {StepGroupResultModalComponent} from "./components/step-group-result-modal/step-group-result-modal.component";
+import { CustomParameterEditorComponent } from './components/custom-parameter-editor/custom-parameter-editor.component';
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
@@ -24,6 +25,7 @@ import {StepGroupResultModalComponent} from "./components/step-group-result-moda
     ObjectMappingsComponent,
     StepInformationComponent,
     StepGroupResultModalComponent,
+    CustomParameterEditorComponent
   ],
   entryComponents: [
     CustomBranchDialogComponent,

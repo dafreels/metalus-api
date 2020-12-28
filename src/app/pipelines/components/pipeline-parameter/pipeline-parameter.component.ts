@@ -1,6 +1,6 @@
 import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
-import {Pipeline, PipelineData, PipelineStepParam,} from '../../models/pipelines.model';
+import {Pipeline, PipelineData, PipelineParameter, PipelineStepParam,} from '../../models/pipelines.model';
 import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
 import {ObjectEditorComponent} from '../../../shared/components/object-editor/object-editor.component';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
@@ -46,9 +46,11 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() expandPanel: boolean = false;
   @Input() scalaParamType: boolean = false;
   propertiesDialogResponse: any;
-
+  @Output() selectedParam:EventEmitter<PipelineParameter> = new EventEmitter();
+  param:PipelineStepParam;
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
+    this.param = stepParameter;
     if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
@@ -514,5 +516,8 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           break;
       }
     }
+  }
+  selectParam(param){
+    this.selectedParam.emit(param);
   }
 }
