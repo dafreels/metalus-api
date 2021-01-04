@@ -11,10 +11,10 @@ optional, but is useful for handling step errors.
 
 ![Designer Step](images/designer_step.png)
 ## Actions
-Each step type has a list of actions available in addition to the remove action. To access, hold the _shift_ key while
-clicking on the step.
+Each step type has a list of actions available in addition to the remove action. To access, click on the step and a toolbar will
+appear at the top of the designer.
 
-![Step Group Actions](images/step_group_action_menu.png)
+![Step Group Actions](images/step_group_action_toolbar.png)
 ### Refresh Step
 Similar to the _Refresh Steps_ button on the control panel, this action will refresh the step metadata for this step.
 ### Step Group Actions
