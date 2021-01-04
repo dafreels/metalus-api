@@ -1,6 +1,6 @@
 const StepsModel = require('../../../models/steps.model');
 const BaseRoutes = require('../../../lib/base.routes');
-const ValidationError = require('./ValidationError');
+const ValidationError = require('../../../lib/ValidationError');
 
 module.exports = function (router) {
   const baseRoutes = new BaseRoutes('step', 'steps', StepsModel);
