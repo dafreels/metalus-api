@@ -1,20 +1,6 @@
 <div>
   <nav-toolbar>
     <span>
-      <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="newPipeline()">New</button>
-    <button mat-raised-button color="primary" [matMenuTriggerFor]="pipelineMenu"
-            style="margin-right: 5px;">Load</button>
-    <mat-menu #pipelineMenu="matMenu">
-      <button mat-menu-item *ngFor="let pipeline of pipelines" [id]="pipeline.id" (click)="loadPipeline(pipeline.id)">
-        {{ pipeline.name }}
-      </button>
-    </mat-menu>
-    <button mat-button color="primary" style="margin-right: 5px;" (click)="copyPipeline()"
-            [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Copy</button>
-    <button mat-button color="primary" (click)="importPipeline()">Import</button>
-    <button mat-button color="primary" style="margin-right: 5px;" (click)="exportPipeline()">Export</button>
-    <button mat-button color="primary" style="margin-right: 5px;" (click)="deletePipeline()"
-            [disabled]=" !this.selectedPipeline.id || this.selectedPipeline.id.trim().length === 0">Delete</button>
     </span>
   </nav-toolbar>
   <div class="pipelines-editor-layout">
@@ -22,66 +8,75 @@
       <app-steps-selector
         [steps]="steps"
         (stepItemSelection)="selectStep($event)"
-        ></app-steps-selector>
-        <!-- [draggableSteps]="true" -->
+      ></app-steps-selector>
+      <!-- [draggableSteps]="true" -->
     </div>
     <div class="designer-content">
       <div class="pipeline-panel">
         <mat-card>
           <mat-card-content class="header-content">
-            <div class="pipeline-data">
-            <span>
-              <mat-form-field *ngIf="editName">
-                <input matInput placeholder=" Pipeline Name" [(ngModel)]="selectedPipeline.name" required (focusout)="disableNameEdit()"/>
-              </mat-form-field>
-              <span class="pipeline-name" *ngIf="!editName">{{selectedPipeline.name}}</span>
-              <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
-                <mat-icon>edit</mat-icon>
-              </button>
-            </span>
-              <span class="pipeline-id">ID: {{selectedPipeline.id}}</span>
+            <div class="step-data">
+              <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
+              <span > <b>Step ID: </b> {{ selectedStep?.id }}</span>
               <span>
-                <mat-form-field>
+                <!-- <mat-form-field>
                   <mat-select required [(ngModel)]="selectedPipeline.category">
-                    <mat-option value="pipeline">Pipeline</mat-option>
-                    <mat-option value="step-group">Step Group</mat-option>
+                    <mat-option value="step-parameter">Step Parameter</mat-option>
                   </mat-select>
-                </mat-form-field>
-                <button mat-icon-button
-                        color="primary"
-                        [disabled]="selectedPipeline.category === 'pipeline'"
-                        (click)="showStepGroupResult()">
-                  <mat-icon>settings</mat-icon>
-                </button>
+                </mat-form-field> -->
+                <b>Selected Param: </b> {{ selectedParam?.name }}
               </span>
             </div>
             <span>
-            <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
-              <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
-              <span>{{errors.length}} Errors Detected</span>
+              <span
+                *ngIf="errors.length > 0"
+                class="error-panel"
+                (click)="showErrors()"
+              >
+                <span
+                  ><mat-icon color="warn" class="error-icon"
+                    >warning</mat-icon
+                  ></span
+                >
+                <span>{{ errors.length }} Errors Detected</span>
+              </span>
+              <button
+                mat-raised-button
+                color="primary"
+                style="margin-right: 5px"
+                [disabled]="errors.length > 0"
+                (click)="saveStepParamTemplate()"
+                >
+                <!-- (click)="saveStep()" -->
+                Save
+              </button>
+              <button
+                mat-button
+                color="primary"
+                style="margin-right: 5px"
+                (click)="cancelStepParamTemplateChanges()"
+              >
+                Cancel
+              </button>
+              <!-- <button
+                mat-button
+                color="primary"
+                style="margin-right: 5px"
+                [disabled]="errors.length > 0"
+                (click)="autoLayout()"
+              >
+                Autolayout
+              </button> -->
             </span>
-            <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="savePipeline()"
-                    [disabled]="errors.length > 0">
-              Save
-            </button>
-            <button mat-button color="primary" style="margin-right: 5px;"
-                    (click)="cancelPipelineChange()">Cancel</button>
-            <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0" (click)="autoLayout()">
-              Autolayout
-            </button>
-              <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0 || !selectedPipeline || selectedPipeline.steps.length === 0" (click)="refreshStepMetadata('')">
-              Refresh Steps
-            </button>
-          </span>
           </mat-card-content>
         </mat-card>
       </div>
 
-      <div class="code-div">
+      <div class="code-div" *ngIf="selectedParam">
         <ace
           [mode]="'json'"
           [theme]="'solarized_light'"
-          [value]="codeViewData"
+          [(value)]="codeViewData"
         ></ace>
       </div>
     </div>
@@ -89,24 +84,42 @@
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <app-step-information [selectedStep]="selectedStep"></app-step-information>
-            <mat-expansion-panel style="margin-top: 5px;">
+            <app-step-information
+              [selectedStep]="selectedStep"
+            ></app-step-information>
+            <mat-expansion-panel style="margin-top: 5px">
               <mat-expansion-panel-header>
                 <mat-panel-title>Parameters</mat-panel-title>
                 <mat-panel-description>
-                  <span class="step-description">{{selectedStep.displayName}}</span>
+                  <span class="step-description">{{
+                    selectedStep?.displayName
+                  }}</span>
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="pipeline-form">
                 <span>
-                  <mat-form-field *ngIf="editStepId">
-                    <input matInput placeholder=" Pipeline Name" [(ngModel)]="selectedStep.id" required
-                           (focusout)="disableStepIdEdit()" (change)="handleIdChange()"/>
+                  <!-- <mat-form-field *ngIf="editStepId">
+                    <input
+                      matInput
+                      placeholder=" Pipeline Name"
+                      [(ngModel)]="selectedStep.id"
+                      required
+                      (focusout)="disableStepIdEdit()"
+                      (change)="handleIdChange()"
+                    />
                   </mat-form-field>
-                  <span class="pipeline-name" *ngIf="!editStepId">{{selectedStep.id}}</span>
-                  <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editStepId" (click)="enableStepIdEdit()">
+                  <span class="pipeline-name" *ngIf="!editStepId">{{
+                    selectedStep.id
+                  }}</span>
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    aria-label="Edit"
+                    *ngIf="!editStepId"
+                    (click)="enableStepIdEdit()"
+                  >
                     <mat-icon>edit</mat-icon>
-                  </button>
+                  </button> -->
                 </span>
                 <mat-accordion>
                   <app-pipelines-parameter
@@ -120,7 +133,7 @@
                     [pipelines]="stepGroups"
                     [pipelinesData]="pipelinesData"
                     (selectedParam)="selectParam($event)"
-                    (parameterUpdate)="handleParameterUpdate(param.name, $event)"></app-pipelines-parameter>
+                  ></app-pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>
