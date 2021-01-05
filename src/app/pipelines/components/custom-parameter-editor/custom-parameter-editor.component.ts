@@ -4,10 +4,8 @@ import { Subject, Subscription } from 'rxjs';
 import { PackageObject } from 'src/app/core/package-objects/package-objects.model';
 import { PackageObjectsService } from 'src/app/core/package-objects/package-objects.service';
 import { DesignerComponent } from 'src/app/designer/components/designer/designer.component';
-import { DesignerConstants, DesignerElement, DesignerElementAction, DesignerElementOutput, DesignerModel } from 'src/app/designer/designer-constants';
-import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
+import { DesignerElement, DesignerModel } from 'src/app/designer/designer-constants';
 import { ErrorModalComponent } from 'src/app/shared/components/error-modal/error-modal.component';
-import { generalDialogDimensions } from 'src/app/shared/models/custom-dialog.model';
 import { User } from 'src/app/shared/models/users.models';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { DisplayDialogService } from 'src/app/shared/services/display-dialog.service';
@@ -17,16 +15,7 @@ import { StepsService } from 'src/app/steps/steps.service';
 import { Pipeline, PipelineData, PipelineStep, PipelineStepParam } from '../../models/pipelines.model';
 import { PipelinesService } from '../../services/pipelines.service';
 import { StepGroupProperty } from '../pipeline-parameter/pipeline-parameter.component';
-import { PipelinesEditorComponent } from '../pipelines-editor/pipelines-editor.component';
-import { StepGroupResultModalComponent } from '../step-group-result-modal/step-group-result-modal.component';
-import * as Ajv from 'ajv';
-import { DndDropEvent } from 'ngx-drag-drop';
-import { CustomBranchDialogComponent } from '../custom-branch-step/custom-branch-dialog.component';
-import { NameDialogComponent } from 'src/app/shared/components/name-dialog/name-dialog.component';
-import { CodeEditorComponent } from 'src/app/code-editor/components/code-editor/code-editor.component';
-import { WaitModalComponent } from 'src/app/shared/components/wait-modal/wait-modal.component';
-import { DesignerPreviewComponent } from 'src/app/designer/components/designer-preview/designer-preview.component';
-import { diff } from 'deep-object-diff';
+
 
 @Component({
   selector: 'app-custom-parameter-editor',
@@ -34,9 +23,6 @@ import { diff } from 'deep-object-diff';
   styleUrls: ['./custom-parameter-editor.component.scss']
 })
 export class CustomParameterEditorComponent implements OnInit, OnDestroy{
-  // pipelines: Pipeline[];
-  // _pipeline: Pipeline;
-  // selectedPipeline: Pipeline;
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
@@ -50,9 +36,10 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   private _selectedStep:PipelineStep;
   set selectedStep(step) {
     this._selectedStep = step;
+    this.selectedParam = null;
     this.getStepParamTemplate(step);
   }
-  private stepTemplate;
+  private stepTemplate = {};
   get selectedStep():PipelineStep {
     return this._selectedStep;
   }
@@ -104,13 +91,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
       let localStep = this.selectedPipeline.steps.find((s) => s.id === step.id);
       if (localStep) {
         this.selectedStep = localStep;
-      } else {
-        // this.newStep();
-      }
-    } else {
-      // this.newStep();
-    }
-    // this.validateChanges();
+      } 
+    } 
   }
 
   
@@ -139,13 +121,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
       this.selectedElement.name = id;
     }
   }
-
-  // handleParameterUpdate(name: string, parameter: PipelineStepParam) {
-  //   if (name === 'executeIfEmpty') {
-  //     this.selectedStep.executeIfEmpty = parameter.value;
-  //   }
-  //   this.validateChanges();
-  // }
 
   showErrors() {
     const messages = [];
@@ -203,10 +178,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedParam = $event;
   }
   get codeViewData() {
-    // return this.selectedParam.template;
-    // return JSON.stringify(this.selectedParam.template, null, 4);
-    // return this.stepTemplate[this.selectedParam.name];
-    if(this.stepTemplate){
+    if(this.stepTemplate && this.stepTemplate[this.selectedParam.name]){
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
     } else {
       return JSON.stringify({}, null, 4);
@@ -215,8 +187,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   set codeViewData(data) {
     try {
       this.paramTemplate = JSON.parse(data);
-    } catch {
-      alert('Incorrect JSON schema.')
+    } catch(err) {
     }
   }
   
@@ -225,10 +196,10 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     .subscribe(resp=>{
       this.stepTemplate = resp;
     })    
-    //.id, {paramName:this.selectedParam.name, template:this.codeViewData})
   }
-  saveStepParamTemplate(){
-    this.stepsService.updateParamTemplate(this.selectedStep.id, {paramName:this.selectedParam.name, template:this.paramTemplate}).subscribe(resp=>{
+  saveStepParamTemplate() {
+    this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
+    this.stepsService.updateParamTemplate(this.selectedStep.id, this.stepTemplate).subscribe(resp=>{
     })    
   }
   saveStep(){
@@ -242,8 +213,5 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     
     this.stepsService.updateStep(this.selectedStep).subscribe(resp=>{
     });
-  }
-  cancelStepParamTemplateChanges(){
-    
   }
 }
