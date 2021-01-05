@@ -214,4 +214,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.stepsService.updateStep(this.selectedStep).subscribe(resp=>{
     });
   }
+  cancelStepParamTemplateChanges() {
+    
+  }
 }

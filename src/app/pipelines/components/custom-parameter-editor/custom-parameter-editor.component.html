@@ -9,7 +9,6 @@
         [steps]="steps"
         (stepItemSelection)="selectStep($event)"
       ></app-steps-selector>
-      <!-- [draggableSteps]="true" -->
     </div>
     <div class="designer-content">
       <div class="pipeline-panel">
@@ -19,11 +18,6 @@
               <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
               <span > <b>Step ID: </b> {{ selectedStep?.id }}</span>
               <span>
-                <!-- <mat-form-field>
-                  <mat-select required [(ngModel)]="selectedPipeline.category">
-                    <mat-option value="step-parameter">Step Parameter</mat-option>
-                  </mat-select>
-                </mat-form-field> -->
                 <b>Selected Param: </b> {{ selectedParam?.name }}
               </span>
             </div>
@@ -47,7 +41,6 @@
                 [disabled]="errors.length > 0"
                 (click)="saveStepParamTemplate()"
                 >
-                <!-- (click)="saveStep()" -->
                 Save
               </button>
               <button
@@ -58,15 +51,6 @@
               >
                 Cancel
               </button>
-              <!-- <button
-                mat-button
-                color="primary"
-                style="margin-right: 5px"
-                [disabled]="errors.length > 0"
-                (click)="autoLayout()"
-              >
-                Autolayout
-              </button> -->
             </span>
           </mat-card-content>
         </mat-card>
@@ -97,30 +81,6 @@
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="pipeline-form">
-                <span>
-                  <!-- <mat-form-field *ngIf="editStepId">
-                    <input
-                      matInput
-                      placeholder=" Pipeline Name"
-                      [(ngModel)]="selectedStep.id"
-                      required
-                      (focusout)="disableStepIdEdit()"
-                      (change)="handleIdChange()"
-                    />
-                  </mat-form-field>
-                  <span class="pipeline-name" *ngIf="!editStepId">{{
-                    selectedStep.id
-                  }}</span>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    aria-label="Edit"
-                    *ngIf="!editStepId"
-                    (click)="enableStepIdEdit()"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button> -->
-                </span>
                 <mat-accordion>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep?.params"
