@@ -15,7 +15,8 @@ import { CustomParameterEditorComponent } from './pipelines/components/custom-pa
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, canDeactivate:[ConfirmDeactivateGuard]},
-  {path: '', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
+  {path: '', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService],
+    data :{ page:"landing", title:"Home"}},
   {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService],
     data :{ page:"applications-editor", title:"Applications Editor"}},
   {path: 'parameter-editor', component: CustomParameterEditorComponent, canActivate: [AuthGuardService],

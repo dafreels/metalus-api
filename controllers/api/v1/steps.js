@@ -14,12 +14,14 @@ module.exports = function (router) {
 async function getTemplate(req, res) {
   try {
     const stepsModel = new StepsModel();
-    const user = await this.getUser(req);
+    const user = await req.user;
     const record = await stepsModel.getTemplate(req.params.id, user);
     if (record) {
       const returnObj = {};
       returnObj['stepTemplate'] = record;
-      res.json(returnObj);
+      delete record._id;
+      delete record.id;
+      res.status(200).json(returnObj);
     } else {
       res.sendStatus(404);
     }
@@ -31,11 +33,13 @@ async function getTemplate(req, res) {
 async function updateTemplate(req, res, next) {
   try {
     const stepsModel = new StepsModel();
-    const user = await this.getUser(req);
-    const record = await stepsModel.updateTemplate(req.params.id, req.body, user);
+    const user = await req.user;
+    const update = req.body;
+    update.id = req.params.id;
+    const record = await stepsModel.updateTemplate(req.params.id, update, user);
     const returnObj = {};
     returnObj['stepTemplate'] = record;
-    res.json(returnObj);
+    res.status(200).json(returnObj);
   } catch (err) {
     if (err instanceof ValidationError) {
       res.status(422).json({errors: err.getValidationErrors(), body: req.body});

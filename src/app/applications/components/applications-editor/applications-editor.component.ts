@@ -302,7 +302,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
           message: 'must not be empty'
         });
       }
-      if (exe.pipelineIds.length === 0) {
+      if (!exe.pipelineIds || exe.pipelineIds.length === 0) {
         errors.push({
           component: 'execution',
           field: 'pipelines',

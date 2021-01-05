@@ -78,6 +78,36 @@ describe('Steps API File Tests', () => {
     verifyStep(step, body);
   });
 
+  it('Should update a single step template', async () => {
+    const userInfo = await TestHelpers.authUser(request(mock), state);
+    let response = await request(mock)
+      .put(`/api/v1/steps/${body.id}/template`)
+      .set('Cookie', [userInfo])
+      .send({
+        param1: 'one',
+        param2: '2'
+      })
+      .expect('Content-Type', /json/)
+      .expect(200);
+    let stepResponse = JSON.parse(response.text);
+    expect(stepResponse).to.exist;
+    expect(stepResponse).to.have.property('stepTemplate');
+    let stepTemplate = stepResponse.stepTemplate;
+    expect(stepTemplate).to.have.property('param1').eq('one');
+    expect(stepTemplate).to.have.property('param2').eq('2');
+    response = await request(mock)
+      .get(`/api/v1/steps/${body.id}/template`)
+      .set('Cookie', [userInfo])
+      .expect('Content-Type', /json/)
+      .expect(200);
+    stepResponse = JSON.parse(response.text);
+    expect(stepResponse).to.exist;
+    expect(stepResponse).to.have.property('stepTemplate');
+    stepTemplate = stepResponse.stepTemplate;
+    expect(stepTemplate).to.have.property('param1').eq('one');
+    expect(stepTemplate).to.have.property('param2').eq('2');
+  });
+
   it('Should get all steps', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);
     const response = await request(mock)
