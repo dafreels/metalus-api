@@ -134,7 +134,7 @@
               <mat-expansion-panel-header>
                 <mat-panel-title>Pipelines</mat-panel-title>
               </mat-expansion-panel-header>
-              <div *ngIf="selectedExecution" class="pipeline-container">
+              <div class="pipeline-container">
                 <h3>Available</h3>
                 <div
                   cdkDropList
@@ -146,12 +146,12 @@
                   <div class="pipeline-box" *ngFor="let pipeline of availablePipelines" cdkDrag>{{pipeline.name}}</div>
                 </div>
               </div>
-              <div *ngIf="selectedExecution" class="pipeline-container">
+              <div class="pipeline-container">
                 <h3>Selected</h3>
                 <div
                   cdkDropList
                   #selectedList="cdkDropList"
-                  [cdkDropListData]="selectedExecution.pipelines"
+                  [cdkDropListData]="selectedExecution?.pipelines"
                   [cdkDropListConnectedTo]="[availableList]"
                   class="pipeline-list"
                   (cdkDropListDropped)="dropPipeline($event)">
