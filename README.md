@@ -1,7 +1,7 @@
 |Branch|Build|Coverage|
 -------|-----|---------|
-|CI|![CI](https://github.com/dafreels/metalus-api/workflows/CI/badge.svg)|[![Master Coverage](https://img.shields.io/coveralls/github/dafreels/metalus-api/develop.svg)](https://coveralls.io/github/dafreels/metalus-api?branch=develop)|
-|Release|![Release](https://github.com/dafreels/metalus-api/workflows/Release/badge.svg)|[![Master Coverage](https://img.shields.io/coveralls/github/dafreels/metalus-api/master.svg)](https://coveralls.io/github/dafreels/metalus-api?branch=master)|
+|Develop|![CI](https://github.com/dafreels/metalus-api/workflows/CI/badge.svg?branch=develop)|[![Master Coverage](https://img.shields.io/coveralls/github/dafreels/metalus-api/develop.svg)](https://coveralls.io/github/dafreels/metalus-api?branch=develop)|
+|Master|![CI](https://github.com/dafreels/metalus-api/workflows/CI/badge.svg?branch=master)|[![Master Coverage](https://img.shields.io/coveralls/github/dafreels/metalus-api/master.svg)](https://coveralls.io/github/dafreels/metalus-api?branch=master)|
 
 # Metalus (Managed ETL)
 Provides a web interface for managing projects built using the [Metalus Pipeline Library](https://github.com/Acxiom/metalus).
