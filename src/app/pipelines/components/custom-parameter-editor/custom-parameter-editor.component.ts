@@ -15,7 +15,7 @@ import { StepsService } from 'src/app/steps/steps.service';
 import { Pipeline, PipelineData, PipelineStep, PipelineStepParam } from '../../models/pipelines.model';
 import { PipelinesService } from '../../services/pipelines.service';
 import { StepGroupProperty } from '../pipeline-parameter/pipeline-parameter.component';
-
+import * as _ from 'lodash'
 
 @Component({
   selector: 'app-custom-parameter-editor',
@@ -39,11 +39,11 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedParam = null;
     this.getStepParamTemplate(step);
   }
-  private stepTemplate = {};
+  public stepTemplate = {};
   get selectedStep():PipelineStep {
     return this._selectedStep;
   }
-  private _selectedParam:PipelineStepParam;
+  private _selectedParam:PipelineStepParam = null;
   set selectedParam(param){
     this._selectedParam = param;
   }
@@ -190,6 +190,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     } catch(err) {
     }
   }
+  get templateChanged() {
+    return (this.stepTemplate && this.selectedParam && !_.isEqual(this.stepTemplate[this.selectedParam.name], this.paramTemplate))
+  }
   
   getStepParamTemplate(step){
     this.stepsService.getParamTemplate(step)
@@ -215,6 +218,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     });
   }
   cancelStepParamTemplateChanges() {
-    
+    this.selectedParam = null;
   }
 }

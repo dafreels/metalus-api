@@ -38,9 +38,10 @@
                 mat-raised-button
                 color="primary"
                 style="margin-right: 5px"
-                [disabled]="errors.length > 0"
+                [disabled]="!templateChanged"
                 (click)="saveStepParamTemplate()"
                 >
+                <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
                 Save
               </button>
               <button
