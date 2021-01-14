@@ -34,6 +34,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   selectedPipeline: Pipeline;
   _pipeline: Pipeline;
   private _selectedStep:PipelineStep;
+  showPreview:boolean = false;
   set selectedStep(step) {
     this._selectedStep = step;
     this.selectedParam = null;
@@ -99,7 +100,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   private loadUIData() {
     this.steps = [];
     this.stepsLoading = true;
-    
     this.stepsService.getSteps().subscribe((steps: Step[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
@@ -219,5 +219,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   }
   cancelStepParamTemplateChanges() {
     this.selectedParam = null;
+  }
+  previewStepParamTemplate(){
+    this.showPreview = !this.showPreview;
   }
 }

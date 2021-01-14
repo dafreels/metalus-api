@@ -6,7 +6,8 @@
       </mat-icon>
       {{ parameterName }}
     </mat-panel-title>
-</mat-expansion-panel-header>
+ </mat-expansion-panel-header>
+ <ng-container  *ngIf="!template">
   <div *ngFor="let param of parameters">
     <span>
       <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
@@ -40,6 +41,7 @@
               </mat-select>
             </mat-form-field>
           </ng-container>
+         
         </ng-container>
         <ng-template #isNotTypeResponse>
           <mat-slide-toggle *ngIf="param.type === 'boolean'" (change)="handleChange(param.id, param)"
@@ -131,5 +133,9 @@
     <mat-label>Parameter Type</mat-label>
     <input matInput type="text" [(ngModel)]="parameter.customType" />
   </mat-form-field>
+ </ng-container>
+  <ng-container *ngIf="template">
+    <app-preview-parameter-editor [fields] = "template"></app-preview-parameter-editor>
+  </ng-container>
 </mat-expansion-panel>
 

@@ -48,6 +48,14 @@
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
+                (click)="previewStepParamTemplate()"
+              >
+                Preview
+              </button>
+              <button
+                mat-button
+                color="primary"
+                style="margin-right: 5px"
                 (click)="cancelStepParamTemplateChanges()"
               >
                 Cancel
@@ -63,6 +71,10 @@
           [theme]="'solarized_light'"
           [(value)]="codeViewData"
         ></ace>
+      <ng-container *ngIf="showPreview">
+        <h4>Showing Preview:</h4>
+        <app-preview-parameter-editor [fields] = "paramTemplate"></app-preview-parameter-editor>
+      </ng-container>
       </div>
     </div>
     <div class="information-panel">
@@ -85,6 +97,7 @@
                 <mat-accordion>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep?.params"
+                   
                     [isABranchStep]="isABranchStep"
                     [stepType]="selectedStep.type"
                     [stepParameters]="param"
@@ -94,7 +107,9 @@
                     [pipelines]="stepGroups"
                     [pipelinesData]="pipelinesData"
                     (selectedParam)="selectParam($event)"
-                  ></app-pipelines-parameter>
+                    [template] = "stepTemplate[param.name]"
+                    [templatePreview] = "showPreview && selectedParam.name === param.name"
+                    ></app-pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>

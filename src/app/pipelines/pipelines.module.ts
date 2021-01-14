@@ -20,12 +20,11 @@ import { CustomParameterEditorComponent } from './components/custom-parameter-ed
   declarations: [
     CustomBranchDialogComponent,
     PipelinesEditorComponent,
-    // PipelineParameterComponent,
     PipelinesSelectorModalComponent,
     ObjectMappingsComponent,
     StepInformationComponent,
     StepGroupResultModalComponent,
-    CustomParameterEditorComponent
+    CustomParameterEditorComponent,
   ],
   entryComponents: [
     CustomBranchDialogComponent,

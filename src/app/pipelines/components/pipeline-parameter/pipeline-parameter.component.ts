@@ -45,6 +45,15 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
   @Input() scalaParamType: boolean = false;
+  public previewTemplate;
+  @Input() template;
+  @Input() set templatePreview(template){
+    this.previewTemplate = template;
+    if(this.param){
+      
+      this.param.type = 'template';
+    }
+  }
   propertiesDialogResponse: any;
   @Output() selectedParam:EventEmitter<PipelineParameter> = new EventEmitter();
   param:PipelineStepParam;
@@ -193,6 +202,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
             }
           }
       }
+    }
+    if(this.previewTemplate){
+      this.param.type = "template"
     }
   }
   isAScriptParameter: string;
