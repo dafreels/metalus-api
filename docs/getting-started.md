@@ -81,9 +81,14 @@ The landing screen provides some simple counts about the metadata stored by the 
 
 Upon login or after each [metadata upload](upload.md), users will be brought back to this screen.
 
+## [New Project](projects.md#new-project)
+Go to the [profile screen](profile.md) to create a new [project](projects.md) and select one or more preloaded
+Metalus libraries to begin working. Make sure to mark this new project as the default by either
+clicking the toggle button or changing in the drop down on the navigation bar.
+
 ## [Upload Metadata](upload.md)
-The final step to prepare Metalus Studio for use is to upload metadata. Navigate to the [upload screen](upload.md) by
-clicking the _navigation_ menu.
+The final step to prepare Metalus Studio for use is to upload custom metadata. Navigate to the [upload screen](upload.md) by
+clicking the _navigation_ menu. This step is optional if the Metalus libraries provide enough functionality.
 
 ![Upload Navigation](images/upload_navigation.png)
 
