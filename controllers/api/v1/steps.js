@@ -15,15 +15,20 @@ async function getTemplate(req, res) {
   try {
     const stepsModel = new StepsModel();
     const user = await req.user;
-    const record = await stepsModel.getTemplate(req.params.id, user);
-    if (record) {
-      const returnObj = {};
-      returnObj['stepTemplate'] = record;
-      delete record._id;
-      delete record.id;
-      res.status(200).json(returnObj);
-    } else {
+    const step = await this.model.getByKey({id: req.params.id}, user);
+    if (!step) {
       res.sendStatus(404);
+    } else {
+      const record = await stepsModel.getTemplate(req.params.id, user);
+      if (record) {
+        const returnObj = {};
+        returnObj['stepTemplate'] = record;
+        delete record._id;
+        delete record.id;
+        res.status(200).json(returnObj);
+      } else {
+        res.sendStatus(204);
+      }
     }
   } catch (err) {
     res.status(501).json({error: err});
