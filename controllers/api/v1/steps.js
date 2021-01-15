@@ -15,7 +15,7 @@ async function getTemplate(req, res) {
   try {
     const stepsModel = new StepsModel();
     const user = await req.user;
-    const step = await this.model.getByKey({id: req.params.id}, user);
+    const step = await stepsModel.getByKey({id: req.params.id}, user);
     if (!step) {
       res.sendStatus(404);
     } else {
