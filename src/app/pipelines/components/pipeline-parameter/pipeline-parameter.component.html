@@ -7,7 +7,7 @@
       {{ parameterName }}
     </mat-panel-title>
  </mat-expansion-panel-header>
- <ng-container  *ngIf="!template">
+ <ng-container  *ngIf="!showTemplate">
   <div *ngFor="let param of parameters">
     <span>
       <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
@@ -134,8 +134,10 @@
     <input matInput type="text" [(ngModel)]="parameter.customType" />
   </mat-form-field>
  </ng-container>
-  <ng-container *ngIf="template">
-    <app-preview-parameter-editor [fields] = "template"></app-preview-parameter-editor>
+  <ng-container *ngIf="showTemplate">
+    <app-preview-parameter-editor (valueChange)="templateValueChanged($event)" [fields] = "template" [model]="parameter.value"></app-preview-parameter-editor>
   </ng-container>
+  <a mat-button color="primary" *ngIf="template" (click)="templateView=!templateView"> {{showTemplate ? 'Show Base Form':'Show Template Form'}}</a>
 </mat-expansion-panel>
+
 

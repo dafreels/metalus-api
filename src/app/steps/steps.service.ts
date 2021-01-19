@@ -36,8 +36,8 @@ export class StepsService {
         catchError(err => throwError(err)));
   }
   
-  getParamTemplate(step: Step): Observable<any> {
-    return this.http.get(`/api/v1/steps/${step.id}/template`,{ observe: 'response' })
+  getParamTemplate(stepId: string): Observable<any> {
+    return this.http.get(`/api/v1/steps/${stepId}/template`,{ observe: 'response' })
       .pipe(map((response:any) => response.body.stepTemplate),
       catchError(err => throwError(err)));
   }

@@ -38,10 +38,10 @@
                 mat-raised-button
                 color="primary"
                 style="margin-right: 5px"
-                [disabled]="!templateChanged"
                 (click)="saveStepParamTemplate()"
                 >
                 <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
+                <!-- [disabled]="!templateChanged" -->
                 Save
               </button>
               <button
@@ -71,10 +71,6 @@
           [theme]="'solarized_light'"
           [(value)]="codeViewData"
         ></ace>
-      <ng-container *ngIf="showPreview">
-        <h4>Showing Preview:</h4>
-        <app-preview-parameter-editor [fields] = "paramTemplate"></app-preview-parameter-editor>
-      </ng-container>
       </div>
     </div>
     <div class="information-panel">
@@ -108,7 +104,7 @@
                     [pipelinesData]="pipelinesData"
                     (selectedParam)="selectParam($event)"
                     [template] = "stepTemplate[param.name]"
-                    [templatePreview] = "showPreview && selectedParam.name === param.name"
+                    [templatePreview] = "showPreview && selectedParam.name === param.name && paramTemplate"
                     ></app-pipelines-parameter>
                 </mat-accordion>
               </div>

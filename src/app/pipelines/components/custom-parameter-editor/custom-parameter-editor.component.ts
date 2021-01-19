@@ -47,6 +47,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   private _selectedParam:PipelineStepParam = null;
   set selectedParam(param){
     this._selectedParam = param;
+    this.showPreview = false;
   }
   get selectedParam(){
     return this._selectedParam;
@@ -191,11 +192,12 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     }
   }
   get templateChanged() {
+    // _.isEqual(this.stepTemplate[this.selectedParam.name], this.paramTemplate)
     return (this.stepTemplate && this.selectedParam && !_.isEqual(this.stepTemplate[this.selectedParam.name], this.paramTemplate))
   }
   
   getStepParamTemplate(step){
-    this.stepsService.getParamTemplate(step)
+    this.stepsService.getParamTemplate(step.id)
     .subscribe(resp=>{
       this.stepTemplate = resp;
     })    

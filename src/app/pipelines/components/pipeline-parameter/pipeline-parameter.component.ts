@@ -45,18 +45,21 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
   @Input() scalaParamType: boolean = false;
-  public previewTemplate;
+  templateView = true;
+  get showTemplate(){
+    return this.template && this.templateView;
+  }
   @Input() template;
-  @Input() set templatePreview(template){
-    this.previewTemplate = template;
-    if(this.param){
-      
-      this.param.type = 'template';
+  @Input() set templatePreview(template) {
+    if(template === false) {
+      return;
     }
+    this.template = template;
+    this.templateView  = true;
   }
   propertiesDialogResponse: any;
   @Output() selectedParam:EventEmitter<PipelineParameter> = new EventEmitter();
-  param:PipelineStepParam;
+  param: PipelineStepParam;
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     this.param = stepParameter;
@@ -118,13 +121,14 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         case 'object':
         case 'scalascript':
         case 'script':
+        case 'template':
           this.complexParameter = true;
           this.parameters = [
             {
               id: this.id++,
               name: stepParameter.name,
               value: stepParameter.value,
-              type: stepParameter.type,
+              type: stepParameter.type == 'template' ? 'object': stepParameter.type,
               language: stepParameter.language,
               className: stepParameter.className,
             },
@@ -144,6 +148,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           ];
           break;
         default:
+          if(this.template){
+            return;
+          }
           this.complexParameter = false;
           if (stepParameter.value) {
             let value;
@@ -202,9 +209,6 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
             }
           }
       }
-    }
-    if(this.previewTemplate){
-      this.param.type = "template"
     }
   }
   isAScriptParameter: string;
@@ -531,5 +535,10 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   }
   selectParam(param){
     this.selectedParam.emit(param);
+  }
+  templateValueChanged(value) {
+    this.parameter.value = value;
+    this.parameter.type = 'template';
+    this.parameterUpdate.emit(this.parameter);
   }
 }
