@@ -12,6 +12,7 @@ Steps to follow in parameter editor
  
 
 Once we added JSON click on Preview button to reflect UI render in right side parameter expansion panel.
+
 ![Parameter-Editor](images/Parameter UI Render.png) 
 
 Each parameter has its own new UI and we do have show Template/Advanced toggle button. With these two action button we do have chance to bring back old UI.
