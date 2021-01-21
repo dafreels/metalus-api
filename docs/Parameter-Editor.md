@@ -13,11 +13,13 @@ Steps to follow in parameter editor
 
 Once we added JSON click on Preview button to reflect UI render in right side parameter expansion panel.
 
-![Parameter-Editor](images/Parameter UI Render.png) 
+![Parameter-Editor](images/Parameter_UI_Render.png) 
 
-Each parameter has its own new UI and we do have show Template/Advanced toggle button. With these two action button we do have chance to bring back old UI.
+Each parameter has its own new UI and we do have show Template/Advanced toggle button. With these two action button we have chance to bring back old UI.
 
 
  Once we done with adding and checking new formly JSON UI in Parameter screen go to Pepelines-editor UI and click step on what we have added formly JSON in parameter UI. 
-![Parameter-Editor](images/Pepeline UI with parameter JSON added.png).
+
+![Parameter-Editor](images/Pepeline_UI_with_parameter_JSON_added.png).
+
 We can add all inputs in this UI and save to our own Pipeline.
