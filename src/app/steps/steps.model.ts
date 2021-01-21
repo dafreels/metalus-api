@@ -25,6 +25,7 @@ export interface Param {
   className: string,
   parameterType: string
   description?: string
+  template?:any
 }
 
 export interface StepResults {

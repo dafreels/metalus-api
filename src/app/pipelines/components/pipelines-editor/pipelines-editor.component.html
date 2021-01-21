@@ -119,6 +119,7 @@
                     [stepSuggestions]="typeAhead"
                     [pipelines]="stepGroups"
                     [pipelinesData]="pipelinesData"
+                    [template] = "stepTemplate[param.name]"
                     (parameterUpdate)="handleParameterUpdate(param.name, $event)"></app-pipelines-parameter>
                 </mat-accordion>
               </div>

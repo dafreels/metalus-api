@@ -49,6 +49,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   selectedPipeline: Pipeline;
   _pipeline: Pipeline;
   selectedStep: PipelineStep;
+  stepTemplate = {};
   selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
   stepCreated: Subject<PipelineStep> = new Subject<PipelineStep>();
@@ -229,6 +230,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       let localStep = this.selectedPipeline.steps.find((s) => s.id === step.id);
       if (localStep) {
         this.selectedStep = localStep;
+        this.getStepParamTemplate(this.selectedStep);
       } else {
         this.newStep();
       }
@@ -273,6 +275,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
 
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as PipelineStep;
+    this.getStepParamTemplate(this.selectedStep);
     if (this.selectedStep.params.length > 0) {
       if (this.selectedStep.params[0].name === 'executeIfEmpty') {
         this.selectedStep.params.shift();
@@ -1244,5 +1247,11 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       return mergedStep;
     }
     return step;
+  }
+  getStepParamTemplate(step){
+    this.stepsService.getParamTemplate(step.stepId)
+    .subscribe(resp=>{
+      this.stepTemplate = resp;
+    })    
   }
 }

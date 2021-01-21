@@ -35,6 +35,18 @@ export class StepsService {
         map(response => response.body.step),
         catchError(err => throwError(err)));
   }
+  
+  getParamTemplate(stepId: string): Observable<any> {
+    return this.http.get(`/api/v1/steps/${stepId}/template`,{ observe: 'response' })
+      .pipe(map((response:any) => response.body.stepTemplate),
+      catchError(err => throwError(err)));
+  }
+  updateParamTemplate(stepID, stepTemplate:any): Observable<Step> {
+    return this.http.put<StepResponse>(`/api/v1/steps/${stepID}/template`, stepTemplate, {observe: 'response'})
+      .pipe(
+        map(response => response.body.step),
+        catchError(err => throwError(err)));
+  }
 
   updateSteps(steps: Step[]): Observable<Step[]> {
     const bulkSteps = steps.map(s => {

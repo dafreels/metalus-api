@@ -1,4 +1,4 @@
-<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result' || isAStepGroupResult" [expanded]="expandPanel">
+<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result' || isAStepGroupResult" (click)="selectParam(param)" [expanded]="expandPanel">
   <mat-expansion-panel-header>
     <mat-panel-title>
       <mat-icon color="primary" [matTooltip]="parameter.description" style="margin-right: 3px">
@@ -6,7 +6,9 @@
       </mat-icon>
       {{ parameterName }}
     </mat-panel-title>
-</mat-expansion-panel-header>
+  </mat-expansion-panel-header>
+  <a style="float:right" mat-button color="primary" *ngIf="template" (click)="templateView=!templateView"> {{showTemplate ? 'Show Adanced Form':'Show Template Form'}}</a>
+ <ng-container  *ngIf="!showTemplate">
   <div *ngFor="let param of parameters">
     <span>
       <ng-container *ngIf="!complexParameter; else isAcomplexParameter">
@@ -40,6 +42,7 @@
               </mat-select>
             </mat-form-field>
           </ng-container>
+         
         </ng-container>
         <ng-template #isNotTypeResponse>
           <mat-slide-toggle *ngIf="param.type === 'boolean'" (change)="handleChange(param.id, param)"
@@ -131,5 +134,11 @@
     <mat-label>Parameter Type</mat-label>
     <input matInput type="text" [(ngModel)]="parameter.customType" />
   </mat-form-field>
+ </ng-container>
+  <ng-container *ngIf="showTemplate">
+    <app-preview-parameter-editor (valueChange)="templateValueChanged($event)" [fields] = "template" [model]="parameter.value"></app-preview-parameter-editor>
+  </ng-container>
+  <!-- <a mat-button color="primary" *ngIf="template" (click)="templateView=!templateView"> {{showTemplate ? 'Show Base Form':'Show Template Form'}}</a> -->
 </mat-expansion-panel>
+
 

@@ -17,7 +17,7 @@ import { MatSelectSearchComponent } from './components/mat-select-search/mat-sel
 import {PasswordDialogComponent} from "./components/password-dialog/password-dialog.component";
 import {MatTreeModule} from '@angular/material/tree';
 import { ACE_CONFIG, AceConfigInterface, AceModule } from 'ngx-ace-wrapper';
-
+import { PreviewParameterEditorComponent } from './components/preview-parameter-editor/preview-parameter-editor.component';
 import { TreeEditorComponent } from '../shared/components/tree-editor/tree-editor.component'
 import { TreeEditorPopupComponent } from '../shared/components/tree-editor/tree-editor-popup.component';
 import { TreeonloadDirective } from '../shared/components/tree-editor/treeonload.directive';
@@ -27,6 +27,8 @@ import { TreeDatabase } from '../shared/components/tree-editor/tree.service';
 import { ScalaScriptComponent } from './scala-script/scala-script.component';
 import { PipelineParameterComponent } from '../pipelines/components/pipeline-parameter/pipeline-parameter.component';
 import { ParameterEditorComponent } from './scala-script/parameter-editor/parameter-editor.component';
+import { FormlyModule } from '@ngx-formly/core';
+import { FormlyMaterialModule } from '@ngx-formly/material';
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -38,11 +40,23 @@ const commonModules = [
   DndModule,
   MaterialDesignFrameworkModule,
   MatTreeModule,
-  AceModule
+  AceModule,
+  ReactiveFormsModule,
+ 
 ];
 
 @NgModule({
-  imports: [...commonModules, ...materialDesignModules],
+  imports: [
+    ...commonModules,
+    ...materialDesignModules,
+    FormlyModule.forRoot({
+      validationMessages: [
+        { name: 'required', message: 'This field is required' },
+      ],
+    }),
+    // FormlyModule,
+    FormlyMaterialModule,
+  ],
   declarations: [
     NameDialogComponent,
     PasswordDialogComponent,
@@ -61,7 +75,8 @@ const commonModules = [
     PromptComponent,
     ScalaScriptComponent,
     PipelineParameterComponent,
-    ParameterEditorComponent
+    ParameterEditorComponent,
+    PreviewParameterEditorComponent,
   ],
   exports: [
     ...commonModules,
@@ -69,7 +84,8 @@ const commonModules = [
     CloseDialogButtonComponent,
     MatSelectSearchComponent,
     IsGenericType,
-    PipelineParameterComponent
+    PipelineParameterComponent,
+    PreviewParameterEditorComponent,
   ],
   entryComponents: [
     NameDialogComponent,
@@ -85,8 +101,8 @@ const commonModules = [
     ScalaScriptComponent,
   ],
   providers: [
-    { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG, },
-    TreeDatabase
-  ]
+    { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG },
+    TreeDatabase,
+  ],
 })
 export class SharedModule {}

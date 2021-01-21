@@ -1,0 +1,117 @@
+<div>
+  <nav-toolbar>
+    <span>
+    </span>
+  </nav-toolbar>
+  <div class="pipelines-editor-layout">
+    <div class="steps-editor-sidebar">
+      <app-steps-selector
+        [steps]="steps"
+        (stepItemSelection)="selectStep($event)"
+      ></app-steps-selector>
+    </div>
+    <div class="designer-content">
+      <div class="pipeline-panel">
+        <mat-card>
+          <mat-card-content class="header-content">
+            <div class="step-data">
+              <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
+              <span > <b>Step ID: </b> {{ selectedStep?.id }}</span>
+              <span>
+                <b>Selected Param: </b> {{ selectedParam?.name }}
+              </span>
+            </div>
+            <span>
+              <span
+                *ngIf="errors.length > 0"
+                class="error-panel"
+                (click)="showErrors()"
+              >
+                <span
+                  ><mat-icon color="warn" class="error-icon"
+                    >warning</mat-icon
+                  ></span
+                >
+                <span>{{ errors.length }} Errors Detected</span>
+              </span>
+              <button
+                mat-raised-button
+                color="primary"
+                style="margin-right: 5px"
+                (click)="saveStepParamTemplate()"
+                [disabled]="!templateChanged"
+                >
+                <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
+                Save
+              </button>
+              <button
+                mat-button
+                color="primary"
+                style="margin-right: 5px"
+                (click)="previewStepParamTemplate()"
+              >
+                Preview
+              </button>
+              <button
+                mat-button
+                color="primary"
+                style="margin-right: 5px"
+                (click)="cancelStepParamTemplateChanges()"
+              >
+                Cancel
+              </button>
+            </span>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="code-div" *ngIf="selectedParam">
+        <ace
+          [mode]="'json'"
+          [theme]="'solarized_light'"
+          [(value)]="codeViewData"
+        ></ace>
+      </div>
+    </div>
+    <div class="information-panel">
+      <mat-card>
+        <mat-card-content>
+          <mat-accordion>
+            <app-step-information
+              [selectedStep]="selectedStep"
+            ></app-step-information>
+            <mat-expansion-panel style="margin-top: 5px">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Parameters</mat-panel-title>
+                <mat-panel-description>
+                  <span class="step-description">{{
+                    selectedStep?.displayName
+                  }}</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="pipeline-form">
+                <mat-accordion>
+                  <app-pipelines-parameter
+                    *ngFor="let param of selectedStep?.params"
+                   
+                    [isABranchStep]="isABranchStep"
+                    [stepType]="selectedStep.type"
+                    [stepParameters]="param"
+                    [stepGroup]="stepGroup"
+                    [packageObjects]="packageObjects"
+                    [stepSuggestions]="typeAhead"
+                    [pipelines]="stepGroups"
+                    [pipelinesData]="pipelinesData"
+                    (selectedParam)="selectParam($event)"
+                    [template] = "stepTemplate[param.name]"
+                    [templatePreview] = "showPreview && selectedParam.name === param.name && paramTemplate"
+                    ></app-pipelines-parameter>
+                </mat-accordion>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

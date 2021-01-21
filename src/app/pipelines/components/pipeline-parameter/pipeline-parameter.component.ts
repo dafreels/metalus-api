@@ -1,6 +1,6 @@
 import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
-import {Pipeline, PipelineData, PipelineStepParam,} from '../../models/pipelines.model';
+import {Pipeline, PipelineData, PipelineParameter, PipelineStepParam,} from '../../models/pipelines.model';
 import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
 import {ObjectEditorComponent} from '../../../shared/components/object-editor/object-editor.component';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
@@ -45,10 +45,24 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
   @Input() scalaParamType: boolean = false;
+  templateView = true;
+  get showTemplate(){
+    return this.template && this.templateView;
+  }
+  @Input() template;
+  @Input() set templatePreview(template) {
+    if(template === false) {
+      return;
+    }
+    this.template = template;
+    this.templateView  = true;
+  }
   propertiesDialogResponse: any;
-
+  @Output() selectedParam:EventEmitter<PipelineParameter> = new EventEmitter();
+  param: PipelineStepParam;
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
+    this.param = stepParameter;
     if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
@@ -107,13 +121,14 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         case 'object':
         case 'scalascript':
         case 'script':
+        case 'template':
           this.complexParameter = true;
           this.parameters = [
             {
               id: this.id++,
               name: stepParameter.name,
               value: stepParameter.value,
-              type: stepParameter.type,
+              type: stepParameter.type == 'template' ? 'object': stepParameter.type,
               language: stepParameter.language,
               className: stepParameter.className,
             },
@@ -133,6 +148,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           ];
           break;
         default:
+          if(this.template){
+            return;
+          }
           this.complexParameter = false;
           if (stepParameter.value) {
             let value;
@@ -514,5 +532,13 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           break;
       }
     }
+  }
+  selectParam(param){
+    this.selectedParam.emit(param);
+  }
+  templateValueChanged(value) {
+    this.parameter.value = value;
+    this.parameter.type = 'template';
+    this.parameterUpdate.emit(this.parameter);
   }
 }
