@@ -39,9 +39,9 @@
                 color="primary"
                 style="margin-right: 5px"
                 (click)="saveStepParamTemplate()"
+                [disabled]="!templateChanged"
                 >
                 <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
-                <!-- [disabled]="!templateChanged" -->
                 Save
               </button>
               <button

@@ -16,6 +16,7 @@ import { Pipeline, PipelineData, PipelineStep, PipelineStepParam } from '../../m
 import { PipelinesService } from '../../services/pipelines.service';
 import { StepGroupProperty } from '../pipeline-parameter/pipeline-parameter.component';
 import * as _ from 'lodash'
+import { WaitModalComponent } from 'src/app/shared/components/wait-modal/wait-modal.component';
 
 @Component({
   selector: 'app-custom-parameter-editor',
@@ -192,8 +193,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     }
   }
   get templateChanged() {
-    // _.isEqual(this.stepTemplate[this.selectedParam.name], this.paramTemplate)
-    return (this.stepTemplate && this.selectedParam && !_.isEqual(this.stepTemplate[this.selectedParam.name], this.paramTemplate))
+    if(this.selectedParam) {
+      return (this.stepTemplate && this.selectedParam && !(JSON.stringify(this.stepTemplate[this.selectedParam.name]) === JSON.stringify(this.paramTemplate)));
+    }
   }
   
   getStepParamTemplate(step){
@@ -203,9 +205,16 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     })    
   }
   saveStepParamTemplate() {
+    const dialogRef = this.dialog.open(WaitModalComponent, {
+      width: '25%',
+      height: '25%',
+    });
     this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
     this.stepsService.updateParamTemplate(this.selectedStep.id, this.stepTemplate).subscribe(resp=>{
-    })    
+      dialogRef.close();
+    },
+    (error) => this.handleError(error, dialogRef)
+    )    
   }
   saveStep(){
     let stepParams = this.selectedStep.params.map(param=>{
