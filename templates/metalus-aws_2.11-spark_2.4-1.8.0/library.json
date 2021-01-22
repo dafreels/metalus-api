@@ -1,0 +1,6 @@
+{
+  "name": "Metalus AWS Spark 2.4 Version 1.8.0",
+  "dependencies": [
+    "metalus-common_2.11-spark_2.4-1.8.0"
+  ]
+}

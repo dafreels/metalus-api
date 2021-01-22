@@ -1,0 +1,6 @@
+{
+  "name": "Metalus Mongo Spark 3.0 Version 1.8.0",
+  "dependencies": [
+    "metalus-common_2.12-spark_3.0-1.8.0"
+  ]
+}
