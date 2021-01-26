@@ -184,7 +184,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     if(this.stepTemplate && this.stepTemplate[this.selectedParam.name]){
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
     } else {
-      console.log("🚀 ~ file: custom-parameter-editor.component.ts ~ line 223 ~ CustomParameterEditorComponent ~ getcodeViewData ~ this.sampleTemplate", this.sampleTemplate)
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
   }
