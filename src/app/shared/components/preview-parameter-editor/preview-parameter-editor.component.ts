@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
+import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 
 @Component({
   selector: 'app-preview-parameter-editor',
@@ -23,9 +24,17 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   get model(){
     return this._model;
   }
-  @Input() fields: FormlyFieldConfig[];
+  @Input() set fields(formlyJson) {
+    if(formlyJson.schema){
+      this._fields =  [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
+    } else {
+      this._fields = formlyJson;
+    }
+    // schema; 
+  }
+  _fields: FormlyFieldConfig[];
   @Output() valueChange = new EventEmitter(); //this.form.valueChanges;
-  constructor() {}
+  constructor(private formlyJsonschema: FormlyJsonschema) {}
   ngAfterViewInit(): void {
     this.form.valueChanges.subscribe((value) => {
       this.valueChange.emit(value);

@@ -66,6 +66,7 @@
       </div>
 
       <div class="code-div" *ngIf="selectedParam">
+        <button mat-button color="primary" [disabled]="!stepTemplate || stepTemplate[selectedParam.name]" style="float: right;"(click)="addSampleTemplate()">Add Sample JSON Schema</button>
         <ace
           [mode]="'json'"
           [theme]="'solarized_light'"
