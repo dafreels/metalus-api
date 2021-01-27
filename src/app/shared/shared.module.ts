@@ -33,6 +33,7 @@ import { ArrayTypeComponent } from './components/formly-types/array.type';
 import { MultiSchemaTypeComponent } from './components/formly-types/multischema.type';
 import { NullTypeComponent } from './components/formly-types/null.type';
 import { ObjectTypeComponent } from './components/formly-types/object.type';
+import { RepeatTypeComponent } from './components/formly-types/repeat-section.type';
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -83,6 +84,9 @@ const commonModules = [
         { name: 'array', component: ArrayTypeComponent },
         { name: 'object', component: ObjectTypeComponent },
         { name: 'multischema', component: MultiSchemaTypeComponent },
+        { name: 'repeat', component: RepeatTypeComponent },
+        // { name: 'repeatschema', component: RepeatTypeComponent },
+        // RepeatTypeComponent
       ],
     }),
     // FormlyModule,
@@ -112,6 +116,7 @@ const commonModules = [
     ObjectTypeComponent,
     MultiSchemaTypeComponent,
     NullTypeComponent,
+    RepeatTypeComponent,
   ],
   exports: [
     ...commonModules,

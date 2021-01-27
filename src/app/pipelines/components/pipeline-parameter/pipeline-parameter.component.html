@@ -7,7 +7,7 @@
       {{ parameterName }}
     </mat-panel-title>
   </mat-expansion-panel-header>
-  <a style="float:right" mat-button color="primary" *ngIf="template" (click)="templateView=!templateView"> {{showTemplate ? 'Show Adanced Form':'Show Template Form'}}</a>
+  <a style="margin-left: 65px;" mat-button color="primary" *ngIf="template" (click)="templateView=!templateView"> {{showTemplate ? 'Show Adanced Form':'Show Template Form'}}</a>
  <ng-container  *ngIf="!showTemplate">
   <div *ngFor="let param of parameters">
     <span>
