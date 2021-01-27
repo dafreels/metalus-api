@@ -9,7 +9,9 @@ import { FieldArrayType } from '@ngx-formly/core';
         <button mat-icon-button color="warn" class="remove" type="button" (click)="remove(i)"><mat-icon>delete</mat-icon></button>
     </div>
     <div style="margin:30px 0;">
-      <button mat-raised-button color="primary" type="button" (click)="add()">{{ to.addText }}</button>
+      <button mat-raised-button color="primary" type="button" (click)="add()" [matTooltip]="to.addText">
+        <mat-icon>add</mat-icon>
+      </button>
     </div>
   `,
   styleUrls:["./repeat-section.styles.scss"]

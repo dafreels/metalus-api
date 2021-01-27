@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {PipelinesEditorComponent} from './components/pipelines-editor/pipelines-editor.component';
 import {DesignerModule} from '../designer/designer.module';
-import {PipelineParameterComponent} from './components/pipeline-parameter/pipeline-parameter.component';
 import {PipelinesSelectorModalComponent} from './components/pipelines-selector-modal/pipelines-selector-modal.component';
 import {SharedModule} from '../shared/shared.module';
 import {StepsModule} from '../steps/steps.module';
@@ -12,10 +11,10 @@ import {CustomBranchDialogComponent} from "./components/custom-branch-step/custo
 import {ObjectMappingsComponent} from "./components/object-group-mappings/object-group-mappings.component";
 import {NgJsonEditorModule} from 'ang-jsoneditor';
 import {StepGroupResultModalComponent} from "./components/step-group-result-modal/step-group-result-modal.component";
-import { CustomParameterEditorComponent } from './components/custom-parameter-editor/custom-parameter-editor.component';
+import {CustomParameterEditorComponent} from './components/custom-parameter-editor/custom-parameter-editor.component';
 
 @NgModule({
-  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule,NgJsonEditorModule],
+  imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule, NgJsonEditorModule],
   exports: [StepInformationComponent],
   declarations: [
     CustomBranchDialogComponent,

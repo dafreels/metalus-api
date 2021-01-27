@@ -2,14 +2,16 @@
 # Parameter Editor 
 The Parameter Editor is a specialized component which gives admins the ability to configure formly JSON 
 structure to render a custom UI for a step parameter. This allows step library creators the ability to
-build custom parameter forms without the user needing to understand how Metalus mapping works.
+build custom parameter forms without the user needing to understand how Metalus mapping works. When
+working in the code editor, the JSON provided will be applied to the _fields_ property of the form. No
+other properties are exposed. Documentation for formly is provided [here](https://formly.dev/guide/expression-properties).
+[Examples](https://formly.dev/ui/material) for material may be used to help understand the syntax.
 
 Steps to follow in parameter editor
 1. Go to Navigation Menu panel oon the navigation bar and select Parameter Editor. 
 2. Select any step from left side list. 
 3. Select the parameter on the right side.
 4. Enter a JSON form definition.
-_Note_: The correct format can be found [here](https://formly.dev/examples/advanced/json-schema).
 
 ![Parameter-Editor](images/parameter_editor.png) 
 

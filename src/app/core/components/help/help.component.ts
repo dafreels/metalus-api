@@ -12,7 +12,11 @@ export class HelpComponent {
   constructor(public dialogRef: MatDialogRef<string>,
               @Inject(MAT_DIALOG_DATA) public data: string,
               private sanitizer: DomSanitizer) {
-    this.trustedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`/docs/${data}.html`);
+    if (data.startsWith("http")) {
+      this.trustedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(data);
+    } else {
+      this.trustedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`/docs/${data}.html`);
+    }
   }
 
   closeDialog(): void {

@@ -47,7 +47,6 @@ const commonModules = [
   MatTreeModule,
   AceModule,
   ReactiveFormsModule,
- 
 ];
 
 @NgModule({

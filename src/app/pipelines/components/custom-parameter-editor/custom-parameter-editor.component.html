@@ -25,22 +25,19 @@
               <span
                 *ngIf="errors.length > 0"
                 class="error-panel"
-                (click)="showErrors()"
-              >
-                <span
-                  ><mat-icon color="warn" class="error-icon"
-                    >warning</mat-icon
-                  ></span
-                >
+                (click)="showErrors()">
+                <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
                 <span>{{ errors.length }} Errors Detected</span>
               </span>
+              <mat-icon color="primary" (click)="openHelp()" style="vertical-align: middle; margin-right: 5px">
+                help
+              </mat-icon>
               <button
                 mat-raised-button
                 color="primary"
                 style="margin-right: 5px"
                 (click)="saveStepParamTemplate()"
-                [disabled]="!templateChanged"
-                >
+                [disabled]="!templateChanged">
                 <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
                 Save
               </button>
@@ -48,16 +45,14 @@
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
-                (click)="previewStepParamTemplate()"
-              >
+                (click)="previewStepParamTemplate()">
                 Preview
               </button>
               <button
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
-                (click)="cancelStepParamTemplateChanges()"
-              >
+                (click)="cancelStepParamTemplateChanges()">
                 Cancel
               </button>
             </span>
@@ -94,7 +89,6 @@
                 <mat-accordion>
                   <app-pipelines-parameter
                     *ngFor="let param of selectedStep?.params"
-                   
                     [isABranchStep]="isABranchStep"
                     [stepType]="selectedStep.type"
                     [stepParameters]="param"
