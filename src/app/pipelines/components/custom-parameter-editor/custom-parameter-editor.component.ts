@@ -31,7 +31,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   stepGroups: Pipeline[];
   stepGroupSteps: Step[];
   steps: Step[];
-  paramTemplate: any;
+  paramTemplate: any = {};
+  sampleTemplate:any = {};
   selectedPipeline: Pipeline;
   _pipeline: Pipeline;
   private _selectedStep:PipelineStep;
@@ -183,7 +184,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     if(this.stepTemplate && this.stepTemplate[this.selectedParam.name]){
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
     } else {
-      return JSON.stringify({}, null, 4);
+      return JSON.stringify(this.sampleTemplate, null, 4);
     }
   }
   set codeViewData(data) {
@@ -219,7 +220,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   saveStep(){
     let stepParams = this.selectedStep.params.map(param=>{
       if(param.name===this.selectedParam.name) {
-        param.template = this.paramTemplate
+        param.template = this.paramTemplate;
       }
       return param;
     });
@@ -233,5 +234,162 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   }
   previewStepParamTemplate(){
     this.showPreview = !this.showPreview;
+  }
+  
+  addSampleTemplate() {
+    const formlySampleSchema = [
+      {
+          "key": "input",
+          "type": "input",
+          "templateOptions": {
+              "label": "Name",
+              "placeholder": "Input placeholder",
+              "required": true,
+              "focus": false,
+              "disabled": false
+          },
+          "id": "formly_5_input_input_0",
+          "hooks": {},
+          "modelOptions": {},
+          "wrappers": [
+              "form-field"
+          ],
+          "_keyPath": {
+              "key": "input",
+              "path": [
+                  "input"
+              ]
+          }
+      },
+      {
+          "key": "textarea",
+          "type": "textarea",
+          "templateOptions": {
+              "label": "Textarea",
+              "placeholder": "Textarea placeholder",
+              "required": true,
+              "focus": false,
+              "disabled": false,
+              "cols": 1,
+              "rows": 1
+          },
+          "id": "formly_5_textarea_textarea_1",
+          "hooks": {},
+          "modelOptions": {},
+          "wrappers": [
+              "form-field"
+          ],
+          "_keyPath": {
+              "key": "textarea",
+              "path": [
+                  "textarea"
+              ]
+          }
+      },
+      {
+          "key": "checkbox",
+          "type": "checkbox",
+          "templateOptions": {
+              "label": "Checkbox",
+              "placeholder": "",
+              "focus": false,
+              "disabled": false,
+              "hideFieldUnderline": true,
+              "indeterminate": true,
+              "floatLabel": "always",
+              "hideLabel": true,
+              "align": "start",
+              "color": "accent"
+          },
+          "id": "formly_5_checkbox_checkbox_2",
+          "hooks": {},
+          "modelOptions": {},
+          "wrappers": [
+              "form-field"
+          ],
+          "_keyPath": {
+              "key": "checkbox",
+              "path": [
+                  "checkbox"
+              ]
+          }
+      },
+      {
+          "key": "select",
+          "type": "select",
+          "templateOptions": {
+              "label": "Select",
+              "placeholder": "Select placeholder",
+              "required": true,
+              "options": [
+                  {
+                      "label": "Option 1",
+                      "value": "1"
+                  },
+                  {
+                      "label": "Option 2",
+                      "value": "2"
+                  },
+                  {
+                      "label": "Option 3",
+                      "value": "3"
+                  }
+              ],
+              "focus": false,
+              "disabled": false,
+              "_flatOptions": true
+          },
+          "id": "formly_5_select_select_3",
+          "hooks": {},
+          "modelOptions": {},
+          "wrappers": [
+              "form-field"
+          ],
+          "_keyPath": {
+              "key": "select",
+              "path": [
+                  "select"
+              ]
+          }
+      },
+      {
+          "key": "radio",
+          "type": "radio",
+          "templateOptions": {
+              "label": "Radio",
+              "required": true,
+              "options": [
+                  {
+                      "label": "Option 1",
+                      "value": "1"
+                  },
+                  {
+                      "label": "Option 2",
+                      "value": "2"
+                  }
+              ],
+              "placeholder": "",
+              "focus": false,
+              "disabled": false,
+              "hideFieldUnderline": true,
+              "floatLabel": "always",
+              "tabindex": -1,
+              "_flatOptions": true
+          },
+          "id": "formly_5_radio_radio_4",
+          "hooks": {},
+          "modelOptions": {},
+          "wrappers": [
+              "form-field"
+          ],
+          "_keyPath": {
+              "key": "radio",
+              "path": [
+                  "radio"
+              ]
+          }
+      }
+    ];
+    this.sampleTemplate = formlySampleSchema;
   }
 }

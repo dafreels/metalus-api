@@ -85,11 +85,13 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else if (stepParameter.type === 'object') {
       this.isAnObjectParameter = 'object';
       this.parameterType = 'object';
-    } else if (stepParameter.type === 'text') {
+    } else if (stepParameter.type === 'text' && this.template) {
+      this.stepParameters.type = 'template';
+    }else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     } else if (stepParameter.type === 'list') {
       this.parameterType = 'list';
-    }
+    } 
     if (
       stepParameter.type !== 'result' &&
       stepParameter.value &&

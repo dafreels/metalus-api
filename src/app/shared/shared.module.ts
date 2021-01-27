@@ -29,6 +29,11 @@ import { PipelineParameterComponent } from '../pipelines/components/pipeline-par
 import { ParameterEditorComponent } from './scala-script/parameter-editor/parameter-editor.component';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { ArrayTypeComponent } from './components/formly-types/array.type';
+import { MultiSchemaTypeComponent } from './components/formly-types/multischema.type';
+import { NullTypeComponent } from './components/formly-types/null.type';
+import { ObjectTypeComponent } from './components/formly-types/object.type';
+import { RepeatTypeComponent } from './components/formly-types/repeat-section.type';
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -52,6 +57,36 @@ const commonModules = [
     FormlyModule.forRoot({
       validationMessages: [
         { name: 'required', message: 'This field is required' },
+      ],
+      types: [
+        { name: 'string', extends: 'input' },
+        {
+          name: 'number',
+          extends: 'input',
+          defaultOptions: {
+            templateOptions: {
+              type: 'number',
+            },
+          },
+        },
+        {
+          name: 'integer',
+          extends: 'input',
+          defaultOptions: {
+            templateOptions: {
+              type: 'number',
+            },
+          },
+        },
+        { name: 'boolean', extends: 'checkbox' },
+        { name: 'enum', extends: 'select' },
+        { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
+        { name: 'array', component: ArrayTypeComponent },
+        { name: 'object', component: ObjectTypeComponent },
+        { name: 'multischema', component: MultiSchemaTypeComponent },
+        { name: 'repeat', component: RepeatTypeComponent },
+        // { name: 'repeatschema', component: RepeatTypeComponent },
+        // RepeatTypeComponent
       ],
     }),
     // FormlyModule,
@@ -77,6 +112,11 @@ const commonModules = [
     PipelineParameterComponent,
     ParameterEditorComponent,
     PreviewParameterEditorComponent,
+    ArrayTypeComponent,
+    ObjectTypeComponent,
+    MultiSchemaTypeComponent,
+    NullTypeComponent,
+    RepeatTypeComponent,
   ],
   exports: [
     ...commonModules,
