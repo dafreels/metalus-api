@@ -36,7 +36,7 @@ jobs:
         run: grunt test:api
 
       - name: Build
-        if: ${{ github.repository == 'dafreels/metalus-api' || github.event_name != 'pull_request_target'}}
+        if: ${{ github.repository == 'dafreels/metalus-api' || github.event_name == 'pull_request_target'}}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: grunt build
