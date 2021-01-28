@@ -3,9 +3,13 @@
 The Parameter-Editor is a specialized component which gives admins ability to configure formly JSON structure to render custom UI for a step parameter. Prior to this feature, a user would need to choose the step parameter from different options based on its value purpose.
 
 Steps to follow in parameter editor
+
 1) Go to menu panel in home page and click on Parameter Editor UI button. 
+
 ![Parameter-Editor](images/Home_Menu_ParameterScreen_Button.PNG)
+
 2) Select any step from left side category list. 
+
 ![Parameter-Editor](images/Select_ParameterStep.PNG)
 3) On the right side step parameters will be loaded and expand the parameter which will bring down JSON editor.
 ![Parameter-Editor](images/AfterClick_Parameter_Expansion_Panel.PNG)
