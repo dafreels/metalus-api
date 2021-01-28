@@ -44,6 +44,6 @@ Note: On adding new JSON we have to follow exact JSON formly format(https://form
 
 Once new formly JSON is configured for the step parameter the same UI will be rendered in the pipeline editor when user select a step and expand the parameter and the value changes will reflect in the peipeline parameter value.
 
-![Parameter-Editor](images/Pepeline_UI_with_parameter_JSON_added.png)
+![Parameter-Editor](images/pipeline_ui_with_parameter_json_added.png)
 
 In Pepeline editor screen also on each parameter we have same feature with show Advanced/Templte form toggle button to bring back old teplate UI.
