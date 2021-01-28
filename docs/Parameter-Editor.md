@@ -28,7 +28,7 @@ Note: On adding new JSON we have to follow exact JSON formly format(https://form
 
 6) After JSON edit done click preview button.
 
-![Parameter-Editor](images/parameter_editor.png) 
+![Parameter-Editor](images/pipeline_ui_with_parameter_json_added.pngg) 
 
 7) Once we click on Preview button new UI will reflect based on given formly json in right side parameter expansion panel.
 
@@ -40,7 +40,9 @@ Note: On adding new JSON we have to follow exact JSON formly format(https://form
 
 9) Each parameter has its own new UI.
 
-10) Once new formly JSON is configured for the step parameter the same UI will be rendered in the pipeline editor when user select a step and expand the parameter and the value changes will reflect in the peipeline parameter value.
+# Pipeline-Editor
+
+Once new formly JSON is configured for the step parameter the same UI will be rendered in the pipeline editor when user select a step and expand the parameter and the value changes will reflect in the peipeline parameter value.
 
 ![Parameter-Editor](images/Pepeline_UI_with_parameter_JSON_added.png)
 
