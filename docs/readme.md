@@ -27,4 +27,4 @@ metadata used by the UI. Users should read the [Pipeline Mappings](https://githu
 * [Scalascript Editor](scala-script-editor.md)
 * [Code Editor](code-editor.md)
 * Application Editor (Coming Soon)
-* [Parameter Editor](docs/parameter-editor.md)
+* [Parameter Editor](parameter-editor.md)
