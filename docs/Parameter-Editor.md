@@ -1,5 +1,5 @@
 [Home](readme.md)
-# Parameter-Editor 
+# parameter-editor 
 The Parameter-Editor is a specialized component which gives admins ability to configure formly JSON structure to render custom UI for a step parameter. Prior to this feature, a user would need to choose the step parameter from different options based on its value purpose.
 
 Steps to follow in parameter editor
