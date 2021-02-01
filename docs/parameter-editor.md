@@ -6,25 +6,25 @@ Steps to follow in parameter editor
 
 1) Go to menu panel in home page and click on Parameter Editor UI button. 
 
-![Parameter-Editor](images/home_menu_parameterScreen_button.png)
+![Parameter-Editor](images/home_menu_parameterscreen_button.PNG)
 
 2) Select any step from left side category list. 
 
-![Parameter-Editor](images/select_parameterstep.png)
+![Parameter-Editor](images/select_parameterstep.PNG)
 
 3) On the right side step parameters will be loaded and expand the parameter which will bring down JSON editor.
 
-![Parameter-Editor](images/afterClick_parameter_expansion_panel.png)
+![Parameter-Editor](images/afterClick_parameter_expansion_panel.PNG)
 
 Note: On adding new JSON we have to follow exact JSON formly format(https://formly.dev/examples/advanced/json-schema).
 
 4) In JSON editor screen we have Add Sample Json Scheme UI button on top right side, once we click on this button it will add sample formly json to the editor screen. 
 
-![Parameter-Editor](images/add_sample_Json_schema_button.png)
+![Parameter-Editor](images/add_sample_json_schema_button.PNG)
 
 5) After added JSON editor screen will show the JSON and we can edit if want.(There is vaidation as well if we add wrong syntax json,it shows X red mark)
 
-![Parameter-Editor](images/json_validation.png)
+![Parameter-Editor](images/Json_validation.PNG)
 
 6) After JSON edit done click preview button.
 
@@ -36,7 +36,7 @@ Note: On adding new JSON we have to follow exact JSON formly format(https://form
 
 8) We have Show Advnced form/Show Templte form toggle button which will bring old template if we want.
   
-  ![Parameter-Editor](images/show_adanvced_show_template.png) 
+  ![Parameter-Editor](images/show_adanvced_show_template.PNG) 
 
 9) Each parameter has its own new UI.
 
