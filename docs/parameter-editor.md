@@ -40,7 +40,7 @@ Note: On adding new JSON we have to follow exact JSON formly format(https://form
 
 9) Each parameter has its own new UI.
 
-# [Pipeline-Editor](pipeline-editor.md)
+[Pipeline-Editor](pipeline-editor.md)
 
 Once new formly JSON is configured for the step parameter the same UI will be rendered in the pipeline editor when user select a step and expand the parameter and the value changes will reflect in the peipeline parameter value.
 
