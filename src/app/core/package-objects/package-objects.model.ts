@@ -8,7 +8,7 @@ export interface PackageObject {
   id: string;
   project: Project;
   schema: string;
-  layout: string;
+  template: string;
 }
 
 export interface PackageObjectResponse {

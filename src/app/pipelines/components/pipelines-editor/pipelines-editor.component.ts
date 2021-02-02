@@ -951,7 +951,14 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       );
     }
     if (pipeline.steps.length > 0) {
+      let forkCount = 0;
+      let joinCount = 0;
       pipeline.steps.forEach((step) => {
+        if (step.type === 'fork') {
+          forkCount++;
+        } else if (step.type === 'join') {
+          joinCount++;
+        }
         if (step.params && step.params.length > 0) {
           if (step.type.toLocaleLowerCase() === 'branch') {
             const hasResultParameter = step.params.find(
@@ -995,6 +1002,13 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           });
         }
       });
+      if (forkCount > 1 && forkCount !== joinCount) {
+        errors.push({
+          component: 'pipeline',
+          field: 'fork',
+          message: `must have closing join when multiple forks are present.`
+        });
+      }
     }
     return errors;
   }
@@ -1252,6 +1266,6 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     this.stepsService.getParamTemplate(step.stepId)
     .subscribe(resp=>{
       this.stepTemplate = resp;
-    })    
+    })
   }
 }

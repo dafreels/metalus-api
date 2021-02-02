@@ -27,7 +27,7 @@
         "schema": {
           "type": "string"
         },
-        "layout": {
+        "template": {
           "type": "string"
         }
       }
