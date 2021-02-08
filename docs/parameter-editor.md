@@ -42,7 +42,7 @@ Steps to follow in parameter editor
 
 ## Pipeline-Editor
 
-Once new formly JSON is configured for the step parameter the same UI will be rendered in the pipeline editor when user select a step and expand the parameter and the value changes will reflect in the peipeline parameter value.
+After the form has been saved for the step, the new form will begin displaying in the [Pipeline Editor](pipeline-editor.md).
 
 ![Parameter-Editor](images/pipeline_ui_with_parameter_json_added.png)
 
