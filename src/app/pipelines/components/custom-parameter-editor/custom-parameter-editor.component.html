@@ -1,35 +1,64 @@
 <div>
   <nav-toolbar>
-    <span>
-    </span>
+    <span> </span>
   </nav-toolbar>
   <div class="pipelines-editor-layout">
     <div class="steps-editor-sidebar">
       <app-steps-selector
         [steps]="steps"
         (stepItemSelection)="selectStep($event)"
+        *ngIf="stepOrPackageSlection == 'Step'"
       ></app-steps-selector>
+      <app-package-selector
+        *ngIf="stepOrPackageSlection == 'Package'"
+        (packageItemSelection)="selectPackage($event)"
+      ></app-package-selector>
     </div>
     <div class="designer-content">
       <div class="pipeline-panel">
         <mat-card>
           <mat-card-content class="header-content">
             <div class="step-data">
-              <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
-              <span > <b>Step ID: </b> {{ selectedStep?.id }}</span>
-              <span>
-                <b>Selected Param: </b> {{ selectedParam?.name }}
-              </span>
+              <mat-form-field appearance="fill">
+                <mat-label>Select Type</mat-label>
+                <mat-select
+                  #field
+                  #fieldModel="ngModel"
+                  [(ngModel)]="stepOrPackageSlection"
+                >
+                  <mat-option value="Step"> Step </mat-option>
+                  <mat-option value="Package"> Package </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <ng-container *ngIf="isStep">
+                <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
+                <span> <b>Step ID: </b> {{ selectedStep?.id }}</span>
+                <span> <b>Selected Param: </b> {{ selectedParam?.name }} </span>
+              </ng-container>
+              <ng-container *ngIf="isPackage">
+                <span> <b>Package Object: </b> {{ selectedPackage?.id }} </span>
+                <span> <b>ID: </b> {{ selectedPackage?._id }}</span>
+                <!-- <span> <b>Selected Param: </b> {{ selectedPackage?.project }} </span> -->
+              </ng-container>
             </div>
             <span>
               <span
                 *ngIf="errors.length > 0"
                 class="error-panel"
-                (click)="showErrors()">
-                <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
+                (click)="showErrors()"
+              >
+                <span
+                  ><mat-icon color="warn" class="error-icon"
+                    >warning</mat-icon
+                  ></span
+                >
                 <span>{{ errors.length }} Errors Detected</span>
               </span>
-              <mat-icon color="primary" (click)="openHelp()" style="vertical-align: middle; margin-right: 5px">
+              <mat-icon
+                color="primary"
+                (click)="openHelp()"
+                style="vertical-align: middle; margin-right: 5px"
+              >
                 help
               </mat-icon>
               <button
@@ -37,7 +66,8 @@
                 color="primary"
                 style="margin-right: 5px"
                 (click)="saveStepParamTemplate()"
-                [disabled]="!templateChanged">
+                [disabled]="!templateChanged"
+              >
                 <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
                 Save
               </button>
@@ -45,14 +75,16 @@
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
-                (click)="previewStepParamTemplate()">
+                (click)="previewStepParamTemplate()"
+              >
                 Preview
               </button>
               <button
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
-                (click)="cancelStepParamTemplateChanges()">
+                (click)="cancelStepParamTemplateChanges()"
+              >
                 Cancel
               </button>
             </span>
@@ -60,8 +92,16 @@
         </mat-card>
       </div>
 
-      <div class="code-div" *ngIf="selectedParam">
-        <button mat-button color="primary" [disabled]="!stepTemplate || stepTemplate[selectedParam.name]" style="float: right;"(click)="addSampleTemplate()">Add Sample JSON Schema</button>
+      <div class="code-div" *ngIf="codeViewData">
+        <button
+          mat-button
+          color="primary"
+          style="float: right"
+          (click)="addSampleTemplate()"
+        >
+        <!-- [disabled]="!stepTemplate || stepTemplate[selectedParam.name]" -->
+          Add Sample JSON Schema
+        </button>
         <ace
           [mode]="'json'"
           [theme]="'solarized_light'"
@@ -72,7 +112,7 @@
     <div class="information-panel">
       <mat-card>
         <mat-card-content>
-          <mat-accordion>
+          <mat-accordion *ngIf="isStep">
             <app-step-information
               [selectedStep]="selectedStep"
             ></app-step-information>
@@ -98,13 +138,18 @@
                     [pipelines]="stepGroups"
                     [pipelinesData]="pipelinesData"
                     (selectedParam)="selectParam($event)"
-                    [template] = "stepTemplate[param.name]"
-                    [templatePreview] = "showPreview && selectedParam.name === param.name && paramTemplate"
-                    ></app-pipelines-parameter>
+                    [template]="stepTemplate[param.name]"
+                    [templatePreview]="
+                      showPreview &&
+                      selectedParam.name === param.name &&
+                      paramTemplate
+                    "
+                  ></app-pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>
           </mat-accordion>
+          <app-preview-parameter-editor *ngIf="isPackage && selectedPackage" [fields]="selectedPackage?.template"></app-preview-parameter-editor>
         </mat-card-content>
       </mat-card>
     </div>

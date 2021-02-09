@@ -1,0 +1,20 @@
+.package-list-item {
+    width: 100%;
+    border: 1px solid #eeeeee;
+  }
+  
+  .package-list-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: inherit;
+    overflow: hidden;
+  }
+  
+  .package-list-text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-left: 5px;
+  }
+  

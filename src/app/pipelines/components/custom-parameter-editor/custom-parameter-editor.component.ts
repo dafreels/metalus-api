@@ -17,12 +17,18 @@ import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.compon
 import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-modal.component';
 import {HelpComponent} from "../../../core/components/help/help.component";
 
+export interface input {
+  value: string;
+  viewValue: string;
+}
+
 @Component({
   selector: 'app-custom-parameter-editor',
   templateUrl: './custom-parameter-editor.component.html',
   styleUrls: ['./custom-parameter-editor.component.scss']
 })
 export class CustomParameterEditorComponent implements OnInit, OnDestroy{
+  stepOrPackageSlection:'Step'|'Package' = 'Step';
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
@@ -34,10 +40,13 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   selectedPipeline: Pipeline;
   private _selectedStep:PipelineStep;
   showPreview:boolean = false;
+  selectedPackage: PackageObject;
   set selectedStep(step) {
     this._selectedStep = step;
     this.selectedParam = null;
-    this.getStepParamTemplate(step);
+    if(step){
+      this.getStepParamTemplate(step);
+    }
   }
   public stepTemplate = {};
   get selectedStep():PipelineStep {
@@ -134,20 +143,35 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
 
   selectStep($event) {
     this.selectedStep = $event;
+    this.selectedPackage = null;
   }
+  
+  selectPackage($event) {
+    console.log("🚀 ~ file: custom-parameter-editor.component.ts ~ line 155 ~ CustomParameterEditorComponent ~ selectPackage ~ event", $event)
+    this.selectedPackage = $event;
+    this.selectedStep = null;
+    this._selectedParam = null;
+  }
+  
   selectParam($event){
     this.selectedParam = $event;
   }
   get codeViewData() {
-    if(this.stepTemplate && this.stepTemplate[this.selectedParam.name]){
+    if(this.stepTemplate && this.selectedParam && this.stepTemplate[this.selectedParam.name]){
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
+    } else if(this.selectedPackage) {
+      return JSON.stringify(this.selectedPackage.template || this.sampleTemplate, null, 4);
     } else {
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
   }
   set codeViewData(data) {
     try {
-      this.paramTemplate = JSON.parse(data);
+      if(this.selectedStep) {
+        this.paramTemplate = JSON.parse(data);
+      } else if(this.selectedPackage) {
+        this.selectedPackage.template = JSON.parse(data);
+      }
     } catch(err) {
     }
   }
@@ -241,5 +265,11 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
       height: '75%',
       data: 'https://formly.dev/guide/expression-properties',
     });
+  }
+  get isStep(){
+    return this.stepOrPackageSlection === 'Step';
+  }
+  get isPackage(){
+    return this.stepOrPackageSlection === 'Package';
   }
 }

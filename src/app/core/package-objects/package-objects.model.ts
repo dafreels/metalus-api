@@ -5,6 +5,7 @@ export interface PackageObjectsResponse {
 }
 
 export interface PackageObject {
+  _id:string;
   id: string;
   project: Project;
   schema: string;

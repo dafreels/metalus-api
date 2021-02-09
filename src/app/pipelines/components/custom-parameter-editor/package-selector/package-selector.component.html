@@ -1,0 +1,22 @@
+<mat-card class="sidebar">
+    <h4>Package Objects</h4>
+  <mat-card-content class="content">
+    <mat-list role="list">
+      <!-- <mat-list-item role="listitem" *ngFor="let package of packages">{{
+        package.id
+      }}</mat-list-item> -->
+      <mat-list-item
+        class="package-list-item"
+        *ngFor="let package of packages"
+        matTooltip="{{ package.id }}"
+        matTooltipPosition="right"
+        (click)="handlePackageSelection(package)"
+      >
+        <div class="package-list-container">
+          <!-- <mat-icon color="primary">{{ getStepIcon(step) }}</mat-icon> -->
+          <span class="package-list-text">{{ package.id }}</span>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>
