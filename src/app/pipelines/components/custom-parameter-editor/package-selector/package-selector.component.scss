@@ -10,6 +10,9 @@
     height: inherit;
     overflow: hidden;
   }
+  .package-list {
+    max-height: 350px;
+  }
   
   .package-list-text {
     white-space: nowrap;

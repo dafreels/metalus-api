@@ -24,7 +24,6 @@ export class PackageSelectorComponent implements OnInit {
         this.formattedPackages = Object.keys(byPackage).map((key) => {
           return { path: key, packages: byPackage[key] };
         });
-        console.log("🚀 ~ file: package-selector.component.ts ~ line 27 ~ PackageSelectorComponent ~ this.formattedPackages=Object.keys ~ this.formattedPackages", this.formattedPackages)
       }
     });
   }

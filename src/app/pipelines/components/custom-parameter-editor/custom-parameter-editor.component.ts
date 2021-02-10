@@ -17,11 +17,6 @@ import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.compon
 import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-modal.component';
 import {HelpComponent} from "../../../core/components/help/help.component";
 
-export interface input {
-  value: string;
-  viewValue: string;
-}
-
 @Component({
   selector: 'app-custom-parameter-editor',
   templateUrl: './custom-parameter-editor.component.html',
@@ -147,7 +142,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   }
   
   selectPackage($event) {
-    console.log("🚀 ~ file: custom-parameter-editor.component.ts ~ line 155 ~ CustomParameterEditorComponent ~ selectPackage ~ event", $event)
     this.selectedPackage = $event;
     this.selectedStep = null;
     this._selectedParam = null;
