@@ -13,6 +13,7 @@ import {NgJsonEditorModule} from 'ang-jsoneditor';
 import {StepGroupResultModalComponent} from "./components/step-group-result-modal/step-group-result-modal.component";
 import {CustomParameterEditorComponent} from './components/custom-parameter-editor/custom-parameter-editor.component';
 import { PackageSelectorComponent } from './components/custom-parameter-editor/package-selector/package-selector.component';
+import { ClassNamePipe } from './components/custom-parameter-editor/package-selector/classname.pipe';
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule, NgJsonEditorModule],
@@ -26,6 +27,7 @@ import { PackageSelectorComponent } from './components/custom-parameter-editor/p
     StepGroupResultModalComponent,
     CustomParameterEditorComponent,
     PackageSelectorComponent,
+    ClassNamePipe,
   ],
   entryComponents: [
     CustomBranchDialogComponent,

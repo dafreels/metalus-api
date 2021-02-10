@@ -170,7 +170,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
       if(this.selectedStep) {
         this.paramTemplate = JSON.parse(data);
       } else if(this.selectedPackage) {
-        this.selectedPackage.template = JSON.parse(data);
+        this.paramTemplate = JSON.parse(data);
+        // this.selectedPackage.template = JSON.parse(data);
       }
     } catch(err) {
     }
@@ -178,6 +179,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   get templateChanged() {
     if(this.selectedParam) {
       return (this.stepTemplate && this.selectedParam && (JSON.stringify(this.stepTemplate[this.selectedParam.name]) !== JSON.stringify(this.paramTemplate)));
+    } else if(this.selectedPackage) {
+      return ( this.selectedPackage && (JSON.stringify(this.selectedPackage.template) !== JSON.stringify(this.paramTemplate)));
     }
   }
 
@@ -188,6 +191,10 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     })
   }
   saveStepParamTemplate() {
+    if (this.isPackage) {
+      this.saveStepPackageTemplate();
+      return;
+    }
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
       height: '25%',
@@ -199,15 +206,18 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     (error) => this.handleError(error, dialogRef)
     )
   }
-  saveStep(){
-    this.selectedStep.params = this.selectedStep.params.map(param=> {
-      if(param.name===this.selectedParam.name) {
-        param.template = this.paramTemplate;
-      }
-      return param;
+  saveStepPackageTemplate() {
+    const dialogRef = this.dialog.open(WaitModalComponent, {
+      width: '25%',
+      height: '25%',
     });
-
-    this.stepsService.updateStep(this.selectedStep).subscribe(() => {});
+    // this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
+    this.selectedPackage.template = this.paramTemplate;
+    this.packageObjectsService.updatePackageTemplate(this.selectedPackage).subscribe(() => {
+      dialogRef.close();
+    },
+    (error) => this.handleError(error, dialogRef)
+    )
   }
   cancelStepParamTemplateChanges() {
     this.selectedParam = null;
@@ -271,5 +281,21 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   }
   get isPackage(){
     return this.stepOrPackageSlection === 'Package';
+  }
+  get canAddSampleJSON() {
+    if(this.isPackage && this.selectedPackage) {
+      return !this.selectedPackage.template;
+    }
+    if(this.isStep && this.stepTemplate && this.selectedParam) {
+      return !this.stepTemplate[this.selectedParam.name];
+    }
+    return this.canShowCodeView;
+  }
+  get canShowCodeView() {
+    if(this.isPackage){
+      return this.selectedPackage;
+    } else if(this.isStep) {
+      return this.stepTemplate && this.selectedParam;
+    }
   }
 }

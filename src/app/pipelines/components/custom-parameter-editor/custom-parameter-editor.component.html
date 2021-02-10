@@ -68,7 +68,6 @@
                 (click)="saveStepParamTemplate()"
                 [disabled]="!templateChanged"
               >
-                <!-- [disabled]="selectedStep.params?.length== 0? true:false" -->
                 Save
               </button>
               <button
@@ -92,14 +91,14 @@
         </mat-card>
       </div>
 
-      <div class="code-div" *ngIf="codeViewData">
+      <div class="code-div" *ngIf="canShowCodeView">
         <button
           mat-button
           color="primary"
           style="float: right"
           (click)="addSampleTemplate()"
+          [disabled]="!canAddSampleJSON"
         >
-        <!-- [disabled]="!stepTemplate || stepTemplate[selectedParam.name]" -->
           Add Sample JSON Schema
         </button>
         <ace
@@ -149,7 +148,7 @@
               </div>
             </mat-expansion-panel>
           </mat-accordion>
-          <app-preview-parameter-editor *ngIf="isPackage && selectedPackage" [fields]="selectedPackage?.template"></app-preview-parameter-editor>
+          <app-preview-parameter-editor *ngIf="isPackage && selectedPackage" [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
         </mat-card-content>
       </mat-card>
     </div>
