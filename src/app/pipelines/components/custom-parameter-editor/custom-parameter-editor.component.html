@@ -148,7 +148,9 @@
               </div>
             </mat-expansion-panel>
           </mat-accordion>
-          <app-preview-parameter-editor *ngIf="isPackage && selectedPackage" [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
+          <div class="preview-form" *ngIf="isPackage && selectedPackage" >
+            <app-preview-parameter-editor [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>

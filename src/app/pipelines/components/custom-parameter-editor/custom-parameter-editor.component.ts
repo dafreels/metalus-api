@@ -151,15 +151,18 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedParam = $event;
   }
   get codeViewData() {
-    if(this.stepTemplate && this.selectedParam && this.stepTemplate[this.selectedParam.name]){
+    if(this.isStep && this.stepTemplate && this.selectedParam && this.stepTemplate[this.selectedParam.name]){
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
-    } else if(this.selectedPackage) {
+    } else if(this.isPackage && this.selectedPackage) {
       return JSON.stringify(this.selectedPackage.template || this.sampleTemplate, null, 4);
     } else {
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
   }
   set codeViewData(data) {
+    // if(!data){
+    //   this.canAddSampleJSON = true;
+    // }
     try {
       if(this.selectedStep) {
         this.paramTemplate = JSON.parse(data);
@@ -186,7 +189,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   }
   saveStepParamTemplate() {
     if (this.isPackage) {
-      this.saveStepPackageTemplate();
+      this.savePackageTemplate();
       return;
     }
     const dialogRef = this.dialog.open(WaitModalComponent, {
@@ -200,15 +203,15 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     (error) => this.handleError(error, dialogRef)
     )
   }
-  saveStepPackageTemplate() {
+  savePackageTemplate() {
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
       height: '25%',
     });
     // this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
-    this.selectedPackage.template = this.paramTemplate;
-    this.packageObjectsService.updatePackageTemplate(this.selectedPackage).subscribe(() => {
+    this.packageObjectsService.updatePackageTemplate(this.selectedPackage, this.paramTemplate).subscribe(() => {
       dialogRef.close();
+      this.selectedPackage.template = this.paramTemplate;
     },
     (error) => this.handleError(error, dialogRef)
     )
@@ -276,7 +279,14 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   get isPackage(){
     return this.stepOrPackageSlection === 'Package';
   }
+  // private _canAddSampleJSON:boolean = false;
+  // set canAddSampleJSON(show:boolean){
+  //   // this._canAddSampleJSON = show;
+  // }
   get canAddSampleJSON() {
+    // if(this._canAddSampleJSON) {
+    //   return true;
+    // }
     if(this.isPackage && this.selectedPackage) {
       return !this.selectedPackage.template;
     }
@@ -287,9 +297,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   }
   get canShowCodeView() {
     if(this.isPackage){
-      return this.selectedPackage;
+      return !!this.selectedPackage;
     } else if(this.isStep) {
-      return this.stepTemplate && this.selectedParam;
+      return !!(this.stepTemplate && this.selectedParam);
     }
   }
 }
