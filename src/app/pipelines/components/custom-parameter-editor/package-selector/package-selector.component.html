@@ -17,7 +17,7 @@
           (click)="handlePackageSelection(package)"
         >
           <div class="package-list-container">
-            <span class="package-list-text">{{ package.id | className }}</span>
+            <span class="package-list-text">{{ package.id | packageName }}</span>
           </div>
         </mat-list-item>
       </mat-action-list>
