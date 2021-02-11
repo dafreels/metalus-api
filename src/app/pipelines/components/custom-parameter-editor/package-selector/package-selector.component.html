@@ -1,0 +1,26 @@
+<mat-card class="sidebar">
+  <h4>Package Objects</h4>
+  <mat-card-content class="content">
+    <mat-expansion-panel
+      *ngFor="let category of formattedPackages"
+      style="margin-bottom: 5px"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ category.path }}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-action-list class="package-list">
+        <mat-list-item
+          class="package-list-item"
+          *ngFor="let package of category.packages"
+          matTooltip="{{ package.id }}"
+          matTooltipPosition="right"
+          (click)="handlePackageSelection(package)"
+        >
+          <div class="package-list-container">
+            <span class="package-list-text">{{ package.id | className }}</span>
+          </div>
+        </mat-list-item>
+      </mat-action-list>
+    </mat-expansion-panel>
+  </mat-card-content>
+</mat-card>

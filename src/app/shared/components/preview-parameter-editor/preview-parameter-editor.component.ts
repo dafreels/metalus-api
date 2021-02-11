@@ -18,19 +18,20 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   form = new FormGroup({});
   _model;
-  @Input() set model(value){
+  @Input() set model(value) {
     this._model = value;
   }
-  get model(){
+  get model() {
     return this._model;
   }
   @Input() set fields(formlyJson) {
-    if(formlyJson.schema){
-      this._fields =  [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
-    } else {
-      this._fields = formlyJson;
+    if (formlyJson) {
+      if (formlyJson.schema) {
+        this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
+      } else if(Array.isArray(formlyJson)) {
+        this._fields = formlyJson;
+      }
     }
-    // schema; 
   }
   _fields: FormlyFieldConfig[];
   @Output() valueChange = new EventEmitter(); //this.form.valueChanges;
@@ -41,9 +42,7 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {
-    
-  }
+  ngOnInit() {}
 
   onSubmit() {
     if (this.form.valid) {

@@ -8,6 +8,16 @@ import { PackageObject, PackageObjectResponse, PackageObjectsResponse } from './
   providedIn: 'root',
 })
 export class PackageObjectsService {
+  updatePackageTemplate(selectedPackage: PackageObject, template:any) {
+    return this.http.put<PackageObjectsResponse>(`/api/v1/package-objects/${selectedPackage.id}`,{...selectedPackage, template}, { observe: 'response' })
+    .pipe(
+      map(response => {
+        if (response && response.body) {
+          return response.body['package-object'];
+        }
+        return [];
+      }));
+  }
   constructor(private http: HttpClient) {}
 
   getPackageObjects(): Observable<PackageObject[]> {

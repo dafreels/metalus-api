@@ -23,6 +23,7 @@ import {HelpComponent} from "../../../core/components/help/help.component";
   styleUrls: ['./custom-parameter-editor.component.scss']
 })
 export class CustomParameterEditorComponent implements OnInit, OnDestroy{
+  stepOrPackageSlection:'Step'|'Package' = 'Step';
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
@@ -34,10 +35,13 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   selectedPipeline: Pipeline;
   private _selectedStep:PipelineStep;
   showPreview:boolean = false;
+  selectedPackage: PackageObject;
   set selectedStep(step) {
     this._selectedStep = step;
     this.selectedParam = null;
-    this.getStepParamTemplate(step);
+    if(step){
+      this.getStepParamTemplate(step);
+    }
   }
   public stepTemplate = {};
   get selectedStep():PipelineStep {
@@ -134,26 +138,46 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
 
   selectStep($event) {
     this.selectedStep = $event;
+    this.selectedPackage = null;
   }
+  
+  selectPackage($event) {
+    this.selectedPackage = $event;
+    this.selectedStep = null;
+    this._selectedParam = null;
+  }
+  
   selectParam($event){
     this.selectedParam = $event;
   }
   get codeViewData() {
-    if(this.stepTemplate && this.stepTemplate[this.selectedParam.name]){
+    if(this.isStep && this.stepTemplate && this.selectedParam && this.stepTemplate[this.selectedParam.name]){
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
+    } else if(this.isPackage && this.selectedPackage) {
+      return JSON.stringify(this.selectedPackage.template || this.sampleTemplate, null, 4);
     } else {
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
   }
   set codeViewData(data) {
+    // if(!data){
+    //   this.canAddSampleJSON = true;
+    // }
     try {
-      this.paramTemplate = JSON.parse(data);
+      if(this.selectedStep) {
+        this.paramTemplate = JSON.parse(data);
+      } else if(this.selectedPackage) {
+        this.paramTemplate = JSON.parse(data);
+        // this.selectedPackage.template = JSON.parse(data);
+      }
     } catch(err) {
     }
   }
   get templateChanged() {
     if(this.selectedParam) {
       return (this.stepTemplate && this.selectedParam && (JSON.stringify(this.stepTemplate[this.selectedParam.name]) !== JSON.stringify(this.paramTemplate)));
+    } else if(this.selectedPackage) {
+      return ( this.selectedPackage && (JSON.stringify(this.selectedPackage.template) !== JSON.stringify(this.paramTemplate)));
     }
   }
 
@@ -164,6 +188,10 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     })
   }
   saveStepParamTemplate() {
+    if (this.isPackage) {
+      this.savePackageTemplate();
+      return;
+    }
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
       height: '25%',
@@ -175,15 +203,18 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     (error) => this.handleError(error, dialogRef)
     )
   }
-  saveStep(){
-    this.selectedStep.params = this.selectedStep.params.map(param=> {
-      if(param.name===this.selectedParam.name) {
-        param.template = this.paramTemplate;
-      }
-      return param;
+  savePackageTemplate() {
+    const dialogRef = this.dialog.open(WaitModalComponent, {
+      width: '25%',
+      height: '25%',
     });
-
-    this.stepsService.updateStep(this.selectedStep).subscribe(() => {});
+    // this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
+    this.packageObjectsService.updatePackageTemplate(this.selectedPackage, this.paramTemplate).subscribe(() => {
+      dialogRef.close();
+      this.selectedPackage.template = this.paramTemplate;
+    },
+    (error) => this.handleError(error, dialogRef)
+    )
   }
   cancelStepParamTemplateChanges() {
     this.selectedParam = null;
@@ -241,5 +272,34 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
       height: '75%',
       data: 'https://formly.dev/guide/expression-properties',
     });
+  }
+  get isStep(){
+    return this.stepOrPackageSlection === 'Step';
+  }
+  get isPackage(){
+    return this.stepOrPackageSlection === 'Package';
+  }
+  // private _canAddSampleJSON:boolean = false;
+  // set canAddSampleJSON(show:boolean){
+  //   // this._canAddSampleJSON = show;
+  // }
+  get canAddSampleJSON() {
+    // if(this._canAddSampleJSON) {
+    //   return true;
+    // }
+    if(this.isPackage && this.selectedPackage) {
+      return !this.selectedPackage.template;
+    }
+    if(this.isStep && this.stepTemplate && this.selectedParam) {
+      return !this.stepTemplate[this.selectedParam.name];
+    }
+    return this.canShowCodeView;
+  }
+  get canShowCodeView() {
+    if(this.isPackage){
+      return !!this.selectedPackage;
+    } else if(this.isStep) {
+      return !!(this.stepTemplate && this.selectedParam);
+    }
   }
 }
