@@ -19,7 +19,7 @@
         <mat-card>
           <mat-card-content class="header-content">
             <div class="step-data">
-              <mat-form-field appearance="fill">
+              <mat-form-field class="dropdown" appearance="fill">
                 <mat-label>Select Type</mat-label>
                 <mat-select
                   #field
@@ -27,18 +27,17 @@
                   [(ngModel)]="stepOrPackageSlection"
                 >
                   <mat-option value="Step"> Step </mat-option>
-                  <mat-option value="Package"> Package </mat-option>
+                  <mat-option  value="Package"> Package </mat-option>
                 </mat-select>
               </mat-form-field>
-              <ng-container *ngIf="isStep">
+              <ng-container class="Step" *ngIf="isStep">
                 <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
                 <span> <b>Step ID: </b> {{ selectedStep?.id }}</span>
                 <span> <b>Selected Param: </b> {{ selectedParam?.name }} </span>
               </ng-container>
-              <ng-container *ngIf="isPackage">
+              <ng-container class="Package" *ngIf="isPackage">
                 <span> <b>Package Object: </b> {{ selectedPackage?.id }} </span>
                 <span> <b>ID: </b> {{ selectedPackage?._id }}</span>
-                <!-- <span> <b>Selected Param: </b> {{ selectedPackage?.project }} </span> -->
               </ng-container>
             </div>
             <span>
