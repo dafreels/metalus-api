@@ -27,16 +27,16 @@
                   [(ngModel)]="stepOrPackageSlection"
                 >
                   <mat-option value="Step"> Step </mat-option>
-                  <mat-option  value="Package"> Package </mat-option>
+                  <mat-option  value="Package"> Class </mat-option>
                 </mat-select>
               </mat-form-field>
               <ng-container class="Step" *ngIf="isStep">
                 <span> <b>Step Name: </b> {{ selectedStep?.displayName }} </span>
-                <span> <b>Step ID: </b> {{ selectedStep?.id }}</span>
+                <span> <b>Step ID: </b> {{ selectedStep?.id  }}</span>
                 <span> <b>Selected Param: </b> {{ selectedParam?.name }} </span>
               </ng-container>
               <ng-container class="Package" *ngIf="isPackage">
-                <span> <b>Package Object: </b> {{ selectedPackage?.id }} </span>
+                <span> <b>Package Object: </b> {{ selectedPackage?.id | packageName }} </span>
                 <span> <b>ID: </b> {{ selectedPackage?._id }}</span>
               </ng-container>
             </div>

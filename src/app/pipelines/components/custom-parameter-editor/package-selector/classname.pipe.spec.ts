@@ -1,9 +1,8 @@
-import { ClassNamePipe } from './classname.pipe';
-import { ClassNamePipe } from './classname.pipe';
+import { packageNamePipe } from './classname.pipe';
 
-describe('ClassnamePipe', () => {
+describe('packageNamePipe', () => {
   it('create an instance', () => {
-    const pipe = new ClassNamePipe();
+    const pipe = new packageNamePipe();
     expect(pipe).toBeTruthy();
   });
 });
