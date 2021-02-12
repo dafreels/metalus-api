@@ -140,13 +140,17 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedStep = $event;
     this.selectedPackage = null;
   }
-  
+
   selectPackage($event) {
-    this.selectedPackage = $event;
+    const pkg = $event;
+    if (pkg.template && typeof pkg.template === 'string') {
+      pkg.template = JSON.parse(pkg.template);
+    }
+    this.selectedPackage = pkg;
     this.selectedStep = null;
     this._selectedParam = null;
   }
-  
+
   selectParam($event){
     this.selectedParam = $event;
   }

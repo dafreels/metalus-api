@@ -9,7 +9,11 @@ import { PackageObject, PackageObjectResponse, PackageObjectsResponse } from './
 })
 export class PackageObjectsService {
   updatePackageTemplate(selectedPackage: PackageObject, template:any) {
-    return this.http.put<PackageObjectsResponse>(`/api/v1/package-objects/${selectedPackage.id}`,{...selectedPackage, template}, { observe: 'response' })
+    let templateBody = template;
+    if (typeof template !== 'string') {
+      templateBody = JSON.stringify(template);
+    }
+    return this.http.put<PackageObjectsResponse>(`/api/v1/package-objects/${selectedPackage.id}`,{...selectedPackage, template: templateBody}, { observe: 'response' })
     .pipe(
       map(response => {
         if (response && response.body) {
