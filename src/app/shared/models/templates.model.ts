@@ -1,7 +1,16 @@
 export interface Template {
   id: string;
   name: string;
-  dependencies?: string[];
+  group: string;
+  version: string;
+  sparkVersion: string;
+  dependencies?: TemplateDependency[];
+}
+
+export interface TemplateDependency {
+  group: string;
+  version: string;
+  sparkVersion: string;
 }
 
 export interface GetTemplatesResponse {

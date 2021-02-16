@@ -16,6 +16,7 @@ import {NavToolbarComponent} from "./components/nav-toolbar/nav-toolbar.componen
 import { LogOutComponent } from './components/log-out/log-out.component';
 import {HelpComponent} from "./components/help/help.component";
 import {NewProjectDialogComponent} from "./components/profile/new-project/new-project.component";
+import {ProjectTemplatesComponent} from "./components/profile/project-templates/project-templates.component";
 
 @NgModule({
   imports: [
@@ -33,6 +34,7 @@ import {NewProjectDialogComponent} from "./components/profile/new-project/new-pr
     NewProjectDialogComponent,
     PageNotFoundComponent,
     ProfileComponent,
+    ProjectTemplatesComponent,
     UploadComponent,
     UsersComponent,
     UserMenuComponent,

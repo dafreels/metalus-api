@@ -137,7 +137,6 @@ module.exports = function (router) {
 
       let metaDataUpload = updateUser.metaDataLoad;
       delete updateUser.metaDataLoad;
-      const newuser = await userModel.update(updateUser.id, updateUser);
       // Determine if any templates were selected and load the data
       if (metaDataUpload) {
         const templatesDir = getTemplatesDir(req);
@@ -162,6 +161,7 @@ module.exports = function (router) {
           }
         }
       }
+      const newuser = await userModel.update(updateUser.id, updateUser);
       res.status(200).json(newuser);
     } catch (err) {
       if (err instanceof ValidationError) {

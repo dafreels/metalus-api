@@ -48,6 +48,12 @@
                 "type": "string",
                 "minLength": 4
               },
+              "preloadedLibraries": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
               "uploadHistory": {
                 "type": "array",
                 "items": {

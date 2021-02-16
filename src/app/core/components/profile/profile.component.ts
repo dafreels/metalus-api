@@ -93,7 +93,8 @@ export class ProfileComponent implements OnInit {
         const newProjectId = `${max + 1}`;
         user.projects.push({
           id: newProjectId,
-          displayName: name
+          displayName: name,
+          preloadedLibraries: result.selectedTemplates,
         });
         if (result.selectedTemplates && result.selectedTemplates.length > 0) {
           user.metaDataLoad = {

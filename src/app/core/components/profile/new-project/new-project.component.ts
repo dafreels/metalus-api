@@ -1,7 +1,6 @@
-import {Component, OnInit} from "@angular/core";
+import {Component} from "@angular/core";
 import {MatDialogRef} from "@angular/material/dialog";
 import {Template} from "../../../../shared/models/templates.model";
-import {TemplatesService} from "../../../../shared/services/templates.service";
 
 export interface TemplateState extends Template {
   checked?: boolean;
@@ -10,12 +9,11 @@ export interface TemplateState extends Template {
 @Component({
   templateUrl: './new-project.component.html',
 })
-export class NewProjectDialogComponent implements OnInit {
-  templates: TemplateState[];
+export class NewProjectDialogComponent {
   name: string = '';
+  selectedTemplates: string[];
 
-  constructor(public dialogRef: MatDialogRef<NewProjectDialogComponent>,
-              private templatesService: TemplatesService) {}
+  constructor(public dialogRef: MatDialogRef<NewProjectDialogComponent>) {}
 
   closeDialog(): void {
     this.dialogRef.close();
@@ -24,11 +22,11 @@ export class NewProjectDialogComponent implements OnInit {
   saveDialog() {
     this.dialogRef.close({
       name: this.name,
-      selectedTemplates: this.templates.filter(t => t.checked).map(t => t.id),
+      selectedTemplates: this.selectedTemplates,
     });
   }
 
-  ngOnInit(): void {
-    this.templatesService.getTemplates().subscribe(data => this.templates = data);
+  setSelectedTemplates($event: string[]) {
+    this.selectedTemplates = $event;
   }
 }

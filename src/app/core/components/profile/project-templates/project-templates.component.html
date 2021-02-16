@@ -1,0 +1,22 @@
+<div mat-dialog-content class="message">
+  <h3 mat-dialog-title>Preload Step Libraries</h3>
+  <mat-form-field>
+    <mat-label>Metalus Version:</mat-label>
+    <mat-select required [(ngModel)]="selectedVersion">
+      <mat-option *ngFor="let version of versions" [value]="version">{{version}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Spark Version:</mat-label>
+    <mat-select required [(ngModel)]="selectedSparkVersion">
+      <mat-option *ngFor="let version of sparkVersions" [value]="version">{{version}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <ul>
+    <li *ngFor="let template of templates">
+      <mat-checkbox [(ngModel)]="template.checked" [disabled]="template.disabled || (selectedVersion === '' || selectedSparkVersion === '')" (change)="templatedClicked()">
+        {{template.name}}
+      </mat-checkbox>
+    </li>
+  </ul>
+</div>

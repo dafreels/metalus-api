@@ -1,3 +1,7 @@
 {
-  "name": "Metalus Common Spark 3.0 Version 1.8.0"
+  "name": "Metalus Common",
+  "group": "metalus-common",
+  "version": "1.8.0",
+  "sparkVersion": "3.0",
+  "metalusVersion": "1.8.0"
 }
