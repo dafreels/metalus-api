@@ -17,6 +17,7 @@ import { LogOutComponent } from './components/log-out/log-out.component';
 import {HelpComponent} from "./components/help/help.component";
 import {NewProjectDialogComponent} from "./components/profile/new-project/new-project.component";
 import {ProjectTemplatesComponent} from "./components/profile/project-templates/project-templates.component";
+import {ProjectTemplatesDialogComponent} from "./components/profile/project-templates/project-templates-dialog.component";
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import {ProjectTemplatesComponent} from "./components/profile/project-templates/
     PageNotFoundComponent,
     ProfileComponent,
     ProjectTemplatesComponent,
+    ProjectTemplatesDialogComponent,
     UploadComponent,
     UsersComponent,
     UserMenuComponent,
@@ -46,6 +48,7 @@ import {ProjectTemplatesComponent} from "./components/profile/project-templates/
     HelpComponent,
     LogOutComponent,
     NewProjectDialogComponent,
+    ProjectTemplatesDialogComponent,
     UsersModalComponent
   ],
   exports: [

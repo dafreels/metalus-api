@@ -1,0 +1,6 @@
+<project-templates (selectedTemplates)="setSelectedTemplates($event)"
+                   [preloadedLibraries]="preloadedLibraries"></project-templates>
+<mat-dialog-actions align = "end">
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-button (click)="saveDialog()" cdkFocusInitial>Ok</button>
+</mat-dialog-actions>

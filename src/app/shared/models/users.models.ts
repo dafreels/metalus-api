@@ -16,6 +16,7 @@ export enum Role {
 export interface Project {
   id: string;
   displayName: string;
+  preloadedLibraries?: string[];
 }
 
 export interface ChangePassword {

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {TemplatesService} from "../../../../shared/services/templates.service";
 import {Template} from "../../../../shared/models/templates.model";
 
@@ -7,6 +7,7 @@ export interface TemplateState {
   disabled?: boolean;
   name: string;
   group: string;
+  lockedStatus: boolean;
 }
 
 @Component({
@@ -21,10 +22,27 @@ export class ProjectTemplatesComponent implements OnInit {
   selectedVersion = '';
   selectedSparkVersion = '';
   @Output() selectedTemplates = new EventEmitter<string[]>();
+  @Input() preloadedLibraries: string[] = [];
 
   constructor(private templatesService: TemplatesService) {}
 
   ngOnInit(): void {
+    let version = '';
+    let spark = '';
+    const groups = [];
+    if (this.preloadedLibraries && this.preloadedLibraries.length > 0) {
+      const temp = this.preloadedLibraries[0];
+      const index = temp.lastIndexOf('-');
+      version = temp.substring(index + 1);
+      spark = temp.substring(temp.indexOf('spark_') + 6, index);
+      let group;
+      this.preloadedLibraries.forEach(lib => {
+        group = lib.substring(0, lib.indexOf('_'));
+        if (groups.indexOf(group) === -1) {
+          groups.push(group);
+        }
+      });
+    }
     this.templatesService.getTemplates().subscribe(data => {
       this.fullTemplates = data;
       data.forEach(t => {
@@ -35,15 +53,19 @@ export class ProjectTemplatesComponent implements OnInit {
           this.versions.push(t.version);
         }
         if (this.templates.findIndex(template => template.group === t.group) === -1) {
+          const existing = groups.indexOf(t.group) !== -1;
           this.templates.push({
-            checked: false,
-            disabled: false,
+            checked: existing,
+            disabled: existing,
             group: t.group,
-            name: t.name
+            name: t.name,
+            lockedStatus: existing,
           });
         }
       })
     });
+    this.selectedSparkVersion = spark;
+    this.selectedVersion = version;
   }
 
   templatedClicked() {
@@ -57,7 +79,7 @@ export class ProjectTemplatesComponent implements OnInit {
       if (fullTemplate && fullTemplate.dependencies) {
         fullTemplate.dependencies.forEach(dep => {
           const dependentTemplate = this.templates.find(temp => temp.group === dep.group);
-          if (dependentTemplate) {
+          if (dependentTemplate && !dependentTemplate.lockedStatus) {
             dependentTemplate.disabled = template.checked;
             dependentTemplate.checked = true;
             libraryId = `${dependentTemplate.group}_${this.getScalaVersion(this.selectedSparkVersion)}-spark_${this.selectedSparkVersion}-${this.selectedVersion}`;
