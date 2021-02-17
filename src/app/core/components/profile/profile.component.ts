@@ -73,9 +73,11 @@ export class ProfileComponent implements OnInit {
         const user = JSON.parse(JSON.stringify(this.user));
         const projects = [];
         let selectedTemplates = [];
+        let libraries;
         user.projects.forEach(project => {
           if (project.id === projectId) {
-            selectedTemplates = templates.filter(t => project.preloadedLibraries.indexOf(t) === -1);
+            libraries = project.preloadedLibraries || [];
+            selectedTemplates = templates.filter(t => (libraries.indexOf(t) === -1);
             project.preloadedLibraries = templates;
           }
           projects.push(project);
