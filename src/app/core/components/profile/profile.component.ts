@@ -77,7 +77,7 @@ export class ProfileComponent implements OnInit {
         user.projects.forEach(project => {
           if (project.id === projectId) {
             libraries = project.preloadedLibraries || [];
-            selectedTemplates = templates.filter(t => (libraries.indexOf(t) === -1);
+            selectedTemplates = templates.filter(t => libraries.indexOf(t) === -1);
             project.preloadedLibraries = templates;
           }
           projects.push(project);
