@@ -65,7 +65,7 @@
                 color="primary"
                 style="margin-right: 5px"
                 (click)="saveStepParamTemplate()"
-                [disabled]="!templateChanged"
+                [disabled]="!templateChanged && !enableSave"
               >
                 Save
               </button>
@@ -100,6 +100,13 @@
         >
           Add Sample JSON Schema
         </button>
+        <button  (click)="exportTemplate()" color="primary" mat-button>Export</button>
+        <span class="uuidLableLeft"> 
+          <!-- <b>Do your want to import your previous file (.json)?</b>  -->
+          <input style="display: none" type="file" accept=".json" 
+               (change)="onFileLoad($event)" #fileinput>
+          <button mat-button color="primary" type="button" (click)="fileinput.click()"> Import (*.json) </button>
+        </span> 
         <ace
           [mode]="'json'"
           [theme]="'solarized_light'"
@@ -148,7 +155,8 @@
             </mat-expansion-panel>
           </mat-accordion>
           <div class="preview-form" *ngIf="isPackage && selectedPackage" >
-            <app-preview-parameter-editor [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
+            <h3 *ngIf="!canPreviewPackageTemplate">Please add the JSON schema and click preview to view the template here.</h3>
+            <app-preview-parameter-editor *ngIf="canPreviewPackageTemplate" [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
           </div>
         </mat-card-content>
       </mat-card>

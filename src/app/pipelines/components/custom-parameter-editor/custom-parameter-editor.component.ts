@@ -16,7 +16,7 @@ import {PipelinesService} from '../../services/pipelines.service';
 import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.component';
 import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-modal.component';
 import {HelpComponent} from "../../../core/components/help/help.component";
-
+// import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-custom-parameter-editor',
   templateUrl: './custom-parameter-editor.component.html',
@@ -35,7 +35,17 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   selectedPipeline: Pipeline;
   private _selectedStep:PipelineStep;
   showPreview:boolean = false;
-  selectedPackage: PackageObject;
+  _selectedPackage:PackageObject;
+  get selectedPackage() {
+    return this._selectedPackage;
+  }
+  set selectedPackage(packageObj) {
+    this._selectedPackage = packageObj;
+    this.sampleTemplate = {};
+    
+  }
+  // downloadJsonHref: SafeUrl;
+  enableSave:boolean = false;
   set selectedStep(step) {
     this._selectedStep = step;
     this.selectedParam = null;
@@ -151,6 +161,37 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this._selectedParam = null;
   }
 
+exportTemplate() {
+  const fileName = this.isStep ? `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json`:
+        `${this.selectedPackage.id.split('.').join('_')}.json`;
+  // let data = this.isStep ? this.stepTemplate:this.paramTemplate;
+  SharedFunctions.downloadAsFile(fileName,JSON.stringify(this.paramTemplate));
+}
+
+onFileLoad(event) {
+  const f = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = ((theFile) => {
+    return (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        this.paramTemplate = json;
+        if(this.isStep) {
+          this.stepTemplate[this.selectedParam.name] = json;
+        } else if(this.isPackage) {
+          this.selectedPackage.template = json;
+        }
+        this.enableSave  = true;
+      } catch (err) {
+      }
+    };
+  })(f);
+  reader.readAsText(f);
+}
+
+
+
   selectParam($event){
     this.selectedParam = $event;
   }
@@ -164,15 +205,11 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     }
   }
   set codeViewData(data) {
-    // if(!data){
-    //   this.canAddSampleJSON = true;
-    // }
     try {
       if(this.selectedStep) {
         this.paramTemplate = JSON.parse(data);
       } else if(this.selectedPackage) {
         this.paramTemplate = JSON.parse(data);
-        // this.selectedPackage.template = JSON.parse(data);
       }
     } catch(err) {
     }
@@ -212,10 +249,10 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
       width: '25%',
       height: '25%',
     });
-    // this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
     this.packageObjectsService.updatePackageTemplate(this.selectedPackage, this.paramTemplate).subscribe(() => {
       dialogRef.close();
       this.selectedPackage.template = this.paramTemplate;
+      this.enableSave = false;
     },
     (error) => this.handleError(error, dialogRef)
     )
@@ -305,5 +342,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     } else if(this.isStep) {
       return !!(this.stepTemplate && this.selectedParam);
     }
+  }
+  
+  get canPreviewPackageTemplate(){
+    return this.selectedPackage.template || (JSON.stringify(this.paramTemplate)!='{}' && this.showPreview);
   }
 }
