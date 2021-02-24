@@ -44,7 +44,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.sampleTemplate = {};
     
   }
-  // downloadJsonHref: SafeUrl;
   enableSave:boolean = false;
   set selectedStep(step) {
     this._selectedStep = step;
@@ -164,7 +163,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
 exportTemplate() {
   const fileName = this.isStep ? `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json`:
         `${this.selectedPackage.id.split('.').join('_')}.json`;
-  // let data = this.isStep ? this.stepTemplate:this.paramTemplate;
   SharedFunctions.downloadAsFile(fileName,JSON.stringify(this.paramTemplate));
 }
 
@@ -320,14 +318,8 @@ onFileLoad(event) {
   get isPackage(){
     return this.stepOrPackageSlection === 'Package';
   }
-  // private _canAddSampleJSON:boolean = false;
-  // set canAddSampleJSON(show:boolean){
-  //   // this._canAddSampleJSON = show;
-  // }
+ 
   get canAddSampleJSON() {
-    // if(this._canAddSampleJSON) {
-    //   return true;
-    // }
     if(this.isPackage && this.selectedPackage) {
       return !this.selectedPackage.template;
     }

@@ -19,7 +19,7 @@
         <mat-card>
           <mat-card-content class="header-content">
             <div class="step-data">
-              <mat-form-field class="dropdown" appearance="fill">
+              <mat-form-field class="dropdown">
                 <mat-label>Select Type</mat-label>
                 <mat-select
                   #field
@@ -102,7 +102,6 @@
         </button>
         <button  (click)="exportTemplate()" color="primary" mat-button>Export</button>
         <span class="uuidLableLeft"> 
-          <!-- <b>Do your want to import your previous file (.json)?</b>  -->
           <input style="display: none" type="file" accept=".json" 
                (change)="onFileLoad($event)" #fileinput>
           <button mat-button color="primary" type="button" (click)="fileinput.click()"> Import (*.json) </button>
@@ -155,7 +154,7 @@
             </mat-expansion-panel>
           </mat-accordion>
           <div class="preview-form" *ngIf="isPackage && selectedPackage" >
-            <h3 *ngIf="!canPreviewPackageTemplate">Please add the JSON schema and click preview to view the template here.</h3>
+            <h3 *ngIf="!canPreviewPackageTemplate" class="Empty">Please add the JSON schema and click preview to view the template here.</h3>
             <app-preview-parameter-editor *ngIf="canPreviewPackageTemplate" [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
           </div>
         </mat-card-content>
