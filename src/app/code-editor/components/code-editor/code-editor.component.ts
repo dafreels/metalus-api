@@ -39,7 +39,6 @@ export class CodeEditorComponent {
       return (e) => {
         try {
           let importedJSON = JSON.parse(e.target.result);
-          // delete importedJSON.id;
           this.data.code = JSON.stringify(importedJSON,null,4);
         } catch (err) {
         }
