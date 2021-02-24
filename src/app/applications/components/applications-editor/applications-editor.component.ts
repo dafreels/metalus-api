@@ -440,9 +440,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   importApplication() {
     const importApplicationDialogData = {
-      code: JSON.stringify(this.generateApplication(), null, 4),
+      code: '', //JSON.stringify(this.generateApplication(), null, 4),
       language: 'json',
-      allowSave: false,
+      allowSave: true,
     };
     const importDialog = this.displayDialogService.openDialog(
       CodeEditorComponent,
@@ -476,10 +476,12 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   exportApplication() {
+    const application = this.generateApplication();
     const exportApplicationDialogData = {
-      code: JSON.stringify(this.generateApplication(), null, 4),
+      code: JSON.stringify(application, null, 4),
       language: 'json',
       allowSave: false,
+      exportFileName:`${application.name}-${application.id}.json`
     };
     this.displayDialogService.openDialog(
       CodeEditorComponent,

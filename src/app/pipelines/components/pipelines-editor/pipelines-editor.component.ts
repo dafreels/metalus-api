@@ -410,6 +410,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         code: JSON.stringify(pipeline, null, 4),
         language: 'json',
         allowSave: false,
+        exportFileName: `${pipeline.name}-${pipeline.id}.json`
       },
     });
   }
