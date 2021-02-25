@@ -9,6 +9,11 @@
           <mat-option value="sql">SQL</mat-option>
         </mat-select>
       </mat-form-field>
+      <span class="uuidLableLeft" *ngIf="data.allowSave"> 
+        <input style="display: none" type="file" accept=".json" 
+             (change)="onFileLoad($event)" #fileinput>
+        <button mat-button color="primary" type="button" (click)="fileinput.click()"> Import </button>
+      </span> 
     </div>
 <div class="code-div">
   <ace
@@ -19,6 +24,12 @@
 </div>
 <div mat-dialog-actions class="code-button-div">
   <button mat-raised-button mat-dialog-close>Close</button>
+  <button mat-raised-button  
+    *ngIf="data.exportFileName"
+    color="primary"
+    (click)="exportTemplate()"> 
+    Export 
+  </button>
   <button
     *ngIf="data.allowSave"
     mat-raised-button

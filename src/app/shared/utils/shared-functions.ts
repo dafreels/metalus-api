@@ -141,4 +141,14 @@ export class SharedFunctions {
   static clone(data: any) {
     return JSON.parse(JSON.stringify(data));
   }
+  static downloadAsFile(fileName:string,data:string){
+    const downloadEl = document.createElement('a');
+    const fileType = fileName.indexOf('.json') > -1 ? 'text/json' : 'text/plain';
+    downloadEl.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(data)}`);
+    downloadEl.setAttribute('download', fileName);
+    var event = new MouseEvent("click");
+    downloadEl.dispatchEvent(event);
+   }
 }
+const sharedFunctions = new SharedFunctions();
+export default sharedFunctions;
