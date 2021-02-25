@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "providers.json",
+  "$ref": "#/definitions/providers",
+  "definitions": {
+    "providers": {
+      "required": [
+        "id",
+        "name",
+        "description",
+        "providerTypeId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "providerTypeId": {
+          "type": "string"
+        },
+        "providerInstance": {
+          "$ref": "providers.json#/definitions/ProviderInstance"
+        }
+      }
+    },
+    "ProviderInstance": {
+      "type": "object",
+      "properties": {
+        "credentials": {
+          "oneOf": [
+            {
+              "$ref": "providers.json#/definitions/DatabricksCredential"
+            }
+          ]
+        }
+      }
+    },
+    "DatabricksProviderInstance": {
+      "allOf": [
+        {
+          "$ref": "providers.json#/definitions/ProviderInstance"
+        },
+        {
+          "type": "object",
+          "required": [
+            "instanceURL",
+            "credentials"
+          ],
+          "properties": {
+            "instanceURL": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "DatabricksCredential": {
+      "type": "object",
+      "properties": {
+        "apiToken": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

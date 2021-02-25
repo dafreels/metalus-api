@@ -10,8 +10,10 @@ import {AuthGuardService} from "./shared/services/auth-gaurd.service";
 import {ProfileComponent} from "./core/components/profile/profile.component";
 import {UsersComponent} from "./core/components/users/users.component";
 import {UploadComponent} from "./core/components/upload/upload.component";
-import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard';
-import { CustomParameterEditorComponent } from './pipelines/components/custom-parameter-editor/custom-parameter-editor.component';
+import {ConfirmDeactivateGuard} from './shared/guards/confirm-deactivate.guard';
+import {CustomParameterEditorComponent} from './pipelines/components/custom-parameter-editor/custom-parameter-editor.component';
+import {JobsComponent} from "./jobs/components/jobs/jobs.component";
+import {ProvidersComponent} from "./jobs/components/providers/providers.component";
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, canDeactivate:[ConfirmDeactivateGuard]},
@@ -19,6 +21,10 @@ const appRoutes: Routes = [
     data :{ page:"landing", title:"Home"}},
   {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService],
     data :{ page:"applications-editor", title:"Applications Editor"}},
+  {path: 'jobs', component: JobsComponent, canActivate: [AuthGuardService],
+    data :{ page:"jobs", title:"Jobs"}},
+  {path: 'providers', component: ProvidersComponent, canActivate: [AuthGuardService],
+    data :{ page:"providers", title:"Providers"}},
   {path: 'parameter-editor', component: CustomParameterEditorComponent, canActivate: [AuthGuardService],
     data :{ page:"parameter-editor", title:"Parameter Editor"}},
   {path: 'steps-editor', component: StepsEditorComponent, canActivate: [AuthGuardService]},

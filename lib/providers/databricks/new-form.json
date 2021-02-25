@@ -1,0 +1,30 @@
+[
+  {
+    "type": "input",
+    "key": "name",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "description",
+    "templateOptions": {
+      "label": "Description"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.instanceURL",
+    "templateOptions": {
+      "label": "Instance URL"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.apiToken",
+    "templateOptions": {
+      "label": "API Token"
+    }
+  }
+]

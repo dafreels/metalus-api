@@ -1,0 +1,65 @@
+<div>
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <div class="mt-2">
+          <mat-card-title>Clusters</mat-card-title>
+          <mat-table [dataSource]="clusters" class="mat-elevation-z2">
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef> Id</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="state">
+              <mat-header-cell *matHeaderCellDef> State</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.state}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="source">
+              <mat-header-cell *matHeaderCellDef> Source</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.source}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="providerName">
+              <mat-header-cell *matHeaderCellDef> Provider</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.providerName}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="version">
+              <mat-header-cell *matHeaderCellDef> Version</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.version}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="startTime">
+              <mat-header-cell *matHeaderCellDef> Start Time</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.startTime | date : 'HH:mm:ss.SSS': 'UTC'}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="terminationTime">
+              <mat-header-cell *matHeaderCellDef> Termination Time</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.terminationTime | date : 'HH:mm:ss.SSS': 'UTC'}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef> Actions</mat-header-cell>
+              <mat-cell *matCellDef="let cluster">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Navigation">
+                  <mat-icon>more_horiz</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+<!--                  <a mat-menu-item (click)="refreshState(cluster.id)">-->
+<!--                    <mat-icon color="primary">refresh</mat-icon>-->
+<!--                    <span class="spacer">Refresh</span>-->
+<!--                  </a>-->
+                  <a mat-menu-item (click)="removeEngine(cluster.id)">
+                    <mat-icon color="primary">cancel</mat-icon>
+                    <span class="spacer">Terminate</span>
+                  </a>
+                </mat-menu>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

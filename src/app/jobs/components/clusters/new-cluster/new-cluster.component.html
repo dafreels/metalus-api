@@ -1,0 +1,16 @@
+<form [formGroup]="form">
+  <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
+</form>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="saveDialog()"
+    style="margin-right: 5px">
+    Save
+  </button>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,22 @@
+<mat-list-item class="provider-list-item" *ngFor="let provider of providers" matTooltip="{{provider.description}}"
+               matTooltipPosition="right"
+               (click)="handleProviderSelection(provider)">
+  <div class="provider-list-container" [matTooltip]="provider.description">
+    <mat-icon color="primary">{{getProviderIcon(provider)}}</mat-icon>
+    <span class="provider-list-text">{{provider.name}}
+      <button mat-icon-button [matMenuTriggerFor]="menu" color="primary" aria-label="Navigation">
+        <mat-icon>more_horiz</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <a mat-menu-item (click)="addCluster(provider.id)">
+          <mat-icon color="primary">add</mat-icon>
+          <span class="spacer">New</span>
+        </a>
+        <a mat-menu-item (click)="removeProvider(provider.id)">
+          <mat-icon color="primary">cancel</mat-icon>
+          <span class="spacer">Delete</span>
+        </a>
+      </mat-menu>
+    </span>
+  </div>
+</mat-list-item>

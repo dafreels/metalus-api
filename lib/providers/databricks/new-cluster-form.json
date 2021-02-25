@@ -1,0 +1,69 @@
+[
+  {
+    "type": "input",
+    "key": "cluster_name",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "spark_version",
+    "templateOptions": {
+      "label": "Version",
+      "options": [
+        { "id": "7.3.x-scala2.12", "name": "7.3.x-scala2.12" },
+        { "id": "6.4.x-scala2.11", "name": "6.4.x-scala2.11" }
+      ],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "node_type_id",
+    "templateOptions": {
+      "label": "Executor Node Type",
+      "options": [
+        { "id": "7.3.x-scala2.12", "name": "7.3.x-scala2.12" },
+        { "id": "6.4.x-scala2.11", "name": "6.4.x-scala2.11" }
+      ],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "driver_node_type_id",
+    "templateOptions": {
+      "label": "Driver Node Type",
+      "options": [
+        { "id": "7.3.x-scala2.12", "name": "7.3.x-scala2.12" },
+        { "id": "6.4.x-scala2.11", "name": "6.4.x-scala2.11" }
+      ],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "autoscale.minWorkers",
+    "templateOptions": {
+      "label": "Min. Workers"
+    }
+  },
+  {
+    "type": "input",
+    "key": "autoscalee.maxWorkers",
+    "templateOptions": {
+      "label": "Max. Workers"
+    }
+  },
+  {
+    "type": "input",
+    "key": "credentials.apiToken",
+    "templateOptions": {
+      "label": "API Token"
+    }
+  }
+]

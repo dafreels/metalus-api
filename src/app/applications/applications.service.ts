@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Application, ApplicationResponse, ApplicationsResponse} from './applications.model';
 import {Observable, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {Pipeline, PipelineResponse} from "../pipelines/models/pipelines.model";
 
 @Injectable({
   providedIn: 'root',

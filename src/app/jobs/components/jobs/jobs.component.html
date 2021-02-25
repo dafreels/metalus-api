@@ -1,0 +1,75 @@
+<div>
+  <nav-toolbar>
+    <span>
+      <button mat-raised-button color="primary" style="margin-right: 5px;" matTooltip="Run a Job">Run</button>
+    </span>
+  </nav-toolbar>
+  <!-- Jobs Page -->
+  <div>
+    <mat-card>
+      <mat-card-content>
+        <div class="mt-2">
+          <mat-card-title>Jobs</mat-card-title>
+          <mat-table [dataSource]="jobs" class="mat-elevation-z2">
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef> Id</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.id}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="appName">
+              <mat-header-cell *matHeaderCellDef> Application Name</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.applicationName}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="providerName">
+              <mat-header-cell *matHeaderCellDef> Provider</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.provider.name}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef> Status</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.status}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="type">
+              <mat-header-cell *matHeaderCellDef> Type</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.jobType}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="start">
+              <mat-header-cell *matHeaderCellDef> Start</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.startTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC'}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="end">
+              <mat-header-cell *matHeaderCellDef> End</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.endTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC'}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="duration">
+              <mat-header-cell *matHeaderCellDef> Duration</mat-header-cell>
+              <mat-cell *matCellDef="let job">{{job.job.executionDuration | date : 'HH:mm:ss.SSS': 'UTC' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef> Actions</mat-header-cell>
+              <mat-cell *matCellDef="let job">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Navigation">
+                  <mat-icon>more_horiz</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <a mat-menu-item>
+                    <mat-icon color="primary">cancel</mat-icon>
+                    <span class="spacer">Cancel</span>
+                  </a>
+                  <a mat-menu-item>
+                    <mat-icon color="primary">refresh</mat-icon>
+                    <span class="spacer">Refresh</span>
+                  </a>
+                </mat-menu>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

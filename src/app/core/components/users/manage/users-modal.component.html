@@ -4,8 +4,8 @@
     <input matInput placeholder="Username" [(ngModel)]="data.username" required>
   </mat-form-field>
   <span class="label password">Password</span>
-  <mat-form-field class="passwordInput">
-    <input matInput type="password" placeholder="Password" [(ngModel)]="data.password" required>
+  <mat-form-field class="passwordInput" >
+    <input [disabled]="data.id === undefined" matInput type="password" placeholder="Password" [(ngModel)]="data.password" required>
   </mat-form-field>
   <span class="label displayName">Display Name</span>
   <mat-form-field class="displayNameInput">

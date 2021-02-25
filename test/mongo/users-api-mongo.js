@@ -11,6 +11,7 @@ const TestHelpers = require('../helpers/TestHelpers');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const mUtils = require('../../lib/metalus-utils');
+const UsersModel = require('../../models/users.model');
 
 describe('Users API Mongo Tests', () => {
   let app;
@@ -129,7 +130,12 @@ describe('Users API Mongo Tests', () => {
       .expect(201);
     const resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp).to.have.property('id');
+    expect(resp).to.have.property('id').eq('mock-dev-user');
+    expect(resp).to.not.have.property('secretKey');
+    // Validate the secretKey was saved to the data store
+    const userModel = new UsersModel();
+    const user = await userModel.getUser(resp.id);
+    expect(user).to.have.property('secretKey');
   });
 
   it('Should get all users', async () => {
@@ -143,38 +149,42 @@ describe('Users API Mongo Tests', () => {
     expect(resp).to.exist;
     expect(resp).to.have.property('users').lengthOf(2);
     expect(resp.users.find(user => user.username === 'dev')).to.exist;
+    expect(resp.users.find(user => user.username === 'dev')).to.not.have.property('secretKey');
     expect(resp.users.find(user => user.username === 'admin')).to.exist;
+    expect(resp.users.find(user => user.username === 'admin')).to.not.have.property('secretKey');
   });
 
   it('Should change user password', async () => {
-    const userInfo = await TestHelpers.authUser(request(mock), state);
-    let response = await request(mock)
-      .get('/api/v1/users/')
-      .set('Cookie', [userInfo])
-      .expect('Content-Type', /json/)
-      .expect(200);
-    let resp = JSON.parse(response.text);
-    expect(resp).to.exist;
-    expect(resp).to.have.property('users').lengthOf(2);
-    const user = resp.users.find(user => user.username === 'dev');
+    const userInfo = await TestHelpers.authUser(request(mock), {}, 'dev', 'dev');
+    const userModel = new UsersModel();
+    // Get the secretKey from the database how it is stored and decrypt
+    let dbUser = await userModel.getUser('mock-dev-user');
+    const dbSecretKey = mUtils.decryptString(dbUser.secretKey, mUtils.createSecretKeyFromString('dev'));
     const changePassword = {
-      id: user.id,
-      password: user.password,
+      id: 'mock-dev-user',
+      password: 'dev',
       newPassword: 'newdevpassword',
       verifyNewpassword: 'newdevpassword'
     };
-    response = await request(mock)
-      .put(`/api/v1/users/${user.id}/changePassword`)
+    const response = await request(mock)
+      .put('/api/v1/users/mock-dev-user/changePassword')
       .send(changePassword)
       .set('Cookie', [userInfo])
       .expect('Content-Type', /json/)
       .expect(200);
-    resp = JSON.parse(response.text);
+    const resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(bcrypt.compareSync(changePassword.newPassword, resp.password)).to.equal(true);
+    expect(resp).to.not.have.property('secretKey');
+    // Validate the secretKey was saved to the data store
+    user = await userModel.getUser(resp.id);
+    expect(user).to.have.property('secretKey');
+    const updatedKey = mUtils.decryptString(user.secretKey, mUtils.createSecretKeyFromString('newdevpassword'));
+    expect(dbSecretKey).eq(updatedKey);
   });
 
   it('Should change user', async () => {
+    delete state.authCookie;
     const userInfo = await TestHelpers.authUser(request(mock), state);
     let response = await request(mock)
       .get('/api/v1/users/')
@@ -287,7 +297,6 @@ describe('Users API Mongo Tests', () => {
        .set('Cookie', [userInfo])
        .expect(500);
   });
-
 
   it('Should fail to upload a jar file to the wrong user', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);
@@ -415,7 +424,6 @@ describe('Users API Mongo Tests', () => {
        .set('Cookie', [userInfo])
        .expect(500);
   });
-
 
   it('Should delete user project', async () => {
     const userInfo = await TestHelpers.authUser(request(mock), state);

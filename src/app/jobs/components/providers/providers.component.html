@@ -1,0 +1,32 @@
+<div>
+  <nav-toolbar>
+
+  </nav-toolbar>
+  <!-- Providers List -->
+  <div class="providers-layout">
+    <div class="providers-editor-sidebar">
+      <mat-card>
+        <mat-card-content>
+          <div>
+            <span>
+              <button mat-raised-button color="primary" style="margin-right: 5px;" matTooltip="Create Provider Instance"
+                      (click)="addProvider()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </span>
+            <mat-action-list>
+              <providers-list-item [providers]="providers"
+                                   (providerSelection)="handleProviderSelection($event)"
+                                   (removeProviderEmit)="removeProvider($event)"
+              (newClusterEmit)="newCluster($event)"></providers-list-item>
+            </mat-action-list>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <!-- Engines -->
+    <div class="cluster-content">
+      <provider-clusters [providerSubject]="providerSubject" [providerTypes]="providerTypes"></provider-clusters>
+    </div>
+  </div>
+</div>

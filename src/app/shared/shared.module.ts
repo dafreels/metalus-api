@@ -18,12 +18,12 @@ import {PasswordDialogComponent} from "./components/password-dialog/password-dia
 import {MatTreeModule} from '@angular/material/tree';
 import { ACE_CONFIG, AceConfigInterface, AceModule } from 'ngx-ace-wrapper';
 import { PreviewParameterEditorComponent } from './components/preview-parameter-editor/preview-parameter-editor.component';
-import { TreeEditorComponent } from '../shared/components/tree-editor/tree-editor.component'
-import { TreeEditorPopupComponent } from '../shared/components/tree-editor/tree-editor-popup.component';
-import { TreeonloadDirective } from '../shared/components/tree-editor/treeonload.directive';
-import { IsGenericType } from '../shared/components/tree-editor/type-formatter.pipe';
-import { PromptComponent } from '../shared/components/tree-editor/prompt/prompt.component';
-import { TreeDatabase } from '../shared/components/tree-editor/tree.service';
+import { TreeEditorComponent } from './components/tree-editor/tree-editor.component'
+import { TreeEditorPopupComponent } from './components/tree-editor/tree-editor-popup.component';
+import { TreeonloadDirective } from './components/tree-editor/treeonload.directive';
+import { IsGenericType } from './components/tree-editor/type-formatter.pipe';
+import { PromptComponent } from './components/tree-editor/prompt/prompt.component';
+import { TreeDatabase } from './components/tree-editor/tree.service';
 import { ScalaScriptComponent } from './scala-script/scala-script.component';
 import { PipelineParameterComponent } from '../pipelines/components/pipeline-parameter/pipeline-parameter.component';
 import { ParameterEditorComponent } from './scala-script/parameter-editor/parameter-editor.component';

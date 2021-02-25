@@ -1,6 +1,7 @@
 const UsersModel = require('../../../models/users.model');
 const StepsModel = require('../../../models/steps.model');
 const PkgObjsModel = require('../../../models/package-objects.model');
+const ProvidersModel = require('../../../models/providers.model');
 const AppsModel = require('../../../models/applications.model');
 const PipelinesModel = require('../../../models/pipelines.model');
 const passport = require('passport');
@@ -27,7 +28,10 @@ module.exports = function (router) {
         if (error) {
           return next(error);
         }
-        return res.json(user);
+        // Make sure to remove the secret key before ending it back.
+        const loginUser = mUtils.clone(user);
+        delete loginUser.secretKey;
+        return res.json(loginUser);
       });
     })(req, res, next);
   });
@@ -62,7 +66,10 @@ module.exports = function (router) {
     const userModel = new UsersModel();
     const users = await userModel.getAll();
     if (users && users.length > 0) {
-      res.status(200).json({users});
+      res.status(200).json({users: users.map(u => {
+          delete u.secretKey;
+          return u;
+        })});
     } else {
       res.sendStatus(204);
     }
@@ -83,9 +90,13 @@ module.exports = function (router) {
         next(new Error('User already exists!'));
       }
       try {
+        // Create an encryption key
+        const key = mUtils.generateSecretKey();
+        newUser.secretKey = mUtils.encryptString(key, mUtils.createSecretKeyFromString(newUser.password));
         // hash the password
         newUser.password = bcrypt.hashSync(newUser.password, 8);
         const fullUser = await userModel.createOne(newUser);
+        delete fullUser.secretKey;
         res.status(201).json(fullUser);
       } catch (err) {
         if (err instanceof ValidationError) {
@@ -101,17 +112,21 @@ module.exports = function (router) {
     const changePassword = req.body;
     const userModel = new UsersModel();
     const user = await req.user;
-    if (changePassword.id !== user.id && user.role !== 'admin') {
+    if (changePassword.id !== user.id) {
       next(new Error('User does not have permission to change password for different user!'));
     }
     // Verify the provided password matches the password on file
     const updateUser = await userModel.getUser(changePassword.id);
-    if (user.role !== 'admin' && !bcrypt.compareSync(changePassword.password, updateUser.password)) {
+    if (!bcrypt.compareSync(changePassword.password, updateUser.password)) {
       next(new Error('Invalid password provided!'));
     }
     // Change password and return new user
     updateUser.password = bcrypt.hashSync(changePassword.newPassword, 8);
+    // Re-encrypt the secretKey
+    const secretKey = mUtils.decryptString(updateUser.secretKey, mUtils.createSecretKeyFromString(changePassword.password));
+    updateUser.secretKey = mUtils.encryptString(secretKey, mUtils.createSecretKeyFromString(changePassword.newPassword));
     const newuser = await userModel.update(updateUser.id, updateUser);
+    delete newuser.secretKey;
     res.status(200).json(newuser);
   });
 
@@ -124,16 +139,8 @@ module.exports = function (router) {
     }
     const existingUser = await userModel.getUser(updateUser.id);
     try {
-      if (user.role === 'admin' &&
-        updateUser.password &&
-        updateUser.password.trim().length > 0 &&
-        !bcrypt.compareSync(updateUser.password, existingUser.password) &&
-        updateUser.password !== existingUser.password) {
-        updateUser.password = bcrypt.hashSync(updateUser.password, 8);
-      } else {
-        // Password cannot be changed using this method
-        updateUser.password = existingUser.password;
-      }
+      // Password cannot be changed using this method
+      updateUser.password = existingUser.password;
 
       let metaDataUpload = updateUser.metaDataLoad;
       delete updateUser.metaDataLoad;
@@ -162,6 +169,7 @@ module.exports = function (router) {
         }
       }
       const newuser = await userModel.update(updateUser.id, updateUser);
+      delete newuser.secretKey;
       res.status(200).json(newuser);
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -184,7 +192,8 @@ module.exports = function (router) {
     const index = updateUser.projects.findIndex(p => p.id === projectId);
     updateUser.projects.splice(index, 1);
     const newuser = await userModel.update(updateUser.id, updateUser);
-    await deleteProjectData(userId, projectId, `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`);
+    await deleteProjectData(userId, projectId, `${mUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`);
+    delete newuser.secretKey;
     res.status(200).json(newuser);
   });
 
@@ -197,7 +206,7 @@ module.exports = function (router) {
     }
     const existingUser = await userModel.getUser(userId);
     for await (const project of existingUser.projects) {
-      await deleteProjectData(userId, project.id, `${getProjectJarsBaseDir(req)}/${userId}`);
+      await deleteProjectData(userId, project.id, `${mUtils.getProjectJarsBaseDir(req)}/${userId}`);
     }
     await userModel.delete(userId);
     res.sendStatus(204);
@@ -210,7 +219,7 @@ module.exports = function (router) {
     if (userId !== user.id) {
       next(new Error('User does not have permission to retrieve files for different user!'));
     }
-    const userJarDir = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
+    const userJarDir = `${mUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
     let exists;
     try {
       const stats = await mUtils.stat(userJarDir);
@@ -255,7 +264,7 @@ module.exports = function (router) {
     }
 
     if(!errors) {
-      const userJarDir = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
+      const userJarDir = `${mUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
       await mUtils.mkdir(userJarDir, {recursive: true});
       const options = {
         uploadDir: userJarDir
@@ -295,7 +304,7 @@ module.exports = function (router) {
     if (userId !== user.id) {
       next(new Error('User does not have permission to delete files for different user!'));
     } else {
-      const filePath = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}/${fileName}`;
+      const filePath = `${mUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}/${fileName}`;
       let exists;
       try {
         const stats = await mUtils.stat(filePath);
@@ -324,12 +333,14 @@ module.exports = function (router) {
     if (userId !== user.id) {
       next(new Error('User does not have permission to process files for different user!'));
     }
+    // TODO Create a json file that contains the repos, jarFiles and remoteJars for job processing
     const userModel = new UsersModel();
     const projectUser = await userModel.getUser(userId);
     if (!bcrypt.compareSync(password, projectUser.password)) {
       next(new Error('Unable to upload metadata: Invalid password!'));
     }
-    const userJarDir = `${getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
+    const processJSON = {};
+    const userJarDir = `${mUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
     const stagingDir = `${userJarDir}/staging`;
     const jarFiles = [];
     try {
@@ -348,9 +359,11 @@ module.exports = function (router) {
       // Do nothing since it is a valid state to not have a project directory when uploading remote jars
     }
     if (remoteJars && remoteJars.trim().length > 0) {
-      remoteJars.split(",").forEach(f => jarFiles.push(f));
+      processJSON.remoteJars = remoteJars.split(',');
+      processJSON.remoteJars.forEach(f => jarFiles.push(f));
     }
     if (jarFiles.length > 0) {
+      processJSON.jarFiles = jarFiles;
       const parameters = [
         '--api-url',
         `http://localhost:${req.socket.localPort}`,
@@ -374,6 +387,7 @@ module.exports = function (router) {
       if (repos && repos.trim().length > 0) {
         parameters.push('--repo');
         parameters.push(repos);
+        processJSON.repos = repos;
       }
       if (skipPipelines) {
         parameters.push('--excludePipelines');
@@ -385,10 +399,12 @@ module.exports = function (router) {
         parameters.push('true');
       }
       try {
-        await mUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 5000});
+        await mUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
+        // Write the process file
+        await mUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
         // Delete the jar directory
         await mUtils.removeDir(stagingDir);
-        await mUtils.removeDir(userJarDir);
+        // await mUtils.removeDir(userJarDir);
       } catch (err) {
         //TODO clean this up
         return res.status(400).json({error: err});
@@ -410,11 +426,10 @@ async function deleteProjectData(userId, projectId, userJarDir) {
   await new StepsModel().deleteMany(query);
   await new AppsModel().deleteMany(query);
   await new PkgObjsModel().deleteMany(query);
-  return await new PipelinesModel().deleteMany(query);
-}
-
-function getProjectJarsBaseDir(req) {
-  return req.app.kraken.get('baseJarsDir') || `${process.cwd()}/jars`;
+  await new PipelinesModel().deleteMany(query);
+  delete query.project.projectId;
+  // TODO Make sure to add all new job related models here
+  return await new ProvidersModel().deleteMany(query);
 }
 
 function getTemplatesDir(req) {
