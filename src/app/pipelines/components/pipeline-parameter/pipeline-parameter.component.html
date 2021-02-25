@@ -138,7 +138,6 @@
   <ng-container *ngIf="showTemplate">
     <app-preview-parameter-editor (valueChange)="templateValueChanged($event)" [fields] = "template" [model]="parameter.value"></app-preview-parameter-editor>
   </ng-container>
-  <!-- <a mat-button color="primary" *ngIf="template" (click)="templateView=!templateView"> {{showTemplate ? 'Show Base Form':'Show Template Form'}}</a> -->
 </mat-expansion-panel>
 
 
