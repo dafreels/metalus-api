@@ -2,8 +2,7 @@ import {Injectable} from "@angular/core";
 import {Observable, of, throwError} from "rxjs";
 import {
   Cluster,
-  ClusterResponse,
-  ClustersResponse,
+  ClusterResponse, ClustersResponse,
   FormRespsonse,
   Provider,
   ProviderResponse,
@@ -40,7 +39,7 @@ export class ProvidersService {
   getNewProviderForm(providerId) {
     const form = sessionStorage.getItem(`newProviderForm${providerId}`);
     if (form) {
-      return JSON.parse(form);
+      return of(JSON.parse(form));
     }
     return this.http.get<FormRespsonse>(`/api/v1/provider-types/${providerId}/form`, {observe: 'response'})
       .pipe(
@@ -57,7 +56,7 @@ export class ProvidersService {
   getNewClusterForm(providerId) {
     const form = sessionStorage.getItem(`newClusterForm${providerId}`);
     if (form) {
-      return JSON.parse(form);
+      return of(JSON.parse(form));
     }
     return this.http.get<FormRespsonse>(`/api/v1/providers/${providerId}/new-cluster-form`, {observe: 'response'})
       .pipe(
@@ -113,6 +112,16 @@ export class ProvidersService {
       })
       .pipe(
         map((response) => response.body.cluster),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  deleteCluster(providerId: string, cluster: Cluster) {
+    return this.http
+      .delete(`/api/v1/providers/${providerId}/clusters/${cluster.id}?clusterName=${cluster.name}`, {
+        observe: 'response',
+      })
+      .pipe(
         catchError((err) => throwError(err))
       );
   }

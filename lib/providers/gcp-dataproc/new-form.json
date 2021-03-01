@@ -1,0 +1,38 @@
+[
+  {
+    "type": "input",
+    "key": "name",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "description",
+    "templateOptions": {
+      "label": "Description"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.region",
+    "templateOptions": {
+      "label": "Region"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.projectId",
+    "templateOptions": {
+      "label": "Project Id"
+    }
+  },
+  {
+    "type": "textarea",
+    "key": "providerInstance.credentials.jsonKey",
+    "templateOptions": {
+      "label": "JSON Key",
+      "rows": 20
+    }
+  }
+]

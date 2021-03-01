@@ -1,25 +1,27 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {Cluster, Provider, ProviderType} from "../../models/providers.model";
-import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {ProvidersService} from "../../services/providers.service";
-import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
-import {NewClusterComponent} from "./new-cluster/new-cluster.component";
 import {Subject, Subscription} from "rxjs";
+import {SharedFunctions} from "../../../shared/utils/shared-functions";
+import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 
 @Component({
   selector: 'provider-clusters',
   templateUrl: './clusters.component.html'
 })
-export class ClustersComponent implements OnInit {
+export class ClustersComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['id', 'name', 'providerName', 'version', 'state', 'source', 'startTime', 'terminationTime', 'actions'];
   clusters: Cluster[];
   provider: Provider;
   @Input() providerTypes: ProviderType[];
   @Input() providerSubject: Subject<Provider>;
+  @Input() clusterSubject: Subject<Cluster>;
   subscriptions: Subscription[] = [];
 
-  constructor(private providersService: ProvidersService,
-              private displayDialogService: DisplayDialogService) {}
+  constructor(public dialog: MatDialog,
+              private providersService: ProvidersService) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
@@ -27,27 +29,54 @@ export class ClustersComponent implements OnInit {
         this.provider = element;
         this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
       }));
+    this.subscriptions.push(
+      this.clusterSubject.subscribe(cluster => {
+        const index = this.clusters.findIndex(c => c.id === cluster.id);
+        if (index === -1) {
+          this.clusters.push(cluster);
+        } else {
+          this.clusters[index] = cluster;
+        }
+        this.clusters = [...this.clusters];
+      }));
   }
 
-  addCluster() {
-    const addDialog = this.displayDialogService.openDialog(
-      NewClusterComponent,
-      generalDialogDimensions,
-      {
-        providerTypes: this.providerTypes,
-        provider: this.provider
-      }
-    );
-    addDialog.afterClosed().subscribe((result) => {
-      if (result) {
-        // this.providersService.addCluster(result).subscribe(prov => {
-        //   this.providersService.getClustersList().subscribe(engs => this.clusters = engs);
-        // });
-      }
+  removeEngine(cluster) {
+    const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+      width: '450px',
+      height: '200px',
+      data: {
+        message: 'Are you sure you wish to permanently terminate this cluster? This operation is asynchronous.',
+      },
     });
+    this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
+        if (confirmation) {
+          this.providersService.deleteCluster(this.provider.id, cluster).subscribe(el => {
+            this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
+          });
+        }
+      },
+      (error) => this.handleError(error, dialogRef)
+    ));
   }
 
-  removeEngine(id) {
+  ngOnDestroy(): void {
+    this.subscriptions = SharedFunctions.clearSubscriptions(this.subscriptions);
+  }
 
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: { messages: message.split('\n') },
+    });
   }
 }

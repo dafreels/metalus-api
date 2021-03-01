@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {Provider, ProviderType} from "../../models/providers.model";
+import {Cluster, Provider, ProviderType} from "../../models/providers.model";
 import {ProvidersService} from "../../services/providers.service";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
@@ -18,6 +18,7 @@ export class ProvidersComponent implements OnInit {
   providers: Provider[];
   selectedProvider: Provider;
   providerSubject: Subject<Provider> = new Subject<Provider>();
+  clusterSubject: Subject<Cluster> = new Subject<Cluster>();
 
   constructor(private providersService: ProvidersService,
               private displayDialogService: DisplayDialogService) {
@@ -62,10 +63,9 @@ export class ProvidersComponent implements OnInit {
       });
     addDialog.afterClosed().subscribe((result) => {
       if (result) {
-        // TODO Emit event indicating that the clusters component needs to refresh or get the clusters and emit that
-        // this.providersService.addProvider(result).subscribe(prov => {
-        //   this.providersService.getProvidersList().subscribe(provs => this.providers = provs);
-        // });
+        this.providersService.addCluster(providerId, result).subscribe(prov => {
+          this.clusterSubject.next(prov);
+        });
       }
     });
   }

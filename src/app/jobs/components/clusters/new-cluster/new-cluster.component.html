@@ -1,3 +1,6 @@
+<div style="text-align: center">
+  <mat-spinner *ngIf="showSpinner" style="text-align: center; display: inline-block"></mat-spinner>
+</div>
 <form [formGroup]="form">
   <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
 </form>

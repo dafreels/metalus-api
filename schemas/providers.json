@@ -24,7 +24,14 @@
           "type": "string"
         },
         "providerInstance": {
-          "$ref": "providers.json#/definitions/ProviderInstance"
+          "anyOf": [
+            {
+              "$ref": "providers.json#/definitions/DatabricksProviderInstance"
+            },
+            {
+              "$ref": "providers.json#/definitions/GCPDataprocProviderInstance"
+            }
+          ]
         }
       }
     },
@@ -32,9 +39,12 @@
       "type": "object",
       "properties": {
         "credentials": {
-          "oneOf": [
+          "anyOf": [
             {
               "$ref": "providers.json#/definitions/DatabricksCredential"
+            },
+            {
+              "$ref": "providers.json#/definitions/GCPCredential"
             }
           ]
         }
@@ -59,10 +69,41 @@
         }
       ]
     },
+    "GCPDataprocProviderInstance": {
+      "allOf": [
+        {
+          "$ref": "providers.json#/definitions/ProviderInstance"
+        },
+        {
+          "type": "object",
+          "required": [
+            "credentials",
+            "projectId",
+            "region"
+          ]
+        }
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
     "DatabricksCredential": {
       "type": "object",
       "properties": {
         "apiToken": {
+          "type": "string"
+        }
+      }
+    },
+    "GCPCredential": {
+      "type": "object",
+      "properties": {
+        "jsonKey": {
           "type": "string"
         }
       }

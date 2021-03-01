@@ -1,0 +1,43 @@
+<div>
+  <mat-form-field>
+    <input matInput placeholder=" Job Name" [(ngModel)]="name" required />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Select Provider: </mat-label>
+    <mat-select (selectionChange)="handleProviderSelection($event.value)">
+      <mat-option *ngFor="let provider of data.providers" [value]="provider.id">{{ provider.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Select Cluster: </mat-label>
+    <mat-select [(ngModel)]="selectedCluster">
+      <mat-option *ngFor="let cluster of clusters" [value]="cluster.id">{{ cluster.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Select Application: </mat-label>
+    <mat-select [(ngModel)]="selectedApplication">
+      <mat-option *ngFor="let app of applications" [value]="app">{{ app.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Select Job Type: </mat-label>
+    <mat-select [(ngModel)]="selectedJobType">
+      <mat-option *ngFor="let t of jobTypes" [value]="t">{{ t.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="run()"
+    style="margin-right: 5px"
+    [disabled]="!selectedCluster || !selectedApplication || !selectedJobType">
+    Run
+  </button>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

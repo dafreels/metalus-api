@@ -2,7 +2,6 @@ import {NgModule} from "@angular/core";
 import {JobsComponent} from "./components/jobs/jobs.component";
 import {CoreModule} from "../core/core.module";
 import {SharedModule} from "../shared/shared.module";
-import {JobConfigurationsComponent} from "./components/jobs-configuration/jobs-configuration.component";
 import {ProvidersComponent} from "./components/providers/providers.component";
 import {NewProviderComponent} from "./components/providers/new-provider/new-provider.component";
 import {FormlyModule} from "@ngx-formly/core";
@@ -15,6 +14,7 @@ import {FormlyMaterialModule} from "@ngx-formly/material";
 import {ClustersComponent} from "./components/clusters/clusters.component";
 import {NewClusterComponent} from "./components/clusters/new-cluster/new-cluster.component";
 import {ProvidersListItemComponent} from "./components/providers/providers-list-item/providers-list-item.component";
+import {RunJobComponent} from "./components/jobs/run-job/run-job.component";
 
 @NgModule({
   imports: [
@@ -57,16 +57,17 @@ import {ProvidersListItemComponent} from "./components/providers/providers-list-
   ],
   declarations: [
     ClustersComponent,
-    JobConfigurationsComponent,
     JobsComponent,
     NewClusterComponent,
     NewProviderComponent,
     ProvidersListItemComponent,
-    ProvidersComponent
+    ProvidersComponent,
+    RunJobComponent
   ],
   entryComponents: [
     NewClusterComponent,
-    NewProviderComponent
+    NewProviderComponent,
+    RunJobComponent
   ]
 })
 

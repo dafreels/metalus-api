@@ -15,6 +15,7 @@ export interface NewEngineData {
   templateUrl: './new-cluster.component.html'
 })
 export class NewClusterComponent implements OnInit, AfterViewInit {
+  showSpinner: boolean = true;
   form = new FormGroup({});
   _model;
   @Input() set model(value) {
@@ -38,9 +39,7 @@ export class NewClusterComponent implements OnInit, AfterViewInit {
   }
 
   saveDialog() {
-    const response = this.formValue;
-    response['providerId'] = this.providerId;
-    this.dialogRef.close(response);
+    this.dialogRef.close(this.formValue);
   }
 
   ngAfterViewInit(): void {
@@ -48,6 +47,7 @@ export class NewClusterComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.showSpinner = true;
     this.providersService.getNewClusterForm(this.data.provider.id).subscribe(formlyJson => {
       if (formlyJson) {
         if (formlyJson.schema) {
@@ -57,6 +57,7 @@ export class NewClusterComponent implements OnInit, AfterViewInit {
         } else {
           this._fields = [formlyJson];
         }
+        this.showSpinner = false;
       }
     });
   }

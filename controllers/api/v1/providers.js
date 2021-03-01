@@ -15,19 +15,25 @@ module.exports = function (router) {
   router.post('/', createProvider);
   router.get('/:id', getProvider);
   router.get('/:id/clusters', getClusters);
+  router.post('/:id/clusters', createCluster);
+  router.delete('/:id/clusters/:clusterId', deleteCluster);
   router.get('/:id/new-cluster-form', getNewClusterForm);
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
 };
 
-async function getNewClusterForm(req, res) {
+async function getNewClusterForm(req, res, next) {
   const user = await req.user;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
-    const providerType = ProviderFactory.getProvider(provider.providerTypeId);
-    const form = await providerType.getNewClusterForm(provider.providerInstance, user);
-    res.status(200).json({form});
+    try {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      const form = await providerType.getNewClusterForm(provider.providerInstance, user);
+      res.status(200).json({form});
+    } catch (err) {
+      next(err)
+    }
   } else {
     res.sendStatus(404);
   }
@@ -90,7 +96,7 @@ async function getClusters(req, res, next) {
   const providerType = ProviderFactory.getProvider(provider.providerTypeId);
   if (provider) {
     try {
-      const clusters = await providerType.getClusters(provider.providerInstance, user.secretKey);
+      const clusters = await providerType.getClusters(provider.providerInstance, user);
       if (clusters && clusters.length === 0) {
         res.sendStatus(204);
       } else {
@@ -102,6 +108,40 @@ async function getClusters(req, res, next) {
         });
       }
     } catch(err) {
+      next(err);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+
+async function createCluster(req, res, next) {
+  const user = await req.user;
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({id: req.params.id}, user);
+  if (provider) {
+    try {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      const cluster = await providerType.createCluster(req.body, provider.providerInstance, user);
+      res.status(201).json({cluster});
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+
+async function deleteCluster(req, res, next) {
+  const user = await req.user;
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({id: req.params.id}, user);
+  if (provider) {
+    try {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      await providerType.deleteCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      res.sendStatus(204);
+    } catch (err) {
       next(err);
     }
   } else {
@@ -133,6 +173,7 @@ async function startJob(req, res, next) {
   const clusterId = req.body.clusterId;
   const clusterName = req.body.clusterName;
   const applicationId = req.body.applicationId;
+  const jobType = req.body.jobType;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
