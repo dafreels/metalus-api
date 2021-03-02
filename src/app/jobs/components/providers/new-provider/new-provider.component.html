@@ -1,0 +1,25 @@
+<div>
+  <mat-form-field>
+    <mat-label>Select Provider: </mat-label>
+    <mat-select (selectionChange)="setFields($event)">
+      <mat-option *ngFor="let provider of providers" [value]="provider.id">{{ provider.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<form [formGroup]="form">
+  <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
+</form>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="saveDialog()"
+    style="margin-right: 5px">
+    Save
+  </button>
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

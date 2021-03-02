@@ -24,4 +24,18 @@
       <mat-icon color="primary">group</mat-icon>
       <span class="spacer">Upload Metadata</span>
   </a>
+  <a mat-menu-item  [matMenuTriggerFor]="jobsMenu">
+    <mat-icon color="primary">workspaces</mat-icon>
+    <span class="spacer">Jobs (Dev)</span>
+  </a>
+</mat-menu>
+<mat-menu #jobsMenu="matMenu">
+  <a mat-menu-item  [routerLink]="['/jobs']" routerLinkActive="active">
+    <mat-icon color="primary">work</mat-icon>
+    <span class="spacer">Jobs</span>
+  </a>
+  <a mat-menu-item  [routerLink]="['/providers']" routerLinkActive="active">
+    <mat-icon color="primary">cloud</mat-icon>
+    <span class="spacer">Manage Providers</span>
+  </a>
 </mat-menu>

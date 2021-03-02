@@ -53,10 +53,9 @@ export class ProfileComponent implements OnInit {
   }
 
   openProjectTemplates(projectId: string) {
-    console.log('doo doo')
     const deleteProjectDialogDimensions: DialogDimensions = {
       width: '450px',
-      height: '200px',
+      height: '400px',
     };
     const selectedProject = this.user.projects.find(p => p.id === projectId);
     let preloadedLibraries = [];

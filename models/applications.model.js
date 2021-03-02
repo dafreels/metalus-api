@@ -2,7 +2,6 @@ const Ajv = require('ajv');
 const schema = require('../schemas/applications.json');
 const BaseModel = require('../lib/base.model');
 
-
 class ApplicationsModel extends BaseModel {
     constructor(){
         super('applications', schema);

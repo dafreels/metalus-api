@@ -22,6 +22,9 @@
         "password": {
           "type": "string"
         },
+        "secretKey": {
+          "type": "string"
+        },
         "displayName": {
           "type": "string",
           "minLength": 4

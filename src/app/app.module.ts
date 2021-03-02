@@ -15,7 +15,8 @@ import {
 import {ApplicationsModule} from './applications/applications.module';
 import {StepsModule} from './steps/steps.module';
 import {PipelinesModule} from './pipelines/pipelines.module';
-import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard';
+import {ConfirmDeactivateGuard} from './shared/guards/confirm-deactivate.guard';
+import {JobsModule} from "./jobs/jobs.module";
 
 @NgModule({
   imports: [
@@ -28,6 +29,7 @@ import { ConfirmDeactivateGuard } from './shared/guards/confirm-deactivate.guard
     StepsModule,
     PipelinesModule,
     AppRoutingModule,
+    JobsModule,
   ],
   declarations: [
     AppComponent

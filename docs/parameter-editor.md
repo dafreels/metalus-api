@@ -1,6 +1,11 @@
 [Home](readme.md)
 # Parameter Editor 
-The Parameter Editor is a specialized component which gives admins the ability to configure formly JSON structure to render a custom UI for a step parameter. This allows step library creators the ability to build custom parameter forms without the user needing to understand how Metalus mapping works. When working in the code editor, the JSON provided will be applied to the _fields_ property of the form. No other properties are exposed. Documentation for formly is provided [here](https://formly.dev/guide/expression-properties). [Examples](https://formly.dev/ui/material) for material may be used to help understand the syntax.
+The Parameter Editor is a specialized component which provides the ability to configure formly JSON structure to 
+render a custom UI for a step parameter. This allows step library creators the ability to build custom parameter forms 
+without the user needing to understand how Metalus mapping works. When working in the code editor, the JSON provided will
+be applied to the _fields_ property of the form. No other properties are exposed. Documentation for formly is provided 
+[here](https://formly.dev/guide/expression-properties). [Examples](https://formly.dev/ui/material) for material may be used 
+to help understand the syntax.
 
 
 Steps to follow in parameter editor
@@ -46,4 +51,4 @@ After the form has been saved for the step, the new form will begin displaying i
 
 ![Parameter-Editor](images/pipeline_ui_with_parameter_json_added.png)
 
-In Pepeline editor screen also on each parameter we have same feature with show Advanced/Templte form toggle button to bring back old teplate UI.
+The Pipeline Editor screen will automatically display the created forms with the Advanced/Template form toggle button to bring back old template UI.

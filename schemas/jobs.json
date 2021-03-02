@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "jobs.json",
+  "$ref": "#/definitions/jobs",
+  "definitions": {
+    "jobs": {
+      "required": [
+        "id",
+        "name",
+        "providerId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "applicationId": {
+          "type": "string"
+        },
+        "applicationName": {
+          "type": "string"
+        },
+        "providerId": {
+          "type": "string"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "providerInformation": {
+          "oneOf": [
+            {
+              "$ref": "jobs.json#/definitions/DatabricksProviderInformation"
+            }
+          ]
+        }
+      }
+    },
+    "DatabricksProviderInformation": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        },
+        "clusterName": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,85 @@
+[
+  {
+    "type": "input",
+    "key": "clusterName",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "key": "useServiceAccount",
+    "type": "checkbox",
+    "templateOptions": {
+      "label": "Use Service Account"
+    }
+  },
+  {
+    "type": "select",
+    "key": "config.softwareConfig.imageVersion",
+    "templateOptions": {
+      "label": "Version",
+      "options": [
+        {
+          "id": "2.0-debian10",
+          "name": "2.0 (Debian 10, Hadoop 3.2, Spark 3.1)"
+        },
+        {
+          "id": "2.0-ubuntu18",
+          "name": "2.0 (Ubuntu 18.04 LTS, Hadoop 3.2, Spark 3.1)"
+        },
+        {
+          "id": "1.5-centos8",
+          "name": "1.5 (CentOS 8, Hadoop 2.10, Spark 2.4)"
+        },
+        {
+          "id": "1.5-debian10",
+          "name": "1.5 (Debian 10, Hadoop 2.10, Spark 2.4)"
+        },
+        {
+          "id": "1.5-ubuntu18",
+          "name": "1.5 (Ubuntu 18.04 LTS, Hadoop 2.10, Spark 2.4)"
+        }
+      ],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "config.masterConfig.machineTypeUri",
+    "templateOptions": {
+      "label": "Executor Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "config.masterConfig.numInstances",
+    "templateOptions": {
+      "label": "Master Instances",
+      "type": "number",
+      "min": 1
+    }
+  },
+  {
+    "type": "select",
+    "key": "config.workerConfig.machineTypeUri",
+    "templateOptions": {
+      "label": "Driver Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "config.workerConfig.numInstances",
+    "templateOptions": {
+      "label": "Worker Instances",
+      "type": "number",
+      "min": 1
+    }
+  }
+]
