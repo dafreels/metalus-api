@@ -1,4 +1,5 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit(model)">
     <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
+    <button type="button" mat-button color="primary" *ngIf="previewMode" (click)="previewData()">Preview Data</button>
 </form>

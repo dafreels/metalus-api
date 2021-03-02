@@ -9,6 +9,9 @@ import {
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
+import { CodeEditorComponent } from 'src/app/code-editor/components/code-editor/code-editor.component';
+import { generalDialogDimensions } from '../../models/custom-dialog.model';
+import { DisplayDialogService } from '../../services/display-dialog.service';
 
 @Component({
   selector: 'app-preview-parameter-editor',
@@ -17,6 +20,7 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 })
 export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   form = new FormGroup({});
+  @Input() previewMode:boolean;
   _model;
   @Input() set model(value) {
     this._model = value;
@@ -35,7 +39,9 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   }
   _fields: FormlyFieldConfig[];
   @Output() valueChange = new EventEmitter(); //this.form.valueChanges;
-  constructor(private formlyJsonschema: FormlyJsonschema) {}
+  constructor(private formlyJsonschema: FormlyJsonschema,
+    private displayDialogService: DisplayDialogService,
+    ) {}
   ngAfterViewInit(): void {
     this.form.valueChanges.subscribe((value) => {
       this.valueChange.emit(value);
@@ -48,5 +54,17 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
     if (this.form.valid) {
       alert(JSON.stringify(this.model, null, 2));
     }
+  }
+  previewData(){
+    const exportApplicationDialogData={
+      code: JSON.stringify(this.form.getRawValue(), null, 4),
+      language: 'json',
+      allowSave: false,
+    };
+    this.displayDialogService.openDialog(
+      CodeEditorComponent,
+      generalDialogDimensions,
+      exportApplicationDialogData
+    );
   }
 }
