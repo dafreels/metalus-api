@@ -136,7 +136,7 @@
   </mat-form-field>
  </ng-container>
   <ng-container *ngIf="showTemplate">
-    <app-preview-parameter-editor (valueChange)="templateValueChanged($event)" [fields] = "template" [model]="parameter.value"></app-preview-parameter-editor>
+    <app-preview-parameter-editor [previewMode]="previewMode" (valueChange)="templateValueChanged($event)" [fields] = "template" [model]="parameter.value"></app-preview-parameter-editor>
   </ng-container>
 </mat-expansion-panel>
 

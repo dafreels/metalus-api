@@ -45,6 +45,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input() stepGroup: StepGroupProperty = { enabled: false };
   @Input() expandPanel: boolean = false;
   @Input() scalaParamType: boolean = false;
+  @Input() previewMode: boolean = false;
   templateView = true;
   get showTemplate(){
     return this.template && this.templateView;
