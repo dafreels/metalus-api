@@ -35,3 +35,7 @@ export interface ProviderJob {
 export interface JobsResponse {
   jobs: Job[]
 }
+
+export interface JobResponse {
+  job: Job
+}

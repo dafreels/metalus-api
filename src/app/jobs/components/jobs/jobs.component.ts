@@ -3,7 +3,6 @@ import {ProviderJob} from "../../models/jobs.model";
 import {JobsService} from "../../services/jobs.service";
 import {ProvidersService} from "../../services/providers.service";
 import {Provider} from "../../models/providers.model";
-import {NewClusterComponent} from "../clusters/new-cluster/new-cluster.component";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {RunJobComponent} from "./run-job/run-job.component";
@@ -39,9 +38,11 @@ export class JobsComponent implements OnInit {
     );
     addDialog.afterClosed().subscribe((result) => {
       if (result) {
-        // this.providersService.addCluster(result).subscribe(prov => {
-        //   this.providersService.getClustersList().subscribe(engs => this.clusters = engs);
-        // });
+        this.jobsService.runJob(result).subscribe(job => {
+          this.jobsService.getJobsByProviders(this.providers).subscribe(jobs => {
+            this.jobs = jobs;
+          });
+        });
       }
     });
   }

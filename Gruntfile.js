@@ -27,15 +27,21 @@ module.exports = (grunt) => {
     'coveralls:report'
   ]);
 
-  grunt.registerTask('prep-docker', [
+  grunt.registerTask('prep-local', [
     'clean:metalus',
+    'clean:applicationJars',
     'curl-dir:metalusUtils',
     'extract-metalus-utils',
-  ]);
-
-  grunt.registerTask('genDocs', [
+    'curl-dir:applicationJars',
     'clean:localDocs',
     'markdown:local',
     'copy:localDocImages'
+  ]);
+
+  grunt.registerTask('docker-build', [
+    'clean:localDocs',
+    'markdown:local',
+    'copy:localDocImages',
+    'curl-dir:applicationJars'
   ]);
 };

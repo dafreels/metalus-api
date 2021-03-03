@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {forkJoin, Observable, throwError} from "rxjs";
-import {JobsResponse, JobStatus, JobType, ProviderJob} from "../models/jobs.model";
+import {JobResponse, JobsResponse, JobStatus, JobType, ProviderJob} from "../models/jobs.model";
 import {Provider} from "../models/providers.model";
 import {catchError, map} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
@@ -39,6 +39,17 @@ export class JobsService {
           return finalJobs;
         }),
         catchError(err => throwError(err)));
+  }
+
+  runJob(runConfig: any) {
+    return this.http
+      .post<JobResponse>(`/api/v1/providers/${runConfig.providerId}/jobs`, runConfig, {
+        observe: 'response',
+      })
+      .pipe(
+        map((response) => response.body.job),
+        catchError((err) => throwError(err))
+      );
   }
 
   static getStatusString(status: JobStatus) {

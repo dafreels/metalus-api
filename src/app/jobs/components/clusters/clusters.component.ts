@@ -31,13 +31,7 @@ export class ClustersComponent implements OnInit, OnDestroy {
       }));
     this.subscriptions.push(
       this.clusterSubject.subscribe(cluster => {
-        const index = this.clusters.findIndex(c => c.id === cluster.id);
-        if (index === -1) {
-          this.clusters.push(cluster);
-        } else {
-          this.clusters[index] = cluster;
-        }
-        this.clusters = [...this.clusters];
+        this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
       }));
   }
 
@@ -78,5 +72,9 @@ export class ClustersComponent implements OnInit, OnDestroy {
       height: '300px',
       data: { messages: message.split('\n') },
     });
+  }
+
+  refresh() {
+    this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
   }
 }

@@ -440,7 +440,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   importApplication() {
     const importApplicationDialogData = {
-      code: '', 
+      code: '',
       language: 'json',
       allowSave: true,
     };

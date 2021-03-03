@@ -333,7 +333,6 @@ module.exports = function (router) {
     if (userId !== user.id) {
       next(new Error('User does not have permission to process files for different user!'));
     }
-    // TODO Create a json file that contains the repos, jarFiles and remoteJars for job processing
     const userModel = new UsersModel();
     const projectUser = await userModel.getUser(userId);
     if (!bcrypt.compareSync(password, projectUser.password)) {
@@ -367,12 +366,6 @@ module.exports = function (router) {
       const parameters = [
         '--api-url',
         `http://localhost:${req.socket.localPort}`,
-        '--no-auth-download',
-        'true',
-        '--staging-dir',
-        stagingDir,
-        '--jar-files',
-        jarFiles.join(','),
         '--authorization.class',
         'com.acxiom.pipeline.api.SessionAuthorization',
         '--authorization.username',
@@ -381,6 +374,14 @@ module.exports = function (router) {
         password,
         '--authorization.authUrl',
         `http://localhost:${req.socket.localPort}/api/v1/users/login`,
+        '--staging-dir',
+        stagingDir,
+        '--jar-files',
+        jarFiles.join(','),
+        '--no-auth-download',
+        'true',
+        '--repo',
+        userJarDir,
         '--clean-staging',
         'true'
       ];

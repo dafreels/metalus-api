@@ -53,12 +53,28 @@ export class NewClusterComponent implements OnInit, AfterViewInit {
         if (formlyJson.schema) {
           this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
         } else if(Array.isArray(formlyJson)) {
-          this._fields = formlyJson;
+          this._fields = this.convertForm(formlyJson);
         } else {
-          this._fields = [formlyJson];
+          this._fields = this.convertForm([formlyJson]);
         }
         this.showSpinner = false;
       }
+    });
+  }
+
+  private convertForm(formlyJson) {
+    return formlyJson.map(item => {
+      if (item.validators) {
+        const validators = {};
+        Object.keys(item.validators).forEach(key => {
+          validators[key] = {
+            expression: item.validators[key].expression ? eval(item.validators[key].expression) : null,
+            message: item.validators[key].message ? eval(item.validators[key].message) : null
+          };
+        });
+        item.validators = validators;
+      }
+      return item;
     });
   }
 }

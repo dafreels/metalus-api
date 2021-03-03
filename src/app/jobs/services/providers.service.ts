@@ -12,6 +12,7 @@ import {
 } from "../models/providers.model";
 import {catchError, map} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
+import {JobResponse, JobsResponse} from "../models/jobs.model";
 
 @Injectable({
   providedIn: 'root',

@@ -11,9 +11,7 @@ class ProvidersModel extends BaseModel {
       providerId
     };
     if (user) {
-      key.project = {
-        userId: user.id
-      };
+      key['project.userId'] = user.id;
     }
     return await this.storageModel.find(key);
   }

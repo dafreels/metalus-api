@@ -11,6 +11,9 @@ module.exports = (grunt) => {
     },
     localDocs: {
       src: ['docs/html']
+    },
+    applicationJars: {
+      src: ['applicationJars']
     }
   };
 };

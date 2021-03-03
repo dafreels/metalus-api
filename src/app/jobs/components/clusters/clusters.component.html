@@ -3,7 +3,12 @@
     <mat-card>
       <mat-card-content>
         <div class="mt-2">
-          <mat-card-title>Clusters</mat-card-title>
+          <mat-card-title>
+            Clusters
+            <button mat-icon-button color="primary" (click)="refresh()">
+              <mat-icon>refresh</mat-icon>
+            </button>
+          </mat-card-title>
           <mat-table [dataSource]="clusters" class="mat-elevation-z2">
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef> Id</mat-header-cell>

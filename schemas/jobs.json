@@ -31,13 +31,13 @@
         "providerInformation": {
           "oneOf": [
             {
-              "$ref": "jobs.json#/definitions/DatabricksProviderInformation"
+              "$ref": "jobs.json#/definitions/BaseProviderInformation"
             }
           ]
         }
       }
     },
-    "DatabricksProviderInformation": {
+    "BaseProviderInformation": {
       "type": "object",
       "properties": {
         "clusterId": {
@@ -47,6 +47,9 @@
           "type": "string"
         },
         "runId": {
+          "type": "string"
+        },
+        "bucket": {
           "type": "string"
         }
       }

@@ -4,19 +4,19 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Select Provider: </mat-label>
-    <mat-select (selectionChange)="handleProviderSelection($event.value)">
-      <mat-option *ngFor="let provider of data.providers" [value]="provider.id">{{ provider.name }}</mat-option>
+    <mat-select [(ngModel)]="selectedProvider" (selectionChange)="handleProviderSelection($event.value.id)">
+      <mat-option *ngFor="let provider of data.providers" [value]="provider">{{ provider.name }}</mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Select Cluster: </mat-label>
     <mat-select [(ngModel)]="selectedCluster">
-      <mat-option *ngFor="let cluster of clusters" [value]="cluster.id">{{ cluster.name }}</mat-option>
+      <mat-option *ngFor="let cluster of clusters" [value]="cluster">{{ cluster.name }}</mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Select Application: </mat-label>
-    <mat-select [(ngModel)]="selectedApplication">
+    <mat-select [(ngModel)]="selectedApplication" (selectionChange)="determineRequiredFields()">
       <mat-option *ngFor="let app of applications" [value]="app">{{ app.name }}</mat-option>
     </mat-select>
   </mat-form-field>
@@ -26,6 +26,16 @@
       <mat-option *ngFor="let t of jobTypes" [value]="t">{{ t.name }}</mat-option>
     </mat-select>
   </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder=" Jars Bucket Name" [(ngModel)]="bucket" required />
+  </mat-form-field>
+  <!-- Custom job type parameters -->
+  <div *ngIf="selectedJobType?.name === 'kinesis'"></div>
+  <div *ngIf="selectedJobType?.name === 'kafka'"></div>
+  <div *ngIf="selectedJobType?.name === 'pubsub'"></div>
+  <!-- TODO Identify the globals that are needed to have the application run -->
+  <div>
+  </div>
 </div>
 
 <mat-dialog-actions align="end">
