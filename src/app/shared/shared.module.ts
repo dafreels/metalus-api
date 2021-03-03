@@ -84,11 +84,8 @@ const commonModules = [
         { name: 'object', component: ObjectTypeComponent },
         { name: 'multischema', component: MultiSchemaTypeComponent },
         { name: 'repeat', component: RepeatTypeComponent },
-        // { name: 'repeatschema', component: RepeatTypeComponent },
-        // RepeatTypeComponent
       ],
     }),
-    // FormlyModule,
     FormlyMaterialModule,
   ],
   declarations: [
