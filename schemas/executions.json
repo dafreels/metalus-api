@@ -16,6 +16,9 @@
             "description": {
               "type": "string"
             },
+            "displayName": {
+              "type": "string"
+            },
             "project": {
               "type": "object",
               "properties": {
@@ -23,6 +26,14 @@
                   "type": "string"
                 },
                 "projectId": {
+                  "type": "string"
+                }
+              }
+            },
+            "template": {
+              "type": "object",
+              "properties": {
+                "form": {
                   "type": "string"
                 }
               }

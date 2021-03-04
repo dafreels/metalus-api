@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {forkJoin, Observable, throwError} from "rxjs";
-import {JobResponse, JobsResponse, JobStatus, JobType, ProviderJob} from "../models/jobs.model";
-import {Provider} from "../models/providers.model";
+import {Job, JobResponse, JobsResponse, JobStatus, JobType, ProviderJob} from "../models/jobs.model";
+import {Provider, ProvidersResponse} from "../models/providers.model";
 import {catchError, map} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 
@@ -9,8 +9,7 @@ import {HttpClient} from "@angular/common/http";
   providedIn: 'root',
 })
 export class JobsService {
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   getJobsByProviders(providers: Provider[]): Observable<ProviderJob[]> {
     const requests = {};
@@ -41,7 +40,7 @@ export class JobsService {
         catchError(err => throwError(err)));
   }
 
-  runJob(runConfig: any) {
+  runJob(runConfig: any): Observable<Job> {
     return this.http
       .post<JobResponse>(`/api/v1/providers/${runConfig.providerId}/jobs`, runConfig, {
         observe: 'response',
@@ -50,6 +49,18 @@ export class JobsService {
         map((response) => response.body.job),
         catchError((err) => throwError(err))
       );
+  }
+
+  getJob(providerId, jobId): Observable<Job> {
+    return this.http.get<JobResponse>(`/api/v1/providers/${providerId}/jobs/${jobId}`, {observe: 'response'})
+      .pipe(
+        map(response => {
+          if (response && response.body) {
+            return response.body.job;
+          }
+          return null;
+        }),
+        catchError(err => throwError(err)));
   }
 
   static getStatusString(status: JobStatus) {

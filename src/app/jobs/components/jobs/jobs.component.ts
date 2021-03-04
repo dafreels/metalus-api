@@ -6,12 +6,14 @@ import {Provider} from "../../models/providers.model";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {RunJobComponent} from "./run-job/run-job.component";
+import {JobStatusComponent} from "./job-status/job-status.component";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 
 @Component({
   templateUrl: './jobs.component.html'
 })
 export class JobsComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'name', 'appName', 'providerName', 'status', 'type', 'start', 'end', 'duration', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'appName', 'providerName', 'type', 'actions'];
   jobs: ProviderJob[];
   providers: Provider[];
 
@@ -45,5 +47,24 @@ export class JobsComponent implements OnInit {
         });
       }
     });
+  }
+
+  openJobStatus(job) {
+    const dialogRef = this.displayDialogService.openDialog(
+      WaitModalComponent, {
+      width: '25%',
+      height: '25%',
+    });
+    this.jobsService.getJob(job.providerId, job.id).subscribe(j => {
+      dialogRef.close();
+      this.displayDialogService.openDialog(
+        JobStatusComponent,
+        generalDialogDimensions,
+        {
+          providerId: job.providerId,
+          job: job
+        }
+      );
+    })
   }
 }

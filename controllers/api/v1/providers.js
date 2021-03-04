@@ -6,6 +6,7 @@ const PipelinesModel = require('../../../models/pipelines.model');
 const ProvidersModel = require('../../../models/providers.model');
 const ValidationError = require('../../../lib/ValidationError');
 const MetalusUtils = require('../../../lib/metalus-utils');
+const _ = require('lodash');
 
 const mavenCentral = `https://repo1.maven.org/maven2/com/acxiom`;
 
@@ -16,12 +17,14 @@ module.exports = function (router) {
   router.get('/', getProviders);
   router.post('/', createProvider);
   router.get('/:id', getProvider);
+  router.delete('/:id', deleteProvider);
   router.get('/:id/clusters', getClusters);
   router.post('/:id/clusters', createCluster);
   router.delete('/:id/clusters/:clusterId', deleteCluster);
   router.get('/:id/new-cluster-form', getNewClusterForm);
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
+  router.get('/:id/jobs/:jobId', getJob);
 };
 
 async function getNewClusterForm(req, res, next) {
@@ -91,12 +94,26 @@ async function getProvider(req, res) {
   }
 }
 
+async function deleteProvider(req, res) {
+  const user = await req.user;
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({id: req.params.id}, user);
+  if (provider) {
+    const jobsModel = new JobsModel();
+    await providersModel.delete(req.params.id, user);
+    await jobsModel.deleteMany({providerId: req.params.id});
+    res.sendStatus(204);
+  } else {
+    res.sendStatus(404);
+  }
+}
+
 async function getClusters(req, res, next) {
   const user = await req.user;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
-  const providerType = ProviderFactory.getProvider(provider.providerTypeId);
   if (provider) {
+    const providerType = ProviderFactory.getProvider(provider.providerTypeId);
     try {
       const clusters = await providerType.getClusters(provider.providerInstance, user);
       if (clusters && clusters.length === 0) {
@@ -142,6 +159,9 @@ async function deleteCluster(req, res, next) {
     try {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
       await providerType.deleteCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      // Delete the jobs associated with this cluster
+      const jobsModel = new JobsModel();
+      await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
       res.sendStatus(204);
     } catch (err) {
       next(err);
@@ -155,17 +175,29 @@ async function listJobs(req, res) {
   const user = await req.user;
   const jobsModel = new JobsModel();
   const jobs = await jobsModel.getByProvider(req.params.id, user);
-  // TODO This will need to be refreshed and possibly not stored
-  // state: '',
-  //   startTime: '',
-  //   endTime: ''
-  // const providerTypes = ProviderFactory.getProviderList();
-  // const providersModel = new ProvidersModel();
-  // const providers = await providersModel.getAll(user);
   if (jobs && jobs.length > 0) {
     res.status(200).json({jobs});
   } else {
     res.sendStatus(204);
+  }
+}
+
+async function getJob(req, res) {
+  const user = await req.user;
+  const jobsModel = new JobsModel();
+  const job = await jobsModel.getByKey({id: req.params.jobId}, user);
+  if (job) {
+    const providersModel = new ProvidersModel();
+    const provider = await providersModel.getByKey({id: req.params.id}, user);
+    if (provider) {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      const remoteJob = await providerType.getJob(job.providerInformation, provider.providerInstance, user);
+      res.status(200).json({job: _.merge(job, remoteJob)});
+    } else {
+      res.sendStatus(404);
+    }
+  } else {
+    res.sendStatus(404);
   }
 }
 

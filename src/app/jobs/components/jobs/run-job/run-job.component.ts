@@ -19,7 +19,7 @@ export interface JobType {
 @Component({
   templateUrl: './run-job.component.html'
 })
-export class RunJobComponent implements OnInit{
+export class RunJobComponent implements OnInit {
   name: string;
   clusters: Cluster[];
   selectedCluster: Cluster;
