@@ -4,6 +4,12 @@
     "key": "clusterName",
     "templateOptions": {
       "label": "Name"
+    },
+    "validators": {
+      "clusterName": {
+        "expression": "(c) => !/[^a-z\\d\\-]/.test(c.value)",
+        "message": "(error, field) => 'Cluster Name must contain only lowercase, hyphen or numbers'"
+      }
     }
   },
   {

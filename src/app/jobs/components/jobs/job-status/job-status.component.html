@@ -1,0 +1,26 @@
+<mat-card>
+  <mat-card-content>
+    <div class="job-info mat-elevation-z2">
+      <span class="label">Id</span>
+      <span>{{data.job.id}}</span>
+      <span class="label">Name</span>
+      <span>{{data.job.name}}</span>
+      <span class="label">Application Name</span>
+      <span>{{data.job.applicationName}}</span>
+      <span class="label">Status</span>
+      <span>{{data.job.status}}</span>
+      <span class="label">Start Time</span>
+      <span>{{data.job.startTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC' }}</span>
+      <span class="label">End Time</span>
+      <span>{{data.job.endTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC' }}</span>
+      <span class="label">Execution Duration</span>
+      <span>{{data.job.executionDuration | date : 'HH:mm:ss.SSS': 'UTC' }}</span>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    Cancel
+  </button>
+</mat-dialog-actions>

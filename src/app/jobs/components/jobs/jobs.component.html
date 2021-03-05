@@ -26,27 +26,11 @@
             </ng-container>
             <ng-container matColumnDef="providerName">
               <mat-header-cell *matHeaderCellDef> Provider</mat-header-cell>
-              <mat-cell *matCellDef="let job">{{job.job.provider.name}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="status">
-              <mat-header-cell *matHeaderCellDef> Status</mat-header-cell>
-              <mat-cell *matCellDef="let job">{{job.job.status}}</mat-cell>
+              <mat-cell *matCellDef="let job">{{job.provider.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="type">
               <mat-header-cell *matHeaderCellDef> Type</mat-header-cell>
               <mat-cell *matCellDef="let job">{{job.job.jobType}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="start">
-              <mat-header-cell *matHeaderCellDef> Start</mat-header-cell>
-              <mat-cell *matCellDef="let job">{{job.job.startTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC'}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="end">
-              <mat-header-cell *matHeaderCellDef> End</mat-header-cell>
-              <mat-cell *matCellDef="let job">{{job.job.endTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC'}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="duration">
-              <mat-header-cell *matHeaderCellDef> Duration</mat-header-cell>
-              <mat-cell *matCellDef="let job">{{job.job.executionDuration | date : 'HH:mm:ss.SSS': 'UTC' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef> Actions</mat-header-cell>
@@ -55,13 +39,9 @@
                   <mat-icon>more_horiz</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                  <a mat-menu-item>
-                    <mat-icon color="primary">cancel</mat-icon>
-                    <span class="spacer">Cancel</span>
-                  </a>
-                  <a mat-menu-item>
-                    <mat-icon color="primary">refresh</mat-icon>
-                    <span class="spacer">Refresh</span>
+                  <a mat-menu-item (click)="openJobStatus(job.job)">
+                    <mat-icon color="primary">autorenew</mat-icon>
+                    <span class="spacer">Status</span>
                   </a>
                 </mat-menu>
               </mat-cell>

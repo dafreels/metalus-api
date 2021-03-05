@@ -10,7 +10,8 @@
     mat-raised-button
     color="primary"
     (click)="saveDialog()"
-    style="margin-right: 5px">
+    style="margin-right: 5px"
+    [disabled]="!form.valid">
     Save
   </button>
   <button mat-raised-button color="primary" (click)="closeDialog()">

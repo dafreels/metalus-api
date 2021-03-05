@@ -1,0 +1,9 @@
+.job-info {
+  display: grid;
+  padding: 1em;
+  margin: 1rem 6rem 0 0;
+  max-width: 600px;
+  padding: 1em;
+  grid-template-columns: 200px 1fr;
+  grid-gap: 16px;
+}

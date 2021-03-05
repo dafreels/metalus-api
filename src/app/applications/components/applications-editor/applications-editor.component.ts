@@ -60,6 +60,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     exposePipelineManager: false,
     globals: {},
     id: 'Blank',
+    displayName: 'Blank',
     initialPipelineId: '',
     mergeGlobals: false,
     parents: [],
@@ -440,7 +441,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   importApplication() {
     const importApplicationDialogData = {
-      code: '', 
+      code: '',
       language: 'json',
       allowSave: true,
     };

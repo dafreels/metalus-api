@@ -34,7 +34,7 @@ RUN apk --no-cache add \
     npm install -g @angular/cli@latest && \
     npm install -g grunt-cli && \
     npm install && \
-    grunt genDocs && \
+    grunt docker-build && \
     ng build && \
     npm prune --production
 
