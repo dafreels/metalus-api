@@ -122,6 +122,7 @@ const commonModules = [
     IsGenericType,
     PipelineParameterComponent,
     PreviewParameterEditorComponent,
+    TreeEditorComponent,
   ],
   entryComponents: [
     NameDialogComponent,

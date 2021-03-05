@@ -3,8 +3,7 @@
   "version": "1.8.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.json",
-    "hosted": "ng serve --proxy-config proxy.conf.json --port 8080 --host 0.0.0.0",
+    "start": "ng serve --proxy-config proxy.conf.json --port 4200",
     "build": "ng build",
     "test": "jest",
     "lint": "ng lint",

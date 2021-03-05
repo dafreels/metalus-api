@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener,} from '@angular/material/tree';
@@ -34,6 +34,8 @@ export class TreeEditorComponent implements OnInit {
   );
   jsonData: any;
   selectedpath: string;
+  @Input() inputData: any;
+  @Output() dataChanged = new EventEmitter();
 
   constructor(
     private _database: TreeDatabase,
@@ -64,7 +66,11 @@ export class TreeEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._database.initialize({mappings: this.data.mappings});
+    if(this.data.mappings){
+      this._database.initialize({mappings: this.data.mappings});
+    } else if(this.inputData){
+      this._database.initialize({mappings: this.inputData});
+    }
   }
 
   getLevel = (node: TreeItemFlatNode) => node.level;
@@ -279,5 +285,6 @@ export class TreeEditorComponent implements OnInit {
 
   viewChanged() {
     this.setData(this._database.rawData.mappings);
+    this.dataChanged.emit(this._database.rawData.mappings);
   }
 }

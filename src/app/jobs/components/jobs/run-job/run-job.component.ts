@@ -72,4 +72,7 @@ export class RunJobComponent implements OnInit{
       }
     });
   }
+  treeEditorUpdated(data){
+  console.log("🚀 ~ file: run-job.component.ts ~ line 76 ~ RunJobComponent ~ treeEditorUpdated ~ data", data)
+  }
 }

@@ -26,6 +26,7 @@
       <mat-option *ngFor="let t of jobTypes" [value]="t">{{ t.name }}</mat-option>
     </mat-select>
   </mat-form-field>
+  <app-tree-editor  [inputData] = "{name:'suresh'}" (dataChanged)="treeEditorUpdated($event)"></app-tree-editor>
 </div>
 
 <mat-dialog-actions align="end">
