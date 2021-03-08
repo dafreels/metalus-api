@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {ProviderJob} from "../../models/jobs.model";
+import {Job, ProviderJob} from "../../models/jobs.model";
 import {JobsService} from "../../services/jobs.service";
 import {ProvidersService} from "../../services/providers.service";
 import {Provider} from "../../models/providers.model";
@@ -61,10 +61,21 @@ export class JobsComponent implements OnInit {
         JobStatusComponent,
         generalDialogDimensions,
         {
-          providerId: job.providerId,
-          job: job
+          providerId: j.providerId,
+          job: j
         }
       );
     })
+  }
+
+  cancelJob(job: Job) {
+    const dialogRef = this.displayDialogService.openDialog(
+      WaitModalComponent, {
+        width: '25%',
+        height: '25%',
+      });
+    this.jobsService.cancelJob(job).subscribe(() => {
+      dialogRef.close();
+    });
   }
 }

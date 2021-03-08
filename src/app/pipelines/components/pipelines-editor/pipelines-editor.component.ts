@@ -25,7 +25,7 @@ import {DesignerComponent} from "../../../designer/components/designer/designer.
 import {
   DesignerConstants,
   DesignerElement,
-  DesignerElementAction,
+  DesignerElementAction, DesignerElementAddOutput,
   DesignerElementOutput,
   DesignerModel
 } from "../../../designer/designer-constants";
@@ -66,6 +66,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   private stepsLoading: boolean = false;
   private pipelinesLoading: boolean = false;
+  addSplitOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
 
   constructor(
     private stepsService: StepsService,
@@ -125,6 +126,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     this.stepsService.getSteps().subscribe((steps: Step[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
+      steps.push(StaticSteps.SPLIT_STEP);
+      steps.push(StaticSteps.MERGE_STEP);
       steps.push(StaticSteps.STEP_GROUP);
       steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
       this.steps = steps;
@@ -559,6 +562,23 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       }
     } else if (action.action === 'refreshStep') {
       this.refreshStepMetadata(action.element.data['id']);
+    } else if (action.action === 'addSplit') {
+      let param = {
+        required: false,
+        defaultValue: undefined,
+        language: undefined,
+        className: undefined,
+        parameterType: undefined,
+        type: 'result',
+        name: `split-output-${this.selectedStep.params.length}`,
+        value: undefined,
+        description: 'The path to the linked nextStepId'
+      };
+      this.selectedStep.params.push(param);
+      this.addSplitOutput.next({
+        element: action.element,
+        output: param.name,
+      });
     } else if (action.action === 'mapStepGroupOutput') {
       let param = this.selectedStep.params.find(p => p.type === 'result');
       if (!param) {
@@ -608,6 +628,14 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
             return this.getPipeline(this.selectedStep);
           },
         });
+    } else if (step.type === 'split') {
+      actions.push({
+        displayName: 'Add Split',
+        action: 'addSplit',
+        enableFunction: () => {
+          return true;
+        },
+      });
     }
     return {
       name: step.id,
@@ -696,7 +724,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
 
   private generateOutputs(step: PipelineStep) {
     let outputs = [];
-    if (step.type.toLocaleLowerCase() === 'branch') {
+    if (step.type.toLocaleLowerCase() === 'branch' ||
+      step.type.toLocaleLowerCase() === 'split') {
       step.params.forEach((p) => {
         if (p.type.toLocaleLowerCase() === 'result') {
           outputs.push(new DesignerElementOutput(p.name, 'result', DesignerConstants.getSourceEndpointOptions()));
@@ -952,13 +981,42 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
       );
     }
     if (pipeline.steps.length > 0) {
+      const stepsLookup = {};
+      pipeline.steps.forEach((step) => {
+        stepsLookup[step.id] = step;
+      });
       let forkCount = 0;
       let joinCount = 0;
+      const splitFLows = [];
       pipeline.steps.forEach((step) => {
         if (step.type === 'fork') {
           forkCount++;
         } else if (step.type === 'join') {
           joinCount++;
+        } else if (step.type === 'split') {
+          if (step.params.length < 2) {
+            errors.push({
+              component: 'pipeline',
+              field: 'split',
+              message: `${step.id} must have at least two paths!`
+            });
+          }
+          const splitFlow = {
+            step,
+            flows: []
+          };
+          step.params.forEach(p => {
+            if (p.type !== 'result') {
+              errors.push({
+                component: 'pipeline',
+                field: 'split',
+                message: `${step.id} must only have result parameters!`
+              });
+            } else {
+              splitFlow.flows.push(this.buildSplitStepFlow(stepsLookup[p.value], stepsLookup, [], errors));
+            }
+          });
+          splitFLows.push(splitFlow);
         }
         if (step.params && step.params.length > 0) {
           if (step.type.toLocaleLowerCase() === 'branch') {
@@ -967,10 +1025,10 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
             );
             if (!hasResultParameter) {
               errors.push({
-                  component: 'pipeline',
+                component: 'pipeline',
                 field: 'step',
-                  message: `${step.id} is a branch step and needs at least one result.`
-                });
+                message: `${step.id} is a branch step and needs at least one result.`
+              });
             }
           }
           step.params.forEach((param) => {
@@ -1010,8 +1068,42 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           message: `must have closing join when multiple forks are present.`
         });
       }
+      splitFLows.forEach(flow => {
+        const result = flow.flows.shift().filter((v) => {
+          return flow.flows.every((a) => {
+            return a.indexOf(v) !== -1;
+          });
+        });
+        errors.push({
+          component: 'pipeline',
+          field: 'split',
+          message: `step ids ${result} must be unique across split flows!`
+        });
+      });
     }
     return errors;
+  }
+
+  private buildSplitStepFlow(step: PipelineStep, stepLookup, flow: string[], errors) {
+    flow.push(step.id);
+    if (step.type.toLowerCase() === 'branch') {
+      step.params.filter(p => p.type === 'result').forEach(path => {
+        this.buildSplitStepFlow(stepLookup[path.value], stepLookup, flow, errors);
+      });
+    } else if (step.type === 'split') {
+      // This is an error and needs to be recorded
+      errors.push({
+        component: 'pipeline',
+        field: 'split',
+        message: `${step.id} does not allow embedded split steps!`
+      });
+    } else if (step.type === 'merge') {
+      flow.pop();
+      return flow;
+    } else if (step.nextStepId) {
+      return this.buildSplitStepFlow(stepLookup[step.nextStepId], stepLookup, flow, errors);
+    }
+    return flow;
   }
 
   showErrors() {
@@ -1143,7 +1235,8 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         (conn) => conn.sourceNodeId === nodeId && conn.endpoints[0].sourceEndPoint !== 'onError'
       );
       if (children.length > 0) {
-        if (step.type.toLocaleLowerCase() === 'branch') {
+        if (step.type.toLocaleLowerCase() === 'branch' ||
+            step.type.toLocaleLowerCase() === 'split') {
           let childNode;
           delete step.nextStepId;
           children.forEach((child) => {
@@ -1264,9 +1357,17 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     return step;
   }
   getStepParamTemplate(step){
-    this.stepsService.getParamTemplate(step.stepId)
-    .subscribe(resp=>{
-      this.stepTemplate = resp;
-    })
+    switch(step.type.toLowerCase()) {
+      case 'fork':
+      case 'join':
+      case 'split':
+      case 'merge':
+        break;
+      default:
+        this.stepsService.getParamTemplate(step.stepId)
+          .subscribe(resp=>{
+            this.stepTemplate = resp;
+          });
+    }
   }
 }

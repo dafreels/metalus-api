@@ -82,4 +82,9 @@ export class JobsService {
     }
     return 'Batch';
   }
+
+  cancelJob(job: Job) {
+    return this.http.put(`/api/v1/providers/${job.providerId}/jobs/${job.id}`, {})
+      .pipe(catchError(err => throwError(err)));
+  }
 }

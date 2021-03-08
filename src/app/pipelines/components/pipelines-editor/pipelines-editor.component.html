@@ -83,7 +83,8 @@
         (elementAction)="handleElementAction($event)"
         [dataModel]="designerModel"
         #designerElement
-        (modelChanged)="modelChange($event)"></app-designer>
+        (modelChanged)="modelChange($event)"
+        [addElementOutput]="addSplitOutput"></app-designer>
     </div>
     <div class="information-panel">
       <mat-card>

@@ -86,6 +86,10 @@ export class SharedFunctions {
         return 'call_split';
       case 'join':
         return 'call_merge';
+      case 'split':
+        return 'align_vertical_top';
+      case 'merge':
+        return 'align_vertical_bottom';
       case 'execution':
         return 'transform';
       default:

@@ -25,6 +25,7 @@ module.exports = function (router) {
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
   router.get('/:id/jobs/:jobId', getJob);
+  router.put('/:id/jobs/:jobId', cancelJob);
 };
 
 async function getNewClusterForm(req, res, next) {
@@ -193,6 +194,25 @@ async function getJob(req, res) {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
       const remoteJob = await providerType.getJob(job.providerInformation, provider.providerInstance, user);
       res.status(200).json({job: _.merge(job, remoteJob)});
+    } else {
+      res.sendStatus(404);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+
+async function cancelJob(req, res) {
+  const user = await req.user;
+  const jobsModel = new JobsModel();
+  const job = await jobsModel.getByKey({id: req.params.jobId}, user);
+  if (job) {
+    const providersModel = new ProvidersModel();
+    const provider = await providersModel.getByKey({id: req.params.id}, user);
+    if (provider) {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      await providerType.cancelJob(job.providerInformation, provider.providerInstance, user);
+      res.sendStatus(204);
     } else {
       res.sendStatus(404);
     }

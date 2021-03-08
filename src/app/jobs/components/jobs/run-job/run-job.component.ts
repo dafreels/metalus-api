@@ -17,7 +17,8 @@ export interface JobType {
 }
 
 @Component({
-  templateUrl: './run-job.component.html'
+  templateUrl: './run-job.component.html',
+  styleUrls: ['./run-job.component.scss']
 })
 export class RunJobComponent implements OnInit {
   name: string;
@@ -47,6 +48,10 @@ export class RunJobComponent implements OnInit {
   selectedJobType: JobType = this.jobTypes[0];
   selectedProvider: Provider;
   bucket: string;
+  streamingInfo = {
+    duration: null,
+    durationType: 'seconds'
+  };
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
@@ -67,6 +72,7 @@ export class RunJobComponent implements OnInit {
       jobType: this.selectedJobType.id,
       providerId: this.selectedProvider.id,
       bucket: this.bucket,
+      streamingInfo: this.streamingInfo
     });
   }
 
