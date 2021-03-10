@@ -30,6 +30,9 @@
             },
             {
               "$ref": "providers.json#/definitions/GCPDataprocProviderInstance"
+            },
+            {
+              "$ref": "providers.json#/definitions/QuboleAWSProviderInstance"
             }
           ]
         }
@@ -45,6 +48,9 @@
             },
             {
               "$ref": "providers.json#/definitions/GCPCredential"
+            },
+            {
+              "$ref": "providers.json#/definitions/QuboleAWSCredential"
             }
           ]
         }
@@ -92,6 +98,25 @@
         }
       }
     },
+    "QuboleAWSProviderInstance": {
+      "allOf": [
+        {
+          "$ref": "providers.json#/definitions/ProviderInstance"
+        },
+        {
+          "type": "object",
+          "required": [
+            "credentials",
+            "region"
+          ]
+        }
+      ],
+      "properties": {
+        "region": {
+          "type": "string"
+        }
+      }
+    },
     "DatabricksCredential": {
       "type": "object",
       "properties": {
@@ -104,6 +129,20 @@
       "type": "object",
       "properties": {
         "jsonKey": {
+          "type": "string"
+        }
+      }
+    },
+    "QuboleAWSCredential": {
+      "type": "object",
+      "properties": {
+        "authToken": {
+          "type": "string"
+        },
+        "awsKey": {
+          "type": "string"
+        },
+        "awsSecret": {
           "type": "string"
         }
       }

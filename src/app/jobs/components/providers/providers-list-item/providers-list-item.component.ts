@@ -8,6 +8,7 @@ import {Provider} from "../../../models/providers.model";
 })
 export class ProvidersListItemComponent {
   @Input() providers: Provider[];
+  @Input() selectedProvider: Provider;
   @Output() providerSelection = new EventEmitter();
   @Output() removeProviderEmit = new EventEmitter();
   @Output() newClusterEmit = new EventEmitter();

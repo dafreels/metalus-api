@@ -16,6 +16,7 @@
             </span>
             <mat-action-list>
               <providers-list-item [providers]="providers"
+                                   [selectedProvider]="selectedProvider"
                                    (providerSelection)="handleProviderSelection($event)"
                                    (removeProviderEmit)="removeProvider($event)"
               (newClusterEmit)="newCluster($event)"></providers-list-item>

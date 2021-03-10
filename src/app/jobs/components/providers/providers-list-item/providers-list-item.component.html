@@ -1,7 +1,8 @@
 <mat-list-item class="provider-list-item" *ngFor="let provider of providers" matTooltip="{{provider.description}}"
                matTooltipPosition="right"
-               (click)="handleProviderSelection(provider)">
-  <div class="provider-list-container" [matTooltip]="provider.description">
+               (click)="handleProviderSelection(provider)"
+               [ngClass]="selectedProvider?.id === provider.id ? 'provider-selected' : ''">
+  <div class="provider-list-container">
     <mat-icon color="primary">{{getProviderIcon(provider)}}</mat-icon>
     <span class="provider-list-text">{{provider.name}}
       <button mat-icon-button [matMenuTriggerFor]="menu" color="primary" aria-label="Navigation">

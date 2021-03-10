@@ -6,6 +6,8 @@ import {SharedFunctions} from "../../../shared/utils/shared-functions";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
+import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 
 @Component({
   selector: 'provider-clusters',
@@ -21,13 +23,22 @@ export class ClustersComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(public dialog: MatDialog,
-              private providersService: ProvidersService) {}
+              private providersService: ProvidersService,
+              private displayDialogService: DisplayDialogService) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
       this.providerSubject.subscribe(element => {
+        const dialogRef = this.displayDialogService.openDialog(
+          WaitModalComponent, {
+            width: '25%',
+            height: '25%',
+          });
         this.provider = element;
-        this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
+        this.providersService.getClustersList(this.provider.id).subscribe(result => {
+          dialogRef.close();
+          this.clusters = result;
+        });
       }));
     this.subscriptions.push(
       this.clusterSubject.subscribe(cluster => {
@@ -43,10 +54,18 @@ export class ClustersComponent implements OnInit, OnDestroy {
         message: 'Are you sure you wish to permanently terminate this cluster? This operation is asynchronous.',
       },
     });
+    const waitDialogRef = this.displayDialogService.openDialog(
+      WaitModalComponent, {
+        width: '25%',
+        height: '25%',
+      });
     this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
         if (confirmation) {
           this.providersService.deleteCluster(this.provider.id, cluster).subscribe(el => {
-            this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
+            this.providersService.getClustersList(this.provider.id).subscribe(result => {
+              waitDialogRef.close();
+              this.clusters = result;
+            });
           });
         }
       },
@@ -75,6 +94,14 @@ export class ClustersComponent implements OnInit, OnDestroy {
   }
 
   refresh() {
-    this.providersService.getClustersList(this.provider.id).subscribe(result => this.clusters = result);
+    const dialogRef = this.displayDialogService.openDialog(
+      WaitModalComponent, {
+        width: '25%',
+        height: '25%',
+      });
+    this.providersService.getClustersList(this.provider.id).subscribe(result => {
+      dialogRef.close();
+      this.clusters = result;
+    });
   }
 }

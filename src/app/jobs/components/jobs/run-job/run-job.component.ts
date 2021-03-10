@@ -52,6 +52,7 @@ export class RunJobComponent implements OnInit {
     duration: null,
     durationType: 'seconds'
   };
+  selectedLogLevel: string = 'INFO';
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
@@ -72,7 +73,8 @@ export class RunJobComponent implements OnInit {
       jobType: this.selectedJobType.id,
       providerId: this.selectedProvider.id,
       bucket: this.bucket,
-      streamingInfo: this.streamingInfo
+      streamingInfo: this.streamingInfo,
+      selectedLogLevel: this.selectedLogLevel
     });
   }
 

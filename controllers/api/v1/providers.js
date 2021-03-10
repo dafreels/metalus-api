@@ -229,6 +229,7 @@ async function startJob(req, res, next) {
   const applicationId = req.body.applicationId;
   const bucket = req.body.bucket;
   const jobType = req.body.jobType;
+  const logLevel = req.body.selectedLogLevel;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
@@ -314,11 +315,13 @@ async function startJob(req, res, next) {
       }
       const repos = processJSON.repos.trim().length > 0 ? `${jarsDir},${processJSON.repos.trim()}` : jarsDir;
       const classPath = await MetalusUtils.generateClasspath(jarFiles, stagingDir, 'jars/', repos);
-      runConfig.jars = classPath.split(',');
+      runConfig.jars = Array.from(new Set(classPath.split(',')));
       runConfig.bucket = bucket;
       runConfig.stagingDir = stagingDir;
       runConfig.clusterId = clusterId;
       runConfig.clusterName = clusterName;
+      runConfig.name = name;
+      runConfig.logLevel = logLevel;
       const runId = await providerType.executeApplication(provider.providerInstance, user, runConfig);
 
       const jobBody = {
@@ -329,7 +332,7 @@ async function startJob(req, res, next) {
         projectId: user.defaultProjectId,
         jobType,
         providerInformation: {
-          clusterId,
+          clusterId: clusterId.toString(),
           clusterName,
           runId,
           bucket

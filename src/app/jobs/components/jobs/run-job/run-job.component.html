@@ -10,6 +10,13 @@
           <mat-option *ngFor="let app of applications" [value]="app">{{ app.name }}</mat-option>
         </mat-select>
       </mat-form-field>
+      <mat-form-field>
+        <mat-label>Log Level:</mat-label>
+        <mat-select [(ngModel)]="selectedLogLevel" (selectionChange)="determineRequiredFields()">
+          <mat-option value="INFO">INFO</mat-option>
+          <mat-option value="DEBUG">DEBUG</mat-option>
+        </mat-select>
+      </mat-form-field>
     </mat-card-content>
   </mat-card>
 

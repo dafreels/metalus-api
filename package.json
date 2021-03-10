@@ -27,6 +27,10 @@
     "@angular/platform-browser": "^8.2.14",
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/router": "^8.2.14",
+    "@aws-sdk/client-ec2": "^3.8.0",
+    "@aws-sdk/client-s3": "^3.3.0",
+    "@aws-sdk/node-http-handler": "^3.3.0",
+    "@aws-sdk/types": "^3.3.0",
     "@google-cloud/compute": "^2.4.3",
     "@google-cloud/dataproc": "^2.3.0",
     "@google-cloud/storage": "^5.8.0",
@@ -61,6 +65,7 @@
     "passport-local": "^1.0.0",
     "rxjs": "^6.5.4",
     "stream-to-promise": "^3.0.0",
+    "ts-node": "^9.0.0",
     "tslib": "^1.9.0",
     "uuid": "^3.4.0",
     "zone.js": "~0.9.1"
@@ -87,7 +92,6 @@
     "rimraf-promise": "^2.0.0",
     "supertest": "^4.0.2",
     "tar": "^6.0.2",
-    "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
     "typescript": "3.4.5"
   }

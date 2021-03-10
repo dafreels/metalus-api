@@ -1,0 +1,44 @@
+[
+  {
+    "type": "input",
+    "key": "name",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "description",
+    "templateOptions": {
+      "label": "Description"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.region",
+    "templateOptions": {
+      "label": "Region"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.authToken",
+    "templateOptions": {
+      "label": "Qubole Auth Token"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.awsKey",
+    "templateOptions": {
+      "label": "AWS API Key"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.awsSecret",
+    "templateOptions": {
+      "label": "AWS API Secret"
+    }
+  }
+]
