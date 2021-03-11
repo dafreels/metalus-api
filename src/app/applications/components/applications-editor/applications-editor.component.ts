@@ -58,7 +58,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   executionTemplates: ExecutionTemplate[] = [{
     description: 'Blank Execution',
     exposePipelineManager: false,
-    globals: null,
+    globals: {},
     id: 'Blank',
     displayName: 'Blank',
     initialPipelineId: '',
@@ -553,7 +553,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         x: this.designerModel.nodes[key].x,
         y: this.designerModel.nodes[key].y,
       };
-      if (Object.keys(execution.globals).length === 0) {
+      if (execution.globals && Object.keys(execution.globals).length === 0) {
         delete execution.globals;
       }
       executions.push(execution);

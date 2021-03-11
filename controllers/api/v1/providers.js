@@ -386,7 +386,7 @@ async function bundleApplicationJson(jarsDir, application, applicationId) {
   await MetalusUtils.writefile(`${directoryPath}/${application.id}.json`, Buffer.from(JSON.stringify(application)));
   const cwd = process.cwd();
   process.chdir(jarsDir);
-  await MetalusUtils.exec('jar', ['cf', appName, 'metadata']);
+  await MetalusUtils.exec('/usr/lib/jvm/default-jvm/bin/jar', ['cf', appName, 'metadata']);
   await MetalusUtils.removeDir(`${jarsDir}/metadata`);
   process.chdir(cwd);
   return {
