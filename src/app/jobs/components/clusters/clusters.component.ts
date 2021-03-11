@@ -51,16 +51,16 @@ export class ClustersComponent implements OnInit, OnDestroy {
       width: '450px',
       height: '200px',
       data: {
-        message: 'Are you sure you wish to permanently terminate this cluster? This operation is asynchronous.',
+        message: 'Are you sure you wish to terminate this cluster? This operation is asynchronous.',
       },
     });
-    const waitDialogRef = this.displayDialogService.openDialog(
-      WaitModalComponent, {
-        width: '25%',
-        height: '25%',
-      });
     this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
         if (confirmation) {
+          const waitDialogRef = this.displayDialogService.openDialog(
+            WaitModalComponent, {
+              width: '25%',
+              height: '25%',
+            });
           this.providersService.deleteCluster(this.provider.id, cluster).subscribe(el => {
             this.providersService.getClustersList(this.provider.id).subscribe(result => {
               waitDialogRef.close();

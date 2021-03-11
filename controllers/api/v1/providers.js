@@ -20,7 +20,7 @@ module.exports = function (router) {
   router.delete('/:id', deleteProvider);
   router.get('/:id/clusters', getClusters);
   router.post('/:id/clusters', createCluster);
-  router.delete('/:id/clusters/:clusterId', deleteCluster);
+  router.delete('/:id/clusters/:clusterId', terminateCluster);
   router.get('/:id/new-cluster-form', getNewClusterForm);
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
@@ -152,17 +152,19 @@ async function createCluster(req, res, next) {
   }
 }
 
-async function deleteCluster(req, res, next) {
+async function terminateCluster(req, res, next) {
   const user = await req.user;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
     try {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
-      await providerType.deleteCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
-      // Delete the jobs associated with this cluster
-      const jobsModel = new JobsModel();
-      await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
+      await providerType.terminateCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      // Delete the jobs associated with this cluster if terminate removes the cluster
+      if (providerType.canDeleteJobs()) {
+        const jobsModel = new JobsModel();
+        await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
+      }
       res.sendStatus(204);
     } catch (err) {
       next(err);
