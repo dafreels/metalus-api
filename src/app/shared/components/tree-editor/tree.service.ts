@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import * as _ from 'lodash';
+import { EventEmitter } from 'events';
 
 export interface IItemType {
   name: string;
@@ -33,7 +34,19 @@ export class TreeItemFlatNode {
 @Injectable()
 export class TreeDatabase {
   dataChange = new BehaviorSubject<TreeItemNode[]>([]);
-  rawData: any;
+  private _rawData: any;
+  private listener:EventEmitter;
+  set rawData(data) {
+    this._rawData = data;
+    if(this.listener) {
+      const rootName = Object.keys(this._rawData)[0]
+      this.listener.emit(this._rawData[rootName]);
+    }
+  }
+  get rawData() {
+    return this._rawData;
+  }
+  
   selectedpath: string = '[mappings]';//default expanded
   get data(): TreeItemNode[] {
     return this.dataChange.value;
@@ -41,7 +54,9 @@ export class TreeDatabase {
 
   constructor() {
   }
-
+  registerListener(listener) {
+    this.listener = listener;
+  }
   initialize(data) {
     this.rawData = data;
     this.dataChange.next(this.buildFileTree(this.rawData, 0));

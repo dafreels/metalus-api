@@ -144,6 +144,6 @@ export class RunJobComponent implements OnInit {
     return globals[name] || (globals['GlobalLinks'] && globals['GlobalLinks'][name]);
   }
   treeEditorUpdated(data){
-  console.log("🚀 ~ file: run-job.component.ts ~ line 76 ~ RunJobComponent ~ treeEditorUpdated ~ data", data)
+    this.missingParameters = data;
   }
 }

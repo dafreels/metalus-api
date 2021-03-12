@@ -82,7 +82,7 @@
     <mat-button-toggle [value]="true">Visual</mat-button-toggle>
     <mat-button-toggle [value]="false">JSON</mat-button-toggle>
   </mat-button-toggle-group>
-  <ng-container *ngIf="data">
+  <ng-container *ngIf="!inputData">
     <button
       mat-raised-button
       color="primary"

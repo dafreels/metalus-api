@@ -59,7 +59,7 @@ export class TreeEditorComponent implements OnInit {
     );
 
     this.types = this._database.types.filter(t => !(t.mapping && data.hideMappingParameters));
-
+    this._database.registerListener(this.dataChanged);
     _database.dataChange.subscribe((data) => {
       this.dataSource.data = data;
     });
