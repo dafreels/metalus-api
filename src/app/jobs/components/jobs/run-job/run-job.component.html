@@ -1,38 +1,88 @@
 <div>
-  <mat-form-field>
-    <input matInput placeholder=" Job Name" [(ngModel)]="name" required />
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Select Provider: </mat-label>
-    <mat-select [(ngModel)]="selectedProvider" (selectionChange)="handleProviderSelection($event.value.id)">
-      <mat-option *ngFor="let provider of data.providers" [value]="provider">{{ provider.name }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Select Cluster: </mat-label>
-    <mat-select [(ngModel)]="selectedCluster">
-      <mat-option *ngFor="let cluster of clusters" [value]="cluster">{{ cluster.name }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Select Application: </mat-label>
-    <mat-select [(ngModel)]="selectedApplication" (selectionChange)="determineRequiredFields()">
-      <mat-option *ngFor="let app of applications" [value]="app">{{ app.name }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Select Job Type: </mat-label>
-    <mat-select [(ngModel)]="selectedJobType">
-      <mat-option *ngFor="let t of jobTypes" [value]="t">{{ t.name }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder=" Jars Bucket Name" [(ngModel)]="bucket" required />
-  </mat-form-field>
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field>
+        <input matInput placeholder=" Job Name" [(ngModel)]="name" required/>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Select Application:</mat-label>
+        <mat-select [(ngModel)]="selectedApplication" (selectionChange)="determineRequiredFields()">
+          <mat-option *ngFor="let app of applications" [value]="app">{{ app.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Log Level:</mat-label>
+        <mat-select [(ngModel)]="selectedLogLevel" (selectionChange)="determineRequiredFields()">
+          <mat-option value="INFO">INFO</mat-option>
+          <mat-option value="DEBUG">DEBUG</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Select Provider:</mat-label>
+        <mat-select [(ngModel)]="selectedProvider" (selectionChange)="handleProviderSelection($event.value.id)">
+          <mat-option *ngFor="let provider of data.providers" [value]="provider">{{ provider.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Select Cluster:</mat-label>
+        <mat-select [(ngModel)]="selectedCluster">
+          <mat-option *ngFor="let cluster of clusters" [value]="cluster">{{ cluster.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder=" Jars Bucket Name" [(ngModel)]="bucket" required/>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Select Job Type:</mat-label>
+        <mat-select [(ngModel)]="selectedJobType">
+          <mat-option *ngFor="let t of jobTypes" [value]="t">{{ t.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div *ngIf="selectedJobType?.id !== 'batch'">
+        <mat-form-field>
+          <input matInput placeholder="Window Duration" type="number" [(ngModel)]="streamingInfo.duration"/>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Select Duration Type:</mat-label>
+          <mat-select [(ngModel)]="streamingInfo.durationType">
+            <mat-option value="milliseconds">Milliseconds</mat-option>
+            <mat-option value="seconds">Seconds</mat-option>
+            <mat-option value="minutes">Minutes</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+
   <!-- Custom job type parameters -->
-  <div *ngIf="selectedJobType?.name === 'kinesis'"></div>
+
+  <div *ngIf="selectedJobType?.name === 'kinesis'">
+    <!-- (region from provider)
+    streamName
+    appName
+    consumerStreams
+    credentials? -- credential-provider, credential-classes (pull from globals?)
+     -->
+  </div>
   <div *ngIf="selectedJobType?.name === 'kafka'"></div>
-  <div *ngIf="selectedJobType?.name === 'pubsub'"></div>
+  <div *ngIf="selectedJobType?.name === 'pubsub'">
+    <!-- (region from provider)
+    projectId
+    subscription
+    credentials? -- credential-provider, credential-classes
+     -->
+  </div>
   <!-- TODO Identify the globals that are needed to have the application run -->
   <app-tree-editor  [inputData] = "missingParameters" (dataChanged)="treeEditorUpdated($event)"></app-tree-editor>
   <div>

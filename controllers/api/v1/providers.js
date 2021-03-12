@@ -20,11 +20,12 @@ module.exports = function (router) {
   router.delete('/:id', deleteProvider);
   router.get('/:id/clusters', getClusters);
   router.post('/:id/clusters', createCluster);
-  router.delete('/:id/clusters/:clusterId', deleteCluster);
+  router.delete('/:id/clusters/:clusterId', terminateCluster);
   router.get('/:id/new-cluster-form', getNewClusterForm);
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
   router.get('/:id/jobs/:jobId', getJob);
+  router.put('/:id/jobs/:jobId', cancelJob);
 };
 
 async function getNewClusterForm(req, res, next) {
@@ -151,17 +152,19 @@ async function createCluster(req, res, next) {
   }
 }
 
-async function deleteCluster(req, res, next) {
+async function terminateCluster(req, res, next) {
   const user = await req.user;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
     try {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
-      await providerType.deleteCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
-      // Delete the jobs associated with this cluster
-      const jobsModel = new JobsModel();
-      await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
+      await providerType.terminateCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      // Delete the jobs associated with this cluster if terminate removes the cluster
+      if (providerType.canDeleteJobs()) {
+        const jobsModel = new JobsModel();
+        await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
+      }
       res.sendStatus(204);
     } catch (err) {
       next(err);
@@ -201,6 +204,25 @@ async function getJob(req, res) {
   }
 }
 
+async function cancelJob(req, res) {
+  const user = await req.user;
+  const jobsModel = new JobsModel();
+  const job = await jobsModel.getByKey({id: req.params.jobId}, user);
+  if (job) {
+    const providersModel = new ProvidersModel();
+    const provider = await providersModel.getByKey({id: req.params.id}, user);
+    if (provider) {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      await providerType.cancelJob(job.providerInformation, provider.providerInstance, user);
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(404);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+
 async function startJob(req, res, next) {
   const user = await req.user;
   const name = req.body.name;
@@ -209,6 +231,7 @@ async function startJob(req, res, next) {
   const applicationId = req.body.applicationId;
   const bucket = req.body.bucket;
   const jobType = req.body.jobType;
+  const logLevel = req.body.selectedLogLevel;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
@@ -294,11 +317,13 @@ async function startJob(req, res, next) {
       }
       const repos = processJSON.repos.trim().length > 0 ? `${jarsDir},${processJSON.repos.trim()}` : jarsDir;
       const classPath = await MetalusUtils.generateClasspath(jarFiles, stagingDir, 'jars/', repos);
-      runConfig.jars = classPath.split(',');
+      runConfig.jars = Array.from(new Set(classPath.split(',')));
       runConfig.bucket = bucket;
       runConfig.stagingDir = stagingDir;
       runConfig.clusterId = clusterId;
       runConfig.clusterName = clusterName;
+      runConfig.name = name;
+      runConfig.logLevel = logLevel;
       const runId = await providerType.executeApplication(provider.providerInstance, user, runConfig);
 
       const jobBody = {
@@ -309,7 +334,7 @@ async function startJob(req, res, next) {
         projectId: user.defaultProjectId,
         jobType,
         providerInformation: {
-          clusterId,
+          clusterId: clusterId.toString(),
           clusterName,
           runId,
           bucket
@@ -361,7 +386,7 @@ async function bundleApplicationJson(jarsDir, application, applicationId) {
   await MetalusUtils.writefile(`${directoryPath}/${application.id}.json`, Buffer.from(JSON.stringify(application)));
   const cwd = process.cwd();
   process.chdir(jarsDir);
-  await MetalusUtils.exec('jar', ['cf', appName, 'metadata']);
+  await MetalusUtils.exec('/usr/lib/jvm/default-jvm/bin/jar', ['cf', appName, 'metadata']);
   await MetalusUtils.removeDir(`${jarsDir}/metadata`);
   process.chdir(cwd);
   return {

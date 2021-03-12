@@ -1,0 +1,6 @@
+{
+  "command": "/usr/lib/spark/bin/spark-submit",
+  "master": "yarn",
+  "language":"command_line",
+  "command_type":"SparkCommand"
+}

@@ -5,8 +5,8 @@ import {DisplayDialogService} from "../../../shared/services/display-dialog.serv
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {NewProviderComponent} from "./new-provider/new-provider.component";
 import {Subject} from "rxjs";
-import {DesignerElement} from "../../../designer/designer-constants";
 import {NewClusterComponent} from "../clusters/new-cluster/new-cluster.component";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 
 @Component({
   templateUrl: './providers.component.html',
@@ -50,6 +50,8 @@ export class ProvidersComponent implements OnInit {
   }
 
   handleProviderSelection($event: Provider) {
+    // TODO Need to ensure that we highlight the 'selected' provider and unhighlight the previous selection
+    this.selectedProvider = $event;
     this.providerSubject.next($event);
   }
 
@@ -63,7 +65,13 @@ export class ProvidersComponent implements OnInit {
       });
     addDialog.afterClosed().subscribe((result) => {
       if (result) {
+        const dialogRef = this.displayDialogService.openDialog(
+          WaitModalComponent, {
+            width: '25%',
+            height: '25%',
+          });
         this.providersService.addCluster(providerId, result).subscribe(prov => {
+          dialogRef.close();
           this.clusterSubject.next(prov);
         });
       }

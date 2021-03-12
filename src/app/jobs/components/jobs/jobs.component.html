@@ -43,6 +43,10 @@
                     <mat-icon color="primary">autorenew</mat-icon>
                     <span class="spacer">Status</span>
                   </a>
+                  <a mat-menu-item (click)="cancelJob(job.job)">
+                    <mat-icon color="primary">cancel</mat-icon>
+                    <span class="spacer">Cancel</span>
+                  </a>
                 </mat-menu>
               </mat-cell>
             </ng-container>

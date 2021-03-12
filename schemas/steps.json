@@ -17,7 +17,7 @@
               "type": "string",
               "unique": true,
               "minLength": 25,
-              "maxLength": 36
+              "maxLength": 37
             },
             "project": {
               "type": "object",
@@ -69,7 +69,9 @@
             "branch",
             "fork",
             "join",
-            "step-group"
+            "step-group",
+            "split",
+            "merge"
           ]
         },
         "params": {

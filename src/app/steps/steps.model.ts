@@ -46,7 +46,7 @@ export class StaticSteps {
     id: '3d8b5057-6c12-5d3d-80fc-fad3fa0e2191',
     type: 'fork',
     displayName: 'Fork',
-    description: 'A fork type step allows running a set of steps against a list of data simulating looping behavior',
+    description: 'A fork type step allows running a set of steps against a list of data simulating looping behavior. The join step is used to combine the results of the forks back into the main flow.',
     category: 'FlowControl',
     params: [
       {
@@ -74,6 +74,22 @@ export class StaticSteps {
     type: 'join',
     displayName: 'Join',
     description: 'A join type step is used to join the executions of the fork step to continue processing in a linear manner.',
+    category: 'FlowControl',
+    params: []
+  };
+  static SPLIT_STEP: Step = {
+    id: '1edfa1f0-3312-46a4-af5b-4801d9b81dae',
+    type: 'split',
+    displayName: 'Split',
+    description: 'A split type step allows running different step paths in parallel. The merge step is used to combine flows back into the main path.',
+    category: 'FlowControl',
+    params: []
+  };
+  static MERGE_STEP: Step = {
+    id: '33dafef2-ba92-499c-a29f-739f81e47effb',
+    type: 'merge',
+    displayName: 'Merge',
+    description: 'A merge type step is used to merge the executions of the split step to continue processing in a linear manner.',
     category: 'FlowControl',
     params: []
   };

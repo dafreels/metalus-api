@@ -42,7 +42,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   set selectedPackage(packageObj) {
     this._selectedPackage = packageObj;
     this.sampleTemplate = {};
-    
   }
   enableSave:boolean = false;
   set selectedStep(step) {
@@ -110,6 +109,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.stepsService.getSteps().subscribe((steps: Step[]) => {
       steps.push(StaticSteps.FORK_STEP);
       steps.push(StaticSteps.JOIN_STEP);
+      steps.push(StaticSteps.SPLIT_STEP);
+      steps.push(StaticSteps.MERGE_STEP);
       steps.push(StaticSteps.STEP_GROUP);
       steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
       this.steps = steps;
@@ -318,7 +319,7 @@ onFileLoad(event) {
   get isPackage(){
     return this.stepOrPackageSlection === 'Package';
   }
- 
+
   get canAddSampleJSON() {
     if(this.isPackage && this.selectedPackage) {
       return !this.selectedPackage.template;
@@ -335,7 +336,7 @@ onFileLoad(event) {
       return !!(this.stepTemplate && this.selectedParam);
     }
   }
-  
+
   get canPreviewPackageTemplate(){
     return this.selectedPackage.template || (JSON.stringify(this.paramTemplate)!='{}' && this.showPreview);
   }

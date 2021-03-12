@@ -1,0 +1,53 @@
+{
+  "cloud_config": {
+    "provider": "aws",
+    "compute_config": {
+      "compute_validated": true,
+      "use_account_compute_creds": true
+    },
+    "location": {
+      "aws_region": ""
+    },
+    "network_config": {
+      "vpc_id": "",
+      "subnet_id": ""
+    }
+  },
+  "engine_config": {
+    "flavour": "spark",
+    "spark_settings": {
+      "spark_version": "2.4-latest"
+    }
+  },
+  "cluster_info": {
+    "composition": {
+      "master": {
+        "nodes": [
+          {
+            "percentage": 100,
+            "type": "ondemand"
+          }
+        ]
+      },
+      "min_nodes": {
+        "nodes": [
+          {
+            "percentage": 100,
+            "type": "ondemand"
+          }
+        ]
+      },
+      "autoscaling_nodes": {
+        "nodes": [
+          {
+            "percentage": 100,
+            "type": "spot",
+            "maximum_bid_price_percentage": 100,
+            "timeout_for_request": "1",
+            "fallback": "ondemand"
+          }
+        ]
+      }
+    }
+  }
+}

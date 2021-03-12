@@ -1,0 +1,86 @@
+[
+  {
+    "type": "input",
+    "key": "labels",
+    "templateOptions": {
+      "label": "Label(s)"
+    }
+  },
+  {
+    "type": "select",
+    "key": "engine_config.spark_settings.spark_version",
+    "templateOptions": {
+      "label": "Version",
+      "options": [
+        {
+          "id": "2.4-latest",
+          "name": "2.4"
+        },
+        {
+          "id": "3.0-latest",
+          "name": "3.0 (Beta)"
+        }
+      ],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "cloud_config.network_config.vpc_id",
+    "templateOptions": {
+      "label": "VPC",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "cloud_config.network_config.subnet_id",
+    "templateOptions": {
+      "label": "Subnet",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "cluster_info.master_instance_type",
+    "templateOptions": {
+      "label": "Master Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "cluster_info.slave_instance_type",
+    "templateOptions": {
+      "label": "Worker Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "cluster_info.min_nodes",
+    "templateOptions": {
+      "label": "Minimum Nodes",
+      "type": "number",
+      "min": 1
+    }
+  },
+  {
+    "type": "input",
+    "key": "cluster_info.max_nodes",
+    "templateOptions": {
+      "label": "Maximum Nodes",
+      "type": "number",
+      "min": 1
+    }
+  }
+]
