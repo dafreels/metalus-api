@@ -49,13 +49,17 @@
                   <mat-icon>more_horiz</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-<!--                  <a mat-menu-item (click)="refreshState(cluster.id)">-->
-<!--                    <mat-icon color="primary">refresh</mat-icon>-->
-<!--                    <span class="spacer">Refresh</span>-->
-<!--                  </a>-->
-                  <a mat-menu-item (click)="removeEngine(cluster)">
+                  <a *ngIf="cluster.canStart" mat-menu-item (click)="startCluster(cluster)">
+                    <mat-icon color="primary">play_arrow</mat-icon>
+                    <span class="spacer">Start</span>
+                  </a>
+                  <a *ngIf="cluster.canStop" mat-menu-item (click)="stopCluster(cluster)">
+                    <mat-icon color="primary">stop</mat-icon>
+                    <span class="spacer">Stop</span>
+                  </a>
+                  <a *ngIf="cluster.canDelete" mat-menu-item (click)="deleteCluster(cluster)">
                     <mat-icon color="primary">cancel</mat-icon>
-                    <span class="spacer">Terminate</span>
+                    <span class="spacer">Delete</span>
                   </a>
                 </mat-menu>
               </mat-cell>

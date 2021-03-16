@@ -20,7 +20,9 @@ module.exports = function (router) {
   router.delete('/:id', deleteProvider);
   router.get('/:id/clusters', getClusters);
   router.post('/:id/clusters', createCluster);
-  router.delete('/:id/clusters/:clusterId', terminateCluster);
+  router.put('/:id/clusters/:clusterId/start', startCluster);
+  router.put('/:id/clusters/:clusterId/stop', stopCluster);
+  router.delete('/:id/clusters/:clusterId', deleteCluster);
   router.get('/:id/new-cluster-form', getNewClusterForm);
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
@@ -152,19 +154,51 @@ async function createCluster(req, res, next) {
   }
 }
 
-async function terminateCluster(req, res, next) {
+async function startCluster(req, res, next) {
   const user = await req.user;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
     try {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
-      await providerType.terminateCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      await providerType.startCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+
+async function stopCluster(req, res, next) {
+  const user = await req.user;
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({id: req.params.id}, user);
+  if (provider) {
+    try {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      await providerType.stopCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+
+async function deleteCluster(req, res, next) {
+  const user = await req.user;
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({id: req.params.id}, user);
+  if (provider) {
+    try {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      await providerType.deleteCluster(req.params.clusterId, req.query.clusterName, provider.providerInstance, user);
       // Delete the jobs associated with this cluster if terminate removes the cluster
-      if (providerType.canDeleteJobs()) {
-        const jobsModel = new JobsModel();
-        await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
-      }
+      const jobsModel = new JobsModel();
+      await jobsModel.deleteMany({'providerInformation.clusterId': req.params.clusterId});
       res.sendStatus(204);
     } catch (err) {
       next(err);
@@ -386,7 +420,7 @@ async function bundleApplicationJson(jarsDir, application, applicationId) {
   await MetalusUtils.writefile(`${directoryPath}/${application.id}.json`, Buffer.from(JSON.stringify(application)));
   const cwd = process.cwd();
   process.chdir(jarsDir);
-  await MetalusUtils.exec('/usr/lib/jvm/default-jvm/bin/jar', ['cf', appName, 'metadata']);
+  await MetalusUtils.exec(process.env.JAR_COMMAND || 'jar', ['cf', appName, 'metadata']);
   await MetalusUtils.removeDir(`${jarsDir}/metadata`);
   process.chdir(cwd);
   return {

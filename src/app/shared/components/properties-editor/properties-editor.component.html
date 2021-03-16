@@ -12,6 +12,7 @@
     <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('global')">Global</button>
     <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('runtime')">Runtime Parameter</button>
     <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('mapped_runtime')">Mapped Runtime Parameter</button>
+    <button *ngIf="allowSpecialParameters" mat-menu-item (click)="addParameter('credential')">Credential</button>
   </mat-menu>
 </div>
 <mat-card *ngFor="let global of globalParameters">

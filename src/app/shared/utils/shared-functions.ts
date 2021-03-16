@@ -27,6 +27,9 @@ export class SharedFunctions {
         case '&':
           type = 'pipeline';
           break;
+        case '%':
+          type = 'credential';
+          break;
       }
     }
 
@@ -53,6 +56,9 @@ export class SharedFunctions {
         break;
       case 'pipeline':
         leadCharacter = '&';
+        break;
+      case 'credential':
+        leadCharacter = '%';
         break;
       default:
         leadCharacter = '';

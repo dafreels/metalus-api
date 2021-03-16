@@ -40,8 +40,14 @@ export class JobsComponent implements OnInit {
     );
     addDialog.afterClosed().subscribe((result) => {
       if (result) {
+        const dialogRef = this.displayDialogService.openDialog(
+          WaitModalComponent, {
+            width: '25%',
+            height: '25%',
+          });
         this.jobsService.runJob(result).subscribe(job => {
           this.jobsService.getJobsByProviders(this.providers).subscribe(jobs => {
+            dialogRef.close();
             this.jobs = jobs;
           });
         });

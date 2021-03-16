@@ -50,7 +50,6 @@ export class ProvidersComponent implements OnInit {
   }
 
   handleProviderSelection($event: Provider) {
-    // TODO Need to ensure that we highlight the 'selected' provider and unhighlight the previous selection
     this.selectedProvider = $event;
     this.providerSubject.next($event);
   }

@@ -32,6 +32,9 @@ export interface Cluster {
   source: string;
   startTime: number;
   terminationTime?: number;
+  canStart: boolean;
+  canStop: boolean;
+  canDelete: boolean;
 }
 
 export interface ClustersResponse {

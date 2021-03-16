@@ -1270,6 +1270,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
           case 'pipeline':
           case 'step':
           case 'secondary':
+          case 'credential':
             param.type = 'text';
             break;
           default:

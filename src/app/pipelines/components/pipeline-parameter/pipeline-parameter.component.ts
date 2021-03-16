@@ -92,7 +92,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       this.parameterType = 'text';
     } else if (stepParameter.type === 'list') {
       this.parameterType = 'list';
-    } 
+    }
     if (
       stepParameter.type !== 'result' &&
       stepParameter.value &&
@@ -115,6 +115,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       }
       if (stepParameter.value.startsWith('#')) {
         this.parameterType = 'secondary';
+      }
+      if (stepParameter.value.startsWith('%')) {
+        this.parameterType = 'credential';
       }
     }
     if (stepParameter) {
@@ -174,6 +177,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
               if (
                 value &&
                 (type === 'global' ||
+                  type === 'credential' ||
                   type === 'runtime' ||
                   type === 'mapped_runtime')
               ) {

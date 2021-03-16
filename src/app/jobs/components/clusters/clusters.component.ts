@@ -46,7 +46,35 @@ export class ClustersComponent implements OnInit, OnDestroy {
       }));
   }
 
-  removeEngine(cluster) {
+  startCluster(cluster) {
+    const waitDialogRef = this.displayDialogService.openDialog(
+      WaitModalComponent, {
+        width: '25%',
+        height: '25%',
+      });
+    this.providersService.startCluster(this.provider.id, cluster).subscribe(el => {
+      this.providersService.getClustersList(this.provider.id).subscribe(result => {
+        waitDialogRef.close();
+        this.clusters = result;
+      });
+    });
+  }
+
+  stopCluster(cluster) {
+      const waitDialogRef = this.displayDialogService.openDialog(
+        WaitModalComponent, {
+          width: '25%',
+          height: '25%',
+        });
+      this.providersService.stopCluster(this.provider.id, cluster).subscribe(el => {
+        this.providersService.getClustersList(this.provider.id).subscribe(result => {
+          waitDialogRef.close();
+          this.clusters = result;
+        });
+      });
+  }
+
+  deleteCluster(cluster) {
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '450px',
       height: '200px',

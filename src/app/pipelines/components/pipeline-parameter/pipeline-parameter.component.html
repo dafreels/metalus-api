@@ -42,7 +42,7 @@
               </mat-select>
             </mat-form-field>
           </ng-container>
-         
+
         </ng-container>
         <ng-template #isNotTypeResponse>
           <mat-slide-toggle *ngIf="param.type === 'boolean'" (change)="handleChange(param.id, param)"
@@ -75,6 +75,7 @@
           <mat-option *ngIf="stepSuggestions && stepSuggestions.length > 0" value="secondary">Secondary Step Response</mat-option>
           <mat-option value="runtime">Runtime</mat-option>
           <mat-option value="mapped_runtime">Mapped Runtime</mat-option>
+          <mat-option value="credential">Credential</mat-option>
           <mat-option value="integer">Integer</mat-option>
           <mat-option value="boolean">Boolean</mat-option>
           <mat-option value="scalascript" *ngIf="!scalaParamType">ScalaScript</mat-option>

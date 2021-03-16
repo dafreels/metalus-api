@@ -58,5 +58,6 @@ RUN echo `date` > /opt/metalus/dist/metalus/build.txt && \
 
 EXPOSE 8000
 ENV PORT 8000
+ENV JAR_COMMAND "/usr/lib/jvm/default-jvm/bin/jar"
 
 CMD ["node", "server.js"]

@@ -2,7 +2,8 @@ import {Injectable} from "@angular/core";
 import {Observable, of, throwError} from "rxjs";
 import {
   Cluster,
-  ClusterResponse, ClustersResponse,
+  ClusterResponse,
+  ClustersResponse,
   FormRespsonse,
   Provider,
   ProviderResponse,
@@ -12,7 +13,6 @@ import {
 } from "../models/providers.model";
 import {catchError, map} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
-import {JobResponse, JobsResponse} from "../models/jobs.model";
 
 @Injectable({
   providedIn: 'root',
@@ -113,6 +113,26 @@ export class ProvidersService {
       })
       .pipe(
         map((response) => response.body.cluster),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  startCluster(providerId: string, cluster: Cluster) {
+    return this.http
+      .put(`/api/v1/providers/${providerId}/clusters/${cluster.id}/start?clusterName=${cluster.name}`, null,{
+        observe: 'response',
+      })
+      .pipe(
+        catchError((err) => throwError(err))
+      );
+  }
+
+  stopCluster(providerId: string, cluster: Cluster) {
+    return this.http
+      .put(`/api/v1/providers/${providerId}/clusters/${cluster.id}/stop?clusterName=${cluster.name}`, null,{
+        observe: 'response',
+      })
+      .pipe(
         catchError((err) => throwError(err))
       );
   }

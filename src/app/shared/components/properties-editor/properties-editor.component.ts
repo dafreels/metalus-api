@@ -46,6 +46,7 @@ export class PropertiesEditorComponent {
       case 'step':
       case 'secondary':
       case 'global':
+      case 'credential':
       case 'runtime':
       case 'mapped_runtime':
       case 'string':

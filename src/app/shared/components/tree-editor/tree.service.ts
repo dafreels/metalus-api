@@ -110,6 +110,7 @@ export class TreeDatabase {
     {displayName: 'Object', name: 'object', canHaveChild: true, mapping: false},
     {displayName: 'Pipeline', name: 'pipeline', canHaveChild: false, mapping: true},
     {displayName: 'Global', name: 'global', canHaveChild: false, mapping: true},
+    {displayName: 'Credential', name: 'credential', canHaveChild: false, mapping: true},
     {displayName: 'Runtime', name: 'runtime', canHaveChild: false, mapping: true},
     {
       displayName: 'Mapped Runtime',
