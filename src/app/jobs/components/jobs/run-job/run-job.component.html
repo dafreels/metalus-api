@@ -84,6 +84,7 @@
      -->
   </div>
   <!-- TODO Identify the globals that are needed to have the application run -->
+  <app-tree-editor  [inputData] = "missingParameters" (dataChanged)="treeEditorUpdated($event)"></app-tree-editor>
   <div>
   </div>
 </div>

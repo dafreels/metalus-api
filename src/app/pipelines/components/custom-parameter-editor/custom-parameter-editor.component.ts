@@ -23,7 +23,16 @@ import {HelpComponent} from "../../../core/components/help/help.component";
   styleUrls: ['./custom-parameter-editor.component.scss']
 })
 export class CustomParameterEditorComponent implements OnInit, OnDestroy{
-  stepOrPackageSlection:'Step'|'Package' = 'Step';
+  private _stepOrPackageSlection:'Step'|'Package' = 'Step';
+  get stepOrPackageSlection(){
+    return this._stepOrPackageSlection;
+  }
+  set stepOrPackageSlection(value:'Step'|'Package') {
+    this.selectedPackage = null;
+    this.selectedStep = null;
+    this.selectedParam = null;
+    this._stepOrPackageSlection = value;
+  }
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];

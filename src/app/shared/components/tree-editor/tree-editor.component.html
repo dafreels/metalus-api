@@ -4,11 +4,15 @@
       <mat-tree-node
         *matTreeNodeDef="let node"
         matTreeNodeToggle
-        matTreeNodePadding>
+        matTreeNodePadding
+      >
         <button mat-icon-button disabled></button>
         <ng-container>
           <div class="tree-item">
-              <tree-editor-popup [node]="node" [hideMappings]="data.hideMappingParameters"></tree-editor-popup>
+            <tree-editor-popup
+              [node]="node"
+              [hideMappings]="data.hideMappingParameters"
+            ></tree-editor-popup>
           </div>
         </ng-container>
       </mat-tree-node>
@@ -18,17 +22,9 @@
         *matTreeNodeDef="let node; when: hasChild"
         matTreeNodePadding
         matTreeNodeToggle
-        (appTreeonload)="expandNode(node)">
-      <div class="key" *ngIf="node.level==0">
-        <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename">
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{
-              treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
-            }}
-          </mat-icon>
-        </button>
-      </div>
-        <div class="key" *ngIf="node.level!=0">
+        (appTreeonload)="expandNode(node)"
+      >
+        <div class="key" *ngIf="node.level == 0">
           <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename">
             <mat-icon class="mat-icon-rtl-mirror">
               {{
@@ -36,26 +32,44 @@
               }}
             </mat-icon>
           </button>
-          <tree-editor-popup [node]="node" [hideMappings]="data.hideMappingParameters"></tree-editor-popup>
+        </div>
+        <div class="key" *ngIf="node.level != 0">
+          <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{
+                treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
+              }}
+            </mat-icon>
+          </button>
+          <tree-editor-popup
+            [node]="node"
+            [hideMappings]="data.hideMappingParameters"
+          ></tree-editor-popup>
         </div>
         <div class="actions">
-          <button mat-icon-button color="primary" [matMenuTriggerFor]="typeMenu">
+          <button
+            mat-icon-button
+            color="primary"
+            [matMenuTriggerFor]="typeMenu"
+          >
             <mat-icon>add</mat-icon>
           </button>
           <mat-menu #typeMenu="matMenu">
             <button
               mat-menu-item
               *ngFor="let type of types"
-              (click)="addNewItem(node, type)">
+              (click)="addNewItem(node, type)"
+            >
               <span>{{ type.displayName }}</span>
             </button>
           </mat-menu>
           <button
-            *ngIf="node.level!=0"
+            *ngIf="node.level != 0"
             class="action-delete"
             mat-icon-button
             color="primary"
-            (click)="deleteNode(node)">
+            (click)="deleteNode(node)"
+          >
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -68,16 +82,19 @@
     <mat-button-toggle [value]="true">Visual</mat-button-toggle>
     <mat-button-toggle [value]="false">JSON</mat-button-toggle>
   </mat-button-toggle-group>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="saveDialog()"
-    style="margin-right: 5px">
-    Save
-  </button>
-  <button mat-raised-button color="primary" (click)="cancelDialog()">
-    Cancel
-  </button>
+  <ng-container *ngIf="!inputData">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="saveDialog()"
+      style="margin-right: 5px"
+    >
+      Save
+    </button>
+    <button mat-raised-button color="primary" (click)="cancelDialog()">
+      Cancel
+    </button>
+  </ng-container>
 </mat-dialog-actions>
 
 <ng-template #codeView>

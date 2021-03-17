@@ -151,4 +151,7 @@ export class RunJobComponent implements OnInit {
     globals = application.globals || { GlobalLinks: {}};
     return globals[name] || (globals['GlobalLinks'] && globals['GlobalLinks'][name]);
   }
+  treeEditorUpdated(data){
+    this.missingParameters = data;
+  }
 }
