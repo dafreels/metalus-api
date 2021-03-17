@@ -279,14 +279,6 @@ module.exports = function (router) {
         .once('end', async () => {
           const userModel = new UsersModel();
           const projectUser = await userModel.getUser(userId);
-          const project = projectUser.projects.find(p => p.id === projectUser.defaultProjectId);
-          if (!project.uploadHistory) {
-            project.uploadHistory = [];
-          }
-          project.uploadHistory.push({
-            name: uploadedFileName,
-            uploadDate: new Date().getTime()
-          });
           await userModel.update(userId, projectUser);
           res.status(200).json({});
         })

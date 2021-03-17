@@ -56,19 +56,6 @@
                 "items": {
                   "type": "string"
                 }
-              },
-              "uploadHistory": {
-                "type": "array",
-                "items": {
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "uploadDate": {
-                      "type": "number"
-                    }
-                  }
-                }
               }
             }
           }
