@@ -1,13 +1,32 @@
-import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
-import {SelectionModel} from '@angular/cdk/collections';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlatDataSource, MatTreeFlattener,} from '@angular/material/tree';
-import {IItemType, TreeDatabase, TreeItemFlatNode, TreeItemNode,} from './tree.service';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {SharedFunctions} from 'src/app/shared/utils/shared-functions';
-import {ConfirmationModalComponent} from 'src/app/shared/components/confirmation/confirmation-modal.component';
-import {PromptComponent} from './prompt/prompt.component';
-import {PipelineMappingsData} from 'src/app/pipelines/components/object-group-mappings/object-group-mappings.component';
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import {
+  MatTreeFlatDataSource,
+  MatTreeFlattener,
+} from '@angular/material/tree';
+import {
+  IItemType,
+  TreeDatabase,
+  TreeItemFlatNode,
+  TreeItemNode,
+} from './tree.service';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
+import { ConfirmationModalComponent } from 'src/app/shared/components/confirmation/confirmation-modal.component';
+import { PromptComponent } from './prompt/prompt.component';
+import { PipelineMappingsData } from 'src/app/pipelines/components/object-group-mappings/object-group-mappings.component';
 
 @Component({
   selector: 'app-tree-editor',
@@ -34,7 +53,9 @@ export class TreeEditorComponent implements OnInit {
   );
   jsonData: any;
   selectedpath: string;
-  @Input() inputData: any;
+  @Input() set inputData(data) {
+    this._database.initialize({ mappings: data });
+  }
   @Output() dataChanged = new EventEmitter();
 
   constructor(
@@ -58,7 +79,9 @@ export class TreeEditorComponent implements OnInit {
       this.treeFlattener
     );
 
-    this.types = this._database.types.filter(t => !(t.mapping && data.hideMappingParameters));
+    this.types = this._database.types.filter(
+      (t) => !(t.mapping && data.hideMappingParameters)
+    );
     this._database.registerListener(this.dataChanged);
     _database.dataChange.subscribe((data) => {
       this.dataSource.data = data;
@@ -66,10 +89,8 @@ export class TreeEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(this.data.mappings){
-      this._database.initialize({mappings: this.data.mappings});
-    } else if(this.inputData){
-      this._database.initialize({mappings: this.inputData});
+    if (this.data.mappings) {
+      this._database.initialize({ mappings: this.data.mappings });
     }
   }
 
@@ -246,7 +267,7 @@ export class TreeEditorComponent implements OnInit {
   deleteNode(node: TreeItemFlatNode) {
     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
       width: '550px',
-      data: {message: `Would you like to delete ${node.item} ?`},
+      data: { message: `Would you like to delete ${node.item} ?` },
     });
     dialogRef.afterClosed().subscribe((confirmation) => {
       if (confirmation) {
@@ -258,7 +279,10 @@ export class TreeEditorComponent implements OnInit {
   }
 
   expandNode(node: TreeItemFlatNode) {
-    if (this._database.selectedpath && this._database.selectedpath.indexOf(node.path) > -1) {
+    if (
+      this._database.selectedpath &&
+      this._database.selectedpath.indexOf(node.path) > -1
+    ) {
       this.treeControl.expand(node);
     }
   }
@@ -272,7 +296,7 @@ export class TreeEditorComponent implements OnInit {
   }
 
   setData(data) {
-    this._database.initialize({mappings: data});
+    this._database.initialize({ mappings: data });
   }
 
   get codeViewData() {
