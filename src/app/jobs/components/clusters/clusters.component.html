@@ -36,11 +36,11 @@
             </ng-container>
             <ng-container matColumnDef="startTime">
               <mat-header-cell *matHeaderCellDef> Start Time</mat-header-cell>
-              <mat-cell *matCellDef="let cluster">{{cluster.startTime | date : 'HH:mm:ss.SSS': 'UTC'}}</mat-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.startTime | date : 'MM/dd/yyyy HH:mm:ss.SSS': 'UTC'}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="terminationTime">
               <mat-header-cell *matHeaderCellDef> Termination Time</mat-header-cell>
-              <mat-cell *matCellDef="let cluster">{{cluster.terminationTime | date : 'HH:mm:ss.SSS': 'UTC'}}</mat-cell>
+              <mat-cell *matCellDef="let cluster">{{cluster.terminationTime | date : 'MM/dd/yyyy HH:mm:ss.SSS': 'UTC'}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef> Actions</mat-header-cell>

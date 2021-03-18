@@ -63,6 +63,11 @@ export class JobsService {
         catchError(err => throwError(err)));
   }
 
+  deleteJob(providerId, jobId) {
+    return this.http.delete<any>(`/api/v1/providers/${providerId}/jobs/${jobId}`, {observe: 'response'})
+      .pipe(catchError(err => throwError(err)));
+  }
+
   static getStatusString(status: JobStatus) {
     switch (status) {
       case JobStatus.COMPLETE:

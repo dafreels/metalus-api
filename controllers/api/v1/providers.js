@@ -28,6 +28,7 @@ module.exports = function (router) {
   router.post('/:id/jobs', startJob);
   router.get('/:id/jobs/:jobId', getJob);
   router.put('/:id/jobs/:jobId', cancelJob);
+  router.delete('/:id/jobs/:jobId', deleteJob);
 };
 
 async function getNewClusterForm(req, res, next) {
@@ -229,6 +230,8 @@ async function getJob(req, res) {
     if (provider) {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
       const remoteJob = await providerType.getJob(job.providerInformation, provider.providerInstance, user);
+      job.lastStatus = remoteJob.status;
+      await jobsModel.update(job.id, job, user);
       res.status(200).json({job: _.merge(job, remoteJob)});
     } else {
       res.sendStatus(404);
@@ -257,6 +260,18 @@ async function cancelJob(req, res) {
   }
 }
 
+async function deleteJob(req, res) {
+  const user = await req.user;
+  const jobsModel = new JobsModel();
+  const job = await jobsModel.getByKey({id: req.params.jobId}, user);
+  if (job) {
+    await jobsModel.delete(req.params.jobId, user);
+    res.sendStatus(204);
+  } else {
+    res.sendStatus(404);
+  }
+}
+
 async function startJob(req, res, next) {
   const user = await req.user;
   const name = req.body.name;
@@ -266,6 +281,7 @@ async function startJob(req, res, next) {
   const bucket = req.body.bucket;
   const jobType = req.body.jobType;
   const logLevel = req.body.selectedLogLevel;
+  const mappingParameters = req.body.mappingParameters;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
@@ -288,23 +304,56 @@ async function startJob(req, res, next) {
     }
     // Combine the local and remote jars that were uploaded
     const jarFiles = processJSON.jarFiles.concat(processJSON.remoteJars);
+    // Add any runtime values
+    if (mappingParameters) {
+      application.globals = _.merge(application.globals, mappingParameters.globals);
+      application.pipelineParameters = _.merge(application.pipelineParameters, mappingParameters.pipelineParameters);
+    }
     // Bundle the application JSON into a jar so that it can be retrieved on the classpath
     const runConfig = await bundleApplicationJson(`${jarsDir}/staging`, application, applicationId);
     jarFiles.push(runConfig.jars[0]);
-    // TODO handle custom parameters for streaming jobs
+    runConfig.useCredentialProvider = mappingParameters.useCredentialProvider;
+    // handle custom parameters for streaming jobs
     let requiredStepLibrary;
     switch(jobType) {
       case 'kinesis':
         runConfig.mainDriverClass = 'com.acxiom.aws.drivers.KinesisPipelineDriver';
         requiredStepLibrary = 'metalus-aws';
+        runConfig.extraParameters = [
+          '--duration-type',
+          mappingParameters.streamingInfo.durationType,
+          '--duration',
+          mappingParameters.streamingInfo.duration,
+          '--region',
+          provider.providerInstance.region,
+          '--streamName',
+          mappingParameters.streamingInfo.streamName,
+          '--consumerStreams',
+          mappingParameters.streamingInfo.consumerStreams
+        ];
+        if (mappingParameters.streamingInfo.appName) {
+          runConfig.extraParameters.push('--appName');
+          runConfig.extraParameters.push(mappingParameters.streamingInfo.appName);
+        }
         break;
       case 'kafka':
         runConfig.mainDriverClass = 'com.acxiom.kafka.drivers.KafkaPipelineDriver';
         requiredStepLibrary = 'metalus-kafka';
+        runConfig.extraParameters = [];
         break;
       case 'pubsub':
         runConfig.mainDriverClass = 'com.acxiom.gcp.drivers.PubSubPipelineDriver';
         requiredStepLibrary = 'metalus-gcp';
+        runConfig.extraParameters = [
+          '--duration-type',
+          mappingParameters.streamingInfo.durationType,
+          '--duration',
+          mappingParameters.streamingInfo.duration,
+          '--subscription',
+          mappingParameters.streamingInfo.subscription,
+          '--projectId',
+          provider.providerInstance.projectId
+        ];
         break;
       default:
         runConfig.mainDriverClass = 'com.acxiom.pipeline.drivers.DefaultPipelineDriver';
@@ -367,6 +416,9 @@ async function startJob(req, res, next) {
         providerId: provider.id,
         projectId: user.defaultProjectId,
         jobType,
+        lastStatus: 'PENDING',
+        logLevel,
+        useCredentialProvider: mappingParameters.useCredentialProvider,
         providerInformation: {
           clusterId: clusterId.toString(),
           clusterName,

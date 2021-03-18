@@ -69,7 +69,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       className: 'com.acxiom.pipeline.DefaultPipelineListener',
       parameters: {},
     },
-    pipelineParameters: [],
+    pipelineParameters: { parameters: [] },
     securityManager: {
       className: 'com.acxiom.pipeline.DefaultPipelineSecurityManager',
       parameters: {},
@@ -168,7 +168,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         parameters: {},
       },
       pipelineManager: undefined, // This is to ensure that the system will load the application pipelines by default
-      pipelineParameters: [],
+      pipelineParameters: { parameters: [] },
       requiredParameters: [],
       securityManager: {
         className: 'com.acxiom.pipeline.DefaultPipelineSecurityManager',
@@ -795,17 +795,17 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   openPipelineParametersEditor(pipeline: Pipeline, execution: boolean = true) {
     if (!this.selectedExecution.pipelineParameters) {
-      this.selectedExecution.pipelineParameters = [];
+      this.selectedExecution.pipelineParameters = { parameters: [] };
     }
-    let parameters = execution ? this.selectedExecution.pipelineParameters.find(p => p.pipelineId === pipeline.id) :
-    this.selectedApplication.pipelineParameters.find(p => p.pipelineId === pipeline.id);
+    let parameters = execution ? this.selectedExecution.pipelineParameters.parameters.find(p => p.pipelineId === pipeline.id) :
+    this.selectedApplication.pipelineParameters.parameters.find(p => p.pipelineId === pipeline.id);
     if (!parameters) {
       parameters = {
         pipelineId: pipeline.id,
         parameters: Object.assign(SharedFunctions.generatePipelineMappings(pipeline, '?'),
           SharedFunctions.generatePipelineMappings(pipeline, '$')),
       };
-      this.selectedExecution.pipelineParameters.push(parameters);
+      this.selectedExecution.pipelineParameters.parameters.push(parameters);
     }
     const dialog = this.displayDialogService.openDialog(
       TreeEditorComponent,
