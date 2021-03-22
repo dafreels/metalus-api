@@ -1,0 +1,12 @@
+<mat-grid-list cols="4" rowHeight="50px">
+  <mat-grid-tile>Status</mat-grid-tile>
+  <mat-grid-tile>Start</mat-grid-tile>
+  <mat-grid-tile>End</mat-grid-tile>
+  <mat-grid-tile>Duration</mat-grid-tile>
+  <ng-container *ngFor="let job of data">
+    <mat-grid-tile><mat-icon>{{getStatusIcon(job.lastStatus)}}</mat-icon></mat-grid-tile>
+    <mat-grid-tile>{{job.startTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC'}}</mat-grid-tile>
+    <mat-grid-tile>{{job.endTime | date : 'MM/dd/yyyy hh:mm:ss': 'UTC'}}</mat-grid-tile>
+    <mat-grid-tile>{{(job.executionDuration ? job.executionDuration : job.endTime ? job.endTime - job.startTime: null) | date : 'HH:mm:ss.SSS': 'UTC'}}</mat-grid-tile>
+  </ng-container>
+</mat-grid-list>

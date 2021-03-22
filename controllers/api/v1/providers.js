@@ -231,6 +231,8 @@ async function getJob(req, res) {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
       const remoteJob = await providerType.getJob(job.providerInformation, provider.providerInstance, user);
       job.lastStatus = remoteJob.status;
+      job.startTime = remoteJob.startTime;
+      job.endTime = remoteJob.endTime;
       await jobsModel.update(job.id, job, user);
       res.status(200).json({job: _.merge(job, remoteJob)});
     } else {
@@ -281,11 +283,19 @@ async function startJob(req, res, next) {
   const bucket = req.body.bucket;
   const jobType = req.body.jobType;
   const logLevel = req.body.selectedLogLevel;
+  const forceCopy = req.body.forceCopy;
   const mappingParameters = req.body.mappingParameters;
+  const refreshPipelines = req.body.refreshPipelines || false;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
     const application = await new ApplicationsModel().getByKey({ id: applicationId }, user);
+    if (refreshPipelines) {
+      application.pipelines = await refreshPipelinesFromApi(application.pipelines, user);
+      for await (let exe of application.executions) {
+        exe.pipelines = await refreshPipelinesFromApi(exe.pipelines, user);
+      }
+    }
     const pipelinesModel = new PipelinesModel();
     let jarTags = await extractJarTags(application, pipelinesModel, user);
     const jarsDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${user.id}/${user.defaultProjectId}`;
@@ -312,7 +322,7 @@ async function startJob(req, res, next) {
     // Bundle the application JSON into a jar so that it can be retrieved on the classpath
     const runConfig = await bundleApplicationJson(`${jarsDir}/staging`, application, applicationId);
     jarFiles.push(runConfig.jars[0]);
-    runConfig.useCredentialProvider = mappingParameters.useCredentialProvider;
+    runConfig.useCredentialProvider = req.body.useCredentialProvider;
     // handle custom parameters for streaming jobs
     let requiredStepLibrary;
     switch(jobType) {
@@ -407,6 +417,7 @@ async function startJob(req, res, next) {
       runConfig.clusterName = clusterName;
       runConfig.name = name;
       runConfig.logLevel = logLevel;
+      runConfig.forceCopy = forceCopy;
       const runId = await providerType.executeApplication(provider.providerInstance, user, runConfig);
 
       const jobBody = {
@@ -417,8 +428,11 @@ async function startJob(req, res, next) {
         projectId: user.defaultProjectId,
         jobType,
         lastStatus: 'PENDING',
+        submitTime: new Date().getTime(),
+        startTime: null,
+        endTime: null,
         logLevel,
-        useCredentialProvider: mappingParameters.useCredentialProvider,
+        useCredentialProvider: req.body.useCredentialProvider,
         providerInformation: {
           clusterId: clusterId.toString(),
           clusterName,
@@ -463,6 +477,18 @@ async function extractJarTags(application, pipelinesModel, user) {
     });
   });
   return jarTags;
+}
+
+async function refreshPipelinesFromApi(pipelines, user) {
+  if (!pipelines || pipelines.length === 0) {
+    return pipelines;
+  }
+  const pipelinesModel = new PipelinesModel();
+  const updatedPipelines = [];
+  for await (let pipeline of pipelines) {
+    updatedPipelines.push(await pipelinesModel.getByKey({id: pipeline.id}, user));
+  }
+  return updatedPipelines;
 }
 
 async function bundleApplicationJson(jarsDir, application, applicationId) {

@@ -7,7 +7,7 @@ import {Application, Execution} from "../../../../applications/applications.mode
 import {Pipeline} from "../../../../pipelines/models/pipelines.model";
 import {PipelinesService} from "../../../../pipelines/services/pipelines.service";
 import {JobsService} from "../../../services/jobs.service";
-import {Job, ProviderJob} from "../../../models/jobs.model";
+import {ProviderJob} from "../../../models/jobs.model";
 import {MatSelectChange} from "@angular/material/select";
 
 export interface RunJobConfiguration {
@@ -62,8 +62,10 @@ export class RunJobComponent implements OnInit {
     subscription: undefined
   };
   selectedLogLevel: string = 'INFO';
-  useCredentialProvider: boolean;
-  jobs: ProviderJob[];
+  useCredentialProvider: boolean = false;
+  jobs: ProviderJob[]; // TODO Pass these in so that they are tied to the application
+  forceCopy: boolean = false;
+  refreshPipelines: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
@@ -120,11 +122,13 @@ export class RunJobComponent implements OnInit {
       streamingInfo: this.streamingInfo,
       selectedLogLevel: this.selectedLogLevel,
       useCredentialProvider: this.useCredentialProvider,
+      refreshPipelines: this.refreshPipelines,
+      forceCopy: this.forceCopy,
       globals,
       pipelineParameters
     };
     this.jobsService.runJob(body).subscribe(job => {
-      this.dialogRef.close();
+      this.dialogRef.close(job);
     });
   }
 

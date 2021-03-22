@@ -10,25 +10,13 @@
             </button>
           </mat-card-title>
           <mat-table [dataSource]="clusters" class="mat-elevation-z2">
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef> Id</mat-header-cell>
-              <mat-cell *matCellDef="let cluster">{{cluster.id}}</mat-cell>
-            </ng-container>
             <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
-              <mat-cell *matCellDef="let cluster">{{cluster.name}}</mat-cell>
+              <mat-cell *matCellDef="let cluster" [matTooltip]="cluster.id">{{cluster.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="state">
               <mat-header-cell *matHeaderCellDef> State</mat-header-cell>
               <mat-cell *matCellDef="let cluster">{{cluster.state}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="source">
-              <mat-header-cell *matHeaderCellDef> Source</mat-header-cell>
-              <mat-cell *matCellDef="let cluster">{{cluster.source}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="providerName">
-              <mat-header-cell *matHeaderCellDef> Provider</mat-header-cell>
-              <mat-cell *matCellDef="let cluster">{{cluster.providerName}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="version">
               <mat-header-cell *matHeaderCellDef> Version</mat-header-cell>
@@ -70,5 +58,8 @@
         </div>
       </mat-card-content>
     </mat-card>
+  </div>
+  <div>
+    <jobs-listing [provider]="provider"></jobs-listing>
   </div>
 </div>

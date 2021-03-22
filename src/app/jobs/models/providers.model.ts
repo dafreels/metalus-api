@@ -29,7 +29,6 @@ export interface Cluster {
   providerName: string;
   version: string;
   state: string;
-  source: string;
   startTime: number;
   terminationTime?: number;
   canStart: boolean;

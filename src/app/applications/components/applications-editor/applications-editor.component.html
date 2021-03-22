@@ -39,16 +39,22 @@
               <span class="pipeline-id">ID: {{selectedApplication.id}}</span>
             </div>
             <span>
-            <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
-              <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
-              <span>{{errors.length}} Errors Detected</span>
-            </span>
+              <span *ngIf="errors.length > 0" class="error-panel" (click)="showErrors()">
+                <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
+                <span>{{errors.length}} Errors Detected</span>
+              </span>
+            <button mat-raised-button color="primary" style="margin-right: 5px;"
+                    matTooltip="Run a Job"
+                    [disabled]="!this.selectedApplication?.id"
+                    (click)="runJob()">Run</button>
             <button mat-raised-button color="primary" style="margin-right: 5px;" (click)="saveApplication()"
                     [disabled]="errors.length > 0">Save</button>
             <button mat-button color="primary" style="margin-right: 5px;"
                     (click)="cancelApplicationChange()">Cancel</button>
             <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0"
                     (click)="autoLayout()">Autolayout</button>
+            <button mat-button color="primary" style="margin-right: 5px;" [disabled]="jobs?.length < 1"
+                      (click)="showJobs()">{{ jobs?.length }} Jobs</button>
           </span>
           </div>
           <div style="text-align: center">

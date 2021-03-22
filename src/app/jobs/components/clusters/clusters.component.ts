@@ -14,7 +14,7 @@ import {DisplayDialogService} from "../../../shared/services/display-dialog.serv
   templateUrl: './clusters.component.html'
 })
 export class ClustersComponent implements OnInit, OnDestroy {
-  displayedColumns: string[] = ['id', 'name', 'providerName', 'version', 'state', 'source', 'startTime', 'terminationTime', 'actions'];
+  displayedColumns: string[] = ['name', 'version', 'state', 'startTime', 'terminationTime', 'actions'];
   clusters: Cluster[];
   provider: Provider;
   @Input() providerTypes: ProviderType[];

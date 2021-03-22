@@ -6,7 +6,7 @@ import {ApplicationsService} from '../../applications.service';
 import {Pipeline} from '../../../pipelines/models/pipelines.model';
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
 import {SparkConfEditorComponent} from '../spark-conf-editor/spark-conf-editor.component';
-import {Subject, Subscription} from 'rxjs';
+import {forkJoin, of, Subject, Subscription, throwError, timer} from 'rxjs';
 import {PackageObjectsService} from '../../../core/package-objects/package-objects.service';
 import {PackageObject} from '../../../core/package-objects/package-objects.model';
 import {CodeEditorComponent} from '../../../code-editor/components/code-editor/code-editor.component';
@@ -35,6 +35,14 @@ import {UdcEditorComponent} from "../udc-editor/udc-editor.component";
 import {GlobalLinksEditorComponent} from "../global-links-editor/global-links-editor.components";
 import {ComponentsEditorModalComponent} from "../components-editor/components-editor-modal.component";
 import {ExecutionsService} from "../../executions.service";
+import {RunJobComponent} from "../../../jobs/components/jobs/run-job/run-job.component";
+import {ProvidersService} from "../../../jobs/services/providers.service";
+import {Provider} from "../../../jobs/models/providers.model";
+import {Job, ProviderJob} from "../../../jobs/models/jobs.model";
+import {JobsService} from "../../../jobs/services/jobs.service";
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {JobsMessageComponent} from "../../../jobs/components/jobs/jobs-message/jobs-message.component";
+import {catchError, map} from "rxjs/operators";
 
 @Component({
   selector: 'app-applications-editor',
@@ -90,6 +98,8 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
 
   user: User;
   subscriptions: Subscription[] = [];
+  private providers: Provider[];
+  jobs: Job[];
 
   constructor(
     private applicationsService: ApplicationsService,
@@ -99,7 +109,10 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     private packageObjectsService: PackageObjectsService,
     private displayDialogService: DisplayDialogService,
     private dialog: MatDialog,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private providersService: ProvidersService,
+    private jobsService: JobsService,
+    private snackBar: MatSnackBar) {
     this.user = this.authService.getUserInfo();
   }
 
@@ -149,6 +162,34 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         });
       });
     });
+    this.providersService.getProvidersList().subscribe(result => {
+      this.providers = result;
+    });
+    // Setup job polling timer
+    this.subscriptions.push(timer(120000, 120000).subscribe(() => {
+      if (this.jobs) {
+        const jobRequests = {};
+        this.jobs.forEach(job => {
+          if (job.lastStatus === 'PENDING' ||
+            job.lastStatus === 'RUNNING') {
+            jobRequests[job.id] = this.jobsService.getJob(job.providerId, job.id);
+          } else {
+            jobRequests[job.id] = of(job);
+          }
+        });
+        forkJoin(jobRequests)
+          .pipe(map(results => {
+              let finalJobs: Job[] = [];
+              this.jobs.forEach(job => {
+                job = results[job.id];
+                finalJobs.push(job);
+              });
+              return finalJobs;
+            }),
+            catchError(err => throwError(err)))
+          .subscribe(jobs => this.jobs = jobs);
+      }
+    }));
   }
 
   ngOnDestroy(): void {
@@ -206,6 +247,11 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   loadApplication(application) {
     this.originalApplication = application;
     this.selectedApplication = SharedFunctions.clone(this.originalApplication);
+    if (this.selectedApplication.id) {
+      this.jobsService.getJobsByApplicationId(this.selectedApplication.id).subscribe(jobs => {
+        this.jobs = jobs;
+      });
+    }
     // Create the model from the executions
     const model = DesignerComponent.newModel();
     // let nodeId;
@@ -902,5 +948,37 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       stepPackages: packages.filter((value, index, self) => self.indexOf(value) === index),
       requiredParameters: requiredFields.filter((value, index, self) => self.indexOf(value) === index)
     };
+  }
+
+  runJob() {
+    const addDialog = this.displayDialogService.openDialog(
+      RunJobComponent,
+      generalDialogDimensions,
+      {
+        providers: this.providers
+      }
+    );
+    addDialog.afterClosed().subscribe((result) => {
+      if (result) {
+        const dialogRef = this.displayDialogService.openDialog(
+          WaitModalComponent, {
+            width: '25%',
+            height: '25%',
+          });
+        this.jobsService.getJobsByApplicationId(this.selectedApplication.id).subscribe(jobs => {
+          dialogRef.close();
+          this.jobs = jobs;
+        });
+      }
+    });
+  }
+
+  showJobs() {
+    this.snackBar.openFromComponent(JobsMessageComponent, {
+      data: this.jobs,
+      duration: 3000,
+      horizontalPosition: 'start',
+      verticalPosition: 'top'
+    })
   }
 }

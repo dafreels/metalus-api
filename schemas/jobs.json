@@ -41,6 +41,15 @@
             "CANCELLED"
           ]
         },
+        "submitTime": {
+          "type": "number"
+        },
+        "startTime": {
+          "type": ["number", "null"]
+        },
+        "endTime": {
+          "type": ["number", "null"]
+        },
         "useCredentialProvider": {
           "type": "boolean"
         },

@@ -15,6 +15,16 @@ class ProvidersModel extends BaseModel {
     }
     return await this.storageModel.find(key);
   }
+
+  async getByApplication(applicationId, user) {
+    const key = {
+      applicationId
+    };
+    if (user) {
+      key['project.userId'] = user.id;
+    }
+    return await this.storageModel.find(key);
+  }
 }
 
 module.exports = ProvidersModel;

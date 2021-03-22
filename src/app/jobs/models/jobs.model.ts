@@ -12,6 +12,7 @@ export interface Job {
   useCredentialProvider?: boolean;
   providerInformation: object;
   jobType?: string;
+  submitTime?: number;
   startTime?: number;
   endTime?: number;
   executionDuration?: number;
