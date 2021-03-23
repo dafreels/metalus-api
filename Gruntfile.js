@@ -44,4 +44,10 @@ module.exports = (grunt) => {
     'copy:localDocImages',
     'curl-dir:applicationJars'
   ]);
+
+  grunt.registerTask('prep-docs', [
+    'clean:localDocs',
+    'markdown:local',
+    'copy:localDocImages'
+  ]);
 };

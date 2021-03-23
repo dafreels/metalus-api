@@ -38,7 +38,7 @@ import {ExecutionsService} from "../../executions.service";
 import {RunJobComponent} from "../../../jobs/components/jobs/run-job/run-job.component";
 import {ProvidersService} from "../../../jobs/services/providers.service";
 import {Provider} from "../../../jobs/models/providers.model";
-import {Job, ProviderJob} from "../../../jobs/models/jobs.model";
+import {Job} from "../../../jobs/models/jobs.model";
 import {JobsService} from "../../../jobs/services/jobs.service";
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {JobsMessageComponent} from "../../../jobs/components/jobs/jobs-message/jobs-message.component";
@@ -242,6 +242,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     );
     this.selectedExecution = null;
     this.designerModel = DesignerComponent.newModel();
+    this.jobs = [];
   }
 
   loadApplication(application) {
@@ -955,7 +956,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       RunJobComponent,
       generalDialogDimensions,
       {
-        providers: this.providers
+        providers: this.providers,
+        jobs: this.jobs,
+        application: this.selectedApplication
       }
     );
     addDialog.afterClosed().subscribe((result) => {

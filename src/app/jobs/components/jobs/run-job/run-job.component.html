@@ -3,33 +3,40 @@
 </div>
 <div *ngIf="!running">
   <mat-card>
+    <mat-card-title>Runtime Setup</mat-card-title>
     <mat-card-content>
       <mat-form-field>
         <mat-label>Copy Job:</mat-label>
         <mat-select (selectionChange)="copyJob($event)">
-          <mat-option *ngFor="let job of jobs" [value]="job">{{ job.job.name }}</mat-option>
+          <mat-option *ngFor="let job of data.jobs" [value]="job">{{ job.name }}</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-slide-toggle color="primary" labelPosition="before"
-                        [(ngModel)]="forceCopy">
-        Force Upload Jars?
-      </mat-slide-toggle>
-      <mat-slide-toggle color="primary" labelPosition="before"
-                        [(ngModel)]="refreshPipelines">
-        Refresh Application Pipelines?
-      </mat-slide-toggle>
+      <div>
+        <mat-slide-toggle color="primary" labelPosition="before"
+                          [(ngModel)]="forceCopy">
+          Force Upload Jars?
+        </mat-slide-toggle>
+      </div>
+      <div>
+        <mat-slide-toggle color="primary" labelPosition="before"
+                          [(ngModel)]="refreshPipelines">
+          Refresh Application Pipelines?
+        </mat-slide-toggle>
+      </div>
+      <div>
+        <mat-slide-toggle color="primary" labelPosition="before"
+                          [(ngModel)]="useCredentialProvider">
+          Use Secrets Manager Credential Provider?
+        </mat-slide-toggle>
+      </div>
     </mat-card-content>
   </mat-card>
   <mat-card>
+    <mat-card-title>Job Setup</mat-card-title>
+    <mat-card-subtitle>{{ data.application.name }}</mat-card-subtitle>
     <mat-card-content>
       <mat-form-field>
         <input matInput placeholder=" Job Name" [(ngModel)]="name" required/>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Select Application:</mat-label>
-        <mat-select [(ngModel)]="selectedApplication" (selectionChange)="determineRequiredFields()">
-          <mat-option *ngFor="let app of applications" [value]="app">{{ app.name }}</mat-option>
-        </mat-select>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Log Level:</mat-label>
@@ -69,11 +76,7 @@
           <mat-option *ngFor="let t of jobTypes" [value]="t">{{ t.name }}</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-slide-toggle color="primary" labelPosition="before"
-                        [(ngModel)]="useCredentialProvider">
-        Use Secrets Manager Credential Provider?
-      </mat-slide-toggle>
-      <div *ngIf="selectedJobType?.id !== 'batch'">
+      <ng-container *ngIf="selectedJobType?.id !== 'batch'">
         <mat-form-field>
           <input matInput placeholder="Window Duration" type="number" [(ngModel)]="streamingInfo.duration"/>
         </mat-form-field>
@@ -85,7 +88,7 @@
             <mat-option value="minutes">Minutes</mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
+      </ng-container>
       <div *ngIf="selectedJobType?.id === 'kinesis'">
         <mat-form-field>
           <input matInput placeholder=" Stream Name" [(ngModel)]="streamingInfo.streamName" required/>

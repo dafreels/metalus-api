@@ -2,16 +2,17 @@ import {Component, Inject, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ProvidersService} from "../../../services/providers.service";
 import {Cluster, Provider} from "../../../models/providers.model";
-import {ApplicationsService} from "../../../../applications/applications.service";
 import {Application, Execution} from "../../../../applications/applications.model";
 import {Pipeline} from "../../../../pipelines/models/pipelines.model";
 import {PipelinesService} from "../../../../pipelines/services/pipelines.service";
 import {JobsService} from "../../../services/jobs.service";
-import {ProviderJob} from "../../../models/jobs.model";
 import {MatSelectChange} from "@angular/material/select";
+import {Job} from "../../../models/jobs.model";
 
 export interface RunJobConfiguration {
   providers: Provider[];
+  jobs: Job[];
+  application: Application;
 }
 
 export interface JobType {
@@ -28,8 +29,6 @@ export class RunJobComponent implements OnInit {
   name: string;
   clusters: Cluster[];
   selectedCluster: Cluster;
-  applications: Application[];
-  selectedApplication: Application;
   pipelines: Pipeline[];
   missingParameters = {};
   runtimeParameterInformation = {};
@@ -63,14 +62,12 @@ export class RunJobComponent implements OnInit {
   };
   selectedLogLevel: string = 'INFO';
   useCredentialProvider: boolean = false;
-  jobs: ProviderJob[]; // TODO Pass these in so that they are tied to the application
   forceCopy: boolean = false;
   refreshPipelines: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
               private providersService: ProvidersService,
-              private applicationService: ApplicationsService,
               private pipelinesService: PipelinesService,
               private jobsService: JobsService) {}
 
@@ -115,7 +112,7 @@ export class RunJobComponent implements OnInit {
       name: this.name,
       clusterId: this.selectedCluster.id,
       clusterName: this.selectedCluster.name,
-      applicationId: this.selectedApplication.id,
+      applicationId: this.data.application.id,
       jobType: this.selectedJobType.id,
       providerId: this.selectedProvider.id,
       bucket: this.bucket,
@@ -137,11 +134,6 @@ export class RunJobComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.applicationService.getApplications().subscribe(result => {
-      if (result) {
-        this.applications = result;
-      }
-    });
     this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
       if (pipelines) {
         this.pipelines = pipelines;
@@ -149,19 +141,12 @@ export class RunJobComponent implements OnInit {
         this.pipelines = [];
       }
     });
-    this.jobsService.getJobsByProviders(this.data.providers).subscribe(jobs => {
-      if (jobs) {
-        this.jobs = jobs;
-      } else {
-        this.jobs = [];
-      }
-    });
   }
 
   determineRequiredFields() {
     const parameters = {};
     const parameterProperties = [];
-    this.selectedApplication.executions.forEach((execution) => {
+    this.data.application.executions.forEach((execution) => {
       let pipeline;
       let values;
       let name;
@@ -178,7 +163,7 @@ export class RunJobComponent implements OnInit {
                 values.forEach(value => {
                   name = value.substring(1);
                   if (value.startsWith('!') &&
-                    this.isMissingFromGlobals(execution, this.selectedApplication, name) &&
+                    this.isMissingFromGlobals(execution, this.data.application, name) &&
                     !parameters[name]) {
                     parameters[name] = '!';
                     parameterProperties[name] = {
@@ -189,7 +174,7 @@ export class RunJobComponent implements OnInit {
                       required: values.length < 2
                     }
                   } else if ((value.startsWith('$') || value.startsWith('?')) &&
-                    this.isMissingFromRuntime(execution, this.selectedApplication, name)) {
+                    this.isMissingFromRuntime(execution, this.data.application, name)) {
                     parameters[name] = `${value.startsWith('$') ? '$' : '?'}`;
                     if (parameterProperties[name]) {
                       parameterProperties[name].pipelineIds.push(pipeline.id);
@@ -241,13 +226,12 @@ export class RunJobComponent implements OnInit {
 
   copyJob(change: MatSelectChange) {
     const job = change.value;
-    this.selectedProvider = this.data.providers.find(p => p.id === job.job.providerId);
-    this.handleProviderSelection(job.job.providerId, job.job.providerInformation.clusterId);
-    this.selectedApplication = this.applications.find(a => a.id === job.job.applicationId);
-    this.name = `copy-${job.job.name}`;
-    this.selectedLogLevel = job.job.logLevel || 'INFO';
-    this.bucket = job.job.providerInformation['bucket'];
-    this.selectedJobType = this.jobTypes.find(t => t.id === job.job.jobType);
-    this.useCredentialProvider = job.job.useCredentialProvider;
+    this.selectedProvider = this.data.providers.find(p => p.id === job.providerId);
+    this.handleProviderSelection(job.providerId, job.providerInformation.clusterId);
+    this.name = `copy-${job.name}`;
+    this.selectedLogLevel = job.logLevel || 'INFO';
+    this.bucket = job.providerInformation['bucket'];
+    this.selectedJobType = this.jobTypes.find(t => t.id === job.jobType);
+    this.useCredentialProvider = job.useCredentialProvider;
   }
 }
