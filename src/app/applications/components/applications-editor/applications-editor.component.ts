@@ -114,42 +114,43 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     private jobsService: JobsService,
     private snackBar: MatSnackBar) {
     this.user = this.authService.getUserInfo();
+    this.subscriptions.push(
+      this.authService.userItemSelection.subscribe(data => {
+        // TODO Handle application changes
+        this.cancelApplicationChange();
+        this.loadProjectRelatedData();
+        this.loadApplication(this.newApplication());
+        // const newApplication = this.app
+        // // Cannot diff the pipeline since step orders could have changed
+        // if (data.defaultProjectId != this.user.defaultProjectId) {
+        //   if (this.loadApplication(newApplication)) {
+        //     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        //       width: '450px',
+        //       height: '200px',
+        //       data: {
+        //         message:
+        //           'You have unsaved changes to the current pipeline. Would you like to continue?',
+        //       },
+        //     });
+        //
+        //     dialogRef.afterClosed().subscribe((confirmation) => {
+        //       if (confirmation) {
+        //         this.user = data;
+        //         this.loadUIData();
+        //       } else {
+        //         this.authService.setUserInfo({ ...this.user });
+        //       }
+        //     });
+        //   } else {
+        //     this.user = data;
+        //     this.loadUIData();
+        //   }
+        // }
+      }));
   }
 
   ngOnInit(): void {
-    this.newApplication();
-    this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
-      if (pipelines) {
-        this.pipelines = pipelines;
-      } else {
-        this.pipelines = [];
-      }
-    });
-    this.applicationsService
-      .getApplications()
-      .subscribe((applications: Application[]) => {
-        if (applications) {
-          this.applications = applications;
-        } else {
-          this.applications = [];
-        }
-      });
-    this.executionsService
-      .getExecutions()
-      .subscribe((executions: ExecutionTemplate[]) => {
-        if (executions) {
-          this.executionTemplates = this.executionTemplates.concat(executions);
-        }
-      });
-    this.packageObjectsService
-      .getPackageObjects()
-      .subscribe((pkgObjs: PackageObject[]) => {
-        if (pkgObjs) {
-          this.packageObjects = pkgObjs;
-        } else {
-          this.packageObjects = [];
-        }
-      });
+    this.loadProjectRelatedData();
     this.applicationsService.getApplicationSchema().subscribe((applicationSchema) => {
       const ajv = new Ajv({allErrors: true});
       this.pipelinesService.getPipelineSchema().subscribe((pipelineSchema) => {
@@ -190,6 +191,42 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
           .subscribe(jobs => this.jobs = jobs);
       }
     }));
+  }
+
+  private loadProjectRelatedData() {
+    this.newApplication();
+    this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
+      if (pipelines) {
+        this.pipelines = pipelines;
+      } else {
+        this.pipelines = [];
+      }
+    });
+    this.applicationsService
+      .getApplications()
+      .subscribe((applications: Application[]) => {
+        if (applications) {
+          this.applications = applications;
+        } else {
+          this.applications = [];
+        }
+      });
+    this.executionsService
+      .getExecutions()
+      .subscribe((executions: ExecutionTemplate[]) => {
+        if (executions) {
+          this.executionTemplates = this.executionTemplates.concat(executions);
+        }
+      });
+    this.packageObjectsService
+      .getPackageObjects()
+      .subscribe((pkgObjs: PackageObject[]) => {
+        if (pkgObjs) {
+          this.packageObjects = pkgObjs;
+        } else {
+          this.packageObjects = [];
+        }
+      });
   }
 
   ngOnDestroy(): void {

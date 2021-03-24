@@ -99,7 +99,7 @@ export class RunJobComponent implements OnInit {
           parameter = pipelineParameters.parameters.find(p => p.pipelineId === pipelineId);
           if (!parameter) {
             parameter = {
-              pipelineId: info.pipelineId,
+              pipelineId: pipelineId,
               parameters: {}
             }
             pipelineParameters.parameters.push(parameter);
@@ -140,6 +140,7 @@ export class RunJobComponent implements OnInit {
       } else {
         this.pipelines = [];
       }
+      this.determineRequiredFields();
     });
   }
 
@@ -212,11 +213,11 @@ export class RunJobComponent implements OnInit {
   }
 
   private isMissingFromRuntime(execution: Execution, application: Application, name: string) {
-    let parameters = execution.pipelineParameters.parameters || {};
+    let parameters = execution.pipelineParameters && execution.pipelineParameters.parameters ? execution.pipelineParameters.parameters : { parameters: [] };
     if (parameters[name]) {
       return false;
     }
-    parameters = application.pipelineParameters.parameters || {};
+    parameters = application.pipelineParameters && application.pipelineParameters.parameters ? application.pipelineParameters.parameters : { parameters: [] };
     return parameters[name] === undefined;
   }
 

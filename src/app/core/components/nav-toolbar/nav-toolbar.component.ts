@@ -1,13 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import {Component, Input, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MatDialog} from "@angular/material/dialog";
 import {HelpComponent} from "../help/help.component";
 
-interface IRouterData {
-  page: string;
-  title: string;
-}
 
 @Component({
   selector: 'nav-toolbar',
@@ -17,7 +12,6 @@ interface IRouterData {
 export class NavToolbarComponent implements OnInit {
   @Input() page: string;
   @Input() title: string;
-  routerData$: Observable<IRouterData>;
   constructor(private router: Router, private activatedRoute: ActivatedRoute, public dialog: MatDialog) {}
   ngOnInit(){
     this.activatedRoute.data.subscribe(data => {

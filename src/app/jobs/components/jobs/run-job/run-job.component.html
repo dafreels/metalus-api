@@ -124,7 +124,7 @@
     color="primary"
     (click)="run()"
     style="margin-right: 5px"
-    [disabled]="!selectedCluster || !selectedApplication ||
+    [disabled]="!selectedCluster ||
     !selectedJobType || (!bucket || bucket.trim().length === 0) ||
     (!name || name.trim().length === 0)">
     Run

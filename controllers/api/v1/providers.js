@@ -276,16 +276,16 @@ async function deleteJob(req, res) {
 
 async function startJob(req, res, next) {
   const user = await req.user;
-  const name = req.body.name;
-  const clusterId = req.body.clusterId;
-  const clusterName = req.body.clusterName;
-  const applicationId = req.body.applicationId;
-  const bucket = req.body.bucket;
-  const jobType = req.body.jobType;
-  const logLevel = req.body.selectedLogLevel;
-  const forceCopy = req.body.forceCopy;
-  const mappingParameters = req.body.mappingParameters;
-  const refreshPipelines = req.body.refreshPipelines || false;
+  const mappingParameters = req.body;
+  const name = mappingParameters.name;
+  const clusterId = mappingParameters.clusterId;
+  const clusterName = mappingParameters.clusterName;
+  const applicationId = mappingParameters.applicationId;
+  const bucket = mappingParameters.bucket;
+  const jobType = mappingParameters.jobType;
+  const logLevel = mappingParameters.selectedLogLevel;
+  const forceCopy = mappingParameters.forceCopy;
+  const refreshPipelines = mappingParameters.refreshPipelines || false;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
@@ -317,12 +317,34 @@ async function startJob(req, res, next) {
     // Add any runtime values
     if (mappingParameters) {
       application.globals = _.merge(application.globals, mappingParameters.globals);
-      application.pipelineParameters = _.merge(application.pipelineParameters, mappingParameters.pipelineParameters);
+      if (application.pipelineParameters) {
+        const pipelineParameters = MetalusUtils.clone(application.pipelineParameters);
+        if (mappingParameters.pipelineParameters &&
+          mappingParameters.pipelineParameters.parameters &&
+          mappingParameters.pipelineParameters.parameters.length > 0) {
+          let param;
+          mappingParameters.pipelineParameters.parameters.forEach((p) => {
+            const paramIndex = _.findIndex(pipelineParameters.parameters, (params) => {
+              return params.pipelineId === p.pipelineId;
+            });
+            if (paramIndex !== -1) {
+              param = pipelineParameters.parameters[paramIndex];
+              param.parameters = _.merge(param.parameters, p.parameters);
+              pipelineParameters.parameters.splice(paramIndex, 1, param);
+            } else {
+              pipelineParameters.parameters.push(p)
+            }
+          });
+        }
+        application.pipelineParameters = pipelineParameters;
+      } else {
+        application.pipelineParameters = mappingParameters.pipelineParameters;
+      }
     }
     // Bundle the application JSON into a jar so that it can be retrieved on the classpath
     const runConfig = await bundleApplicationJson(`${jarsDir}/staging`, application, applicationId);
     jarFiles.push(runConfig.jars[0]);
-    runConfig.useCredentialProvider = req.body.useCredentialProvider;
+    runConfig.useCredentialProvider = mappingParameters.useCredentialProvider;
     // handle custom parameters for streaming jobs
     let requiredStepLibrary;
     switch(jobType) {
@@ -432,7 +454,7 @@ async function startJob(req, res, next) {
         startTime: null,
         endTime: null,
         logLevel,
-        useCredentialProvider: req.body.useCredentialProvider,
+        useCredentialProvider: mappingParameters.useCredentialProvider,
         providerInformation: {
           clusterId: clusterId.toString(),
           clusterName,
