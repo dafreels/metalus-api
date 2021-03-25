@@ -14,6 +14,7 @@ import {StepGroupResultModalComponent} from "./components/step-group-result-moda
 import {CustomParameterEditorComponent} from './components/custom-parameter-editor/custom-parameter-editor.component';
 import { PackageSelectorComponent } from './components/custom-parameter-editor/package-selector/package-selector.component';
 import { packageNamePipe } from './components/custom-parameter-editor/package-selector/classname.pipe';
+import { ExecutionSelectorComponent } from './components/custom-parameter-editor/execution-selector/execution-selector.component';
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule, NgJsonEditorModule],
@@ -28,6 +29,7 @@ import { packageNamePipe } from './components/custom-parameter-editor/package-se
     CustomParameterEditorComponent,
     PackageSelectorComponent,
     packageNamePipe,
+    ExecutionSelectorComponent,
   ],
   entryComponents: [
     CustomBranchDialogComponent,

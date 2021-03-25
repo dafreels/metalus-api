@@ -1,0 +1,19 @@
+<mat-card class="sidebar">
+    <h4>Execution Name</h4>
+    <mat-card-content class="content">
+        <mat-action-list class="execution-list">
+          <mat-list-item
+            class="execution-list-item"
+            *ngFor="let execution of executions"
+            matTooltip="{{ execution.id }}"
+            matTooltipPosition="right"
+            (click)="handleExecutionSelection(execution)"
+          >
+            <div class="execution-list-container">
+              <span class="execution-list-text">{{ execution.displayName }}</span>
+            </div>
+          </mat-list-item>
+        </mat-action-list>
+    </mat-card-content>
+  </mat-card>
+  
