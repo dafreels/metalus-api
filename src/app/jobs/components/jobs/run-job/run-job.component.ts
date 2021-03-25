@@ -2,13 +2,17 @@ import {Component, Inject, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ProvidersService} from "../../../services/providers.service";
 import {Cluster, Provider} from "../../../models/providers.model";
-import {ApplicationsService} from "../../../../applications/applications.service";
 import {Application, Execution} from "../../../../applications/applications.model";
 import {Pipeline} from "../../../../pipelines/models/pipelines.model";
 import {PipelinesService} from "../../../../pipelines/services/pipelines.service";
+import {JobsService} from "../../../services/jobs.service";
+import {MatSelectChange} from "@angular/material/select";
+import {Job} from "../../../models/jobs.model";
 
 export interface RunJobConfiguration {
   providers: Provider[];
+  jobs: Job[];
+  application: Application;
 }
 
 export interface JobType {
@@ -21,13 +25,13 @@ export interface JobType {
   styleUrls: ['./run-job.component.scss']
 })
 export class RunJobComponent implements OnInit {
+  running = false;
   name: string;
   clusters: Cluster[];
   selectedCluster: Cluster;
-  applications: Application[];
-  selectedApplication: Application;
   pipelines: Pipeline[];
   missingParameters = {};
+  runtimeParameterInformation = {};
   jobTypes: JobType[] = [
     {
       id: 'batch',
@@ -37,10 +41,10 @@ export class RunJobComponent implements OnInit {
       id: 'kinesis',
       name: 'AWS Kinesis'
     },
-    {
-      id: 'kafka',
-      name: 'Kafka'
-    },
+    // {
+    //   id: 'kafka',
+    //   name: 'Kafka'
+    // },
     {
       id: 'pubsub',
       name: 'GCP Pub/Sub'
@@ -49,32 +53,79 @@ export class RunJobComponent implements OnInit {
   selectedProvider: Provider;
   bucket: string;
   streamingInfo = {
-    duration: null,
-    durationType: 'seconds'
+    duration: 30,
+    durationType: 'seconds',
+    streamName: undefined,
+    appName: undefined,
+    consumerStreams: undefined,
+    subscription: undefined
   };
   selectedLogLevel: string = 'INFO';
+  useCredentialProvider: boolean = false;
+  forceCopy: boolean = false;
+  refreshPipelines: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
               private providersService: ProvidersService,
-              private applicationService: ApplicationsService,
-              private pipelinesService: PipelinesService) {}
+              private pipelinesService: PipelinesService,
+              private jobsService: JobsService) {}
 
-  handleProviderSelection(providerId) {
-    this.providersService.getClustersList(providerId).subscribe(result => this.clusters = result);
+  handleProviderSelection(providerId, clusterId) {
+    this.providersService.getClustersList(providerId).subscribe(result => {
+      this.clusters = result;
+      if (clusterId) {
+        this.selectedCluster = this.clusters.find(c => c.id === clusterId);
+      }
+    });
   }
 
   run() {
-    this.dialogRef.close({
+    this.running = true;
+    // TODO Track required fields and disable run button
+    // Separate the globals from the runtime
+    let info;
+    const globals = {};
+    const pipelineParameters = {
+      parameters: []
+    };
+    let parameter;
+    Object.keys(this.missingParameters || {}).forEach(key => {
+      info = this.runtimeParameterInformation[key];
+      if (info.type === 'global') {
+        globals[key] = this.missingParameters[key];
+      } else if (info.type === 'runtime' || info.type === 'mapped_runtime') {
+        new Set(info.pipelineIds).forEach(pipelineId => {
+          parameter = pipelineParameters.parameters.find(p => p.pipelineId === pipelineId);
+          if (!parameter) {
+            parameter = {
+              pipelineId: pipelineId,
+              parameters: {}
+            }
+            pipelineParameters.parameters.push(parameter);
+          }
+          parameter.parameters[key] = this.missingParameters[key];
+        });
+      }
+    });
+    const body = {
       name: this.name,
       clusterId: this.selectedCluster.id,
       clusterName: this.selectedCluster.name,
-      applicationId: this.selectedApplication.id,
+      applicationId: this.data.application.id,
       jobType: this.selectedJobType.id,
       providerId: this.selectedProvider.id,
       bucket: this.bucket,
       streamingInfo: this.streamingInfo,
-      selectedLogLevel: this.selectedLogLevel
+      selectedLogLevel: this.selectedLogLevel,
+      useCredentialProvider: this.useCredentialProvider,
+      refreshPipelines: this.refreshPipelines,
+      forceCopy: this.forceCopy,
+      globals,
+      pipelineParameters
+    };
+    this.jobsService.runJob(body).subscribe(job => {
+      this.dialogRef.close(job);
     });
   }
 
@@ -83,23 +134,20 @@ export class RunJobComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.applicationService.getApplications().subscribe(result => {
-      if (result) {
-        this.applications = result;
-      }
-    });
     this.pipelinesService.getPipelines().subscribe((pipelines: Pipeline[]) => {
       if (pipelines) {
         this.pipelines = pipelines;
       } else {
         this.pipelines = [];
       }
+      this.determineRequiredFields();
     });
   }
 
   determineRequiredFields() {
     const parameters = {};
-    this.selectedApplication.executions.forEach((execution) => {
+    const parameterProperties = [];
+    this.data.application.executions.forEach((execution) => {
       let pipeline;
       let values;
       let name;
@@ -108,14 +156,18 @@ export class RunJobComponent implements OnInit {
         if (pipeline) {
           pipeline.steps.forEach(step => {
             step.params.forEach(param => {
-              if (typeof param.value === 'string' && (param.value.indexOf('!') !== -1 || param.value.indexOf('$') !== -1 || param.value.indexOf('?') !== -1)) {
+              if (typeof param.value === 'string' &&
+                (param.value.indexOf('!') !== -1 ||
+                  param.value.indexOf('$') !== -1 ||
+                  param.value.indexOf('?') !== -1)) {
                 values = param.value.split('||');
                 values.forEach(value => {
                   name = value.substring(1);
                   if (value.startsWith('!') &&
-                    RunJobComponent.isMissingFromGlobals(execution, this.selectedApplication, name) &&
+                    this.isMissingFromGlobals(execution, this.data.application, name) &&
                     !parameters[name]) {
-                    parameters[name] = {
+                    parameters[name] = '!';
+                    parameterProperties[name] = {
                       type: 'global',
                       description: param.description,
                       className: param.className,
@@ -123,14 +175,19 @@ export class RunJobComponent implements OnInit {
                       required: values.length < 2
                     }
                   } else if ((value.startsWith('$') || value.startsWith('?')) &&
-                    RunJobComponent.isMissingFromGlobals(execution, this.selectedApplication, name) &&
-                    !parameters[name]) {
-                    parameters[name] = {
-                      type: 'runtime',
-                      description: param.description,
-                      className: param.className,
-                      parameterType: param.parameterType,
-                      required: values.length < 2
+                    this.isMissingFromRuntime(execution, this.data.application, name)) {
+                    parameters[name] = `${value.startsWith('$') ? '$' : '?'}`;
+                    if (parameterProperties[name]) {
+                      parameterProperties[name].pipelineIds.push(pipeline.id);
+                    } else {
+                      parameterProperties[name] = {
+                        type: value.startsWith('$') ? 'runtime' : 'mapped_runtime',
+                        description: param.description,
+                        className: param.className,
+                        parameterType: param.parameterType,
+                        required: values.length < 2,
+                        pipelineIds: [pipeline.id]
+                      }
                     }
                   }
                 });
@@ -141,17 +198,41 @@ export class RunJobComponent implements OnInit {
       });
     });
     this.missingParameters = parameters;
+    this.runtimeParameterInformation = parameterProperties;
   }
 
-  private static isMissingFromGlobals(execution: Execution, application: Application, name: string) {
+  private isMissingFromGlobals(execution: Execution, application: Application, name: string) {
     let globals = execution.globals || { GlobalLinks: {}};
     if (globals[name] || (globals['GlobalLinks'] && globals['GlobalLinks'][name])) {
       return false;
     }
     globals = application.globals || { GlobalLinks: {}};
-    return globals[name] || (globals['GlobalLinks'] && globals['GlobalLinks'][name]);
+    return globals[name] === undefined ||
+      (globals['GlobalLinks'] &&
+      globals['GlobalLinks'][name] === undefined);
   }
+
+  private isMissingFromRuntime(execution: Execution, application: Application, name: string) {
+    let parameters = execution.pipelineParameters && execution.pipelineParameters.parameters ? execution.pipelineParameters.parameters : { parameters: [] };
+    if (parameters[name]) {
+      return false;
+    }
+    parameters = application.pipelineParameters && application.pipelineParameters.parameters ? application.pipelineParameters.parameters : { parameters: [] };
+    return parameters[name] === undefined;
+  }
+
   treeEditorUpdated(data){
     this.missingParameters = data;
+  }
+
+  copyJob(change: MatSelectChange) {
+    const job = change.value;
+    this.selectedProvider = this.data.providers.find(p => p.id === job.providerId);
+    this.handleProviderSelection(job.providerId, job.providerInformation.clusterId);
+    this.name = `copy-${job.name}`;
+    this.selectedLogLevel = job.logLevel || 'INFO';
+    this.bucket = job.providerInformation['bucket'];
+    this.selectedJobType = this.jobTypes.find(t => t.id === job.jobType);
+    this.useCredentialProvider = job.useCredentialProvider;
   }
 }

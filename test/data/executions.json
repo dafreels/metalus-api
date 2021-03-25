@@ -14,7 +14,6 @@
       "className": "com.acxiom.pipeline.DefaultPipelineListener",
       "parameters": {}
     },
-    "pipelineParameters": [],
     "securityManager": {
       "className": "com.acxiom.pipeline.DefaultPipelineSecurityManager",
       "parameters": {}
@@ -39,7 +38,6 @@
       "className": "com.acxiom.pipeline.DefaultPipelineListener",
       "parameters": {}
     },
-    "pipelineParameters": [],
     "securityManager": {
       "className": "com.acxiom.pipeline.DefaultPipelineSecurityManager",
       "parameters": {}
@@ -64,7 +62,6 @@
       "className": "com.acxiom.pipeline.DefaultPipelineListener",
       "parameters": {}
     },
-    "pipelineParameters": [],
     "securityManager": {
       "className": "com.acxiom.pipeline.DefaultPipelineSecurityManager",
       "parameters": {}

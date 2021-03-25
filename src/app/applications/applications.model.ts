@@ -1,7 +1,4 @@
-import {
-  Pipeline,
-  PipelineParameter,
-} from '../pipelines/models/pipelines.model';
+import {Pipeline, PipelineParameter} from '../pipelines/models/pipelines.model';
 import {Project} from "../shared/models/users.models";
 
 export interface ApplicationsResponse {
@@ -63,7 +60,11 @@ export interface BaseApplicationProperties {
   securityManager: ClassInfo;
   stepMapper: ClassInfo;
   sparkListeners?: ClassInfo[];
-  pipelineParameters: PipelineParameter[];
+  pipelineParameters: PipelineParameters;
+}
+
+export interface PipelineParameters {
+  parameters: PipelineParameter[];
 }
 
 export interface ClassComponentProperties {

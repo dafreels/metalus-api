@@ -7,9 +7,12 @@ export interface Job {
   applicationName: string;
   providerId: string;
   projectId: string;
+  lastStatus?: string;
+  logLevel?: string;
+  useCredentialProvider?: boolean;
   providerInformation: object;
-  status?: string;
   jobType?: string;
+  submitTime?: number;
   startTime?: number;
   endTime?: number;
   executionDuration?: number;
@@ -20,6 +23,7 @@ export enum JobStatus {
   FAILED,
   CANCELLED,
   COMPLETE,
+  PENDING,
 }
 
 export enum JobType {

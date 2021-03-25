@@ -28,6 +28,31 @@
         "projectId": {
           "type": "string"
         },
+        "logLevel": {
+          "type": "string"
+        },
+        "lastStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "RUNNING",
+            "FAILED",
+            "COMPLETE",
+            "CANCELLED"
+          ]
+        },
+        "submitTime": {
+          "type": "number"
+        },
+        "startTime": {
+          "type": ["number", "null"]
+        },
+        "endTime": {
+          "type": ["number", "null"]
+        },
+        "useCredentialProvider": {
+          "type": "boolean"
+        },
         "providerInformation": {
           "oneOf": [
             {

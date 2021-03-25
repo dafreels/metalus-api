@@ -171,9 +171,14 @@
           "$ref": "applications.json#/definitions/ClassInfo"
         },
         "pipelineParameters": {
-          "type": "array",
-          "items": {
-            "$ref": "pipelines.json#/definitions/PipelineParameter"
+          "type": "object",
+          "properties": {
+            "parameters": {
+              "type": "array",
+              "items": {
+                "$ref": "pipelines.json#/definitions/PipelineParameter"
+              }
+            }
           }
         }
       }

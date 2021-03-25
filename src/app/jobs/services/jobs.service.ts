@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {forkJoin, Observable, throwError} from "rxjs";
 import {Job, JobResponse, JobsResponse, JobStatus, JobType, ProviderJob} from "../models/jobs.model";
-import {Provider, ProvidersResponse} from "../models/providers.model";
+import {Provider} from "../models/providers.model";
 import {catchError, map} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 
@@ -10,6 +10,18 @@ import {HttpClient} from "@angular/common/http";
 })
 export class JobsService {
   constructor(private http: HttpClient) {}
+
+  getJobsByProvider(providerId: string): Observable<Job[]> {
+    return this.http.get<JobsResponse>(`/api/v1/providers/${providerId}/jobs`, {observe: 'response'})
+      .pipe(
+        map(response => {
+          if (response && response.body) {
+            return response.body.jobs;
+          }
+          return null;
+        }),
+        catchError(err => throwError(err)));
+  }
 
   getJobsByProviders(providers: Provider[]): Observable<ProviderJob[]> {
     const requests = {};
@@ -40,6 +52,18 @@ export class JobsService {
         catchError(err => throwError(err)));
   }
 
+  getJobsByApplicationId(applicationId): Observable<Job[]> {
+    return this.http.get<JobsResponse>(`/api/v1/applications/${applicationId}/jobs`, {observe: 'response'})
+      .pipe(
+        map(response => {
+          if (response && response.body) {
+            return response.body.jobs.sort((a, b) => a.startTime > b.startTime ? 1 : -1);
+          }
+          return null;
+        }),
+        catchError(err => throwError(err)));
+  }
+
   runJob(runConfig: any): Observable<Job> {
     return this.http
       .post<JobResponse>(`/api/v1/providers/${runConfig.providerId}/jobs`, runConfig, {
@@ -61,6 +85,11 @@ export class JobsService {
           return null;
         }),
         catchError(err => throwError(err)));
+  }
+
+  deleteJob(providerId, jobId) {
+    return this.http.delete<any>(`/api/v1/providers/${providerId}/jobs/${jobId}`, {observe: 'response'})
+      .pipe(catchError(err => throwError(err)));
   }
 
   static getStatusString(status: JobStatus) {

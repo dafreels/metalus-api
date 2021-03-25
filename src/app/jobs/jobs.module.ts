@@ -16,6 +16,7 @@ import {NewClusterComponent} from "./components/clusters/new-cluster/new-cluster
 import {ProvidersListItemComponent} from "./components/providers/providers-list-item/providers-list-item.component";
 import {RunJobComponent} from "./components/jobs/run-job/run-job.component";
 import {JobStatusComponent} from "./components/jobs/job-status/job-status.component";
+import {JobsMessageComponent} from "./components/jobs/jobs-message/jobs-message.component";
 
 @NgModule({
   imports: [
@@ -59,6 +60,7 @@ import {JobStatusComponent} from "./components/jobs/job-status/job-status.compon
   declarations: [
     ClustersComponent,
     JobsComponent,
+    JobsMessageComponent,
     JobStatusComponent,
     NewClusterComponent,
     NewProviderComponent,
@@ -67,6 +69,7 @@ import {JobStatusComponent} from "./components/jobs/job-status/job-status.compon
     RunJobComponent
   ],
   entryComponents: [
+    JobsMessageComponent,
     JobStatusComponent,
     NewClusterComponent,
     NewProviderComponent,
