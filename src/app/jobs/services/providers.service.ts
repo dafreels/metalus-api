@@ -94,6 +94,14 @@ export class ProvidersService {
       );
   }
 
+  removeProvider(providerId: string) {
+    return this.http
+      .delete(`/api/v1/providers/${providerId}`, {
+        observe: 'response',
+      })
+      .pipe(catchError((err) => throwError(err)));
+  }
+
   getClustersList(providerId: string): Observable<Cluster[]> {
     return this.http.get<ClustersResponse>(`/api/v1/providers/${providerId}/clusters`, {observe: 'response'})
       .pipe(
@@ -142,8 +150,6 @@ export class ProvidersService {
       .delete(`/api/v1/providers/${providerId}/clusters/${cluster.id}?clusterName=${cluster.name}`, {
         observe: 'response',
       })
-      .pipe(
-        catchError((err) => throwError(err))
-      );
+      .pipe(catchError((err) => throwError(err)));
   }
 }

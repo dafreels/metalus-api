@@ -1,0 +1,65 @@
+[
+  {
+    "type": "input",
+    "key": "Name",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "ReleaseLabel",
+    "templateOptions": {
+      "label": "Release Label",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "Instances.Ec2SubnetId",
+    "templateOptions": {
+      "label": "Subnets",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "Instances.MasterInstanceType",
+    "templateOptions": {
+      "label": "Master Instance Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "Instances.SlaveInstanceType",
+    "templateOptions": {
+      "label": "Executor Instance Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "input",
+    "key": "Instances.InstanceCount",
+    "templateOptions": {
+      "label": "Number of Instances (1 master and 2 Executor Nodes)",
+      "type": "number",
+      "min": 3
+    }
+  },
+  {
+    "type": "input",
+    "key": "LogUri",
+    "templateOptions": {
+      "label": "S3 EMR Log Path (Optional)"
+    }
+  }
+]

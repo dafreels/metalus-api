@@ -23,35 +23,6 @@ export class JobsService {
         catchError(err => throwError(err)));
   }
 
-  getJobsByProviders(providers: Provider[]): Observable<ProviderJob[]> {
-    const requests = {};
-    providers.forEach(provider => {
-      requests[provider.name] = this.http.get<JobsResponse>(`/api/v1/providers/${provider.id}/jobs`, {observe: 'response'})
-        .pipe(
-          map(response => {
-            if (response && response.body && response.body.jobs) {
-              return response.body.jobs.map(j => {
-                return {
-                  job: j,
-                  provider,
-                };
-              });
-            }
-            return [];
-          })
-        );
-    });
-    return forkJoin(requests)
-      .pipe(map(results => {
-          let finalJobs: ProviderJob[] = [];
-          providers.forEach(provider => {
-            finalJobs = finalJobs.concat(results[provider.name]);
-          });
-          return finalJobs;
-        }),
-        catchError(err => throwError(err)));
-  }
-
   getJobsByApplicationId(applicationId): Observable<Job[]> {
     return this.http.get<JobsResponse>(`/api/v1/applications/${applicationId}/jobs`, {observe: 'response'})
       .pipe(
