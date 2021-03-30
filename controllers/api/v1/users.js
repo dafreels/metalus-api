@@ -388,15 +388,16 @@ async function processUploadedJars(req, res, next) {
       jarFiles.join(','),
       '--no-auth-download',
       'true',
-      '--repo',
-      userJarDir,
       '--clean-staging',
       'true'
     ];
     if (repos && repos.trim().length > 0) {
       parameters.push('--repo');
-      parameters.push(repos);
+      parameters.push(`${userJarDir},${repos}`);
       processJSON.repos = repos;
+    } else {
+      parameters.push('--repo');
+      parameters.push(userJarDir);
     }
     if (skipPipelines) {
       parameters.push('--excludePipelines');
