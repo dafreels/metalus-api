@@ -449,6 +449,8 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
               pipeline = pipe;
             }
           });
+          executionPipelines.push(pipeline);
+          execution.pipelines = executionPipelines;
         }
         pipelines.push(pipeline);
         pipeline = null;
