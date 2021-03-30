@@ -51,6 +51,10 @@ class StepsModel extends BaseModel {
       return await this.templatesModel.updateRecord(key, record);
     // }
   }
+
+  async deleteTemplates(key) {
+    await this.templatesModel.deleteRecords(key);
+  }
 }
 
 module.exports = StepsModel;

@@ -43,6 +43,7 @@ import {JobsService} from "../../../jobs/services/jobs.service";
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {JobsMessageComponent} from "../../../jobs/components/jobs/jobs-message/jobs-message.component";
 import {catchError, map} from "rxjs/operators";
+import {diff} from 'deep-object-diff';
 
 @Component({
   selector: 'app-applications-editor',
@@ -116,36 +117,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
       this.authService.userItemSelection.subscribe(data => {
-        // TODO Handle application changes
         this.cancelApplicationChange();
         this.loadProjectRelatedData();
         this.loadApplication(this.newApplication());
-        // const newApplication = this.app
-        // // Cannot diff the pipeline since step orders could have changed
-        // if (data.defaultProjectId != this.user.defaultProjectId) {
-        //   if (this.loadApplication(newApplication)) {
-        //     const dialogRef = this.dialog.open(ConfirmationModalComponent, {
-        //       width: '450px',
-        //       height: '200px',
-        //       data: {
-        //         message:
-        //           'You have unsaved changes to the current pipeline. Would you like to continue?',
-        //       },
-        //     });
-        //
-        //     dialogRef.afterClosed().subscribe((confirmation) => {
-        //       if (confirmation) {
-        //         this.user = data;
-        //         this.loadUIData();
-        //       } else {
-        //         this.authService.setUserInfo({ ...this.user });
-        //       }
-        //     });
-        //   } else {
-        //     this.user = data;
-        //     this.loadUIData();
-        //   }
-        // }
       }));
   }
 
@@ -233,6 +207,27 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.subscriptions = SharedFunctions.clearSubscriptions(this.subscriptions);
   }
 
+  createNewApplication() {
+    if (this.hasApplicationChanged(this.generateApplication())) {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        width: '450px',
+        height: '200px',
+        data: {
+          message:
+            'You have unsaved changes to the current application. Would you like to continue?',
+        },
+      });
+
+      this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
+        if (confirmation) {
+          this.newApplication();
+        }
+      }));
+    } else {
+      this.newApplication();
+    }
+  }
+
   newApplication() {
     this.originalApplication = {
       applicationProperties: {},
@@ -245,7 +240,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         className: 'com.acxiom.pipeline.DefaultPipelineListener',
         parameters: {},
       },
-      pipelineManager: undefined, // This is to ensure that the system will load the application pipelines by default
+      // pipelineManager: undefined, // This is to ensure that the system will load the application pipelines by default
       pipelineParameters: { parameters: [] },
       requiredParameters: [],
       securityManager: {
@@ -283,6 +278,31 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   loadApplication(application) {
+    if (application.id === this.selectedApplication.id) {
+      return;
+    }
+    this.disableNameEdit();
+    if (this.hasApplicationChanged(this.generateApplication())) {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        width: '450px',
+        height: '200px',
+        data: {
+          message:
+            'You have unsaved changes to the current application. Would you like to continue?',
+        },
+      });
+
+      this.subscriptions.push(dialogRef.afterClosed().subscribe((confirmation) => {
+        if (confirmation) {
+          this.handleLoadApplication(application);
+        }
+      }));
+    } else {
+      this.handleLoadApplication(application);
+    }
+  }
+
+  handleLoadApplication(application) {
     this.originalApplication = application;
     this.selectedApplication = SharedFunctions.clone(this.originalApplication);
     if (this.selectedApplication.id) {
@@ -292,9 +312,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     }
     // Create the model from the executions
     const model = DesignerComponent.newModel();
-    // let nodeId;
     this.executionLookup = {};
-    // const executions = {};
     const pipelineList = this.pipelines;
     this.selectedApplication.executions.forEach((execution) => {
       this.createModelNode(model, execution, -1, -1);
@@ -397,6 +415,16 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       executionIds.push(exe.id);
     });
     this.errors = errors;
+  }
+
+  hasApplicationChanged(application: Application) {
+    const difference = diff(this.originalApplication, application);
+    delete difference['project'];
+    delete difference['layout'];
+    // console.log(`Application differences: ${Object.entries(difference).length}`);
+    console.log(`Application differences: ${Object.entries(difference)}`);
+    // console.log(`Application differences: ${JSON.stringify(difference, null, 4)}`);
+    return Object.entries(difference).length !== 0;
   }
 
   handleElementAction(action: DesignerElementAction) {
@@ -623,7 +651,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.validateApplication();
   }
 
-  private generateApplication() {
+  private generateApplication(includePipelines = false) {
     const application = SharedFunctions.clone(this.selectedApplication);
     const pipelines = [];
     const pipelineIds = [];
@@ -695,7 +723,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         delete execution.pipelines;
       }
     });
-    application.pipelines = pipelines;
+    if (includePipelines) {
+      application.pipelines = pipelines;
+    }
     application.executions = executions;
     application.layout = layout;
     application.project = this.user.projects.find(p => p.id === this.user.defaultProjectId);
@@ -746,6 +776,8 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     executions: Execution[]
   ): DesignerElement {
     // TODO Ensure that pipelineIds get converted to pipelines
+    // Set the executionId to the id of the dropped execution
+    execution.executionId = execution.id;
     return {
       name: execution.id,
       tooltip: execution.id,
@@ -785,7 +817,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   autoLayout() {
-    const application = this.generateApplication();
+    const application = this.generateApplication(true);
     delete application.layout;
     this.loadApplication(application);
   }
