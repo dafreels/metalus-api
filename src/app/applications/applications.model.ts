@@ -22,7 +22,7 @@ export interface Application extends BaseApplicationProperties {
   applicationProperties: object;
   executions: Execution[];
   requiredParameters: string[];
-  pipelineManager: ClassInfo;
+  pipelineManager?: ClassInfo;
   sparkUdfs?: ClassInfo[];
   json4sSerializers?: Json4sSerializers;
   layout?: object;
@@ -45,6 +45,7 @@ export interface Execution extends BaseApplicationProperties {
   pipelineIds?: string[];
   initialPipelineId: string;
   mergeGlobals: boolean;
+  executionId?: string;
 }
 
 export interface ExecutionTemplate extends Execution, ClassComponentProperties {

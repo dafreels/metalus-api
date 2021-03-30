@@ -63,7 +63,7 @@ export class RunJobComponent implements OnInit {
   selectedLogLevel: string = 'INFO';
   useCredentialProvider: boolean = false;
   forceCopy: boolean = false;
-  refreshPipelines: boolean = false;
+  includePipelines: boolean = true;
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
@@ -127,7 +127,7 @@ export class RunJobComponent implements OnInit {
       streamingInfo: this.streamingInfo,
       selectedLogLevel: this.selectedLogLevel,
       useCredentialProvider: this.useCredentialProvider,
-      refreshPipelines: this.refreshPipelines,
+      refreshPipelines: this.includePipelines,
       forceCopy: this.forceCopy,
       globals,
       pipelineParameters

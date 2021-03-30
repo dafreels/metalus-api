@@ -285,17 +285,14 @@ async function startJob(req, res, next) {
   const jobType = mappingParameters.jobType;
   const logLevel = mappingParameters.selectedLogLevel;
   const forceCopy = mappingParameters.forceCopy;
-  const refreshPipelines = mappingParameters.refreshPipelines || false;
+  const includePipelines = mappingParameters.includePipelines || false;
   const providersModel = new ProvidersModel();
   const provider = await providersModel.getByKey({id: req.params.id}, user);
   if (provider) {
     const application = await new ApplicationsModel().getByKey({ id: applicationId }, user);
-    if (refreshPipelines) {
-      application.pipelines = await refreshPipelinesFromApi(application.pipelines, user);
-      for await (let exe of application.executions) {
-        exe.pipelines = await refreshPipelinesFromApi(exe.pipelines, user);
-      }
-    }
+    // Since pipelines are not saved with the application, go through the executions and identify all
+    // pipelines that we need to include.
+    application.pipelines = await addRequiredPipelines(application, user, includePipelines);
     const pipelinesModel = new PipelinesModel();
     let jarTags = await extractJarTags(application, pipelinesModel, user);
     const jarsDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${user.id}/${user.defaultProjectId}`;
@@ -476,6 +473,16 @@ async function startJob(req, res, next) {
   }
 }
 
+function addJarTags(obj, jarTags) {
+  if (obj.tags && obj.tags.filter(t => t.endsWith('.jar')).length > 0) {
+    obj.tags.filter(t => t.endsWith('.jar')).forEach(t => {
+      if (jarTags.indexOf(t) === -1) {
+        jarTags.push(t);
+      }
+    });
+  }
+}
+
 async function extractJarTags(application, pipelinesModel, user) {
   const pipelines = application.pipelines || [];
   let pipeline;
@@ -488,29 +495,32 @@ async function extractJarTags(application, pipelinesModel, user) {
   }
   let jarTags = [];
   pipelines.forEach(p => {
+    addJarTags(p, jarTags);
     p.steps.forEach(s => {
-      if (s.tags && s.tags.filter(t => t.endsWith('.jar')).length > 0) {
-        s.tags.forEach(t => {
-          if (jarTags.indexOf(t) === -1) {
-            jarTags.push(t);
-          }
-        });
-      }
+      addJarTags(s, jarTags);
     });
   });
   return jarTags;
 }
 
-async function refreshPipelinesFromApi(pipelines, user) {
-  if (!pipelines || pipelines.length === 0) {
-    return pipelines;
-  }
+async function addRequiredPipelines(application, user, includePipelines) {
   const pipelinesModel = new PipelinesModel();
-  const updatedPipelines = [];
-  for await (let pipeline of pipelines) {
-    updatedPipelines.push(await pipelinesModel.getByKey({id: pipeline.id}, user));
+  const pipelines = [];
+  const pipelineIds = [];
+  let pipeline;
+  for await (let exe of application.executions) {
+    for await (let pipelineId of exe.pipelineIds) {
+      if (pipelineIds.indexOf(pipelineId) === -1) {
+        pipelineIds.push(pipelineId);
+        pipeline = await pipelinesModel.getByKey({id: pipelineId}, user);
+        if (includePipelines || !pipeline.tags ||
+          pipeline.tags.filter(t => t.endsWith('.jar')).length === 0) {
+          pipelines.push(pipeline)
+        }
+      }
+    }
   }
-  return updatedPipelines;
+  return pipelines.length > 0 ? pipelines : undefined;
 }
 
 async function bundleApplicationJson(jarsDir, application, applicationId) {
