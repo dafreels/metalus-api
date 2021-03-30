@@ -10,23 +10,24 @@ import {AuthGuardService} from "./shared/services/auth-gaurd.service";
 import {ProfileComponent} from "./core/components/profile/profile.component";
 import {UsersComponent} from "./core/components/users/users.component";
 import {UploadComponent} from "./core/components/upload/upload.component";
-import {ConfirmDeactivateGuard} from './shared/guards/confirm-deactivate.guard';
+import {ConfirmPipelineDeactivateGuard} from './shared/guards/confirm-pipeline-deactivate-guard.service';
 import {CustomParameterEditorComponent} from './pipelines/components/custom-parameter-editor/custom-parameter-editor.component';
 import {ProvidersComponent} from "./jobs/components/providers/providers.component";
+import {ConfirmApplicationDeactivateGuard} from "./shared/guards/confirm-application-deactivate-gaurd.service";
 
 const appRoutes: Routes = [
-  {path: 'login', component: LoginComponent, canDeactivate:[ConfirmDeactivateGuard]},
+  {path: 'login', component: LoginComponent, canDeactivate:[ConfirmPipelineDeactivateGuard, ConfirmApplicationDeactivateGuard]},
   {path: '', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService],
     data :{ page:"landing", title:"Home"}},
   {path: 'applications-editor', component: ApplicationsEditorComponent, canActivate: [AuthGuardService],
-    data :{ page:"applications-editor", title:"Applications Editor"}},
+    canDeactivate:[ConfirmApplicationDeactivateGuard], data :{ page:"applications-editor", title:"Applications Editor"}},
   {path: 'providers', component: ProvidersComponent, canActivate: [AuthGuardService],
     data :{ page:"providers", title:"Providers"}},
   {path: 'custom-form-editor', component: CustomParameterEditorComponent, canActivate: [AuthGuardService],
     data :{ page:"custom-form-editor", title:"Custom Form Editor"}},
   {path: 'steps-editor', component: StepsEditorComponent, canActivate: [AuthGuardService]},
-  {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService], canDeactivate:[ConfirmDeactivateGuard],
-    data :{ page:"pipelines-editor", title:"Pipelines Editor"}},
+  {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService],
+    canDeactivate:[ConfirmPipelineDeactivateGuard], data :{ page:"pipelines-editor", title:"Pipelines Editor"}},
   {path: 'landing', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService],
     data :{ page:"landing", title:"Home"}},
   {path: 'profile', component: ProfileComponent, pathMatch: 'full', canActivate: [AuthGuardService],

@@ -759,6 +759,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         }),
       );
   }
+
   get hasChanges() {
     return this.hasPipelineChanged(this.selectedPipeline);
   }
