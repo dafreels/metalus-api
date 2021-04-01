@@ -71,6 +71,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   private _selectedParam:PipelineStepParam = null;
   set selectedParam(param){
     this._selectedParam = param;
+    this.sampleTemplate = {};
     this.showPreview = false;
   }
   get selectedParam(){

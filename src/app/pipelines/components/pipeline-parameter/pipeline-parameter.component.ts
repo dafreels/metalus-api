@@ -540,8 +540,10 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       }
     }
   }
-  selectParam(param){
-    this.selectedParam.emit(param);
+  selectParam(param, expanded){
+    if(expanded) {
+      this.selectedParam.emit(param);
+    }
   }
   templateValueChanged(value) {
     this.parameter.value = value;
