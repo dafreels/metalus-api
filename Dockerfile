@@ -29,8 +29,8 @@ RUN apk --no-cache add \
     nodejs \
     tar \
     npm && \
-    tar -xf /opt/metalus/metalus-utils_2.11-spark_2.4-1.7.2.tar.gz && \
-    rm -f /opt/metalus/metalus-utils_2.11-spark_2.4-1.7.2.tar.gz && \
+    tar -xf /opt/metalus/metalus-utils_2.11-spark_2.4-1.8.0.tar.gz && \
+    rm -f /opt/metalus/metalus-utils_2.11-spark_2.4-1.8.0.tar.gz && \
     npm install -g @angular/cli@latest && \
     npm install -g grunt-cli && \
     npm install && \
