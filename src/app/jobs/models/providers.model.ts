@@ -34,6 +34,7 @@ export interface Cluster {
   canStart: boolean;
   canStop: boolean;
   canDelete: boolean;
+  canRunJob: boolean;
 }
 
 export interface ClustersResponse {
