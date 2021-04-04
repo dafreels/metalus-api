@@ -12,6 +12,7 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { CodeEditorComponent } from 'src/app/code-editor/components/code-editor/code-editor.component';
 import { generalDialogDimensions } from '../../models/custom-dialog.model';
 import { DisplayDialogService } from '../../services/display-dialog.service';
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-preview-parameter-editor',
@@ -33,7 +34,7 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
       if (formlyJson.schema) {
         this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
       } else if(Array.isArray(formlyJson)) {
-        this._fields = formlyJson;
+        this._fields = _.cloneDeep(formlyJson);
       }
     }
   }

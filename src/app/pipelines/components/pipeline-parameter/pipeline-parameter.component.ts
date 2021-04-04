@@ -11,6 +11,7 @@ import {MatSelect} from '@angular/material';
 import {FormControl} from '@angular/forms';
 import {TreeEditorComponent} from '../../../shared/components/tree-editor/tree-editor.component';
 import {ScalaScriptComponent} from 'src/app/shared/scala-script/scala-script.component';
+import { PackageObjectsService } from 'src/app/core/package-objects/package-objects.service';
 
 export interface SplitParameter {
   id: number;
@@ -64,6 +65,14 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     this.param = stepParameter;
+    if(this.param.className) {
+      this.packageObjectsService.getPackageObjects().subscribe(objects=>{
+        const classObject = objects.find(obj=>obj.id==this.param.className);
+        if(classObject && classObject.template) {
+          this.template = JSON.parse(classObject.template);
+        }
+      })
+    }
     if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
       if (numberOfRepetitions && numberOfRepetitions.length > 1) {
@@ -242,7 +251,8 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private displayDialogService: DisplayDialogService
+    private displayDialogService: DisplayDialogService,
+    private packageObjectsService: PackageObjectsService
   ) {}
 
   ngOnDestroy() {
@@ -431,7 +441,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
 
   openEditor(id: number) {
     const inputData = this.parameters.find((p) => p.id === id);
-
+    
     if (inputData.type === 'scalascript') {
       inputData.value = this.parameter.value || '';
       const propertiesDialogResponse = this.displayDialogService.openDialog(
