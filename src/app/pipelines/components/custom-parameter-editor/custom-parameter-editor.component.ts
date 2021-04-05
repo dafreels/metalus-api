@@ -400,6 +400,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
       return !!this.selectedPackage;
     } else if (this.isStep) {
       return !!(this.stepTemplate && this.selectedParam);
+    } else if (this.isExecution) {
+      return !!this.selectedExecution;
     }
   }
 

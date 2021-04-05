@@ -7,8 +7,7 @@
             *ngFor="let execution of executions"
             matTooltip="{{ execution.id }}"
             matTooltipPosition="right"
-            (click)="handleExecutionSelection(execution)"
-          >
+            (click)="handleExecutionSelection(execution)">
             <div class="execution-list-container">
               <span class="execution-list-text">{{ execution.displayName }}</span>
             </div>
@@ -16,4 +15,3 @@
         </mat-action-list>
     </mat-card-content>
   </mat-card>
-  

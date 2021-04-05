@@ -7,17 +7,13 @@
       <app-steps-selector
         [steps]="steps"
         (stepItemSelection)="selectStep($event)"
-        *ngIf="isStep"
-      ></app-steps-selector>
+        *ngIf="isStep"></app-steps-selector>
       <app-package-selector
         *ngIf="isPackage"
-        (packageItemSelection)="selectPackage($event)"
-      ></app-package-selector>
+        (packageItemSelection)="selectPackage($event)"></app-package-selector>
       <app-execution-selector
       *ngIf ="isExecution"
-      (executionItemSelection) = "selectExecution($event)"
-      >
-
+      (executionItemSelection)="selectExecution($event)">
       </app-execution-selector>
     </div>
     <div class="designer-content">
@@ -30,8 +26,7 @@
                 <mat-select
                   #field
                   #fieldModel="ngModel"
-                  [(ngModel)]="stepOrPackageSelection"
-                >
+                  [(ngModel)]="stepOrPackageSelection">
                   <mat-option  value="Package"> Class </mat-option>
                   <mat-option value="Step"> Step </mat-option>
                   <mat-option  value="Execution"> Execution </mat-option>
@@ -46,50 +41,43 @@
                 <span> <b>Class Object: </b> {{ selectedPackage?.id | packageName }} </span>
                 <span> <b>ID: </b> {{ selectedPackage?._id }}</span>
               </ng-container>
+              <ng-container class="Execution" *ngIf="isExecution">
+                <span> <b>Execution Name: </b> {{ selectedExecution?.displayName }} </span>
+                <span> <b>ID: </b> {{ selectedExecution?.id }}</span>
+              </ng-container>
             </div>
             <span>
               <span
                 *ngIf="errors.length > 0"
                 class="error-panel"
-                (click)="showErrors()"
-              >
-                <span
-                  ><mat-icon color="warn" class="error-icon"
-                    >warning</mat-icon
-                  ></span
-                >
+                (click)="showErrors()">
+                <span><mat-icon color="warn" class="error-icon">warning</mat-icon></span>
                 <span>{{ errors.length }} Errors Detected</span>
               </span>
               <mat-icon
                 color="primary"
                 (click)="openHelp()"
-                style="vertical-align: middle; margin-right: 5px"
-              >
-                help
-              </mat-icon>
+                style="vertical-align: middle; margin-right: 5px">help</mat-icon>
               <button
                 mat-raised-button
                 color="primary"
                 style="margin-right: 5px"
                 (click)="saveStepParamTemplate()"
-                [disabled]="!templateChanged && !enableSave"
-              >
+                [disabled]="!templateChanged && !enableSave">
                 Save
               </button>
               <button
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
-                (click)="previewStepParamTemplate()"
-              >
+                (click)="previewStepParamTemplate()">
                 Preview
               </button>
               <button
                 mat-button
                 color="primary"
                 style="margin-right: 5px"
-                (click)="cancelStepParamTemplateChanges()"
-              >
+                (click)="cancelStepParamTemplateChanges()">
                 Cancel
               </button>
             </span>
@@ -103,8 +91,7 @@
           color="primary"
           style="float: right"
           (click)="addSampleTemplate()"
-          [disabled]="!canAddSampleJSON"
-        >
+          [disabled]="!canAddSampleJSON">
           Add Sample JSON Schema
         </button>
         <button  (click)="exportTemplate()" color="primary" mat-button>Export</button>
