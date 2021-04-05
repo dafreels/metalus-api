@@ -34,6 +34,7 @@ import { MultiSchemaTypeComponent } from './components/formly-types/multischema.
 import { NullTypeComponent } from './components/formly-types/null.type';
 import { ObjectTypeComponent } from './components/formly-types/object.type';
 import { RepeatTypeComponent } from './components/formly-types/repeat-section.type';
+import { StringsArrayTypeComponent } from './components/formly-types/strings-array.type';
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -81,6 +82,7 @@ const commonModules = [
         { name: 'enum', extends: 'select' },
         { name: 'null', component: NullTypeComponent, wrappers: ['form-field'] },
         { name: 'array', component: ArrayTypeComponent },
+        { name: 'stringArray', component: StringsArrayTypeComponent },
         { name: 'object', component: ObjectTypeComponent },
         { name: 'multischema', component: MultiSchemaTypeComponent },
         { name: 'repeat', component: RepeatTypeComponent },
@@ -113,6 +115,7 @@ const commonModules = [
     MultiSchemaTypeComponent,
     NullTypeComponent,
     RepeatTypeComponent,
+    StringsArrayTypeComponent
   ],
   exports: [
     ...commonModules,
