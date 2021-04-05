@@ -51,6 +51,7 @@ export interface Execution extends BaseApplicationProperties {
 export interface ExecutionTemplate extends Execution, ClassComponentProperties {
   description: string;
   displayName: string;
+  template?:any
 }
 
 export interface BaseApplicationProperties {

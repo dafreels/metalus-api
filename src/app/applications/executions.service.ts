@@ -8,6 +8,12 @@ import {map} from "rxjs/operators";
   providedIn: 'root',
 })
 export class ExecutionsService {
+  updateExecutionTemplate(selectedExecution: ExecutionTemplate, paramTemplate: any) {
+    return this.http
+      .put<ExecutionsResponse>(`/api/v1/executions`, {
+        observe: 'response',
+      })
+  }
   constructor(private http: HttpClient) {}
 
   getExecutions(): Observable<ExecutionTemplate[]> {

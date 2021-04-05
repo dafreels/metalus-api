@@ -16,6 +16,9 @@ import {PipelinesService} from '../../services/pipelines.service';
 import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.component';
 import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-modal.component';
 import {HelpComponent} from "../../../core/components/help/help.component";
+import { ExecutionsService } from 'src/app/applications/executions.service';
+import { ExecutionTemplate } from 'src/app/applications/applications.model';
+
 // import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-custom-parameter-editor',
@@ -23,11 +26,12 @@ import {HelpComponent} from "../../../core/components/help/help.component";
   styleUrls: ['./custom-parameter-editor.component.scss']
 })
 export class CustomParameterEditorComponent implements OnInit, OnDestroy{
-  private _stepOrPackageSlection:'Step'|'Package' = 'Step';
+  private _stepOrPackageSlection:'Step'|'Package'|'Execution' = 'Step';
+  selectedExecution: ExecutionTemplate;
   get stepOrPackageSlection(){
     return this._stepOrPackageSlection;
   }
-  set stepOrPackageSlection(value:'Step'|'Package') {
+  set stepOrPackageSlection(value:'Step'|'Package'|'Execution') {
     this.selectedPackage = null;
     this.selectedStep = null;
     this.selectedParam = null;
@@ -67,6 +71,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   private _selectedParam:PipelineStepParam = null;
   set selectedParam(param){
     this._selectedParam = param;
+    this.sampleTemplate = {};
     this.showPreview = false;
   }
   get selectedParam(){
@@ -87,6 +92,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   constructor(
     private stepsService: StepsService,
     private pipelinesService: PipelinesService,
+    private executionsService: ExecutionsService,
     private packageObjectsService: PackageObjectsService,
     public dialog: MatDialog,
     private authService: AuthService) {
@@ -169,6 +175,13 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedStep = null;
     this._selectedParam = null;
   }
+  selectExecution($event){
+    const execution = $event;
+    if (execution.template && typeof execution.template === 'string') {
+      execution.template = JSON.parse(execution.template);
+    }
+    this.selectedExecution = execution;
+  }
 
 exportTemplate() {
   const fileName = this.isStep ? `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json`:
@@ -208,6 +221,8 @@ onFileLoad(event) {
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
     } else if(this.isPackage && this.selectedPackage) {
       return JSON.stringify(this.selectedPackage.template || this.sampleTemplate, null, 4);
+    } else if(this.isExecution && this.selectedExecution) {
+      return JSON.stringify(this.selectedExecution.template || this.sampleTemplate, null, 4);
     } else {
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
@@ -237,14 +252,18 @@ onFileLoad(event) {
     })
   }
   saveStepParamTemplate() {
-    if (this.isPackage) {
-      this.savePackageTemplate();
-      return;
-    }
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
       height: '25%',
     });
+    if (this.isPackage) {
+      this.savePackageTemplate(dialogRef);
+      return;
+    }
+    if (this.isExecution) {
+      this.saveExecutionTemplate(dialogRef);
+      return;
+    }
     this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
     this.stepsService.updateParamTemplate(this.selectedStep.id, this.stepTemplate).subscribe(() => {
       dialogRef.close();
@@ -252,14 +271,19 @@ onFileLoad(event) {
     (error) => this.handleError(error, dialogRef)
     )
   }
-  savePackageTemplate() {
-    const dialogRef = this.dialog.open(WaitModalComponent, {
-      width: '25%',
-      height: '25%',
-    });
+  savePackageTemplate(dialogRef) {
     this.packageObjectsService.updatePackageTemplate(this.selectedPackage, this.paramTemplate).subscribe(() => {
       dialogRef.close();
       this.selectedPackage.template = this.paramTemplate;
+      this.enableSave = false;
+    },
+    (error) => this.handleError(error, dialogRef)
+    )
+  }
+  saveExecutionTemplate (dialogRef) {
+    this.executionsService.updateExecutionTemplate(this.selectedExecution, this.paramTemplate).subscribe(() => {
+      dialogRef.close();
+      this.selectedExecution.template = this.paramTemplate;
       this.enableSave = false;
     },
     (error) => this.handleError(error, dialogRef)
@@ -327,6 +351,9 @@ onFileLoad(event) {
   }
   get isPackage(){
     return this.stepOrPackageSlection === 'Package';
+  }
+  get isExecution(){
+    return this.stepOrPackageSlection === 'Execution';
   }
 
   get canAddSampleJSON() {

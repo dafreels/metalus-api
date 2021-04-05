@@ -1,4 +1,4 @@
-<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result' || isAStepGroupResult" (click)="selectParam(param)" [expanded]="expandPanel">
+<mat-expansion-panel style="margin-bottom: 5px;" *ngIf="parameterType !== 'result' || isAStepGroupResult" (expandedChange)="selectParam(param,$event)" [expanded]="expandPanel">
   <mat-expansion-panel-header>
     <mat-panel-title>
       <mat-icon color="primary" [matTooltip]="parameter.description" style="margin-right: 3px">
