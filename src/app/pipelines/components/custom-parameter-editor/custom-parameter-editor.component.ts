@@ -16,8 +16,8 @@ import {PipelinesService} from '../../services/pipelines.service';
 import {StepGroupProperty} from '../pipeline-parameter/pipeline-parameter.component';
 import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-modal.component';
 import {HelpComponent} from "../../../core/components/help/help.component";
-import { ExecutionsService } from 'src/app/applications/executions.service';
-import { ExecutionTemplate } from 'src/app/applications/applications.model';
+import {ExecutionsService} from 'src/app/applications/executions.service';
+import {ExecutionTemplate} from 'src/app/applications/applications.model';
 
 // import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
@@ -25,18 +25,21 @@ import { ExecutionTemplate } from 'src/app/applications/applications.model';
   templateUrl: './custom-parameter-editor.component.html',
   styleUrls: ['./custom-parameter-editor.component.scss']
 })
-export class CustomParameterEditorComponent implements OnInit, OnDestroy{
-  private _stepOrPackageSlection:'Step'|'Package'|'Execution' = 'Step';
+export class CustomParameterEditorComponent implements OnInit, OnDestroy {
+  private _stepOrPackageSelection: 'Step' | 'Package' | 'Execution' = 'Package';
   selectedExecution: ExecutionTemplate;
-  get stepOrPackageSlection(){
-    return this._stepOrPackageSlection;
+
+  get stepOrPackageSelection() {
+    return this._stepOrPackageSelection;
   }
-  set stepOrPackageSlection(value:'Step'|'Package'|'Execution') {
+
+  set stepOrPackageSelection(value: 'Step' | 'Package' | 'Execution') {
     this.selectedPackage = null;
     this.selectedStep = null;
     this.selectedParam = null;
-    this._stepOrPackageSlection = value;
+    this._stepOrPackageSelection = value;
   }
+
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
@@ -44,44 +47,52 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
   stepGroups: Pipeline[];
   steps: Step[];
   paramTemplate: any = {};
-  sampleTemplate:any = {};
+  sampleTemplate: any = {};
   selectedPipeline: Pipeline;
-  private _selectedStep:PipelineStep;
-  showPreview:boolean = false;
-  _selectedPackage:PackageObject;
+  private _selectedStep: PipelineStep;
+  showPreview: boolean = false;
+  _selectedPackage: PackageObject;
   get selectedPackage() {
     return this._selectedPackage;
   }
+
   set selectedPackage(packageObj) {
     this._selectedPackage = packageObj;
     this.sampleTemplate = {};
   }
-  enableSave:boolean = false;
+
+  enableSave: boolean = false;
+
   set selectedStep(step) {
     this._selectedStep = step;
     this.selectedParam = null;
-    if(step){
+    if (step) {
       this.getStepParamTemplate(step);
     }
   }
+
   public stepTemplate = {};
-  get selectedStep():PipelineStep {
+
+  get selectedStep(): PipelineStep {
     return this._selectedStep;
   }
-  private _selectedParam:PipelineStepParam = null;
-  set selectedParam(param){
+
+  private _selectedParam: PipelineStepParam = null;
+  set selectedParam(param) {
     this._selectedParam = param;
     this.sampleTemplate = {};
     this.showPreview = false;
   }
-  get selectedParam(){
+
+  get selectedParam() {
     return this._selectedParam;
   }
+
   selectedElement: DesignerElement;
   isABranchStep: boolean;
   typeAhead: string[] = [];
   pipelineValidator;
-  stepGroup: StepGroupProperty = { enabled: false };
+  stepGroup: StepGroupProperty = {enabled: false};
   user: User;
   editName: boolean = false;
   editStepId: boolean = false;
@@ -117,7 +128,6 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     }
   }
 
-
   private loadUIData() {
     this.steps = [];
     this.stepsLoading = true;
@@ -141,7 +151,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',
-      data: { messages },
+      data: {messages},
     });
   }
 
@@ -157,7 +167,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',
-      data: { messages: message.split('\n') },
+      data: {messages: message.split('\n')},
     });
   }
 
@@ -175,7 +185,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedStep = null;
     this._selectedParam = null;
   }
-  selectExecution($event){
+
+  selectExecution($event) {
     const execution = $event;
     if (execution.template && typeof execution.template === 'string') {
       execution.template = JSON.parse(execution.template);
@@ -183,74 +194,85 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy{
     this.selectedExecution = execution;
   }
 
-exportTemplate() {
-  const fileName = this.isStep ? `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json`:
-        `${this.selectedPackage.id.split('.').join('_')}.json`;
-  SharedFunctions.downloadAsFile(fileName,JSON.stringify(this.paramTemplate));
-}
+  exportTemplate() {
+    const fileName = this.isStep ? `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json` :
+      `${this.selectedPackage.id.split('.').join('_')}.json`;
+    let template;
+    if (this.isPackage && !this.paramTemplate.form) {
+      template = {
+        form: this.paramTemplate
+      };
+    } else {
+      template = this.paramTemplate;
+    }
+    SharedFunctions.downloadAsFile(fileName, JSON.stringify(template));
+  }
 
-onFileLoad(event) {
-  const f = event.target.files[0];
-  const reader = new FileReader();
+  onFileLoad(event) {
+    const f = event.target.files[0];
+    const reader = new FileReader();
 
-  reader.onload = ((theFile) => {
-    return (e) => {
-      try {
-        const json = JSON.parse(e.target.result);
-        this.paramTemplate = json;
-        if(this.isStep) {
-          this.stepTemplate[this.selectedParam.name] = json;
-        } else if(this.isPackage) {
-          this.selectedPackage.template = json;
+    reader.onload = ((theFile) => {
+      return (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
+          this.paramTemplate = json;
+          if (this.isStep) {
+            this.stepTemplate[this.selectedParam.name] = json;
+          } else if (this.isPackage) {
+            this.selectedPackage.template = json;
+          }
+          this.enableSave = true;
+        } catch (err) {
         }
-        this.enableSave  = true;
-      } catch (err) {
-      }
-    };
-  })(f);
-  reader.readAsText(f);
-}
+      };
+    })(f);
+    reader.readAsText(f);
+  }
 
 
-
-  selectParam($event){
+  selectParam($event) {
     this.selectedParam = $event;
   }
+
   get codeViewData() {
-    if(this.isStep && this.stepTemplate && this.selectedParam && this.stepTemplate[this.selectedParam.name]){
+    if (this.isStep && this.stepTemplate && this.selectedParam && this.stepTemplate[this.selectedParam.name]) {
       return JSON.stringify(this.stepTemplate[this.selectedParam.name], null, 4);
-    } else if(this.isPackage && this.selectedPackage) {
+    } else if (this.isPackage && this.selectedPackage) {
       return JSON.stringify(this.selectedPackage.template || this.sampleTemplate, null, 4);
-    } else if(this.isExecution && this.selectedExecution) {
+    } else if (this.isExecution && this.selectedExecution) {
       return JSON.stringify(this.selectedExecution.template || this.sampleTemplate, null, 4);
     } else {
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
   }
+
   set codeViewData(data) {
     try {
-      if(this.selectedStep) {
+      if (this.selectedStep) {
         this.paramTemplate = JSON.parse(data);
-      } else if(this.selectedPackage) {
+      } else if (this.selectedPackage) {
         this.paramTemplate = JSON.parse(data);
       }
-    } catch(err) {
-    }
-  }
-  get templateChanged() {
-    if(this.selectedParam) {
-      return (this.stepTemplate && this.selectedParam && (JSON.stringify(this.stepTemplate[this.selectedParam.name]) !== JSON.stringify(this.paramTemplate)));
-    } else if(this.selectedPackage) {
-      return ( this.selectedPackage && (JSON.stringify(this.selectedPackage.template) !== JSON.stringify(this.paramTemplate)));
+    } catch (err) {
     }
   }
 
-  getStepParamTemplate(step){
-    this.stepsService.getParamTemplate(step.id)
-    .subscribe(resp=>{
-      this.stepTemplate = resp;
-    })
+  get templateChanged() {
+    if (this.selectedParam) {
+      return (this.stepTemplate && this.selectedParam && (JSON.stringify(this.stepTemplate[this.selectedParam.name]) !== JSON.stringify(this.paramTemplate)));
+    } else if (this.selectedPackage) {
+      return (this.selectedPackage && (JSON.stringify(this.selectedPackage.template) !== JSON.stringify(this.paramTemplate)));
+    }
   }
+
+  getStepParamTemplate(step) {
+    this.stepsService.getParamTemplate(step.id)
+      .subscribe(resp => {
+        this.stepTemplate = resp;
+      })
+  }
+
   saveStepParamTemplate() {
     const dialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
@@ -266,33 +288,37 @@ onFileLoad(event) {
     }
     this.stepTemplate[this.selectedParam.name] = this.paramTemplate;
     this.stepsService.updateParamTemplate(this.selectedStep.id, this.stepTemplate).subscribe(() => {
-      dialogRef.close();
-    },
-    (error) => this.handleError(error, dialogRef)
+        dialogRef.close();
+      },
+      (error) => this.handleError(error, dialogRef)
     )
   }
+
   savePackageTemplate(dialogRef) {
     this.packageObjectsService.updatePackageTemplate(this.selectedPackage, this.paramTemplate).subscribe(() => {
-      dialogRef.close();
-      this.selectedPackage.template = this.paramTemplate;
-      this.enableSave = false;
-    },
-    (error) => this.handleError(error, dialogRef)
+        dialogRef.close();
+        this.selectedPackage.template = this.paramTemplate;
+        this.enableSave = false;
+      },
+      (error) => this.handleError(error, dialogRef)
     )
   }
-  saveExecutionTemplate (dialogRef) {
+
+  saveExecutionTemplate(dialogRef) {
     this.executionsService.updateExecutionTemplate(this.selectedExecution, this.paramTemplate).subscribe(() => {
-      dialogRef.close();
-      this.selectedExecution.template = this.paramTemplate;
-      this.enableSave = false;
-    },
-    (error) => this.handleError(error, dialogRef)
+        dialogRef.close();
+        this.selectedExecution.template = this.paramTemplate;
+        this.enableSave = false;
+      },
+      (error) => this.handleError(error, dialogRef)
     )
   }
+
   cancelStepParamTemplateChanges() {
     this.selectedParam = null;
   }
-  previewStepParamTemplate(){
+
+  previewStepParamTemplate() {
     this.showPreview = !this.showPreview;
   }
 
@@ -320,14 +346,14 @@ onFileLoad(event) {
               "templateOptions": {
                 "label": "Data Type",
                 "options": [
-                  { "id": "string", "name": "String" },
-                  { "id": "double", "name": "Double" },
-                  { "id": "integer", "name": "Integer" },
-                  { "id": "timestamp", "name": "Timestamp" },
-                  { "id": "decimal", "name": "Decimal" },
-                  { "id": "array", "name": "Array" },
-                  { "id": "map", "name": "Map" },
-                  { "id": "struct", "name": "Struct" }
+                  {"id": "string", "name": "String"},
+                  {"id": "double", "name": "Double"},
+                  {"id": "integer", "name": "Integer"},
+                  {"id": "timestamp", "name": "Timestamp"},
+                  {"id": "decimal", "name": "Decimal"},
+                  {"id": "array", "name": "Array"},
+                  {"id": "map", "name": "Map"},
+                  {"id": "struct", "name": "Struct"}
                 ],
                 "valueProp": "id",
                 "labelProp": "name"
@@ -346,34 +372,38 @@ onFileLoad(event) {
       data: 'https://formly.dev/guide/expression-properties',
     });
   }
-  get isStep(){
-    return this.stepOrPackageSlection === 'Step';
+
+  get isStep() {
+    return this.stepOrPackageSelection === 'Step';
   }
-  get isPackage(){
-    return this.stepOrPackageSlection === 'Package';
+
+  get isPackage() {
+    return this.stepOrPackageSelection === 'Package';
   }
-  get isExecution(){
-    return this.stepOrPackageSlection === 'Execution';
+
+  get isExecution() {
+    return this.stepOrPackageSelection === 'Execution';
   }
 
   get canAddSampleJSON() {
-    if(this.isPackage && this.selectedPackage) {
+    if (this.isPackage && this.selectedPackage) {
       return !this.selectedPackage.template;
     }
-    if(this.isStep && this.stepTemplate && this.selectedParam) {
+    if (this.isStep && this.stepTemplate && this.selectedParam) {
       return !this.stepTemplate[this.selectedParam.name];
     }
     return this.canShowCodeView;
   }
+
   get canShowCodeView() {
-    if(this.isPackage){
+    if (this.isPackage) {
       return !!this.selectedPackage;
-    } else if(this.isStep) {
+    } else if (this.isStep) {
       return !!(this.stepTemplate && this.selectedParam);
     }
   }
 
-  get canPreviewPackageTemplate(){
-    return this.selectedPackage.template || (JSON.stringify(this.paramTemplate)!='{}' && this.showPreview);
+  get canPreviewPackageTemplate() {
+    return this.selectedPackage.template || (JSON.stringify(this.paramTemplate) != '{}' && this.showPreview);
   }
 }

@@ -17,7 +17,7 @@
       *ngIf ="isExecution"
       (executionItemSelection) = "selectExecution($event)"
       >
-        
+
       </app-execution-selector>
     </div>
     <div class="designer-content">
@@ -30,10 +30,10 @@
                 <mat-select
                   #field
                   #fieldModel="ngModel"
-                  [(ngModel)]="stepOrPackageSlection"
+                  [(ngModel)]="stepOrPackageSelection"
                 >
-                  <mat-option value="Step"> Step </mat-option>
                   <mat-option  value="Package"> Class </mat-option>
+                  <mat-option value="Step"> Step </mat-option>
                   <mat-option  value="Execution"> Execution </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -108,11 +108,11 @@
           Add Sample JSON Schema
         </button>
         <button  (click)="exportTemplate()" color="primary" mat-button>Export</button>
-        <span class="uuidLableLeft"> 
-          <input style="display: none" type="file" accept=".json" 
+        <span class="uuidLableLeft">
+          <input style="display: none" type="file" accept=".json"
                (change)="onFileLoad($event)" #fileinput>
           <button mat-button color="primary" type="button" (click)="fileinput.click()"> Import (*.json) </button>
-        </span> 
+        </span>
         <ace
           [mode]="'json'"
           [theme]="'solarized_light'"

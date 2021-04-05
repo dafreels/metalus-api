@@ -34,7 +34,7 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
       if (formlyJson.schema) {
         this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
       } else if(Array.isArray(formlyJson)) {
-        this._fields = SharedFunctions.clone(formlyJson);;
+        this._fields = SharedFunctions.clone(formlyJson);
       } else if (formlyJson.form) {
         this._fields = formlyJson.form;
       }
