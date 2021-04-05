@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationModalComponent } from '../components/confirmation/confirmation-modal.component';
 
 @Injectable()
-export class ConfirmDeactivateGuard implements CanDeactivate<PipelinesEditorComponent> {    
+export class ConfirmPipelineDeactivateGuard implements CanDeactivate<PipelinesEditorComponent> {
     constructor(
     private dialog: MatDialog
     ){}

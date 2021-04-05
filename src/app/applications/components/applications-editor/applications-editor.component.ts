@@ -417,6 +417,10 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     this.errors = errors;
   }
 
+  get hasChanges() {
+    return this.hasApplicationChanged(this.selectedApplication);
+  }
+
   hasApplicationChanged(application: Application) {
     const difference = diff(this.originalApplication, application);
     delete difference['project'];

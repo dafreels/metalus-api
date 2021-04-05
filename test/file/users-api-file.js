@@ -53,6 +53,7 @@ describe('Users API File Tests', () => {
         fs.mkdirSync(dataDir);
         // Inject a user.json for authentication
         fs.copyFileSync(`${process.cwd()}/test/data/mock-users.json`, `${dataDir}/users.json`);
+        fs.writeFileSync(`${dataDir}/jobs.json`, Buffer.from('[]'));
         next(null, config);
       }
     }));

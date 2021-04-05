@@ -8,6 +8,16 @@ class StepsModel extends BaseModel {
     this.templatesModel = this.getStorageModel('stepTemplates');
   }
 
+  async getTemplates(user) {
+    const key = {
+      project: {
+        userId: user.id,
+        projectId: user.defaultProjectId
+      }
+    };
+    return this.templatesModel.find(key);
+  }
+
   // custom model logic goes here
   async getTemplate(id, user) {
     const key = {

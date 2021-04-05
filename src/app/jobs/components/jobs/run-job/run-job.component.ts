@@ -73,15 +73,7 @@ export class RunJobComponent implements OnInit {
 
   handleProviderSelection(providerId, clusterId) {
     this.providersService.getClustersList(providerId).subscribe(result => {
-      this.clusters = result.filter(c => {
-        switch(c.state) {
-          case 'WAITING':
-          case 'RUNNING':
-          case 'UP':
-            return true;
-          default: return false;
-        }
-      });
+      this.clusters = result.filter(c => c.canRunJob);
       if (clusterId) {
         this.selectedCluster = this.clusters.find(c => c.id === clusterId);
       }

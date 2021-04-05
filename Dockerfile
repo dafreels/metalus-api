@@ -3,7 +3,7 @@ FROM alpine:latest as build
 WORKDIR /opt/metalus
 
 # Download the Metalus Utils version
-ADD https://github.com/Acxiom/metalus/releases/download/release_1_7_2/metalus-utils_2.11-spark_2.4-1.7.2.tar.gz /opt/metalus
+ADD https://github.com/Acxiom/metalus/releases/download/1_8_0_alpha/metalus-utils_2.11-spark_2.4-1.8.0-SNAPSHOT.tar.gz /opt/metalus
 
 COPY config /opt/metalus/config
 COPY controllers /opt/metalus/controllers
@@ -29,8 +29,8 @@ RUN apk --no-cache add \
     nodejs \
     tar \
     npm && \
-    tar -xf /opt/metalus/metalus-utils_2.11-spark_2.4-1.7.2.tar.gz && \
-    rm -f /opt/metalus/metalus-utils_2.11-spark_2.4-1.7.2.tar.gz && \
+    tar -xf /opt/metalus/metalus-utils_2.11-spark_2.4-1.8.0-SNAPSHOT.tar.gz && \
+    rm -f /opt/metalus/metalus-utils_2.11-spark_2.4-1.8.0-SNAPSHOT.tar.gz && \
     npm install -g @angular/cli@latest && \
     npm install -g grunt-cli && \
     npm install && \

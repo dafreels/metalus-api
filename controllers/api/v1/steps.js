@@ -7,9 +7,34 @@ module.exports = function (router) {
   baseRoutes.buildBasicCrudRoutes(router);
 
   // custom routes
+  router.get('/_/template', getTemplates);
   router.get('/:id/template', getTemplate);
   router.put('/:id/template', updateTemplate);
 };
+
+async function getTemplates(req, res) {
+  try {
+    const stepsModel = new StepsModel();
+    const user = await req.user;
+    const steps = await stepsModel.getTemplates(user);
+    if (!steps) {
+      res.sendStatus(204);
+    } else {
+      if (steps) {
+        const returnObj = {};
+        returnObj['stepTemplates'] = steps.map((template) => {
+          delete template._id;
+          return template;
+        });
+        res.status(200).json(returnObj);
+      } else {
+        res.sendStatus(204);
+      }
+    }
+  } catch (err) {
+    res.status(501).json({error: err});
+  }
+}
 
 async function getTemplate(req, res) {
   try {
