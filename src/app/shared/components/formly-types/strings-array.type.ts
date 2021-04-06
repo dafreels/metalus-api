@@ -14,14 +14,13 @@ import { FieldType } from '@ngx-formly/core';
           *ngFor="let item of items"
           [selectable]="selectable"
           [removable]="removable"
-          (removed)="remove(item)"
-        >
+          (removed)="remove(item)">
           {{ item }}
           <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
         </mat-chip>
         <input
           [placeholder]="to.placeholder"
-          #fruitInput
+          #stringInput
           [formControl]="itemCtrl"
           [matChipInputFor]="chipList"
           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
@@ -56,6 +55,7 @@ export class StringsArrayTypeComponent extends FieldType {
 
     if (input) {
       input.value = '';
+      event.value = '';
     }
 
     this.itemCtrl.setValue(null);

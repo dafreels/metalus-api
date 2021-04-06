@@ -35,6 +35,7 @@ import { NullTypeComponent } from './components/formly-types/null.type';
 import { ObjectTypeComponent } from './components/formly-types/object.type';
 import { RepeatTypeComponent } from './components/formly-types/repeat-section.type';
 import { StringsArrayTypeComponent } from './components/formly-types/strings-array.type';
+import {PanelWrapperComponent} from "./components/formly-types/panel-wrapper.component";
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -57,6 +58,9 @@ const commonModules = [
     FormlyModule.forRoot({
       validationMessages: [
         { name: 'required', message: 'This field is required' },
+      ],
+      wrappers:[
+        { name: 'panel', component: PanelWrapperComponent },
       ],
       types: [
         { name: 'string', extends: 'input' },
@@ -114,6 +118,7 @@ const commonModules = [
     ObjectTypeComponent,
     MultiSchemaTypeComponent,
     NullTypeComponent,
+    PanelWrapperComponent,
     RepeatTypeComponent,
     StringsArrayTypeComponent
   ],
