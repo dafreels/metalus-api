@@ -111,9 +111,7 @@
       <mat-card>
         <mat-card-content>
           <mat-accordion *ngIf="isStep">
-            <app-step-information
-              [selectedStep]="selectedStep"
-            ></app-step-information>
+            <app-step-information [selectedStep]="selectedStep"></app-step-information>
             <mat-expansion-panel style="margin-top: 5px">
               <mat-expansion-panel-header>
                 <mat-panel-title>Parameters</mat-panel-title>
@@ -141,9 +139,7 @@
                     [templatePreview]="
                       showPreview &&
                       selectedParam.name === param.name &&
-                      paramTemplate
-                    "
-                  ></app-pipelines-parameter>
+                      paramTemplate"></app-pipelines-parameter>
                 </mat-accordion>
               </div>
             </mat-expansion-panel>
@@ -151,6 +147,10 @@
           <div class="preview-form" *ngIf="isPackage && selectedPackage" >
             <h3 *ngIf="!canPreviewPackageTemplate" class="Empty">Please add the JSON schema and click preview to view the template here.</h3>
             <app-preview-parameter-editor [previewMode]="true" *ngIf="canPreviewPackageTemplate" [fields]="showPreview? paramTemplate: selectedPackage?.template"></app-preview-parameter-editor>
+          </div>
+          <div class="preview-form" *ngIf="isExecution && selectedExecution" >
+            <h3 *ngIf="!canPreviewExecutionTemplate" class="Empty">Please add the JSON schema and click preview to view the template here.</h3>
+            <app-preview-parameter-editor [previewMode]="true" *ngIf="canPreviewExecutionTemplate" [fields]="showPreview? paramTemplate: selectedExecution?.template?.form"></app-preview-parameter-editor>
           </div>
         </mat-card-content>
       </mat-card>

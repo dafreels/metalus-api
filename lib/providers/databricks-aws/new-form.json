@@ -26,5 +26,19 @@
     "templateOptions": {
       "label": "API Token"
     }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.awsKey",
+    "templateOptions": {
+      "label": "AWS API Key"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.awsSecret",
+    "templateOptions": {
+      "label": "AWS API Secret"
+    }
   }
 ]

@@ -122,6 +122,12 @@
       "properties": {
         "apiToken": {
           "type": "string"
+        },
+        "awsKey": {
+          "type": "string"
+        },
+        "awsSecret": {
+          "type": "string"
         }
       }
     },

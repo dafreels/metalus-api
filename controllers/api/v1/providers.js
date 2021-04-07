@@ -24,6 +24,7 @@ module.exports = function (router) {
   router.put('/:id/clusters/:clusterId/stop', stopCluster);
   router.delete('/:id/clusters/:clusterId', deleteCluster);
   router.get('/:id/new-cluster-form', getNewClusterForm);
+  router.get('/:id/custom-job-form', getCustomJobForm);
   router.get('/:id/jobs', listJobs);
   router.post('/:id/jobs', startJob);
   router.get('/:id/jobs/:jobId', getJob);
@@ -45,6 +46,23 @@ async function getNewClusterForm(req, res, next) {
     }
   } else {
     res.sendStatus(404);
+  }
+}
+
+async function getCustomJobForm(req, res, next) {
+  const user = await req.user;
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({id: req.params.id}, user);
+  if (provider) {
+    try {
+      const providerType = ProviderFactory.getProvider(provider.providerTypeId);
+      const form = await providerType.getCustomJobForm(provider.providerInstance, user);
+      res.status(200).json({form});
+    } catch (err) {
+      next(err)
+    }
+  } else {
+    res.sendStatus(204);
   }
 }
 
@@ -342,6 +360,7 @@ async function startJob(req, res, next) {
     const runConfig = await bundleApplicationJson(`${jarsDir}/staging`, application, applicationId);
     jarFiles.push(runConfig.jars[0]);
     runConfig.useCredentialProvider = mappingParameters.useCredentialProvider;
+    runConfig.customFormValues = req.body.customFormValues;
     // handle custom parameters for streaming jobs
     let requiredStepLibrary;
     switch(jobType) {

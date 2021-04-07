@@ -160,6 +160,22 @@ export class SharedFunctions {
     const event = new MouseEvent("click");
     downloadEl.dispatchEvent(event);
    }
+
+   static convertFormlyForm(formlyJson) {
+     return formlyJson.map(item => {
+       if (item.validators) {
+         const validators = {};
+         Object.keys(item.validators).forEach(key => {
+           validators[key] = {
+             expression: item.validators[key].expression ? eval(item.validators[key].expression) : null,
+             message: item.validators[key].message ? eval(item.validators[key].message) : null
+           };
+         });
+         item.validators = validators;
+       }
+       return item;
+     });
+   }
 }
 const sharedFunctions = new SharedFunctions();
 export default sharedFunctions;

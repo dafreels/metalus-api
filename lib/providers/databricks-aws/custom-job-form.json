@@ -1,39 +1,58 @@
 [
   {
-    "type": "input",
-    "key": "cluster_name",
+    "key": "useNewCluster",
+    "type": "checkbox",
+    "defaultValue": false,
     "templateOptions": {
-      "label": "Name"
+      "label": "Create Cluster?",
+      "placeholder": "",
+      "focus": false,
+      "disabled": false,
+      "hideFieldUnderline": true,
+      "indeterminate": true,
+      "floatLabel": "always",
+      "hideLabel": true,
+      "align": "start",
+      "color": "accent"
     }
   },
   {
     "type": "select",
-    "key": "spark_version",
+    "key": "new_cluster.spark_version",
     "templateOptions": {
       "label": "Version",
       "options": [],
       "valueProp": "key",
       "labelProp": "name"
+    },
+    "expressionProperties": {
+      "templateOptions.disabled": "model.useNewCluster ? false : true"
     }
   },
   {
     "type": "select",
-    "key": "node_type_id",
+    "key": "new_cluster.node_type_id",
     "templateOptions": {
       "label": "Executor Node Type",
       "options": [],
       "valueProp": "id",
       "labelProp": "name"
+    },
+    "expressionProperties": {
+      "templateOptions.disabled": "model.useNewCluster ? false : true"
     }
   },
   {
     "type": "select",
-    "key": "driver_node_type_id",
+    "key": "new_cluster.driver_node_type_id",
     "templateOptions": {
       "label": "Driver Node Type",
       "options": [],
       "valueProp": "id",
       "labelProp": "name"
+    },
+    "expressionProperties": {
+      "templateOptions.disabled": "model.useNewCluster ? false : true"
     }
   },
   {
@@ -47,24 +66,30 @@
     "fieldGroup": [
       {
         "type": "input",
-        "key": "autoscale.min_workers",
+        "key": "min_workers",
         "templateOptions": {
           "label": "Min. Workers",
           "type": "number"
+        },
+        "expressionProperties": {
+          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       },
       {
         "type": "input",
-        "key": "autoscale.max_workers",
+        "key": "max_workers",
         "templateOptions": {
           "label": "Max. Workers",
           "type": "number"
+        },
+        "expressionProperties": {
+          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       }
     ]
   },
   {
-    "key": "aws_attributes",
+    "key": "new_cluster.aws_attributes",
     "wrappers": [
       "panel"
     ],
@@ -93,6 +118,9 @@
           ],
           "valueProp": "id",
           "labelProp": "name"
+        },
+        "expressionProperties": {
+          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       },
       {
@@ -102,6 +130,9 @@
         "templateOptions": {
           "label": "EBS Volume Count",
           "type": "number"
+        },
+        "expressionProperties": {
+          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       },
       {
@@ -129,6 +160,9 @@
           ],
           "valueProp": "id",
           "labelProp": "name"
+        },
+        "expressionProperties": {
+          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       }
     ]
