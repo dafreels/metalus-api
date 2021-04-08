@@ -238,7 +238,7 @@ async function listJobs(req, res) {
   }
 }
 
-async function getJob(req, res) {
+async function getJob(req, res, next) {
   const user = await req.user;
   const jobsModel = new JobsModel();
   const job = await jobsModel.getByKey({id: req.params.jobId}, user);
@@ -247,12 +247,16 @@ async function getJob(req, res) {
     const provider = await providersModel.getByKey({id: req.params.id}, user);
     if (provider) {
       const providerType = ProviderFactory.getProvider(provider.providerTypeId);
-      const remoteJob = await providerType.getJob(job.providerInformation, provider.providerInstance, user);
-      job.lastStatus = remoteJob.status;
-      job.startTime = remoteJob.startTime;
-      job.endTime = remoteJob.endTime;
-      await jobsModel.update(job.id, job, user);
-      res.status(200).json({job: _.merge(job, remoteJob)});
+      try {
+        const remoteJob = await providerType.getJob(job.providerInformation, provider.providerInstance, user);
+        job.lastStatus = remoteJob.status;
+        job.startTime = remoteJob.startTime;
+        job.endTime = remoteJob.endTime;
+        await jobsModel.update(job.id, job, user);
+        res.status(200).json({job: _.merge(job, remoteJob)});
+      } catch(err) {
+        next(err);
+      }
     } else {
       res.sendStatus(404);
     }

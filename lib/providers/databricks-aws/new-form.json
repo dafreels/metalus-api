@@ -15,6 +15,13 @@
   },
   {
     "type": "input",
+    "key": "providerInstance.region",
+    "templateOptions": {
+      "label": "Region"
+    }
+  },
+  {
+    "type": "input",
     "key": "providerInstance.instanceURL",
     "templateOptions": {
       "label": "Instance URL"

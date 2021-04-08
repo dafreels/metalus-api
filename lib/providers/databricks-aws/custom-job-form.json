@@ -70,9 +70,6 @@
         "templateOptions": {
           "label": "Min. Workers",
           "type": "number"
-        },
-        "expressionProperties": {
-          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       },
       {
@@ -81,9 +78,6 @@
         "templateOptions": {
           "label": "Max. Workers",
           "type": "number"
-        },
-        "expressionProperties": {
-          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       }
     ]
@@ -118,9 +112,6 @@
           ],
           "valueProp": "id",
           "labelProp": "name"
-        },
-        "expressionProperties": {
-          "templateOptions.disabled": "model.useNewCluster ? false : true"
         }
       },
       {
@@ -129,17 +120,6 @@
         "defaultValue": 0,
         "templateOptions": {
           "label": "EBS Volume Count",
-          "type": "number"
-        },
-        "expressionProperties": {
-          "templateOptions.disabled": "model.useNewCluster ? false : true"
-        }
-      },
-      {
-        "type": "input",
-        "key": "ebs_volume_size",
-        "templateOptions": {
-          "label": "EBS Volume Size",
           "type": "number"
         }
       },
@@ -160,9 +140,14 @@
           ],
           "valueProp": "id",
           "labelProp": "name"
-        },
-        "expressionProperties": {
-          "templateOptions.disabled": "model.useNewCluster ? false : true"
+        }
+      },
+      {
+        "type": "input",
+        "key": "ebs_volume_size",
+        "templateOptions": {
+          "label": "EBS Volume Size",
+          "type": "number"
         }
       }
     ]
