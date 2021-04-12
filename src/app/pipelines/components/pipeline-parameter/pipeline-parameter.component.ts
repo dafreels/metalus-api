@@ -65,13 +65,18 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     this.param = stepParameter;
-    if(this.param.className) {
-      this.packageObjectsService.getPackageObjects().subscribe(objects=>{
-        const classObject = objects.find(obj=>obj.id==this.param.className);
-        if(classObject && classObject.template) {
+    if (this.param.className) {
+      this.packageObjectsService.getPackageObjects().subscribe((objects) => {
+        const classObject = objects.find(
+          (obj) => obj.id == this.param.className
+        );
+        if (classObject && classObject.template) {
           this.template = JSON.parse(classObject.template);
         }
-      })
+        if (this.param.value && typeof this.param.value !== 'object') {
+          this.templateView = false;
+        }
+      });
     }
     if (stepParameter.value && typeof stepParameter.value === 'string') {
       const numberOfRepetitions = stepParameter.value.match(/&/g);
@@ -81,7 +86,6 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         );
       }
     }
-
     this.parameterType = stepParameter.type;
     if (stepParameter.language) {
       this.isAScriptParameter = stepParameter.language;
