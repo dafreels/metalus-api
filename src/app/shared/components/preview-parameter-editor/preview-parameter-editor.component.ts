@@ -12,7 +12,7 @@ import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { CodeEditorComponent } from 'src/app/code-editor/components/code-editor/code-editor.component';
 import { generalDialogDimensions } from '../../models/custom-dialog.model';
 import { DisplayDialogService } from '../../services/display-dialog.service';
-import {SharedFunctions} from "../../utils/shared-functions";
+import { SharedFunctions } from '../../utils/shared-functions';
 
 @Component({
   selector: 'app-preview-parameter-editor',
@@ -21,10 +21,12 @@ import {SharedFunctions} from "../../utils/shared-functions";
 })
 export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   form = new FormGroup({});
-  @Input() previewMode:boolean;
+  @Input() previewMode: boolean;
   _model;
   @Input() set model(value) {
-    this._model = value;
+    if (typeof value === 'object') {
+      this._model = value;
+    }
   }
   get model() {
     return this._model;
@@ -33,7 +35,7 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
     if (formlyJson) {
       if (formlyJson.schema) {
         this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
-      } else if(Array.isArray(formlyJson)) {
+      } else if (Array.isArray(formlyJson)) {
         this._fields = SharedFunctions.clone(formlyJson);
       } else if (formlyJson.form) {
         this._fields = formlyJson.form;
@@ -42,9 +44,10 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   }
   _fields: FormlyFieldConfig[];
   @Output() valueChange = new EventEmitter(); //this.form.valueChanges;
-  constructor(private formlyJsonschema: FormlyJsonschema,
-    private displayDialogService: DisplayDialogService,
-    ) {}
+  constructor(
+    private formlyJsonschema: FormlyJsonschema,
+    private displayDialogService: DisplayDialogService
+  ) {}
   ngAfterViewInit(): void {
     this.form.valueChanges.subscribe((value) => {
       this.valueChange.emit(value);
@@ -58,8 +61,8 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
       alert(JSON.stringify(this.model, null, 2));
     }
   }
-  previewData(){
-    const exportApplicationDialogData={
+  previewData() {
+    const exportApplicationDialogData = {
       code: JSON.stringify(this.form.getRawValue(), null, 4),
       language: 'json',
       allowSave: false,
