@@ -65,6 +65,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
   @Input()
   set stepParameters(stepParameter: PipelineStepParam) {
     this.param = stepParameter;
+    let mappedType = false;
     if (this.param.className) {
       this.packageObjectsService.getPackageObjects().subscribe((objects) => {
         const classObject = objects.find(
@@ -113,46 +114,37 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     ) {
       if (stepParameter.value.startsWith('&')) {
         this.parameterType = 'pipeline';
+        mappedType = true;
       }
       if (stepParameter.value.startsWith('!')) {
         this.parameterType = 'global';
+        mappedType = true;
       }
       if (stepParameter.value.startsWith('$')) {
         this.parameterType = 'runtime';
+        mappedType = true;
       }
       if (stepParameter.value.startsWith('?')) {
         this.parameterType = 'mapped_runtime';
+        mappedType = true;
       }
       if (stepParameter.value.startsWith('@')) {
         this.parameterType = 'step';
+        mappedType = true;
       }
       if (stepParameter.value.startsWith('#')) {
         this.parameterType = 'secondary';
+        mappedType = true;
       }
       if (stepParameter.value.startsWith('%')) {
         this.parameterType = 'credential';
+        mappedType = true;
       }
     }
     if (stepParameter) {
       this.parameter = stepParameter;
       this.parameterName = stepParameter.name;
       switch (stepParameter.type.toLowerCase()) {
-        case 'object':
-        case 'scalascript':
-        case 'script':
-        case 'template':
-          this.complexParameter = true;
-          this.parameters = [
-            {
-              id: this.id++,
-              name: stepParameter.name,
-              value: stepParameter.value,
-              type: stepParameter.type == 'template' ? 'object': stepParameter.type,
-              language: stepParameter.language,
-              className: stepParameter.className,
-            },
-          ];
-          break;
         case 'boolean':
         case 'integer':
           this.complexParameter = false;
@@ -166,8 +158,26 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
             },
           ];
           break;
+        case 'object':
+        case 'scalascript':
+        case 'script':
+        case 'template':
+          if (!mappedType) {
+            this.complexParameter = true;
+            this.parameters = [
+              {
+                id: this.id++,
+                name: stepParameter.name,
+                value: stepParameter.value,
+                type: stepParameter.type == 'template' ? 'object' : stepParameter.type,
+                language: stepParameter.language,
+                className: stepParameter.className,
+              },
+            ];
+            break;
+          }
         default:
-          if(this.template){
+          if(!mappedType && this.template){
             return;
           }
           this.complexParameter = false;
@@ -185,7 +195,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
                 type = 'pipeline';
               } else {
                 value = e.trim();
-                type = SharedFunctions.getType(value, stepParameter.type);
+                type = mappedType ? this.parameterType : SharedFunctions.getType(value, stepParameter.type);
               }
               if (
                 value &&
@@ -445,7 +455,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
 
   openEditor(id: number) {
     const inputData = this.parameters.find((p) => p.id === id);
-    
+
     if (inputData.type === 'scalascript') {
       inputData.value = this.parameter.value || '';
       const propertiesDialogResponse = this.displayDialogService.openDialog(
