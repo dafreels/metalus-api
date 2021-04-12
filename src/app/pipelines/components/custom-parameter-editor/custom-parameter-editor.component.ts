@@ -188,8 +188,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
 
   selectExecution($event) {
     const execution = $event;
-    if (execution.template && typeof execution.template === 'string') {
-      execution.template = JSON.parse(execution.template);
+    if (execution.template && execution.template.form && typeof execution.template.form === 'string') {
+      execution.template.form = JSON.parse(execution.template.form);
     }
     this.selectedExecution = execution;
   }
@@ -241,7 +241,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
     } else if (this.isPackage && this.selectedPackage) {
       return JSON.stringify(this.selectedPackage.template || this.sampleTemplate, null, 4);
     } else if (this.isExecution && this.selectedExecution) {
-      return JSON.stringify(this.selectedExecution.template || this.sampleTemplate, null, 4);
+      return JSON.stringify((this.selectedExecution.template && this.selectedExecution.template.form) || this.sampleTemplate, null, 4);
     } else {
       return JSON.stringify(this.sampleTemplate, null, 4);
     }
@@ -253,6 +253,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
         this.paramTemplate = JSON.parse(data);
       } else if (this.selectedPackage) {
         this.paramTemplate = JSON.parse(data);
+      } else if (this.selectedExecution) {
+        this.paramTemplate = JSON.parse(data);
       }
     } catch (err) {
     }
@@ -263,6 +265,8 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
       return (this.stepTemplate && this.selectedParam && (JSON.stringify(this.stepTemplate[this.selectedParam.name]) !== JSON.stringify(this.paramTemplate)));
     } else if (this.selectedPackage) {
       return (this.selectedPackage && (JSON.stringify(this.selectedPackage.template) !== JSON.stringify(this.paramTemplate)));
+    } else if (this.selectedExecution) {
+      return (this.selectedExecution.template && this.selectedExecution.template.form && (JSON.stringify(this.selectedExecution.template.form) !== JSON.stringify(this.paramTemplate)));
     }
   }
 
@@ -307,7 +311,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
   saveExecutionTemplate(dialogRef) {
     this.executionsService.updateExecutionTemplate(this.selectedExecution, this.paramTemplate).subscribe(() => {
         dialogRef.close();
-        this.selectedExecution.template = this.paramTemplate;
+        this.selectedExecution.template = {
+          form: this.paramTemplate
+        };
         this.enableSave = false;
       },
       (error) => this.handleError(error, dialogRef)
@@ -407,5 +413,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
 
   get canPreviewPackageTemplate() {
     return this.selectedPackage.template || (JSON.stringify(this.paramTemplate) != '{}' && this.showPreview);
+  }
+
+  get canPreviewExecutionTemplate() {
+    return (this.selectedExecution.template && this.selectedExecution.template.form) || (JSON.stringify(this.paramTemplate) != '{}' && this.showPreview);
   }
 }

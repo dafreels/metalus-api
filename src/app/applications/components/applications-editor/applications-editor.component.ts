@@ -887,13 +887,20 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   openMapEditor(selectedExecution, attributeName = 'globals') {
-    if (attributeName === 'globals' && !selectedExecution.globals) {
+    if (attributeName === 'globals' &&
+      Object.keys(selectedExecution.globals || {}).length === 0) {
       let pipelineMappings = {};
-      selectedExecution.pipelines.forEach(pipeline => {
-        pipelineMappings = Object.assign(pipelineMappings, SharedFunctions.generatePipelineMappings(pipeline));
-      });
+      const pipelineIds = [];
+      if (selectedExecution.executions) {
+        selectedExecution.executions.forEach(execution => {
+          this.extractGlobals(execution, pipelineIds, pipelineMappings);
+        });
+      } else {
+        this.extractGlobals(selectedExecution, pipelineIds, pipelineMappings);
+      }
       selectedExecution.globals = pipelineMappings;
-    } else if (attributeName === 'applicationProperties' && !selectedExecution.applicationProperties) {
+    } else if (attributeName === 'applicationProperties' &&
+      Object.keys(selectedExecution.applicationProperties || {}).length === 0) {
       selectedExecution.applicationProperties = {};
     }
     const editorDialog = this.displayDialogService.openDialog(
@@ -912,6 +919,17 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         }
       }
       this.validateApplication();
+    });
+  }
+
+  private extractGlobals(selectedExecution, pipelineIds: string[], pipelineMappings: object) {
+    let pipeline;
+    selectedExecution.pipelineIds.forEach(pipelineId => {
+      if (pipelineIds.indexOf(pipelineId) === -1) {
+        pipelineIds.push(pipelineId);
+        pipeline = this.pipelines.find(p => p.id === pipelineId);
+        Object.assign(pipelineMappings, SharedFunctions.generatePipelineMappings(pipeline));
+      }
     });
   }
 

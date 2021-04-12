@@ -71,6 +71,23 @@ export class ProvidersService {
         catchError(err => throwError(err)));
   }
 
+  getCustomJobForm(providerId) {
+    const form = sessionStorage.getItem(`customJobForm${providerId}`);
+    if (form) {
+      return of(JSON.parse(form));
+    }
+    return this.http.get<FormRespsonse>(`/api/v1/providers/${providerId}/custom-job-form`, {observe: 'response'})
+      .pipe(
+        map(response => {
+          if (response && response.body) {
+            sessionStorage.setItem(`customJobForm${providerId}`, response.body.form);
+            return JSON.parse(response.body.form);
+          }
+          return null;
+        }),
+        catchError(err => throwError(err)));
+  }
+
   getProvidersList(): Observable<Provider[]> {
     return this.http.get<ProvidersResponse>('/api/v1/providers', {observe: 'response'})
       .pipe(

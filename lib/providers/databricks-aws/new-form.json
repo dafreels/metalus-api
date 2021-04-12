@@ -15,6 +15,13 @@
   },
   {
     "type": "input",
+    "key": "providerInstance.region",
+    "templateOptions": {
+      "label": "Region"
+    }
+  },
+  {
+    "type": "input",
     "key": "providerInstance.instanceURL",
     "templateOptions": {
       "label": "Instance URL"
@@ -25,6 +32,20 @@
     "key": "providerInstance.credentials.apiToken",
     "templateOptions": {
       "label": "API Token"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.awsKey",
+    "templateOptions": {
+      "label": "AWS API Key"
+    }
+  },
+  {
+    "type": "input",
+    "key": "providerInstance.credentials.awsSecret",
+    "templateOptions": {
+      "label": "AWS API Secret"
     }
   }
 ]

@@ -116,6 +116,13 @@
       <app-tree-editor [inputData]="missingParameters" (dataChanged)="treeEditorUpdated($event)"></app-tree-editor>
     </mat-card>
   </div>
+
+  <!-- Provider custom runtime form -->
+  <div *ngIf="_fields">
+    <form [formGroup]="form">
+      <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
+    </form>
+  </div>
 </div>
 
 <mat-dialog-actions *ngIf="!running" align="end">

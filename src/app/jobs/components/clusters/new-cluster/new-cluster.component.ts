@@ -5,6 +5,7 @@ import {FormlyFieldConfig} from "@ngx-formly/core";
 import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
 import {FormGroup} from "@angular/forms";
 import {ProvidersService} from "../../../services/providers.service";
+import {SharedFunctions} from "../../../../shared/utils/shared-functions";
 
 export interface NewEngineData {
   providerTypes: ProviderType[];
@@ -53,28 +54,12 @@ export class NewClusterComponent implements OnInit, AfterViewInit {
         if (formlyJson.schema) {
           this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
         } else if(Array.isArray(formlyJson)) {
-          this._fields = this.convertForm(formlyJson);
+          this._fields = SharedFunctions.convertFormlyForm(formlyJson);
         } else {
-          this._fields = this.convertForm([formlyJson]);
+          this._fields = SharedFunctions.convertFormlyForm([formlyJson]);
         }
         this.showSpinner = false;
       }
-    });
-  }
-
-  private convertForm(formlyJson) {
-    return formlyJson.map(item => {
-      if (item.validators) {
-        const validators = {};
-        Object.keys(item.validators).forEach(key => {
-          validators[key] = {
-            expression: item.validators[key].expression ? eval(item.validators[key].expression) : null,
-            message: item.validators[key].message ? eval(item.validators[key].message) : null
-          };
-        });
-        item.validators = validators;
-      }
-      return item;
     });
   }
 }

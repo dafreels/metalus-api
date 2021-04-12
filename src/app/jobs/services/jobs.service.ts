@@ -28,7 +28,7 @@ export class JobsService {
       .pipe(
         map(response => {
           if (response && response.body) {
-            return response.body.jobs.sort((a, b) => a.startTime > b.startTime ? 1 : -1);
+            return response.body.jobs;
           }
           return null;
         }),

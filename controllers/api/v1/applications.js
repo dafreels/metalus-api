@@ -14,7 +14,7 @@ async function listJobs(req, res, next) {
   const jobsModel = new JobsModel();
   const jobs = await jobsModel.getByApplication(req.params.id, user);
   if (jobs && jobs.length > 0) {
-    res.status(200).json({jobs});
+    res.status(200).json({jobs: jobs.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime())});
   } else {
     res.sendStatus(204);
   }

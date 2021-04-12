@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from "@angular/core";
+import {AfterViewInit, Component, Inject, Input, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ProvidersService} from "../../../services/providers.service";
 import {Cluster, Provider} from "../../../models/providers.model";
@@ -8,6 +8,10 @@ import {PipelinesService} from "../../../../pipelines/services/pipelines.service
 import {JobsService} from "../../../services/jobs.service";
 import {MatSelectChange} from "@angular/material/select";
 import {Job} from "../../../models/jobs.model";
+import {SharedFunctions} from "../../../../shared/utils/shared-functions";
+import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
+import {FormGroup} from "@angular/forms";
+import {FormlyFieldConfig} from "@ngx-formly/core";
 
 export interface RunJobConfiguration {
   providers: Provider[];
@@ -24,7 +28,7 @@ export interface JobType {
   templateUrl: './run-job.component.html',
   styleUrls: ['./run-job.component.scss']
 })
-export class RunJobComponent implements OnInit {
+export class RunJobComponent implements OnInit, AfterViewInit {
   running = false;
   name: string;
   clusters: Cluster[];
@@ -64,12 +68,28 @@ export class RunJobComponent implements OnInit {
   useCredentialProvider: boolean = false;
   forceCopy: boolean = false;
   includePipelines: boolean = true;
+  // Custom form support
+  form = new FormGroup({});
+  _model;
+  @Input() set model(value) {
+    this._model = value;
+  }
+  get model() {
+    return this._model;
+  }
+  _fields: FormlyFieldConfig[];
+  formValue: object;
 
   constructor(public dialogRef: MatDialogRef<RunJobComponent>,
               @Inject(MAT_DIALOG_DATA) public data: RunJobConfiguration,
+              private formlyJsonschema: FormlyJsonschema,
               private providersService: ProvidersService,
               private pipelinesService: PipelinesService,
               private jobsService: JobsService) {}
+
+  ngAfterViewInit(): void {
+    this.form.valueChanges.subscribe(value => this.formValue = value);
+  }
 
   handleProviderSelection(providerId, clusterId) {
     this.providersService.getClustersList(providerId).subscribe(result => {
@@ -77,6 +97,17 @@ export class RunJobComponent implements OnInit {
       if (clusterId) {
         this.selectedCluster = this.clusters.find(c => c.id === clusterId);
       }
+      this.providersService.getCustomJobForm(providerId).subscribe(formlyJson => {
+        if (formlyJson) {
+          if (formlyJson.schema) {
+            this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
+          } else if(Array.isArray(formlyJson)) {
+            this._fields = SharedFunctions.convertFormlyForm(formlyJson);
+          } else {
+            this._fields = SharedFunctions.convertFormlyForm([formlyJson]);
+          }
+        }
+      })
     });
   }
 
@@ -122,7 +153,8 @@ export class RunJobComponent implements OnInit {
       refreshPipelines: this.includePipelines,
       forceCopy: this.forceCopy,
       globals,
-      pipelineParameters
+      pipelineParameters,
+      customFormValues: this.formValue
     };
     this.jobsService.runJob(body).subscribe(job => {
       this.dialogRef.close(job);
