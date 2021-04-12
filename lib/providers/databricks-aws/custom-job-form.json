@@ -92,6 +92,13 @@
     },
     "fieldGroup": [
       {
+        "type": "input",
+        "key": "instance_profile_arn",
+        "templateOptions": {
+          "label": "Instance Profile ARN"
+        }
+      },
+      {
         "type": "select",
         "key": "availability",
         "templateOptions": {
@@ -131,7 +138,7 @@
           "options": [
             {
               "id": "GENERAL_PURPOSE_SSD",
-              "name": "General Purpose SSD (1GB - 16TB)"
+              "name": "General Purpose SSD (32GB - 16TB)"
             },
             {
               "id": "THROUGHPUT_OPTIMIZED_HDD",

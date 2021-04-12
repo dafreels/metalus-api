@@ -232,7 +232,7 @@ async function listJobs(req, res) {
   const jobsModel = new JobsModel();
   const jobs = await jobsModel.getByProvider(req.params.id, user);
   if (jobs && jobs.length > 0) {
-    res.status(200).json({jobs});
+    res.status(200).json({jobs: jobs.sort((a, b) => b.creationDate.getTime() - a.creationDate.getTime())});
   } else {
     res.sendStatus(204);
   }
@@ -367,6 +367,7 @@ async function startJob(req, res, next) {
     runConfig.customFormValues = req.body.customFormValues;
     // handle custom parameters for streaming jobs
     let requiredStepLibrary;
+    let streaming = false;
     switch(jobType) {
       case 'kinesis':
         runConfig.mainDriverClass = 'com.acxiom.aws.drivers.KinesisPipelineDriver';
@@ -387,11 +388,13 @@ async function startJob(req, res, next) {
           runConfig.extraParameters.push('--appName');
           runConfig.extraParameters.push(mappingParameters.streamingInfo.appName);
         }
+        streaming = true;
         break;
       case 'kafka':
         runConfig.mainDriverClass = 'com.acxiom.kafka.drivers.KafkaPipelineDriver';
         requiredStepLibrary = 'metalus-kafka';
         runConfig.extraParameters = [];
+        streaming = true;
         break;
       case 'pubsub':
         runConfig.mainDriverClass = 'com.acxiom.gcp.drivers.PubSubPipelineDriver';
@@ -406,6 +409,7 @@ async function startJob(req, res, next) {
           '--projectId',
           provider.providerInstance.projectId
         ];
+        streaming = true;
         break;
       default:
         runConfig.mainDriverClass = 'com.acxiom.pipeline.drivers.DefaultPipelineDriver';
@@ -451,7 +455,7 @@ async function startJob(req, res, next) {
         }
       }
       const repos = processJSON.repos.trim().length > 0 ? `${jarsDir},${processJSON.repos.trim()}` : jarsDir;
-      const classPath = await MetalusUtils.generateClasspath(jarFiles, stagingDir, 'jars/', repos);
+      const classPath = await MetalusUtils.generateClasspath(jarFiles, stagingDir, 'jars/', repos, providerType.getScopes(streaming));
       runConfig.jars = Array.from(new Set(classPath.split(',')));
       runConfig.bucket = bucket;
       runConfig.stagingDir = stagingDir;
@@ -486,6 +490,8 @@ async function startJob(req, res, next) {
       const job = await jobsModel.createOne(jobBody, user);
       res.status(201).json({job});
     } catch(err) {
+      MetalusUtils.log(`Failed to execute job: ${JSON.stringify(err)}`);
+      MetalusUtils.log(err);
       next(err);
     } finally {
       // Clean stagingDir
