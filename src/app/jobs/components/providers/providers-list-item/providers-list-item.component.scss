@@ -10,15 +10,21 @@
   align-items: center;
   height: inherit;
   overflow: hidden;
-}
-
-.provider-list-text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding-left: 5px;
+  width: 100%;
 }
 
 .provider-selected {
   background-color: #EEEEFF;
+}
+
+.provider-label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.provider-button {
+  display: flex;
+  justify-content: flex-end;
 }
