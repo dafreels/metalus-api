@@ -418,16 +418,16 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   get hasChanges() {
-    return this.hasApplicationChanged(this.selectedApplication);
+    return this.hasApplicationChanged(this.generateApplication());
   }
 
   hasApplicationChanged(application: Application) {
     const difference = diff(this.originalApplication, application);
     delete difference['project'];
     delete difference['layout'];
-    // console.log(`Application differences: ${Object.entries(difference).length}`);
+    console.log(`Application differences: ${Object.entries(difference).length}`);
     console.log(`Application differences: ${Object.entries(difference)}`);
-    // console.log(`Application differences: ${JSON.stringify(difference, null, 4)}`);
+    console.log(`Application differences: ${JSON.stringify(difference, null, 4)}`);
     return Object.entries(difference).length !== 0;
   }
 
