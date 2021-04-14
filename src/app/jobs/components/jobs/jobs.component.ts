@@ -102,12 +102,12 @@ export class JobsComponent implements OnInit, OnDestroy {
         width: '25%',
         height: '25%',
       });
-    this.jobsService.deleteJob(this.provider.id, job.id).subscribe(() => {
+    this.jobsService.deleteJob(this._provider.id, job.id).subscribe(() => {
       dialogRef.close();
       const jobs = [];
       this.jobs.forEach(j => {
         if (j.id !== job.id) {
-          jobs.push(job);
+          jobs.push(j);
         }
       });
       this.jobs = jobs;
