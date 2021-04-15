@@ -483,7 +483,9 @@ async function startJob(req, res, next) {
           clusterId: clusterId.toString(),
           clusterName,
           runId,
-          bucket
+          bucket,
+          customFormValues: runConfig.customFormValues,
+          applicationJar: runConfig.applicationJsonJar
         }
       };
       const jobsModel = new JobsModel();
@@ -567,6 +569,7 @@ async function bundleApplicationJson(jarsDir, application, applicationId) {
     driverSetup: 'com.acxiom.pipeline.applications.DefaultApplicationDriverSetup',
     applicationJar: '',
     applicationId,
+    applicationJsonJar: appName,
     jars: [
       `${jarsDir}/${appName}`
     ]

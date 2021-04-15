@@ -91,11 +91,11 @@ export class RunJobComponent implements OnInit, AfterViewInit {
     this.form.valueChanges.subscribe(value => this.formValue = value);
   }
 
-  handleProviderSelection(providerId, clusterId) {
+  handleProviderSelection(providerId, providerInformation) {
     this.providersService.getClustersList(providerId).subscribe(result => {
       this.clusters = result.filter(c => c.canRunJob);
-      if (clusterId) {
-        this.selectedCluster = this.clusters.find(c => c.id === clusterId);
+      if (providerInformation.clusterId) {
+        this.selectedCluster = this.clusters.find(c => c.id === providerInformation.clusterId);
       }
       this.providersService.getCustomJobForm(providerId).subscribe(formlyJson => {
         if (formlyJson) {
@@ -105,6 +105,10 @@ export class RunJobComponent implements OnInit, AfterViewInit {
             this._fields = SharedFunctions.convertFormlyForm(formlyJson);
           } else {
             this._fields = SharedFunctions.convertFormlyForm([formlyJson]);
+          }
+          if (providerInformation.customFormValues) {
+            this._model = providerInformation.customFormValues;
+            this.formValue = providerInformation.customFormValues;
           }
         }
       })
@@ -260,7 +264,7 @@ export class RunJobComponent implements OnInit, AfterViewInit {
   copyJob(change: MatSelectChange) {
     const job = change.value;
     this.selectedProvider = this.data.providers.find(p => p.id === job.providerId);
-    this.handleProviderSelection(job.providerId, job.providerInformation.clusterId);
+    this.handleProviderSelection(job.providerId, job.providerInformation);
     this.name = `copy-${job.name}`;
     this.selectedLogLevel = job.logLevel || 'INFO';
     this.bucket = job.providerInformation['bucket'];
