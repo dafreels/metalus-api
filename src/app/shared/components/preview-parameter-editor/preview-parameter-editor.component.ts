@@ -13,7 +13,16 @@ import { CodeEditorComponent } from 'src/app/code-editor/components/code-editor/
 import { generalDialogDimensions } from '../../models/custom-dialog.model';
 import { DisplayDialogService } from '../../services/display-dialog.service';
 import { SharedFunctions } from '../../utils/shared-functions';
+import * as _ from "lodash";
 
+const removeObjectsWithNull = (obj) => {
+  return _(obj)
+    .pickBy(_.isObject)
+    .mapValues(removeObjectsWithNull)
+    .assign(_.omitBy(obj, _.isObject))
+    .omitBy(_.isEmpty)
+    .value();
+};
 @Component({
   selector: 'app-preview-parameter-editor',
   templateUrl: './preview-parameter-editor.component.html',
@@ -46,14 +55,15 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
     }
   }
   _fields: FormlyFieldConfig[];
-  @Output() valueChange = new EventEmitter(); //this.form.valueChanges;
+  @Output() valueChange = new EventEmitter();
   constructor(
     private formlyJsonschema: FormlyJsonschema,
     private displayDialogService: DisplayDialogService
   ) {}
+
   ngAfterViewInit(): void {
     this.form.valueChanges.subscribe((value) => {
-      this.valueChange.emit(value);
+        this.valueChange.emit(removeObjectsWithNull(value));
     });
   }
 
@@ -66,7 +76,7 @@ export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
   }
   previewData() {
     const exportApplicationDialogData = {
-      code: JSON.stringify(this.form.getRawValue(), null, 4),
+      code: JSON.stringify(removeObjectsWithNull(this.form.getRawValue()), null, 4),
       language: 'json',
       allowSave: false,
     };
