@@ -94,7 +94,7 @@ export class RunJobComponent implements OnInit, AfterViewInit {
   handleProviderSelection(providerId, providerInformation) {
     this.providersService.getClustersList(providerId).subscribe(result => {
       this.clusters = result.filter(c => c.canRunJob);
-      if (providerInformation.clusterId) {
+      if (providerInformation && providerInformation.clusterId) {
         this.selectedCluster = this.clusters.find(c => c.id === providerInformation.clusterId);
       }
       this.providersService.getCustomJobForm(providerId).subscribe(formlyJson => {
@@ -106,7 +106,7 @@ export class RunJobComponent implements OnInit, AfterViewInit {
           } else {
             this._fields = SharedFunctions.convertFormlyForm([formlyJson]);
           }
-          if (providerInformation.customFormValues) {
+          if (providerInformation && providerInformation.customFormValues) {
             this._model = providerInformation.customFormValues;
             this.formValue = providerInformation.customFormValues;
           }
