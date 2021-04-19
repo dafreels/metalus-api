@@ -116,10 +116,11 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar) {
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
-      this.authService.userItemSelection.subscribe(data => {
+      this.authService.userItemSelection.subscribe(() => {
         this.cancelApplicationChange();
         this.loadProjectRelatedData();
-        this.loadApplication(this.newApplication());
+        this.newApplication();
+        this.loadApplication(this.originalApplication);
       }));
   }
 
@@ -841,13 +842,9 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     } else {
       observable = this.applicationsService.addApplication(newApplication);
     }
-    this.subscriptions.push(observable.subscribe(
-      (application: Application) => {
-        // this.selectedApplication = application;
+    this.subscriptions.push(observable.subscribe((application: Application) => {
         this.selectedApplication = JSON.parse(JSON.stringify(application));
-        let index = this.applications.findIndex(
-          (s) => s.id === this.selectedApplication.id
-        );
+        let index = this.applications.findIndex((s) => s.id === this.selectedApplication.id);
         if (index === -1) {
           this.applications.push(this.selectedApplication);
         } else {
@@ -954,7 +951,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         mappings: parameters.parameters,
         hideMappingParameters: true,
       });
-    dialog.afterClosed().subscribe((result) => {
+    dialog.afterClosed().subscribe(() => {
       this.validateApplication();
     });
   }
@@ -987,7 +984,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       ComponentsEditorModalComponent,
       generalDialogDimensions,
       this.selectedApplication);
-    editorDialog.afterClosed().subscribe((result) => {
+    editorDialog.afterClosed().subscribe(() => {
       // if (result) {
       //   if (!selectedApplication.globals) {
       //     selectedApplication.globals = {};

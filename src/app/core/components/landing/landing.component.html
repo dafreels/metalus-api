@@ -1,65 +1,104 @@
 <div>
   <nav-toolbar></nav-toolbar>
-  <div>
-    <mat-grid-list cols="4">
-      <mat-grid-tile>
-        <mat-card>
-          <mat-card-header class="item">
-            <div mat-card-avatar>
-              <mat-icon color="primary">dashboard</mat-icon>
-            </div>
-            <mat-card-title>Applications
-              <mat-chip-list>
-                <mat-chip>{{applicationCount}}</mat-chip>
-              </mat-chip-list>
-            </mat-card-title>
-          </mat-card-header>
-        </mat-card>
-      </mat-grid-tile>
-      <mat-grid-tile>
-        <mat-card>
-          <mat-card-header class="item">
-            <div mat-card-avatar>
-              <mat-icon color="primary">more_vert</mat-icon>
-            </div>
-            <mat-card-title>Pipelines
-              <mat-chip-list>
-                <mat-chip>{{pipelineCount}}</mat-chip>
-              </mat-chip-list>
-            </mat-card-title>
-          </mat-card-header>
-        </mat-card>
-      </mat-grid-tile>
-      <mat-grid-tile>
-        <mat-card>
-          <mat-card-header class="item">
-            <div mat-card-avatar>
-              <mat-icon color="primary">apps</mat-icon>
-            </div>
-            <mat-card-title>Steps
-              <mat-chip-list>
-                <mat-chip>{{stepCount}}</mat-chip>
-              </mat-chip-list>
-            </mat-card-title>
-          </mat-card-header>
-        </mat-card>
-      </mat-grid-tile>
-      <mat-grid-tile>
-        <mat-card>
-          <mat-card-header class="item">
-            <div mat-card-avatar>
-              <mat-icon color="primary">group_work</mat-icon>
-            </div>
-            <mat-card-title>Object Schemas
-              <mat-chip-list>
-                <mat-chip>{{packageObjectCount}}</mat-chip>
-              </mat-chip-list>
-            </mat-card-title>
-          </mat-card-header>
-        </mat-card>
-      </mat-grid-tile>
-    </mat-grid-list>
+  <div class="landing-layout">
+    <div class="left-panel">
+      <mat-list>
+        <div mat-subheader>Quick Start</div>
+        <mat-list-item>
+          <button mat-icon-button (click)="loadWizard('newProject')">
+            <mat-icon>note_add</mat-icon>
+            Create a new project
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </div>
+    <div class="middle-panel">
+      <mat-vertical-stepper *ngIf="wizard !== 'none'" linear="true" #stepper>
+        <mat-step *ngIf="wizard === 'newProject'">
+          <ng-template matStepLabel>Project Name</ng-template>
+          <div>
+            <mat-form-field>
+              <mat-label>Name</mat-label>
+              <input matInput placeholder="Name" [(ngModel)]="project.name" required>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-slide-toggle color="primary" labelPosition="before"
+                              [(ngModel)]="project.makeDefaultProject">
+              Make Default Project?
+            </mat-slide-toggle>
+          </div>
+          <div>
+            <button [disabled]="!project.name" mat-button matStepperNext type="button">Next</button>
+            <button mat-button type="button" (click)="loadWizard('none')">Cancel</button>
+          </div>
+        </mat-step>
+        <mat-step *ngIf="wizard === 'newProject'">
+          <ng-template matStepLabel>Preload Projects</ng-template>
+          <project-templates (selectedTemplates)="setSelectedTemplates($event)"></project-templates>
+          <div>
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button mat-button type="button" (click)="createProject()">Finish</button>
+            <button mat-button type="button" (click)="loadWizard('none')">Cancel</button>
+          </div>
+        </mat-step>
+      </mat-vertical-stepper>
+    </div>
+    <div class="right-panel">
+      <mat-card>
+        <span class="count-span">
+          <span class="count-label">
+            <mat-icon color="primary">cloud</mat-icon>
+            Providers
+          </span>
+          <mat-chip-list><mat-chip>{{providersCount}}</mat-chip></mat-chip-list>
+        </span>
+      </mat-card>
+      <mat-card>
+        <span class="count-span">
+          <span class="count-label">
+            <mat-icon color="primary">workspaces</mat-icon>
+            Jobs
+          </span>
+          <mat-chip-list><mat-chip>{{jobsCount}}</mat-chip></mat-chip-list>
+        </span>
+      </mat-card>
+      <mat-card>
+        <span class="count-span">
+          <span class="count-label">
+            <mat-icon color="primary">dashboard</mat-icon>
+            Applications
+          </span>
+          <mat-chip-list><mat-chip>{{applicationCount}}</mat-chip></mat-chip-list>
+        </span>
+      </mat-card>
+      <mat-card>
+        <span class="count-span">
+          <span class="count-label">
+            <mat-icon color="primary">more_vert</mat-icon>
+            Pipelines
+          </span>
+          <mat-chip-list><mat-chip>{{pipelineCount}}</mat-chip></mat-chip-list>
+        </span>
+      </mat-card>
+      <mat-card>
+        <span class="count-span">
+          <span class="count-label">
+            <mat-icon color="primary">apps</mat-icon>
+            Steps
+          </span>
+          <mat-chip-list><mat-chip>{{stepCount}}</mat-chip></mat-chip-list>
+        </span>
+      </mat-card>
+      <mat-card>
+        <span class="count-span">
+          <span class="count-label">
+            <mat-icon color="primary">group_work</mat-icon>
+            Object Schemas
+          </span>
+          <mat-chip-list><mat-chip>{{packageObjectCount}}</mat-chip></mat-chip-list>
+        </span>
+      </mat-card>
+    </div>
   </div>
 </div>
-
-

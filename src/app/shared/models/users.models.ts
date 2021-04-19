@@ -29,3 +29,17 @@ export interface ChangePassword {
 export interface UserResponse {
   users: User[];
 }
+
+export interface UsageReportResponse {
+  report: UsageReport;
+}
+
+export interface UsageReport {
+  applicationsCount: number;
+  pipelinesCount: number;
+  packageObjectsCount: number;
+  stepsCount: number;
+  executionTemplatesCount: number;
+  jobsCount: number;
+  providersCount: number;
+}
