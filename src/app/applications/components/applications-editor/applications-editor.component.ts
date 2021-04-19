@@ -1074,4 +1074,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
       verticalPosition: 'top'
     })
   }
+  templateValueChanged(value) {
+    
+  }
 }

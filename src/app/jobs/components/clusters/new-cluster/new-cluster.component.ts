@@ -15,9 +15,8 @@ export interface NewEngineData {
 @Component({
   templateUrl: './new-cluster.component.html'
 })
-export class NewClusterComponent implements OnInit, AfterViewInit {
+export class NewClusterComponent implements OnInit {
   showSpinner: boolean = true;
-  form = new FormGroup({});
   _model;
   @Input() set model(value) {
     this._model = value;
@@ -43,8 +42,9 @@ export class NewClusterComponent implements OnInit, AfterViewInit {
     this.dialogRef.close(this.formValue);
   }
 
-  ngAfterViewInit(): void {
-    this.form.valueChanges.subscribe(value => this.formValue = value);
+ 
+  templateValueChanged(value) {
+    this.formValue = value; 
   }
 
   ngOnInit(): void {
