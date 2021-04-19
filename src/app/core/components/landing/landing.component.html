@@ -2,15 +2,21 @@
   <nav-toolbar></nav-toolbar>
   <div class="landing-layout">
     <div class="left-panel">
-      <mat-list>
-        <div mat-subheader>Quick Start</div>
-        <mat-list-item>
-          <button mat-icon-button (click)="loadWizard('newProject')">
-            <mat-icon>note_add</mat-icon>
-            Create a new project
-          </button>
-        </mat-list-item>
-      </mat-list>
+      <mat-card>
+        <mat-card-title>Quick Start</mat-card-title>
+        <mat-card-content>
+          <!-- Quick links list -->
+          <mat-list>
+            <mat-list-item>
+              <button mat-icon-button (click)="loadWizard('newProject')">
+                <mat-icon>note_add</mat-icon>
+                Create a new project
+              </button>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+
     </div>
     <div class="middle-panel">
       <mat-vertical-stepper *ngIf="wizard !== 'none'" linear="true" #stepper>

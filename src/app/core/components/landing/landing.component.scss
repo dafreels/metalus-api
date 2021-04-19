@@ -21,6 +21,10 @@ mat-card-header.item {
   margin-right: 8px;
 }
 
+.left-panel > mat-card {
+  height: 100%;
+}
+
 .middle-panel {
   width: 60%;
   height: 75vh;

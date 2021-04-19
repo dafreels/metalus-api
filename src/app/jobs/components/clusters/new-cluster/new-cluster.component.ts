@@ -42,9 +42,8 @@ export class NewClusterComponent implements OnInit {
     this.dialogRef.close(this.formValue);
   }
 
- 
   templateValueChanged(value) {
-    this.formValue = value; 
+    this.formValue = value;
   }
 
   ngOnInit(): void {
