@@ -30,6 +30,7 @@
           </div>
           <div>
             <button [disabled]="!project.name" mat-button matStepperNext type="button">Next</button>
+            <button mat-button type="button" (click)="loadWizard('none')">Cancel</button>
           </div>
         </mat-step>
         <mat-step *ngIf="wizard === 'newProject'">
@@ -38,6 +39,7 @@
           <div>
             <button mat-button matStepperPrevious type="button">Back</button>
             <button mat-button type="button" (click)="createProject()">Finish</button>
+            <button mat-button type="button" (click)="loadWizard('none')">Cancel</button>
           </div>
         </mat-step>
       </mat-vertical-stepper>

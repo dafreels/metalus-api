@@ -19,11 +19,7 @@ export class LandingComponent implements OnInit {
   providersCount = 0;
   jobsCount = 0;
   wizard = 'none';
-  project = {
-    name: undefined,
-    makeDefaultProject: false,
-    templates: undefined
-  };
+  project;
 
   constructor(
     private applicationService: ApplicationsService,
@@ -53,6 +49,13 @@ export class LandingComponent implements OnInit {
   }
 
   loadWizard(wizard: string) {
+    if (wizard === 'newProject') {
+      this.project = {
+        name: undefined,
+        makeDefaultProject: false,
+        templates: undefined
+      }
+    }
     this.wizard = wizard;
   }
 
