@@ -30,6 +30,7 @@ module.exports = function (router) {
   router.delete('/:id/project/:projectId/files/:fileName', deleteUploadedJar);
   router.put('/:id/project/:projectId/processUploadedJars', processUploadedJars);
   router.put('/:id/project/:projectId/export-metadata', exportMetadata);
+  router.get('/:id/usage-report', getUsageReport);
 };
 
 function login(req, res, next) {
@@ -209,6 +210,35 @@ async function deleteUser(req, res, next) {
   }
   await userModel.delete(userId);
   res.sendStatus(204);
+}
+
+async function getUsageReport(req, res, next) {
+  const userId = req.params.id;
+  const user = await req.user;
+  if (userId !== user.id && user.role !== 'admin') {
+    next(new Error('User does not have permission to retrieve usage report!'));
+  }
+  const query = {
+    project: {
+      userId,
+      projectId: user.defaultProjectId,
+    }
+  };
+  try {
+    const report = {
+      stepsCount: await new StepsModel().getCount(query),
+      applicationsCount: await new AppsModel().getCount(query),
+      pipelinesCount: await new PipelinesModel().getCount(query),
+      packageObjectsCount: await new PkgObjsModel().getCount(query),
+      executionTemplatesCount: await new ExecutionsModel().getCount(query),
+    };
+    query.project.projectId = null;
+    report.jobsCount = await new JobsModel().getCount(query);
+    report.providersCount = await new ProvidersModel().getCount(query);
+    res.status(200).json({report});
+  } catch (err) {
+    next(err);
+  }
 }
 
 async function deleteProject(req, res, next) {

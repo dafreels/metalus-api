@@ -7,3 +7,43 @@ mat-card-header.item {
         margin-right: -2rem;
     }
 }
+
+#mat-icon {
+  margin-right: 8px;
+}
+
+.landing-layout {
+  display: flex;
+}
+
+.left-panel {
+  width: 20%;
+  margin-right: 8px;
+}
+
+.middle-panel {
+  width: 60%;
+  height: 75vh;
+}
+
+.right-panel {
+  width: 20%;
+  margin-left: 8px;
+}
+
+.count-span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 3px;
+}
+
+.count-label {
+  display: flex;
+  align-items: center;
+}
+
+.count-label > mat-icon {
+  margin-right: 20px;
+}

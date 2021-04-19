@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
 import {Observable, throwError} from "rxjs";
-import {ChangePassword, User, UserResponse} from "../models/users.models";
+import {ChangePassword, UsageReportResponse, User, UserResponse} from "../models/users.models";
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +70,19 @@ export class UsersService {
             });
           }
           return [];
+        }),
+        catchError((err) => throwError(err))
+      );
+  }
+
+  getUsageReport(user: User): Observable<UsageReportResponse> {
+    return this.http.get<UsageReportResponse>(`/api/v1/users/${user.id}/usage-report`, {observe: 'response'})
+      .pipe(
+        map((response) => {
+          if (response && response.body) {
+            return response.body;
+          }
+          return null;
         }),
         catchError((err) => throwError(err))
       );
