@@ -1,17 +1,14 @@
 <div style="text-align: center">
   <mat-spinner *ngIf="showSpinner" style="text-align: center; display: inline-block"></mat-spinner>
 </div>
-<form [formGroup]="form">
-  <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
-</form>
-
+  <app-preview-parameter-editor  #previewForm [model]="model"  (valueChange)="templateValueChanged($event)"  [fields] = "_fields"></app-preview-parameter-editor>
 <mat-dialog-actions align="end">
   <button
     mat-raised-button
     color="primary"
     (click)="saveDialog()"
     style="margin-right: 5px"
-    [disabled]="!form.valid">
+    [disabled]="!previewForm.form.valid">
     Save
   </button>
   <button mat-raised-button color="primary" (click)="closeDialog()">

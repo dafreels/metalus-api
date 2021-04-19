@@ -28,7 +28,7 @@ export interface JobType {
   templateUrl: './run-job.component.html',
   styleUrls: ['./run-job.component.scss']
 })
-export class RunJobComponent implements OnInit, AfterViewInit {
+export class RunJobComponent implements OnInit {
   running = false;
   name: string;
   clusters: Cluster[];
@@ -69,7 +69,6 @@ export class RunJobComponent implements OnInit, AfterViewInit {
   forceCopy: boolean = false;
   includePipelines: boolean = true;
   // Custom form support
-  form = new FormGroup({});
   _model;
   @Input() set model(value) {
     this._model = value;
@@ -87,8 +86,8 @@ export class RunJobComponent implements OnInit, AfterViewInit {
               private pipelinesService: PipelinesService,
               private jobsService: JobsService) {}
 
-  ngAfterViewInit(): void {
-    this.form.valueChanges.subscribe(value => this.formValue = value);
+  templateValueChanged(value) {
+    this.formValue = value; 
   }
 
   handleProviderSelection(providerId, clusterId) {

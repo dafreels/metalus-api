@@ -29,7 +29,7 @@ const removeObjectsWithNull = (obj) => {
   styleUrls: ['./preview-parameter-editor.component.scss'],
 })
 export class PreviewParameterEditorComponent implements OnInit, AfterViewInit {
-  form = new FormGroup({});
+  @Input() form = new FormGroup({});
   @Input() previewMode: boolean;
   _model;
   @Input() set model(value) {

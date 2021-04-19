@@ -119,9 +119,7 @@
 
   <!-- Provider custom runtime form -->
   <div *ngIf="_fields">
-    <form [formGroup]="form">
-      <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
-    </form>
+      <app-preview-parameter-editor  [model]="model"  (valueChange)="templateValueChanged($event)"  [fields] = "_fields"></app-preview-parameter-editor>
   </div>
 </div>
 
