@@ -25,7 +25,8 @@ import {DesignerComponent} from "../../../designer/components/designer/designer.
 import {
   DesignerConstants,
   DesignerElement,
-  DesignerElementAction, DesignerElementAddOutput,
+  DesignerElementAction,
+  DesignerElementAddOutput,
   DesignerElementOutput,
   DesignerModel
 } from "../../../designer/designer-constants";
@@ -123,13 +124,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     this.steps = [];
     this.pipelines = [];
     this.stepGroupSteps = [];
-    this.stepsService.getSteps().subscribe((steps: Step[]) => {
-      steps.push(StaticSteps.FORK_STEP);
-      steps.push(StaticSteps.JOIN_STEP);
-      steps.push(StaticSteps.SPLIT_STEP);
-      steps.push(StaticSteps.MERGE_STEP);
-      steps.push(StaticSteps.STEP_GROUP);
-      steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
+    this.stepsService.getSteps(true).subscribe((steps: Step[]) => {
       this.steps = steps;
       this.stepsLoading = false;
       this.createStepGroupSteps();

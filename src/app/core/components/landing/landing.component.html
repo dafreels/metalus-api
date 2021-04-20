@@ -9,10 +9,35 @@
           <mat-list>
             <mat-list-item>
               <button mat-icon-button (click)="loadWizard('newProject')">
-                <mat-icon>note_add</mat-icon>
+                <mat-icon color="primary">note_add</mat-icon>
                 Create a new project
               </button>
             </mat-list-item>
+            <mat-list-item>
+              <button mat-icon-button [routerLink]="['/applications-editor']" routerLinkActive="active">
+                <mat-icon color="primary">dashboards</mat-icon>
+                Create an Application
+              </button>
+            </mat-list-item>
+            <mat-list-item>
+              <button mat-icon-button [routerLink]="['/pipelines-editor']"
+                 routerLinkActive="active">
+                <mat-icon color="primary">more_vert</mat-icon>
+                <span class="spacer">Create a Pipeline</span>
+              </button>
+            </mat-list-item>
+            <mat-list-item>
+              <button mat-icon-button  [routerLink]="['/upload']" routerLinkActive="active">
+                <mat-icon color="primary">group</mat-icon>
+                <span class="spacer">Upload Metadata for current project</span>
+              </button>
+            </mat-list-item>
+<!--            <mat-list-item>-->
+<!--              <button mat-icon-button (click)="changeView('new-provider')">-->
+<!--                <mat-icon color="primary">cloud</mat-icon>-->
+<!--                Register a new provider-->
+<!--              </button>-->
+<!--            </mat-list-item>-->
           </mat-list>
         </mat-card-content>
       </mat-card>
@@ -49,6 +74,7 @@
           </div>
         </mat-step>
       </mat-vertical-stepper>
+<!--      <new-provider *ngIf="view === 'new-provider'" [providers]="providerTypes"></new-provider>-->
     </div>
     <div class="right-panel">
       <mat-card>

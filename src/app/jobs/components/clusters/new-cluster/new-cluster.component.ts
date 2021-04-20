@@ -1,9 +1,8 @@
-import {AfterViewInit, Component, Inject, Input, OnInit} from "@angular/core";
+import {Component, Inject, Input, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Provider, ProviderType} from "../../../models/providers.model";
 import {FormlyFieldConfig} from "@ngx-formly/core";
 import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
-import {FormGroup} from "@angular/forms";
 import {ProvidersService} from "../../../services/providers.service";
 import {SharedFunctions} from "../../../../shared/utils/shared-functions";
 
@@ -53,9 +52,9 @@ export class NewClusterComponent implements OnInit {
         if (formlyJson.schema) {
           this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
         } else if(Array.isArray(formlyJson)) {
-          this._fields = SharedFunctions.convertFormlyForm(formlyJson);
+          this._fields = SharedFunctions.convertFormlyForm(SharedFunctions.clone(formlyJson));
         } else {
-          this._fields = SharedFunctions.convertFormlyForm([formlyJson]);
+          this._fields = SharedFunctions.convertFormlyForm([SharedFunctions.clone(formlyJson)]);
         }
         this.showSpinner = false;
       }

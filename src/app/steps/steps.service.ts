@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { Step, StepResponse, StepsResponse } from './steps.model';
+import {StaticSteps, Step, StepResponse, StepsResponse} from './steps.model';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 
 @Injectable({
@@ -10,12 +10,21 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 export class StepsService {
   constructor(private http: HttpClient) {}
 
-  getSteps(): Observable<Step[]> {
+  getSteps(addStaticSteps = false): Observable<Step[]> {
     return this.http.get<StepsResponse>('/api/v1/steps', {observe: 'response'})
       .pipe(
         map(response => {
           if (response && response.body) {
-            return response.body.steps;
+            const steps = response.body.steps;
+            if (addStaticSteps) {
+              steps.push(StaticSteps.FORK_STEP);
+              steps.push(StaticSteps.JOIN_STEP);
+              steps.push(StaticSteps.SPLIT_STEP);
+              steps.push(StaticSteps.MERGE_STEP);
+              steps.push(StaticSteps.STEP_GROUP);
+              steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
+            }
+            return steps;
           }
           return [];
         }),
@@ -35,7 +44,7 @@ export class StepsService {
         map(response => response.body.step),
         catchError(err => throwError(err)));
   }
-  
+
   getParamTemplate(stepId: string): Observable<any> {
     return this.http.get(`/api/v1/steps/${stepId}/template`,{ observe: 'response' })
       .pipe(map((response:any) => {

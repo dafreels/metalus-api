@@ -9,7 +9,7 @@ import {ErrorModalComponent} from 'src/app/shared/components/error-modal/error-m
 import {User} from 'src/app/shared/models/users.models';
 import {AuthService} from 'src/app/shared/services/auth.service';
 import {SharedFunctions} from 'src/app/shared/utils/shared-functions';
-import {StaticSteps, Step} from 'src/app/steps/steps.model';
+import {Step} from 'src/app/steps/steps.model';
 import {StepsService} from 'src/app/steps/steps.service';
 import {Pipeline, PipelineData, PipelineStep, PipelineStepParam} from '../../models/pipelines.model';
 import {PipelinesService} from '../../services/pipelines.service';
@@ -18,7 +18,6 @@ import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-moda
 import {HelpComponent} from "../../../core/components/help/help.component";
 import {ExecutionsService} from 'src/app/applications/executions.service';
 import {ExecutionTemplate} from 'src/app/applications/applications.model';
-import * as _ from 'lodash';
 
 // import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
@@ -132,13 +131,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
   private loadUIData() {
     this.steps = [];
     this.stepsLoading = true;
-    this.stepsService.getSteps().subscribe((steps: Step[]) => {
-      steps.push(StaticSteps.FORK_STEP);
-      steps.push(StaticSteps.JOIN_STEP);
-      steps.push(StaticSteps.SPLIT_STEP);
-      steps.push(StaticSteps.MERGE_STEP);
-      steps.push(StaticSteps.STEP_GROUP);
-      steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
+    this.stepsService.getSteps(true).subscribe((steps: Step[]) => {
       this.steps = steps;
       this.stepsLoading = false;
     });
@@ -192,7 +185,9 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
     if (execution.template && execution.template.form && typeof execution.template.form === 'string') {
       execution.template.form = JSON.parse(execution.template.form);
     } else {
-      execution.template.form = {};
+      execution.template = {
+        form: {}
+      };
     }
     this.selectedExecution = execution;
   }
@@ -258,11 +253,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
 
   set codeViewData(data) {
     try {
-      if (this.selectedStep) {
-        this.paramTemplate = JSON.parse(data);
-      } else if (this.selectedPackage) {
-        this.paramTemplate = JSON.parse(data);
-      } else if (this.selectedExecution) {
+      if (this.selectedStep || this.selectedPackage || this.selectedExecution) {
         this.paramTemplate = JSON.parse(data);
       }
     } catch (err) {
