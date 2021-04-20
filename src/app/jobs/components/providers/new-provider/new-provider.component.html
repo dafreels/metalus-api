@@ -6,11 +6,7 @@
     </mat-select>
   </mat-form-field>
 </div>
-
-<form [formGroup]="form">
-  <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
-</form>
-
+  <app-preview-parameter-editor [form]="form" [model]="model" [fields]="_fields"></app-preview-parameter-editor>
 <mat-dialog-actions align="end">
   <button
     mat-raised-button
