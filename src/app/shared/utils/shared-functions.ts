@@ -162,8 +162,8 @@ export class SharedFunctions {
    }
 
    static convertFormlyForm(formlyJson) {
-     return formlyJson.map(item => {
-       if (item.validators) {
+     return SharedFunctions.clone(formlyJson).map(item => {
+       if (item.validators && Object.keys(item.validators).length > 0) {
          const validators = {};
          Object.keys(item.validators).forEach(key => {
            validators[key] = {

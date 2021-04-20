@@ -52,9 +52,9 @@ export class NewClusterComponent implements OnInit {
         if (formlyJson.schema) {
           this._fields = [this.formlyJsonschema.toFieldConfig(formlyJson.schema)];
         } else if(Array.isArray(formlyJson)) {
-          this._fields = SharedFunctions.convertFormlyForm(SharedFunctions.clone(formlyJson));
+          this._fields = formlyJson;
         } else {
-          this._fields = SharedFunctions.convertFormlyForm([SharedFunctions.clone(formlyJson)]);
+          this._fields = [formlyJson];
         }
         this.showSpinner = false;
       }
