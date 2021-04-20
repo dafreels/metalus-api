@@ -1,7 +1,7 @@
 <div style="text-align: center">
   <mat-spinner *ngIf="showSpinner" style="text-align: center; display: inline-block"></mat-spinner>
 </div>
-  <app-preview-parameter-editor  #previewForm [model]="model"  (valueChange)="templateValueChanged($event)"  [fields] = "_fields"></app-preview-parameter-editor>
+  <app-preview-parameter-editor #previewForm [model]="model" (valueChange)="templateValueChanged($event)"  [fields] = "_fields"></app-preview-parameter-editor>
 <mat-dialog-actions align="end">
   <button
     mat-raised-button
