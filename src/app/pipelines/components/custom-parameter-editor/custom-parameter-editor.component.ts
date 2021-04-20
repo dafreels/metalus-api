@@ -18,6 +18,7 @@ import {WaitModalComponent} from 'src/app/shared/components/wait-modal/wait-moda
 import {HelpComponent} from "../../../core/components/help/help.component";
 import {ExecutionsService} from 'src/app/applications/executions.service';
 import {ExecutionTemplate} from 'src/app/applications/applications.model';
+import * as _ from 'lodash';
 
 // import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
@@ -197,15 +198,21 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
   }
 
   exportTemplate() {
-    const fileName = this.isStep ? `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json` :
-      `${this.selectedPackage.id.split('.').join('_')}.json`;
+    let fileName = '';
     let template;
     if (this.isPackage && !this.paramTemplate.form) {
+      fileName = `${this.selectedPackage.id.split('.').join('_')}.json`;
       template = {
         form: this.paramTemplate
       };
-    } else {
+    } else if(this.isStep) {
+      fileName = `${this.selectedStep.displayName}-${this.selectedStep.id}-${this.selectedParam.name}.json`;
       template = this.paramTemplate;
+    } else if(this.isExecution) {
+      fileName =  `${this.selectedExecution.displayName}-${this.selectedExecution.id}.json`;
+      template = {
+        form: this.paramTemplate
+      };
     }
     SharedFunctions.downloadAsFile(fileName, JSON.stringify(template));
   }
