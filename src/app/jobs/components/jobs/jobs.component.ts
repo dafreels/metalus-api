@@ -9,12 +9,14 @@ import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-mod
 import {forkJoin, of, Subscription, throwError, timer} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {SharedFunctions} from "../../../shared/utils/shared-functions";
+import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'jobs-listing',
   templateUrl: './jobs.component.html'
 })
-export class JobsComponent implements OnInit, OnDestroy {
+export class JobsComponent extends ErrorHandlingComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['id', 'name', 'appName', 'providerName', 'lastStatus', 'actions'];
   lastRefreshDate = new Date();
   jobs: Job[];
@@ -22,7 +24,10 @@ export class JobsComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(private jobsService: JobsService,
-              private displayDialogService: DisplayDialogService) {}
+              private displayDialogService: DisplayDialogService,
+              public dialog: MatDialog) {
+    super(dialog);
+  }
 
   @Input() set provider(provider: Provider) {
     this._provider = provider;
@@ -82,7 +87,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           job: j
         }
       );
-    })
+    },(error) => this.handleError(error, dialogRef))
   }
 
   cancelJob(job: Job) {
@@ -93,7 +98,7 @@ export class JobsComponent implements OnInit, OnDestroy {
       });
     this.jobsService.cancelJob(job).subscribe(() => {
       dialogRef.close();
-    });
+    },(error) => this.handleError(error, dialogRef));
   }
 
   deleteJob(job: Job) {
@@ -111,6 +116,6 @@ export class JobsComponent implements OnInit, OnDestroy {
         }
       });
       this.jobs = jobs;
-    });
+    },(error) => this.handleError(error, dialogRef));
   }
 }

@@ -5,15 +5,15 @@ import {Subject, Subscription} from "rxjs";
 import {SharedFunctions} from "../../../shared/utils/shared-functions";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {MatDialog} from "@angular/material/dialog";
-import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
+import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
 
 @Component({
   selector: 'provider-clusters',
   templateUrl: './clusters.component.html'
 })
-export class ClustersComponent implements OnInit, OnDestroy {
+export class ClustersComponent extends ErrorHandlingComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['name', 'version', 'state', 'startTime', 'terminationTime', 'actions'];
   clusters: Cluster[];
   provider: Provider;
@@ -24,7 +24,9 @@ export class ClustersComponent implements OnInit, OnDestroy {
 
   constructor(public dialog: MatDialog,
               private providersService: ProvidersService,
-              private displayDialogService: DisplayDialogService) {}
+              private displayDialogService: DisplayDialogService) {
+    super(dialog);
+  }
 
   ngOnInit(): void {
     this.subscriptions.push(
@@ -56,8 +58,8 @@ export class ClustersComponent implements OnInit, OnDestroy {
       this.providersService.getClustersList(this.provider.id).subscribe(result => {
         waitDialogRef.close();
         this.clusters = result;
-      });
-    });
+      },(error) => this.handleError(error, waitDialogRef));
+    },(error) => this.handleError(error, waitDialogRef));
   }
 
   stopCluster(cluster) {
@@ -70,8 +72,8 @@ export class ClustersComponent implements OnInit, OnDestroy {
         this.providersService.getClustersList(this.provider.id).subscribe(result => {
           waitDialogRef.close();
           this.clusters = result;
-        });
-      });
+        },(error) => this.handleError(error, waitDialogRef));
+      },(error) => this.handleError(error, waitDialogRef));
   }
 
   deleteCluster(cluster) {
@@ -93,32 +95,14 @@ export class ClustersComponent implements OnInit, OnDestroy {
             this.providersService.getClustersList(this.provider.id).subscribe(result => {
               waitDialogRef.close();
               this.clusters = result;
-            });
-          });
+            },(error) => this.handleError(error, waitDialogRef));
+          },(error) => this.handleError(error, waitDialogRef));
         }
-      },
-      (error) => this.handleError(error, dialogRef)
-    ));
+      }, (error) => this.handleError(error, null)));
   }
 
   ngOnDestroy(): void {
     this.subscriptions = SharedFunctions.clearSubscriptions(this.subscriptions);
-  }
-
-  private handleError(error, dialogRef) {
-    let message;
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      message = error.error.message;
-    } else {
-      message = error.message;
-    }
-    dialogRef.close();
-    this.dialog.open(ErrorModalComponent, {
-      width: '450px',
-      height: '300px',
-      data: { messages: message.split('\n') },
-    });
   }
 
   refresh() {
@@ -130,6 +114,6 @@ export class ClustersComponent implements OnInit, OnDestroy {
     this.providersService.getClustersList(this.provider.id).subscribe(result => {
       dialogRef.close();
       this.clusters = result;
-    });
+    }, (error) => this.handleError(error, dialogRef));
   }
 }

@@ -44,13 +44,14 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {JobsMessageComponent} from "../../../jobs/components/jobs/jobs-message/jobs-message.component";
 import {catchError, map} from "rxjs/operators";
 import {diff} from 'deep-object-diff';
+import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
 
 @Component({
   selector: 'app-applications-editor',
   templateUrl: './applications-editor.component.html',
   styleUrls: ['./applications-editor.component.scss'],
 })
-export class ApplicationsEditorComponent implements OnInit, OnDestroy {
+export class ApplicationsEditorComponent extends ErrorHandlingComponent implements OnInit, OnDestroy {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   originalApplication: Application;
@@ -109,11 +110,12 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     private stepsService: StepsService,
     private packageObjectsService: PackageObjectsService,
     private displayDialogService: DisplayDialogService,
-    private dialog: MatDialog,
+    public dialog: MatDialog,
     private authService: AuthService,
     private providersService: ProvidersService,
     private jobsService: JobsService,
     private snackBar: MatSnackBar) {
+    super(dialog);
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
       this.authService.userItemSelection.subscribe(() => {
@@ -309,7 +311,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     if (this.selectedApplication.id) {
       this.jobsService.getJobsByApplicationId(this.selectedApplication.id).subscribe(jobs => {
         this.jobs = jobs;
-      });
+      },(error) => this.handleError(error, null));
     }
     // Create the model from the executions
     const model = DesignerComponent.newModel();
@@ -433,31 +435,11 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
   }
 
   handleElementAction(action: DesignerElementAction) {
-    switch (action.action) {
-      // case 'editExecution':
-      //   const originalId = action.element.data['id'];
-      //   const elementActionDialogData = {
-      //     packageObjects: this.packageObjects,
-      //     pipelines: this.pipelines,
-      //     execution: action.element.data,
-      //   };
-      //   const elementActionDialog = this.displayDialogService.openDialog(
-      //     ExecutionEditorComponent,
-      //     generalDialogDimensions,
-      //     elementActionDialogData
-      //   );
-      //
-      //   elementActionDialog.afterClosed().subscribe((result) => {
-      //     if (result && result.id !== originalId) {
-      //       action.element.name = result.id;
-      //     }
-      //   });
-      //   break;
-      case 'addOutput':
-        this.addExecutionOutput.next({
-          element: action.element,
-          output: `output-${new Date().getTime()}`,
-        });
+    if (action.action === 'addOutput') {
+      this.addExecutionOutput.next({
+        element: action.element,
+        output: `output-${new Date().getTime()}`,
+      });
     }
   }
 
@@ -552,8 +534,7 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
                 this.applications = [...this.applications];
               }
               dialog.close();
-            },
-            (error) => this.handleError(error, dialog)));
+            }, (error) => this.handleError(error, dialog)));
         }
       }));
   }
@@ -853,25 +834,8 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
         // Change the reference to force the selector to refresh
         this.applications = [...this.applications];
         dialogRef.close();
-      },
-      (error) => this.handleError(error, dialogRef)
+      }, (error) => this.handleError(error, dialogRef)
     ));
-  }
-
-  private handleError(error, dialogRef) {
-    let message;
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      message = error.error.message;
-    } else {
-      message = error.message;
-    }
-    dialogRef.close();
-    this.dialog.open(ErrorModalComponent, {
-      width: '450px',
-      height: '300px',
-      data: { messages: message.split('\n') },
-    });
   }
 
   cancelApplicationChange() {
@@ -1075,6 +1039,6 @@ export class ApplicationsEditorComponent implements OnInit, OnDestroy {
     })
   }
   templateValueChanged(value) {
-    
+
   }
 }

@@ -33,13 +33,14 @@ import {
 import {StepGroupResultModalComponent} from "../step-group-result-modal/step-group-result-modal.component";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
+import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
 
 @Component({
   selector: 'app-pipelines-editor',
   templateUrl: './pipelines-editor.component.html',
   styleUrls: ['./pipelines-editor.component.scss'],
 })
-export class PipelinesEditorComponent implements OnInit, OnDestroy {
+export class PipelinesEditorComponent extends ErrorHandlingComponent implements OnInit, OnDestroy {
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
   pipelinesData: PipelineData[] = [];
   packageObjects: PackageObject[];
@@ -76,6 +77,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private authService: AuthService,
     private displayDialogService: DisplayDialogService) {
+    super(dialog);
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
       this.authService.userItemSelection.subscribe(data => {
@@ -1141,22 +1143,6 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         pipelinesData: this.pipelinesData
       }
     );
-  }
-
-  private handleError(error, dialogRef) {
-    let message;
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      message = error.error.message;
-    } else {
-      message = error.message;
-    }
-    dialogRef.close();
-    this.dialog.open(ErrorModalComponent, {
-      width: '450px',
-      height: '300px',
-      data: { messages: message.split('\n') },
-    });
   }
 
   private generatePipeline(): Pipeline {

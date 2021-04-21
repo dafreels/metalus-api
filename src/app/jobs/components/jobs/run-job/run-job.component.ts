@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, Inject, Input, OnInit} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {Component, Inject, Input, OnInit} from "@angular/core";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {ProvidersService} from "../../../services/providers.service";
 import {Cluster, Provider} from "../../../models/providers.model";
 import {Application, Execution} from "../../../../applications/applications.model";
@@ -10,8 +10,8 @@ import {MatSelectChange} from "@angular/material/select";
 import {Job} from "../../../models/jobs.model";
 import {SharedFunctions} from "../../../../shared/utils/shared-functions";
 import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
-import {FormGroup} from "@angular/forms";
 import {FormlyFieldConfig} from "@ngx-formly/core";
+import {ErrorHandlingComponent} from "../../../../shared/utils/error-handling-component";
 
 export interface RunJobConfiguration {
   providers: Provider[];
@@ -28,7 +28,7 @@ export interface JobType {
   templateUrl: './run-job.component.html',
   styleUrls: ['./run-job.component.scss']
 })
-export class RunJobComponent implements OnInit {
+export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
   running = false;
   name: string;
   clusters: Cluster[];
@@ -84,10 +84,13 @@ export class RunJobComponent implements OnInit {
               private formlyJsonschema: FormlyJsonschema,
               private providersService: ProvidersService,
               private pipelinesService: PipelinesService,
-              private jobsService: JobsService) {}
+              private jobsService: JobsService,
+              public dialog: MatDialog) {
+    super(dialog);
+  }
 
   templateValueChanged(value) {
-    this.formValue = value; 
+    this.formValue = value;
   }
 
   handleProviderSelection(providerId, providerInformation) {
@@ -110,8 +113,8 @@ export class RunJobComponent implements OnInit {
             this.formValue = providerInformation.customFormValues;
           }
         }
-      })
-    });
+      },(error) => this.handleError(error, null))
+    },(error) => this.handleError(error, null));
   }
 
   run() {
@@ -161,7 +164,7 @@ export class RunJobComponent implements OnInit {
     };
     this.jobsService.runJob(body).subscribe(job => {
       this.dialogRef.close(job);
-    });
+    },(error) => this.handleError(error, null));
   }
 
   closeDialog() {

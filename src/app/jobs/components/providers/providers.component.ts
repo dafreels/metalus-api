@@ -10,12 +10,13 @@ import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-mod
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {MatDialog} from "@angular/material/dialog";
 import {SharedFunctions} from "../../../shared/utils/shared-functions";
+import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
 
 @Component({
   templateUrl: './providers.component.html',
   styleUrls: ['./providers.component.scss']
 })
-export class ProvidersComponent implements OnInit, OnDestroy {
+export class ProvidersComponent extends ErrorHandlingComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['id', 'name', 'provider', 'description', 'actions'];
   providerTypes: ProviderType[];
   providers: Provider[];
@@ -27,6 +28,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   constructor(public dialog: MatDialog,
               private providersService: ProvidersService,
               private displayDialogService: DisplayDialogService) {
+    super(dialog);
   }
 
   ngOnInit(): void {
@@ -48,9 +50,9 @@ export class ProvidersComponent implements OnInit, OnDestroy {
       if (result) {
         this.providersService.addProvider(result).subscribe(prov => {
           this.providersService.getProvidersList().subscribe(provs => this.providers = provs);
-        });
+        },(error) => this.handleError(error, null));
       }
-    });
+    },(error) => this.handleError(error, null));
   }
 
   removeProvider(id) {
@@ -75,10 +77,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
             }
             waitDialog.close();
             this.providers = provs;
-          });
-        });
+          },(error) => this.handleError(error, waitDialog));
+        },(error) => this.handleError(error, waitDialog));
       }
-    }));
+    },(error) => this.handleError(error, null)));
   }
 
   handleProviderSelection($event: Provider) {
@@ -104,7 +106,7 @@ export class ProvidersComponent implements OnInit, OnDestroy {
         this.providersService.addCluster(providerId, result).subscribe(prov => {
           dialogRef.close();
           this.clusterSubject.next(prov);
-        });
+        },(error) => this.handleError(error, dialogRef));
       }
     });
   }

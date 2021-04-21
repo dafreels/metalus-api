@@ -1,10 +1,11 @@
 import {Component, Inject, Input, OnInit} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {Provider, ProviderType} from "../../../models/providers.model";
 import {FormlyFieldConfig} from "@ngx-formly/core";
 import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
 import {ProvidersService} from "../../../services/providers.service";
 import {SharedFunctions} from "../../../../shared/utils/shared-functions";
+import {ErrorHandlingComponent} from "../../../../shared/utils/error-handling-component";
 
 export interface NewEngineData {
   providerTypes: ProviderType[];
@@ -14,7 +15,7 @@ export interface NewEngineData {
 @Component({
   templateUrl: './new-cluster.component.html'
 })
-export class NewClusterComponent implements OnInit {
+export class NewClusterComponent extends ErrorHandlingComponent implements OnInit {
   showSpinner: boolean = true;
   _model;
   @Input() set model(value) {
@@ -31,7 +32,10 @@ export class NewClusterComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<NewClusterComponent>,
               @Inject(MAT_DIALOG_DATA) public data: NewEngineData,
               private formlyJsonschema: FormlyJsonschema,
-              private providersService: ProvidersService) {}
+              private providersService: ProvidersService,
+              public dialog: MatDialog) {
+    super(dialog);
+  }
 
   closeDialog(): void {
     this.dialogRef.close();
@@ -58,6 +62,6 @@ export class NewClusterComponent implements OnInit {
         }
         this.showSpinner = false;
       }
-    });
+    },(error) => this.handleError(error, null));
   }
 }

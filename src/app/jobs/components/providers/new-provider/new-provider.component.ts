@@ -1,15 +1,16 @@
 import {AfterViewInit, Component, Inject, Input} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {ProviderType} from "../../../models/providers.model";
 import {FormlyFieldConfig} from "@ngx-formly/core";
 import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
 import {FormGroup} from "@angular/forms";
 import {ProvidersService} from "../../../services/providers.service";
+import {ErrorHandlingComponent} from "../../../../shared/utils/error-handling-component";
 
 @Component({
   templateUrl: './new-provider.component.html'
 })
-export class NewProviderComponent implements AfterViewInit {
+export class NewProviderComponent extends ErrorHandlingComponent implements AfterViewInit {
   form = new FormGroup({});
   _model;
   @Input() set model(value) {
@@ -26,7 +27,10 @@ export class NewProviderComponent implements AfterViewInit {
   constructor(public dialogRef: MatDialogRef<NewProviderComponent>,
               @Inject(MAT_DIALOG_DATA) public providers: ProviderType[],
               private formlyJsonschema: FormlyJsonschema,
-              private providersService: ProvidersService) {}
+              private providersService: ProvidersService,
+              public dialog: MatDialog) {
+    super(dialog);
+  }
 
   closeDialog(): void {
     this.dialogRef.close();
@@ -55,6 +59,6 @@ export class NewProviderComponent implements AfterViewInit {
           this._fields = [formlyJson];
         }
       }
-    });
+    },(error) => this.handleError(error, null));
   }
 }
