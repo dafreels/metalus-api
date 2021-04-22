@@ -45,6 +45,7 @@ import {JobsMessageComponent} from "../../../jobs/components/jobs/jobs-message/j
 import {catchError, map} from "rxjs/operators";
 import {diff} from 'deep-object-diff';
 import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
+import {isArray} from "rxjs/internal-compatibility";
 
 @Component({
   selector: 'app-applications-editor',
@@ -317,6 +318,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     const model = DesignerComponent.newModel();
     this.executionLookup = {};
     const pipelineList = this.pipelines;
+    this.convertPipelineParameters(this.selectedApplication);
     this.selectedApplication.executions.forEach((execution) => {
       this.createModelNode(model, execution, -1, -1);
       execution.pipelines = [];
@@ -326,6 +328,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     const connectedNodes = [];
     let connection;
     this.selectedApplication.executions.forEach((execution) => {
+      this.convertPipelineParameters(execution);
       if (execution.parents) {
         execution.parents.forEach((parent) => {
           if (connectedNodes.indexOf(execution.id) === -1) {
@@ -369,6 +372,14 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     }
     this.designerModel = model;
     this.validateApplication();
+  }
+
+  private convertPipelineParameters(obj) {
+    if (isArray(obj.pipelineParameters)) {
+      obj.pipelineParameters = {
+        parameters: obj.pipelineParameters
+      };
+    }
   }
 
   validateApplication() {

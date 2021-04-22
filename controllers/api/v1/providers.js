@@ -166,7 +166,11 @@ async function createCluster(req, res, next) {
       const cluster = await providerType.createCluster(req.body, provider.providerInstance, user);
       res.status(201).json({cluster});
     } catch (err) {
-      next(err);
+      if (err instanceof ValidationError) {
+        res.status(422).json({errors: err.getValidationErrors(), body: req.body});
+      } else {
+        next(err);
+      }
     }
   } else {
     res.sendStatus(404);

@@ -38,14 +38,16 @@ export class LandingComponent implements OnInit {
   }
 
   private loadCounts() {
-    this.usersService.getUsageReport(this.authService.getUserInfo()).subscribe(report => {
-      this.applicationCount = report.report.applicationsCount;
-      this.pipelineCount = report.report.pipelinesCount;
-      this.packageObjectCount = report.report.packageObjectsCount;
-      this.stepCount = report.report.stepsCount;
-      this.providersCount = report.report.providersCount;
-      this.jobsCount = report.report.jobsCount;
-    });
+    if (this.authService.getUserInfo()) {
+      this.usersService.getUsageReport(this.authService.getUserInfo()).subscribe(report => {
+        this.applicationCount = report.report.applicationsCount;
+        this.pipelineCount = report.report.pipelinesCount;
+        this.packageObjectCount = report.report.packageObjectsCount;
+        this.stepCount = report.report.stepsCount;
+        this.providersCount = report.report.providersCount;
+        this.jobsCount = report.report.jobsCount;
+      });
+    }
   }
 
   loadWizard(wizard: string) {

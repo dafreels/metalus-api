@@ -9,6 +9,8 @@ export class ErrorHandlingComponent {
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       message = error.error.message;
+    } else if (error.error.errors) {
+      message = error.error.errors.join('\n');
     } else {
       message = error.message;
     }
