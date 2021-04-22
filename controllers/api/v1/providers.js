@@ -310,6 +310,8 @@ async function startJob(req, res, next) {
   const bucket = mappingParameters.bucket;
   const jobType = mappingParameters.jobType;
   const logLevel = mappingParameters.selectedLogLevel;
+  const rootLogLevel = mappingParameters.selectedRootLogLevel;
+  const customLogLevels = mappingParameters.customLogLevels;
   const forceCopy = mappingParameters.forceCopy;
   const includePipelines = mappingParameters.includePipelines || false;
   const providersModel = new ProvidersModel();
@@ -467,6 +469,8 @@ async function startJob(req, res, next) {
       runConfig.clusterName = clusterName;
       runConfig.name = name;
       runConfig.logLevel = logLevel;
+      runConfig.rootLogLevel = rootLogLevel;
+      runConfig.customLogLevels = customLogLevels;
       runConfig.forceCopy = forceCopy;
       const runId = await providerType.executeApplication(provider.providerInstance, user, runConfig);
 
@@ -482,6 +486,8 @@ async function startJob(req, res, next) {
         startTime: null,
         endTime: null,
         logLevel,
+        rootLogLevel,
+        customLogLevels,
         useCredentialProvider: mappingParameters.useCredentialProvider,
         providerInformation: {
           clusterId: clusterId.toString(),

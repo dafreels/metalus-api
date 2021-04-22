@@ -31,6 +31,12 @@
         "logLevel": {
           "type": "string"
         },
+        "rootLogLevel": {
+          "type": "string"
+        },
+        "customLogLevels": {
+          "type": "string"
+        },
         "lastStatus": {
           "type": "string",
           "enum": [

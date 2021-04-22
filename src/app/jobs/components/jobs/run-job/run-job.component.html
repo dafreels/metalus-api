@@ -39,11 +39,34 @@
         <input matInput placeholder=" Job Name" [(ngModel)]="name" required/>
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Log Level:</mat-label>
+        <mat-label>Metalus Log Level:</mat-label>
         <mat-select [(ngModel)]="selectedLogLevel">
-          <mat-option value="INFO">INFO</mat-option>
-          <mat-option value="DEBUG">DEBUG</mat-option>
+          <mat-option *ngFor="let level of loglevelList" [value]="level">{{level}}</mat-option>
         </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Root Log Level:</mat-label>
+        <mat-select [(ngModel)]="selectedRootLogLevel">
+          <mat-option *ngFor="let level of loglevelList" [value]="level">{{level}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="custom-log-field">
+        <mat-chip-list #customLogLevelList>
+          <mat-chip *ngFor="let level of customLogLevelsList"
+                    selectable="true"
+                    removable="true"
+                    (removed)="removeCustomLogLevel(level)">
+            {{level}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <input
+            placeholder="Custom Log Levels"
+            [matChipInputFor]="customLogLevelList"
+            [formControl]="customLogLevelsCtrl"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="true"
+            (matChipInputTokenEnd)="addCustomLogLevel($event)">
+        </mat-chip-list>
       </mat-form-field>
     </mat-card-content>
   </mat-card>

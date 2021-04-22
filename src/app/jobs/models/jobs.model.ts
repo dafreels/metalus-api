@@ -9,6 +9,8 @@ export interface Job {
   projectId: string;
   lastStatus?: string;
   logLevel?: string;
+  rooLogLevel?: string;
+  customLogLevels?: string;
   useCredentialProvider?: boolean;
   providerInformation: object;
   jobType?: string;
