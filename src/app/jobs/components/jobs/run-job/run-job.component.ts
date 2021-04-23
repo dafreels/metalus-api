@@ -14,6 +14,9 @@ import {FormlyFieldConfig} from "@ngx-formly/core";
 import {ErrorHandlingComponent} from "../../../../shared/utils/error-handling-component";
 import { AuthService } from "src/app/shared/services/auth.service";
 import { finalize } from "rxjs/operators";
+import {FormControl} from "@angular/forms";
+import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {MatChipInputEvent} from "@angular/material";
 
 export interface RunJobConfiguration {
   providers: Provider[];
@@ -67,9 +70,22 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
     subscription: undefined
   };
   selectedLogLevel: string = 'INFO';
+  selectedRootLogLevel: string = 'WARN';
+  customLogLevelsList: string[] = [];
+  customLogLevelsCtrl = new FormControl();
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   useCredentialProvider: boolean = false;
   forceCopy: boolean = false;
   includePipelines: boolean = true;
+  loglevelList = [
+    'INFO',
+    'WARN',
+    'DEBUG',
+    'ERROR',
+    'TRACE',
+    'FATAL',
+    'OFF'
+  ];
   // Custom form support
   _model;
   @Input() set model(value) {
@@ -158,6 +174,8 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
       bucket: this.bucket,
       streamingInfo: this.streamingInfo,
       selectedLogLevel: this.selectedLogLevel,
+      selectedRootLogLevel: this.selectedRootLogLevel,
+      customLogLevels: this.customLogLevelsList.length > 0 ? this.customLogLevelsList.join(',') : undefined,
       useCredentialProvider: this.useCredentialProvider,
       refreshPipelines: this.includePipelines,
       forceCopy: this.forceCopy,
@@ -276,8 +294,37 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
     this.handleProviderSelection(job.providerId, job.providerInformation);
     this.name = `copy-${job.name}`;
     this.selectedLogLevel = job.logLevel || 'INFO';
+    this.selectedRootLogLevel = job.rooLogLevel || 'WARN';
+    this.customLogLevelsList = job.customLogLevels ? job.customLogLevels.split(',') : [];
     this.bucket = job.providerInformation['bucket'];
     this.selectedJobType = this.jobTypes.find(t => t.id === job.jobType);
     this.useCredentialProvider = job.useCredentialProvider;
+  }
+
+  addCustomLogLevel(event: MatChipInputEvent) {
+    const input = event.input;
+    const value = event.value;
+
+    // Add our package
+    if ((value || '').trim()) {
+      if (!this.customLogLevelsList) {
+        this.customLogLevelsList = [];
+      }
+      this.customLogLevelsList.push(value.trim());
+    }
+
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+
+    this.customLogLevelsCtrl.setValue(null);
+  }
+
+  removeCustomLogLevel(level: string) {
+    const index = this.customLogLevelsList.indexOf(level);
+    if (index > -1) {
+      this.customLogLevelsList.splice(index, 1);
+    }
   }
 }
