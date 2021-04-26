@@ -120,10 +120,24 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
       this.authService.userItemSelection.subscribe(() => {
-        this.cancelApplicationChange();
-        this.loadProjectRelatedData();
-        this.newApplication();
-        this.loadApplication(this.originalApplication);
+        if(this.hasChanges) {
+          const confirm = this.confirmChanges();
+          if(confirm){
+            confirm.then(res => {
+              if (res){
+                this.cancelApplicationChange();
+                this.loadProjectRelatedData();
+                this.newApplication();
+                this.loadApplication(this.originalApplication);
+              }
+            })
+          } 
+        } else {
+          this.cancelApplicationChange();
+          this.loadProjectRelatedData();
+          this.newApplication();
+          this.loadApplication(this.originalApplication);
+        }
       }));
   }
 
@@ -304,6 +318,20 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     } else {
       this.handleLoadApplication(application);
     }
+  }
+  confirmChanges(){
+    if (this.hasApplicationChanged(this.generateApplication())) {
+      const dialogRef = this.dialog.open(ConfirmationModalComponent, {
+        width: '450px',
+        height: '200px',
+        data: {
+          message:
+            'You have unsaved changes to the current application. Would you like to continue?',
+        },
+      });
+      const confirm = dialogRef.afterClosed().toPromise();
+      return confirm;
+    } 
   }
 
   handleLoadApplication(application) {
