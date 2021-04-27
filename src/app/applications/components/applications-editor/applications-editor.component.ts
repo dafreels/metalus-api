@@ -119,25 +119,31 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     super(dialog);
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
-      this.authService.userItemSelection.subscribe(() => {
+      this.authService.userItemSelection.subscribe((data) => {
+        if (data.defaultProjectId != this.user.defaultProjectId) {
         if(this.hasChanges) {
           const confirm = this.confirmChanges();
           if(confirm){
             confirm.then(res => {
               if (res){
+                this.user = data;
                 this.cancelApplicationChange();
                 this.loadProjectRelatedData();
                 this.newApplication();
                 this.loadApplication(this.originalApplication);
-              }
+              } else {
+                this.authService.setUserInfo({ ...this.user });
+              } 
             })
           } 
         } else {
+          this.user = data;
           this.cancelApplicationChange();
           this.loadProjectRelatedData();
           this.newApplication();
           this.loadApplication(this.originalApplication);
         }
+      }
       }));
   }
 
@@ -207,7 +213,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       .getExecutions()
       .subscribe((executions: ExecutionTemplate[]) => {
         if (executions) {
-          this.executionTemplates = this.executionTemplates.concat(executions);
+          this.executionTemplates = this.executionTemplates.slice(0,1).concat(executions);
         }
       });
     this.packageObjectsService

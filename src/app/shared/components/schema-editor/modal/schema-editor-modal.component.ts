@@ -13,4 +13,7 @@ export class SchemaEditorModalComponent {
   closeDialog() {
     this.dialogRef.close();
   }
+  schemaChanged(event){
+    this.dialogRef.close(event);
+  }
 }
