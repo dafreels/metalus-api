@@ -1,0 +1,17 @@
+<mat-form-field>
+  <mat-label>Base Type</mat-label>
+  <mat-select [(ngModel)]="dataType.baseType">
+    <mat-option *ngFor="let t of baseTypes" [value]="t">{{t}}</mat-option>
+  </mat-select>
+</mat-form-field>
+<button (click)="addType('name')">Add Name Type</button>
+<button (click)="addType('value')">Add Value Type</button>
+<button (click)="addSchema()">Add Sub Schema</button>
+<attribute-type-editor *ngIf="dataType.nameType" [dataType]="dataType.nameType"></attribute-type-editor>
+<attribute-type-editor *ngIf="dataType.valueType" [dataType]="dataType.valueType"></attribute-type-editor>
+<mat-card *ngIf="dataType.schema">
+  <mat-card-title>Sub-Schema</mat-card-title>
+  <mat-card-content>
+    <schema-editor [schemaObject]="dataType.schema"></schema-editor>
+  </mat-card-content>
+</mat-card>

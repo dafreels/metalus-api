@@ -1,0 +1,3 @@
+
+<button (click)="addAttribute()">Add Attribute</button>
+<attribute-editor *ngFor="let attribute of schemaObject?.attributes" [attribute]="attribute"></attribute-editor>
