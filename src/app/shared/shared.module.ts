@@ -36,6 +36,10 @@ import { ObjectTypeComponent } from './components/formly-types/object.type';
 import { RepeatTypeComponent } from './components/formly-types/repeat-section.type';
 import { StringsArrayTypeComponent } from './components/formly-types/strings-array.type';
 import {PanelWrapperComponent} from "./components/formly-types/panel-wrapper.component";
+import {SchemaEditorComponent} from "./components/schema-editor/schema-editor.component";
+import {AttributeComponent} from "./components/schema-editor/attributes/attribute.component";
+import {SchemaEditorModalComponent} from "./components/schema-editor/modal/schema-editor-modal.component";
+import {AttributeTypesComponent} from "./components/schema-editor/attribute-types/attribute-types.component";
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -111,6 +115,10 @@ const commonModules = [
     IsGenericType,
     PromptComponent,
     ScalaScriptComponent,
+    SchemaEditorComponent,
+    AttributeComponent,
+    AttributeTypesComponent,
+    SchemaEditorModalComponent,
     PipelineParameterComponent,
     ParameterEditorComponent,
     PreviewParameterEditorComponent,
@@ -144,6 +152,7 @@ const commonModules = [
     TreeEditorPopupComponent,
     PromptComponent,
     ScalaScriptComponent,
+    SchemaEditorModalComponent
   ],
   providers: [
     { provide: ACE_CONFIG, useValue: DEFAULT_ACE_CONFIG },
