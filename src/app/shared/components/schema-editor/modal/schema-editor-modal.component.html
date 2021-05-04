@@ -1,5 +1,5 @@
 
-<schema-editor [schemaObject]="data"></schema-editor>
+<schema-editor [schemaObject]="data" (schemaChanged)="schemaChanged($event)"></schema-editor>
 <div mat-dialog-actions class="ok-button-div">
   <button mat-raised-button (click)="closeDialog()">OK</button>
 </div>

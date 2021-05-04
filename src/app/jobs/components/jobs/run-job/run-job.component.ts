@@ -12,6 +12,8 @@ import {SharedFunctions} from "../../../../shared/utils/shared-functions";
 import {FormlyJsonschema} from "@ngx-formly/core/json-schema";
 import {FormlyFieldConfig} from "@ngx-formly/core";
 import {ErrorHandlingComponent} from "../../../../shared/utils/error-handling-component";
+import { AuthService } from "src/app/shared/services/auth.service";
+import { finalize } from "rxjs/operators";
 import {FormControl} from "@angular/forms";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {MatChipInputEvent} from "@angular/material";
@@ -101,6 +103,7 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
               private providersService: ProvidersService,
               private pipelinesService: PipelinesService,
               private jobsService: JobsService,
+              private authService: AuthService,
               public dialog: MatDialog) {
     super(dialog);
   }
@@ -180,7 +183,11 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
       pipelineParameters,
       customFormValues: this.formValue
     };
-    this.jobsService.runJob(body).subscribe(job => {
+    this.authService.setAutoLogout(false);
+    this.jobsService.runJob(body).pipe(finalize(()=>{
+     this.authService.setAutoLogout(true);
+    })).subscribe(job => {
+      this.authService.setAutoLogout(false);
       this.dialogRef.close(job);
     },(error) => this.handleError(error, null));
   }

@@ -12,6 +12,6 @@
 <mat-card *ngIf="dataType.schema">
   <mat-card-title>Sub-Schema</mat-card-title>
   <mat-card-content>
-    <schema-editor [schemaObject]="dataType.schema"></schema-editor>
+    <schema-editor [canSubmit]="false" [schemaObject]="dataType.schema"></schema-editor>
   </mat-card-content>
 </mat-card>
