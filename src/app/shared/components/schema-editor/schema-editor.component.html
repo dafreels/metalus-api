@@ -1,4 +1,6 @@
-
-<button (click)="addAttribute()">Add Attribute</button>
-<button *ngIf="canSubmit" (click)="submit()">Submit</button>
+<section>
+    <button mat-button color = "primary"  (click)="addAttribute()">Add Attribute</button>
+    <button mat-raised-button *ngIf="canSubmit" color = "primary" (click)="submit()">Submit</button>
+</section>
+<br />
 <attribute-editor *ngFor="let attribute of schemaObject?.attributes" [(attribute)]="attribute"></attribute-editor>
