@@ -7,6 +7,7 @@ import {AttributeType} from "../../../models/schema.model";
   styleUrls: ['./attribute-types.component.scss']
 })
 export class AttributeTypesComponent {
+  @Input() attribute;
   baseTypes: string[] = [
     'string',
     'double',
