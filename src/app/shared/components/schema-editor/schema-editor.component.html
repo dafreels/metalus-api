@@ -1,6 +1,10 @@
 <section>
-    <button mat-raised-button color = "primary" style="margin: 10px;" (click)="addAttribute()">Add Attribute</button>
-    <button mat-raised-button *ngIf="canSubmit" color = "primary" (click)="submit()">Submit</button>
+    <button color="primary" (click)="addAttribute()" mat-icon-button matTooltip="Add Attribute">
+        <mat-icon>add</mat-icon>
+      </button>
 </section>
 <br />
 <attribute-editor *ngFor="let attribute of schemaObject?.attributes" [(attribute)]="attribute"></attribute-editor>
+<div mat-dialog-actions style="float:left">
+    <button mat-raised-button *ngIf="canSubmit"  style="margin: 10px;" color="primary" (click)="submit()">OK</button>
+</div>
