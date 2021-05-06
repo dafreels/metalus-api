@@ -13,16 +13,15 @@ import { CodeEditorComponent } from 'src/app/code-editor/components/code-editor/
 import { generalDialogDimensions } from '../../models/custom-dialog.model';
 import { DisplayDialogService } from '../../services/display-dialog.service';
 import { SharedFunctions } from '../../utils/shared-functions';
-import * as _ from "lodash";
 
 const removeObjectsWithNull = (obj) => {
-  return _(obj)
-    .pickBy(_.isObject)
-    .mapValues(removeObjectsWithNull)
-    .assign(_.omitBy(obj, _.isObject))
-    .omitBy(_.isEmpty)
-    .value();
-};
+  Object.entries(obj).forEach(([key, val])  =>
+    (val && typeof val === 'object') && removeObjectsWithNull(val) ||
+    (val === null || val === "") && delete obj[key]
+  );
+  return obj;
+}
+
 @Component({
   selector: 'app-preview-parameter-editor',
   templateUrl: './preview-parameter-editor.component.html',

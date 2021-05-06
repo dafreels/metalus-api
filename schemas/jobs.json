@@ -35,7 +35,7 @@
           "type": "string"
         },
         "customLogLevels": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "lastStatus": {
           "type": "string",

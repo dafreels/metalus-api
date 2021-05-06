@@ -12,6 +12,7 @@ import {FormControl} from '@angular/forms';
 import {TreeEditorComponent} from '../../../shared/components/tree-editor/tree-editor.component';
 import {ScalaScriptComponent} from 'src/app/shared/scala-script/scala-script.component';
 import { PackageObjectsService } from 'src/app/core/package-objects/package-objects.service';
+import {SchemaEditorModalComponent} from "../../../shared/components/schema-editor/modal/schema-editor-modal.component";
 
 export interface SplitParameter {
   id: number;
@@ -94,6 +95,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else if (stepParameter.type === 'script') {
       this.isAScriptParameter = 'script';
       this.parameterType = 'script';
+    } else if (stepParameter.className && stepParameter.className === 'com.acxiom.pipeline.steps.Schema') {
+      this.isAnObjectParameter = stepParameter.className;
+      this.parameterType = 'object';
     } else if (stepParameter.className && stepParameter.type !== 'script') {
       this.isAnObjectParameter = stepParameter.className;
       this.parameterType = 'object';
@@ -485,6 +489,24 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
         }
       );
       this.propertiesDialogResponse.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    } else if (inputData.className === 'com.acxiom.pipeline.steps.Schema') {
+      let schema = {
+        attributes:[]
+      };
+      if (this.parameter.value && typeof this.parameter.value === 'object') {
+        schema = this.parameter.value;
+      }
+      const schemaDialog = this.displayDialogService.openDialog(
+        SchemaEditorModalComponent,
+        generalDialogDimensions,
+        schema,
+      );
+      schemaDialog.afterClosed().subscribe((result) => {
         if (result) {
           inputData.value = result;
           this.handleChange(id);

@@ -17,9 +17,11 @@ export class AuthService {
   getAutoLogout(){
     return this.autoLogout;
   }
+
   setAutoLogout(logout:boolean){
     this.autoLogout = logout;
   }
+
   @Output() userItemSelection = new EventEmitter();
   private unauthorizedResponse: AuthorizationStatus = {
     authorized: false,
