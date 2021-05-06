@@ -3,7 +3,8 @@ import {Attribute} from "../../../models/schema.model";
 
 @Component({
   selector: 'attribute-editor',
-  templateUrl: './attribute.component.html'
+  templateUrl: './attribute.component.html',
+  styleUrls: ['./attribute.component.scss'],
 })
 export class AttributeComponent {
   @Input() attribute: Attribute;

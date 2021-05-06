@@ -4,14 +4,48 @@
     <mat-option *ngFor="let t of baseTypes" [value]="t">{{t}}</mat-option>
   </mat-select>
 </mat-form-field>
-<button (click)="addType('name')">Add Name Type</button>
-<button (click)="addType('value')">Add Value Type</button>
-<button (click)="addSchema()">Add Sub Schema</button>
-<attribute-type-editor *ngIf="dataType.nameType" [dataType]="dataType.nameType"></attribute-type-editor>
-<attribute-type-editor *ngIf="dataType.valueType" [dataType]="dataType.valueType"></attribute-type-editor>
-<mat-card *ngIf="dataType.schema">
-  <mat-card-title>Sub-Schema</mat-card-title>
-  <mat-card-content>
-    <schema-editor [canSubmit]="false" [schemaObject]="dataType.schema"></schema-editor>
-  </mat-card-content>
-</mat-card>
+<button color="primary" (click)="addType('name')" mat-icon-button matTooltip="Add Name Type">
+  <mat-icon>face</mat-icon>
+</button>
+<button color="primary" (click)="addType('value')" mat-icon-button matTooltip="Add Value Type">
+  <mat-icon>article</mat-icon>
+</button>
+<!-- <button mat-button color="primary"  (click)="addSchema()">Add Sub Schema</button> -->
+<button color="primary" (click)="addSchema()" mat-icon-button matTooltip="Add Sub Schema">
+  <mat-icon>schema</mat-icon>
+</button>
+<mat-accordion>
+<mat-expansion-panel *ngIf="dataType.nameType">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Name Type
+    </mat-panel-title>
+    <mat-panel-description>
+      For {{attribute.name}}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+<attribute-type-editor  [dataType]="dataType.nameType"></attribute-type-editor>
+</mat-expansion-panel>
+<mat-expansion-panel *ngIf="dataType.valueType">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Value Type
+    </mat-panel-title>
+    <mat-panel-description>
+      For {{attribute.name}}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+<attribute-type-editor  [dataType]="dataType.valueType"></attribute-type-editor>
+</mat-expansion-panel>
+<mat-expansion-panel *ngIf="dataType.schema">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Sub Schmea
+    </mat-panel-title>
+    <mat-panel-description>
+      For {{attribute?.name}}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+<schema-editor [canSubmit]="false" [schemaObject]="dataType.schema"></schema-editor>
+</mat-expansion-panel>
+</mat-accordion>

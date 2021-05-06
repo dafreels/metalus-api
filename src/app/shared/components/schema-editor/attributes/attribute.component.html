@@ -1,6 +1,6 @@
-<mat-card>
+<mat-card class="attribute-editor">
   <mat-form-field>
     <input matInput placeholder="Name" [(ngModel)]="attribute.name" required name="Name">
   </mat-form-field>
-  <attribute-type-editor [(dataType)]="attribute.dataType"></attribute-type-editor>
+  <attribute-type-editor [attribute]="attribute" [(dataType)]="attribute.dataType"></attribute-type-editor>
 </mat-card>

@@ -3,9 +3,11 @@ import {AttributeType} from "../../../models/schema.model";
 
 @Component({
   selector: 'attribute-type-editor',
-  templateUrl: './attribute-types.component.html'
+  templateUrl: './attribute-types.component.html',
+  styleUrls: ['./attribute-types.component.scss']
 })
 export class AttributeTypesComponent {
+  @Input() attribute;
   baseTypes: string[] = [
     'string',
     'double',
