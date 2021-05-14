@@ -403,6 +403,9 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
   exportPipeline() {
     const pipeline = this.generatePipeline();
     delete pipeline.project;
+    delete pipeline['_id'];
+    delete pipeline['creationDate'];
+    delete pipeline['modifiedDate'];
     this.dialog.open(CodeEditorComponent, {
       width: '75%',
       height: '90%',

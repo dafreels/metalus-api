@@ -28,6 +28,7 @@ module.exports = function (router) {
   router.get('/:id/project/:projectId/files', listUploadedFiles);
   router.post('/:id/project/:projectId/upload', uploadJar);
   router.delete('/:id/project/:projectId/files/:fileName', deleteUploadedJar);
+  router.get('/:id/project/:projectId/process-status', checkProcessingStatus);
   router.put('/:id/project/:projectId/processUploadedJars', processUploadedJars);
   router.put('/:id/project/:projectId/export-metadata', exportMetadata);
   router.get('/:id/usage-report', getUsageReport);
@@ -359,6 +360,25 @@ async function deleteUploadedJar(req, res, next) {
   }
 }
 
+async function checkProcessingStatus(req, res) {
+  const user = await req.user;
+  const userId = req.params.id;
+  const projectId = req.params.projectId;
+  if (userId !== user.id) {
+    next(new Error('User does not have permission to process files for different user!'));
+    return;
+  }
+  const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
+  try {
+    const json = await MetalusUtils.readfile(`${userJarDir}/processedJars.json`);
+    res.status(200).json(JSON.parse(json.toString()));
+  } catch (err) {
+    res.status(200).json({
+      status: 'waiting',
+    });
+  }
+}
+
 async function processUploadedJars(req, res, next) {
   const user = await req.user;
   const userId = req.params.id;
@@ -370,11 +390,13 @@ async function processUploadedJars(req, res, next) {
   const skipSteps = req.body.skipSteps;
   if (userId !== user.id) {
     next(new Error('User does not have permission to process files for different user!'));
+    return;
   }
   const userModel = new UsersModel();
   const projectUser = await userModel.getUser(userId);
   if (!bcrypt.compareSync(password, projectUser.password)) {
     next(new Error('Unable to upload metadata: Invalid password!'));
+    return;
   }
   const processJSON = {};
   const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
@@ -433,24 +455,41 @@ async function processUploadedJars(req, res, next) {
       parameters.push('--excludePipelines');
       parameters.push('true');
     }
-
     if (skipSteps) {
       parameters.push('--excludeSteps');
       parameters.push('true');
     }
     try {
-      await MetalusUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
+      processJSON.status = 'processing';
       // Write the process file
       await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+      res.status(200).json(processJSON);
+    } catch (err) {
+      res.status(400).json({error: err});
+      return;
+    }
+    try {
+      await MetalusUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
+      processJSON.status = 'complete';
+      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+    } catch (err) {
+      MetalusUtils.log(`Error processing jars: ${err}`);
+      processJSON.status = 'failed';
+      processJSON.error = `Error processing jars: ${err}`;
+      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+      return;
+    }
+    try {
       // Delete the jar directory
       await MetalusUtils.removeDir(stagingDir);
       // await MetalusUtils.removeDir(userJarDir);
     } catch (err) {
-      //TODO clean this up
-      return res.status(400).json({error: err});
+      MetalusUtils.log(`Error removing staging dir: ${err}`);
     }
+  } else {
+    // MetalusUtils.log('Process Jars Complete');
+    res.sendStatus(204);
   }
-  res.status(204).json({});
 }
 
 async function exportMetadata(req, res, next) {

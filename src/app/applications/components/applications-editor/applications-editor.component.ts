@@ -133,9 +133,9 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
                 this.loadApplication(this.originalApplication);
               } else {
                 this.authService.setUserInfo({ ...this.user });
-              } 
+              }
             })
-          } 
+          }
         } else {
           this.user = data;
           this.cancelApplicationChange();
@@ -337,7 +337,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       });
       const confirm = dialogRef.afterClosed().toPromise();
       return confirm;
-    } 
+    }
   }
 
   handleLoadApplication(application) {
@@ -623,6 +623,10 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
 
   exportApplication() {
     const application = this.generateApplication();
+    delete application._id;
+    delete application.project;
+    delete application.creationDate;
+    delete application.modifiedDate;
     const exportApplicationDialogData = {
       code: JSON.stringify(application, null, 4),
       language: 'json',

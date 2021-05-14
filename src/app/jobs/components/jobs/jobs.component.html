@@ -37,11 +37,11 @@
                   <mat-icon>more_horiz</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                  <a mat-menu-item (click)="openJobStatus(job.job)">
+                  <a mat-menu-item (click)="openJobStatus(job)">
                     <mat-icon color="primary">autorenew</mat-icon>
                     <span class="spacer">Details</span>
                   </a>
-                  <a mat-menu-item (click)="cancelJob(job.job)">
+                  <a mat-menu-item (click)="cancelJob(job)">
                     <mat-icon color="primary">cancel</mat-icon>
                     <span class="spacer">Cancel</span>
                   </a>

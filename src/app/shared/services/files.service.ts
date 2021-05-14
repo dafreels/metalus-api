@@ -1,4 +1,4 @@
-import {User, UserResponse} from "../models/users.models";
+import {User} from "../models/users.models";
 import {Observable, Subject, throwError} from "rxjs";
 import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/common/http";
 import {Injectable} from "@angular/core";
@@ -91,6 +91,16 @@ export class FilesService {
       skipSteps
     };
     return this.http.put(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/processUploadedJars`, body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError(err => throwError(err)));
+  }
+
+  checkProcessingStatus(user: User): Observable<any> {
+    return this.http.get(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/process-status`, { observe: 'response' })
+      .pipe(map((response) => {
+        if (response && response.body) {
+          return response.body;
+        }
+        return null;
+      }),catchError(err => throwError(err)));
   }
 }

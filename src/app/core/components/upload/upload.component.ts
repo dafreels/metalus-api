@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {AuthService} from "../../../shared/services/auth.service";
 import {User} from "../../../shared/models/users.models";
-import {forkJoin} from "rxjs";
+import {forkJoin, Subject, timer} from "rxjs";
 import {FilesService} from "../../../shared/services/files.service";
 import {UploadedFile} from "../../../shared/models/files.model";
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
@@ -15,6 +15,7 @@ import {ErrorModalComponent} from "../../../shared/components/error-modal/error-
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {FormControl} from "@angular/forms";
 import {MatChipInputEvent} from "@angular/material/chips";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-upload',
@@ -142,9 +143,24 @@ export class UploadComponent implements OnInit {
           this.additionalRepos.join(','),
           this.remoteJars.join(','),
           this.skipPipelines,
-          this.skipSteps).subscribe(data => {
-          waitDialogRef.close();
-          this.router.navigate(['landing']);
+          this.skipSteps).subscribe(() => {
+            const subject = new Subject();
+            // Wait 20 seconds before checking status and then poll every 10 seconds
+            timer(20000, 10000).pipe(
+              takeUntil(subject),
+            ).subscribe(() => {
+              this.filesService.checkProcessingStatus(this.user).subscribe((status) => {
+                if (status.status === 'failed') {
+                  subject.next();
+                  this.handleError(new Error(status.error || 'There was an error processing metadata.'), dialogRef);
+                  waitDialogRef.close();
+                } else if (status.status === 'complete') {
+                  subject.next();
+                  waitDialogRef.close();
+                  this.router.navigate(['landing']);
+                }
+              });
+            });
         },
           (error) => {
             this.handleError(error, dialogRef);
@@ -152,12 +168,6 @@ export class UploadComponent implements OnInit {
           });
       }
     });
-  }
-
-  convertBytes(bytes) {
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const convertedSize = (bytes / Math.pow(1024, i)).toFixed(2);
-    return `${convertedSize} ${this.sizes[i]}`;
   }
 
   private handleError(error, dialogRef) {
