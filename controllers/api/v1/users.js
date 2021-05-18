@@ -400,6 +400,10 @@ async function processUploadedJars(req, res, next) {
   }
   const processJSON = {};
   const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
+  // Handle the case where thee directory structure does not exist
+  if (!MetalusUtils.exists(userJarDir)) {
+    await MetalusUtils.mkdir(userJarDir, {recursive: true});
+  }
   const stagingDir = `${userJarDir}/staging`;
   const jarFiles = [];
   try {
@@ -465,6 +469,7 @@ async function processUploadedJars(req, res, next) {
       await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
       res.status(200).json(processJSON);
     } catch (err) {
+      MetalusUtils.log(`Error updating status file: ${err}`);
       res.status(400).json({error: err});
       return;
     }
@@ -476,7 +481,12 @@ async function processUploadedJars(req, res, next) {
       MetalusUtils.log(`Error processing jars: ${err}`);
       processJSON.status = 'failed';
       processJSON.error = `Error processing jars: ${err}`;
-      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+      try {
+        await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+      } catch (error) {
+        MetalusUtils.log(`Error updating status file: ${err}`);
+        res.status(400).json({error: err});
+      }
       return;
     }
     try {
