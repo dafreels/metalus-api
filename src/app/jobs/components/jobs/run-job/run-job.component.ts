@@ -148,7 +148,7 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
     let parameter;
     Object.keys(this.missingParameters || {}).forEach(key => {
       info = this.runtimeParameterInformation[key];
-      if (info.type === 'global') {
+      if (!info || info.type === 'global') {
         globals[key] = this.missingParameters[key];
       } else if (info.type === 'runtime' || info.type === 'mapped_runtime') {
         new Set(info.pipelineIds).forEach(pipelineId => {
