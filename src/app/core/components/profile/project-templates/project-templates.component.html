@@ -2,7 +2,7 @@
   <h3 mat-dialog-title>Preload Step Libraries</h3>
   <mat-form-field>
     <mat-label>Metalus Version:</mat-label>
-    <mat-select required [(ngModel)]="selectedVersion">
+    <mat-select required [(ngModel)]="selectedVersion" (selectionChange)="selectVersion($event)">
       <mat-option *ngFor="let version of versions" [value]="version">{{version}}</mat-option>
     </mat-select>
   </mat-form-field>

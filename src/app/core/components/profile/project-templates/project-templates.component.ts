@@ -8,6 +8,7 @@ export interface TemplateState {
   name: string;
   group: string;
   lockedStatus: boolean;
+  allowedVersions: string[];
 }
 
 @Component({
@@ -52,7 +53,8 @@ export class ProjectTemplatesComponent implements OnInit {
         if (this.versions.indexOf(t.version) === -1) {
           this.versions.push(t.version);
         }
-        if (this.templates.findIndex(template => template.group === t.group) === -1) {
+        let templateIndex = this.templates.findIndex(template => template.group === t.group);
+        if (templateIndex === -1) {
           const existing = groups.indexOf(t.group) !== -1;
           this.templates.push({
             checked: existing,
@@ -60,7 +62,10 @@ export class ProjectTemplatesComponent implements OnInit {
             group: t.group,
             name: t.name,
             lockedStatus: existing,
+            allowedVersions: [t.version]
           });
+        } else {
+          this.templates[templateIndex].allowedVersions.push(t.version);
         }
       })
     });
@@ -102,5 +107,18 @@ export class ProjectTemplatesComponent implements OnInit {
       default:
         return '2.11';
     }
+  }
+
+  selectVersion(version) {
+    this.templates.forEach((template) => {
+      if (template.allowedVersions.indexOf(version.value) === -1) {
+        template.checked = false;
+        template.disabled = true;
+        template.lockedStatus = true;
+      } else {
+        template.lockedStatus = false;
+        template.disabled = false;
+      }
+    });
   }
 }

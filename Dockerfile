@@ -3,7 +3,7 @@ FROM alpine:latest as build
 WORKDIR /opt/metalus
 
 # Download the Metalus Utils version
-ADD https://github.com/Acxiom/metalus/releases/download/1_8_0_alpha/metalus-utils_2.11-spark_2.4-1.8.0-SNAPSHOT.tar.gz /opt/metalus
+ADD https://github.com/Acxiom/metalus/releases/download/1.8.0/metalus-utils_2.11-spark_2.4-1.8.0.tar.gz /opt/metalus
 
 COPY config /opt/metalus/config
 COPY controllers /opt/metalus/controllers

@@ -172,6 +172,8 @@ async function updateUser(req, res, next) {
       for await (const template of metaDataUpload.selectedTemplates) {
         const steps = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/steps.json`));
         const pipelines = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/pipelines.json`));
+        const executions = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/executions.json`));
+        const applications = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/applications.json`));
         if (steps.steps && steps.steps.length > 0) {
           const stepsModel = new StepsModel();
           await stepsModel.createMany(steps.steps, metadataUser);
@@ -183,6 +185,12 @@ async function updateUser(req, res, next) {
         if (pipelines && pipelines.length > 0) {
           const pipelinesModel = new PipelinesModel();
           await pipelinesModel.createMany(pipelines, metadataUser);
+        }
+        if (executions.executions && executions.executions.length > 0) {
+          await new ExecutionsModel().createMany(executions.executions, metadataUser);
+        }
+        if (applications.applications && applications.applications.length > 0) {
+          await new AppsModel().createMany(applications.applications, metadataUser);
         }
       }
     }
