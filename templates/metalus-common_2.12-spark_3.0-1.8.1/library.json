@@ -1,0 +1,8 @@
+{
+  "name": "Metalus Common",
+  "group": "metalus-common",
+  "version": "1.8.1",
+  "sparkVersion": "3.0",
+  "metalusVersion": "1.8.1",
+  "dependencies": []
+}
