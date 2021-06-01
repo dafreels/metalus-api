@@ -136,7 +136,10 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <app-preview-parameter-editor *ngIf="selectedExecution?.template?.form" (valueChange)="templateValueChanged($event)" [fields] = "selectedExecution.template.form"></app-preview-parameter-editor>
+                <app-preview-parameter-editor *ngIf="selectedExecution?.template?.form"
+                                              (valueChange)="templateValueChanged($event)"
+                                              [fields]="selectedExecution.template.form"
+                                              [model]="selectedExecution"></app-preview-parameter-editor>
               </div>
             </mat-expansion-panel>
             <mat-expansion-panel [disabled]="!selectedExecution">

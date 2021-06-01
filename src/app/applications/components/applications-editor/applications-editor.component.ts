@@ -299,6 +299,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     this.selectedExecution = null;
     this.designerModel = DesignerComponent.newModel();
     this.jobs = [];
+    this.errors = [];
   }
 
   loadApplication(application) {
@@ -354,6 +355,12 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     const pipelineList = this.pipelines;
     this.convertPipelineParameters(this.selectedApplication);
     this.selectedApplication.executions.forEach((execution) => {
+      if (execution.executionId && !execution['template']) {
+        const template = this.executionTemplates.find((e) => e.id === execution.executionId);
+        if (template) {
+          execution['template'] = template.template;
+        }
+      }
       this.createModelNode(model, execution, -1, -1);
       execution.pipelines = [];
       execution.pipelineIds.forEach(pid => execution.pipelines.push(pipelineList.find(p => p.id === pid)));
@@ -705,6 +712,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       if (execution.globals && Object.keys(execution.globals).length === 0) {
         delete execution.globals;
       }
+      delete execution.template; // Remove the form template
       executions.push(execution);
       execution.parents = [];
       connectionKeys.forEach((connectionKey) => {
@@ -1087,7 +1095,9 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       verticalPosition: 'top'
     })
   }
-  templateValueChanged(value) {
 
+  templateValueChanged(value) {
+    console.log(JSON.stringify(value, null, 4))
+    this.selectedExecution = Object.assign(this.selectedExecution, value);
   }
 }
