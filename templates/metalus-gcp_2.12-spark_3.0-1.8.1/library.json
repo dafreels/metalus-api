@@ -1,15 +1,15 @@
 {
   "name": "Metalus GCP",
   "group": "metalus-gcp",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "sparkVersion": "3.0",
-  "metalusVersion": "1.8.0",
+  "metalusVersion": "1.8.1",
   "dependencies": [
     {
       "group": "metalus-common",
-      "version": "1.8.0",
+      "version": "1.8.1",
       "sparkVersion": "3.0",
-      "metalusVersion": "1.8.0"
+      "metalusVersion": "1.8.1"
     }
   ]
 }
