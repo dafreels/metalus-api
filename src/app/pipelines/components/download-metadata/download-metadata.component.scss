@@ -1,0 +1,25 @@
+.steps{
+    padding-right: 1px;
+    display: block;
+}
+.export {
+    float: right;
+}
+.recursive{
+    margin-left: 1rem;
+}
+.toggle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .step-item {
+        flex: 0 30%;
+        margin: 5px;
+        min-width: 32%;
+    }
+}

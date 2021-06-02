@@ -14,6 +14,7 @@ import {ConfirmPipelineDeactivateGuard} from './shared/guards/confirm-pipeline-d
 import {CustomParameterEditorComponent} from './pipelines/components/custom-parameter-editor/custom-parameter-editor.component';
 import {ProvidersComponent} from "./jobs/components/providers/providers.component";
 import {ConfirmApplicationDeactivateGuard} from "./shared/guards/confirm-application-deactivate-gaurd.service";
+import { DownloadMetadataComponent } from './pipelines/components/download-metadata/download-metadata.component';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent, canDeactivate:[ConfirmPipelineDeactivateGuard, ConfirmApplicationDeactivateGuard]},
@@ -28,6 +29,8 @@ const appRoutes: Routes = [
   {path: 'steps-editor', component: StepsEditorComponent, canActivate: [AuthGuardService]},
   {path: 'pipelines-editor', component: PipelinesEditorComponent, canActivate: [AuthGuardService],
     canDeactivate:[ConfirmPipelineDeactivateGuard], data :{ page:"pipelines-editor", title:"Pipelines Editor"}},
+  {path: 'download-metadata', component: DownloadMetadataComponent, canActivate: [AuthGuardService],
+    data :{ page:"download-metadata", title:"Download Metadata"}},
   {path: 'landing', component: LandingComponent, pathMatch: 'full', canActivate: [AuthGuardService],
     data :{ page:"landing", title:"Home"}},
   {path: 'profile', component: ProfileComponent, pathMatch: 'full', canActivate: [AuthGuardService],

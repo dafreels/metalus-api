@@ -15,6 +15,7 @@ import {CustomParameterEditorComponent} from './components/custom-parameter-edit
 import { PackageSelectorComponent } from './components/custom-parameter-editor/package-selector/package-selector.component';
 import { packageNamePipe } from './components/custom-parameter-editor/package-selector/classname.pipe';
 import { ExecutionSelectorComponent } from './components/custom-parameter-editor/execution-selector/execution-selector.component';
+import { DownloadMetadataComponent } from './components/download-metadata/download-metadata.component';
 
 @NgModule({
   imports: [SharedModule, StepsModule, DesignerModule, CodeEditorModule, CoreModule, NgJsonEditorModule],
@@ -30,6 +31,7 @@ import { ExecutionSelectorComponent } from './components/custom-parameter-editor
     PackageSelectorComponent,
     packageNamePipe,
     ExecutionSelectorComponent,
+    DownloadMetadataComponent,
   ],
   entryComponents: [
     CustomBranchDialogComponent,
