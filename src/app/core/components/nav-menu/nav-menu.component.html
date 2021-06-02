@@ -19,6 +19,7 @@
     <mat-icon color="primary">cloud</mat-icon>
     <span class="spacer">Providers</span>
   </a>
+<button mat-menu-item [matMenuTriggerFor]="Metadata">Meta Data</button>
   <a mat-menu-item [routerLink]="['/download-metadata']" routerLinkActive="active">
     <mat-icon color="primary">download</mat-icon>
     <span class="spacer">Download UI</span>
@@ -31,5 +32,15 @@
      routerLinkActive="active">
     <mat-icon color="primary">more_vert</mat-icon>
     <span class="spacer">Custom Forms Editor</span>
+  </a>
+</mat-menu>
+<mat-menu #Metadata="matMenu">
+  <a mat-menu-item [routerLink]="['/download-metadata']" routerLinkActive="active">
+    <mat-icon color="primary">download</mat-icon>
+    <span class="spacer">Download UI</span>
+  </a>
+  <a mat-menu-item  [routerLink]="['/upload']" routerLinkActive="active">
+      <mat-icon color="primary">group</mat-icon>
+      <span class="spacer">Upload Metadata</span>
   </a>
 </mat-menu>
