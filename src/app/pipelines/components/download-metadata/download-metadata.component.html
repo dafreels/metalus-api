@@ -1,0 +1,56 @@
+<ng-container>
+  <div>
+    <nav-toolbar>
+      <span> </span>
+    </nav-toolbar>
+  </div>
+  <br />
+  <mat-form-field class="example-full-width">
+    <mat-label>Jar Name</mat-label>
+    <input type="text" matInput [(ngModel)]="jarName">
+  </mat-form-field>
+  <mat-checkbox class="recursive" [(ngModel)]="recursive">Pull Dependencies</mat-checkbox>
+  <mat-card class="cards">
+    <h4>Choose Applications</h4>
+    <div *ngFor="let application of applications">
+      <mat-checkbox [(ngModel)]="application.checked" [value]="application.item.id"></mat-checkbox>
+      {{application.item.name}}
+    </div>
+  </mat-card>
+  <ng-container *ngIf="!recursive">
+    <br />
+    <mat-card>
+      <h4>Choose Pipelines</h4>
+      <div *ngFor="let pipeline of pipelines">
+        <mat-checkbox [(ngModel)]="pipeline.checked" [value]="pipeline.item.id"> </mat-checkbox> {{pipeline.item.name}}
+      </div>
+    </mat-card>
+    <br />
+    <mat-card>
+      <h4>Choose Package Objects</h4>
+      <div *ngFor="let packageobject of packageObjects">
+        <mat-checkbox [(ngModel)]="packageobject.checked" [value]="packageobject.item.id"></mat-checkbox>
+        {{packageobject.item.id}}
+      </div>
+    </mat-card>
+    <br />
+    <mat-card>
+      <h4>Choose Step Templates</h4>
+      <div class="step">
+      <div  class="step-item" *ngFor="let step of steps; let i = index" [attr.data-index]="i">
+          <mat-checkbox [(ngModel)]="step.checked" [value]="step.item.id"></mat-checkbox> {{step.item.displayName}}
+      </div>
+    </div>
+    </mat-card>
+    <br />
+    <mat-card>
+      <h4>Choose Execution Templates</h4>
+      <div  *ngFor="let execution of executions">
+        <mat-checkbox [(ngModel)]="execution.checked" [value]="execution.item.id"></mat-checkbox>
+        {{execution.item.displayName}}
+    </div>
+    </mat-card>
+  </ng-container>
+  <br />
+  <button class="export" color="primary" mat-raised-button (click)="downloadUI()">Export</button>
+</ng-container>

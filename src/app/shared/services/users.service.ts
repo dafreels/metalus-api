@@ -58,6 +58,17 @@ export class UsersService {
       );
   }
 
+  downloadProject(user: User, projectId: string, req:any) {
+    return this.http
+      .put(`/api/v1/users/${user.id}/project/${projectId}/export-metadata`, req,{
+        observe: 'response',
+      })
+      .pipe(
+        map((response) => response.body),
+        catchError((err) => throwError(err))
+      );
+  }
+
   getAllUsers(): Observable<User[]> {
     return this.http
       .get<UserResponse>(`/api/v1/users`, {observe: 'response'})
