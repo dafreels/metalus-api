@@ -184,7 +184,7 @@ export class CustomParameterEditorComponent implements OnInit, OnDestroy {
     const execution = $event;
     if (execution.template && execution.template.form && typeof execution.template.form === 'string') {
       execution.template.form = JSON.parse(execution.template.form);
-    } else {
+    } else if (!execution.template && !execution.template.form) {
       execution.template = {
         form: {}
       };

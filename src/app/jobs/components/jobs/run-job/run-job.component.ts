@@ -148,6 +148,7 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
     let parameter;
     Object.keys(this.missingParameters || {}).forEach(key => {
       info = this.runtimeParameterInformation[key];
+      // TODO Strip the leading character from the value?
       if (!info || info.type === 'global') {
         globals[key] = this.missingParameters[key];
       } else if (info.type === 'runtime' || info.type === 'mapped_runtime') {
@@ -177,7 +178,7 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
       selectedRootLogLevel: this.selectedRootLogLevel,
       customLogLevels: this.customLogLevelsList.length > 0 ? this.customLogLevelsList.join(',') : undefined,
       useCredentialProvider: this.useCredentialProvider,
-      refreshPipelines: this.includePipelines,
+      includePipelines: this.includePipelines,
       forceCopy: this.forceCopy,
       globals,
       pipelineParameters,
@@ -212,67 +213,111 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
     const parameterProperties = [];
     this.data.application.executions.forEach((execution) => {
       let pipeline;
-      let values;
-      let name;
       execution.pipelineIds.forEach(pid => {
         pipeline = this.pipelines.find(p => p.id === pid);
-        if (pipeline) {
-          pipeline.steps.forEach(step => {
-            step.params.forEach(param => {
-              if (typeof param.value === 'string' &&
-                (param.value.indexOf('!') !== -1 ||
-                  param.value.indexOf('$') !== -1 ||
-                  param.value.indexOf('?') !== -1)) {
-                values = param.value.split('||');
-                values.forEach(value => {
-                  name = value.substring(1);
-                  if (value.startsWith('!') &&
-                    this.isMissingFromGlobals(execution, this.data.application, name) &&
-                    !parameters[name]) {
-                    parameters[name] = '!';
-                    parameterProperties[name] = {
-                      type: 'global',
-                      description: param.description,
-                      className: param.className,
-                      parameterType: param.parameterType,
-                      required: values.length < 2
-                    }
-                  } else if ((value.startsWith('$') || value.startsWith('?')) &&
-                    this.isMissingFromRuntime(execution, this.data.application, name)) {
-                    parameters[name] = `${value.startsWith('$') ? '$' : '?'}`;
-                    if (parameterProperties[name]) {
-                      parameterProperties[name].pipelineIds.push(pipeline.id);
-                    } else {
-                      parameterProperties[name] = {
-                        type: value.startsWith('$') ? 'runtime' : 'mapped_runtime',
-                        description: param.description,
-                        className: param.className,
-                        parameterType: param.parameterType,
-                        required: values.length < 2,
-                        pipelineIds: [pipeline.id]
-                      }
-                    }
-                  }
-                });
-              }
-            });
-          });
-        }
+        this.extractPipelineParameters(pipeline, execution, parameters, parameterProperties);
       });
     });
     this.missingParameters = parameters;
     this.runtimeParameterInformation = parameterProperties;
   }
 
+  // TODO Move this to shared functions so it can be used for globals
+  private extractPipelineParameters(pipeline, execution: Execution, parameters: {}, parameterProperties: any[]) {
+    if (pipeline) {
+      pipeline.steps.forEach(step => {
+        if (step.type === 'step-group') {
+          const idParam = step.params.find((p) => p.name === 'pipelineId');
+          const pipelineParam = step.params.find((p) => p.name === 'pipeline');
+          let subPipeline;
+          let paramName;
+          let pipelineId;
+          if (idParam && idParam.value && idParam.value.trim().length > 0) {
+            if (idParam.value.startsWith('!')) {
+              paramName = idParam.value.substring(1);
+              pipelineId = execution.globals[paramName] || this.data.application.globals[paramName]
+            } else {
+              pipelineId = idParam.value;
+            }
+            subPipeline = this.pipelines.find(p => p.id === pipelineId);
+          } else if (pipelineParam && pipelineParam.value && typeof pipelineParam.value === 'object') {
+            subPipeline = pipelineParam.value;
+          }
+          if (subPipeline) {
+            this.extractPipelineParameters(subPipeline, execution, parameters, parameterProperties);
+          }
+        } else {
+          step.params.forEach(param => {
+            if (typeof param.value === 'string' &&
+              (param.value.indexOf('!') !== -1 ||
+                param.value.indexOf('$') !== -1 ||
+                param.value.indexOf('?') !== -1)) {
+              let match;
+              const values = [];
+              param.value.split('||').forEach((s) => {
+                match = s.match(/([!@$%#&?]{.*?})/);
+                if (match && match.length > 0) {
+                  s.split(/([!@$%#&?]{.*?})/).forEach((v) => {
+                    values.push(v.trim().replace(/{/, '').replace(/}/, ''));
+                  });
+                } else {
+                  values.push(s.trim());
+                }
+              });
+              values.forEach(value => {
+                const name = value.substring(1);
+                if (value.startsWith('!') &&
+                  this.isMissingFromGlobals(execution, this.data.application, name) &&
+                  !parameters[name]) {
+                  parameters[name] = '!';
+                  parameterProperties[name] = {
+                    type: 'global',
+                    description: param.description,
+                    className: param.className,
+                    parameterType: param.parameterType,
+                    required: values.length < 2
+                  }
+                } else if ((value.startsWith('$') || value.startsWith('?')) &&
+                  this.isMissingFromRuntime(execution, this.data.application, name)) {
+                  parameters[name] = `${value.startsWith('$') ? '$' : '?'}`;
+                  if (parameterProperties[name]) {
+                    parameterProperties[name].pipelineIds.push(pipeline.id);
+                  } else {
+                    parameterProperties[name] = {
+                      type: value.startsWith('$') ? 'runtime' : 'mapped_runtime',
+                      description: param.description,
+                      className: param.className,
+                      parameterType: param.parameterType,
+                      required: values.length < 2,
+                      pipelineIds: [pipeline.id]
+                    }
+                  }
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+  }
+
   private isMissingFromGlobals(execution: Execution, application: Application, name: string) {
     let globals = execution.globals || { GlobalLinks: {}};
-    if (globals[name] || (globals['GlobalLinks'] && globals['GlobalLinks'][name])) {
-      return false;
+    let value;
+    if (globals[name]) {
+      value = globals[name];
+    }
+    if ((globals['GlobalLinks'] && globals['GlobalLinks'][name])) {
+      value = globals['GlobalLinks'][name];
     }
     globals = application.globals || { GlobalLinks: {}};
-    return globals[name] === undefined ||
-      (globals['GlobalLinks'] &&
-      globals['GlobalLinks'][name] === undefined);
+    if (globals[name]) {
+      value = globals[name];
+    }
+    if ((globals['GlobalLinks'] && globals['GlobalLinks'][name])) {
+      value = globals['GlobalLinks'][name];
+    }
+    return !value || (typeof value === 'string' && value.trim().length === 0);
   }
 
   private isMissingFromRuntime(execution: Execution, application: Application, name: string) {

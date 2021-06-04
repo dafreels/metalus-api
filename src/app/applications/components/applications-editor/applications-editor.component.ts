@@ -820,7 +820,9 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   ): DesignerElement {
     // TODO Ensure that pipelineIds get converted to pipelines
     // Set the executionId to the id of the dropped execution
-    execution.executionId = execution.id;
+    if (!execution.executionId) {
+      execution.executionId = execution.id;
+    }
     return {
       name: execution.id,
       tooltip: execution.id,
@@ -940,6 +942,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     });
   }
 
+  // TODO Refactor to use the extractPipelineParameters from run job once it has been moved
   private extractGlobals(selectedExecution, pipelineIds: string[], pipelineMappings: object) {
     let pipeline;
     selectedExecution.pipelineIds.forEach(pipelineId => {
@@ -1097,7 +1100,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   }
 
   templateValueChanged(value) {
-    console.log(JSON.stringify(value, null, 4))
-    this.selectedExecution = Object.assign(this.selectedExecution, value);
+    const execution = SharedFunctions.mergeDeep(this.selectedExecution, value);
+    this.selectedExecution = Object.assign(this.selectedExecution, execution);
   }
 }

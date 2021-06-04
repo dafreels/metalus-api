@@ -446,6 +446,8 @@ async function processUploadedJars(req, res, next) {
       password,
       '--authorization.authUrl',
       `http://localhost:${req.socket.localPort}/api/v1/users/login`,
+      '--extractors',
+      'com.acxiom.metalus.executions.ExecutionsMetadataExtractor,com.acxiom.metalus.applications.ApplicationsMetadataExtractor',
       '--staging-dir',
       stagingDir,
       '--jar-files',
@@ -482,7 +484,7 @@ async function processUploadedJars(req, res, next) {
       return;
     }
     try {
-      await MetalusUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
+      const { err, stdout, stderr } = await MetalusUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
       processJSON.status = 'complete';
       await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
     } catch (err) {

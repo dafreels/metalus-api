@@ -13,6 +13,7 @@ import {UsersService} from "../../../shared/services/users.service";
 })
 export class LandingComponent implements OnInit {
   applicationCount = 0;
+  executionsCount = 0;
   pipelineCount = 0;
   packageObjectCount = 0;
   stepCount = 0;
@@ -46,6 +47,7 @@ export class LandingComponent implements OnInit {
         this.stepCount = report.report.stepsCount;
         this.providersCount = report.report.providersCount;
         this.jobsCount = report.report.jobsCount;
+        this.executionsCount = report.report.executionTemplatesCount;
       });
     }
   }

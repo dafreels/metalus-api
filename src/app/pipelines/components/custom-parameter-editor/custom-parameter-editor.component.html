@@ -94,7 +94,7 @@
           [disabled]="!canAddSampleJSON">
           Add Sample JSON Schema
         </button>
-        <button  (click)="exportTemplate()" color="primary" mat-button>Export</button>
+        <button (click)="exportTemplate()" color="primary" mat-button>Export</button>
         <span class="uuidLableLeft">
           <input style="display: none" type="file" accept=".json"
                (change)="onFileLoad($event)" #fileinput>

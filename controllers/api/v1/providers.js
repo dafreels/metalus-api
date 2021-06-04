@@ -442,7 +442,7 @@ async function startJob(req, res, next) {
     if (appJar) {
       runConfig.applicationJar = appJar;
     } else {
-      runConfig.applicationJar = `${process.cwd()}/applicationJars/${jarName}`;
+      runConfig.applicationJar = `${process.cwd()}/application_jars/${jarName}`;
     }
     const stagingDir = `${jarsDir}/staging`;
     try {
