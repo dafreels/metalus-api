@@ -16,6 +16,16 @@ export interface Step {
   }
 }
 
+export interface StepTemplate {
+  id: string;
+  name: string;
+  path?: any[];
+}
+
+export interface StepTemplateResponse {
+  stepTemplates: StepTemplate[];
+}
+
 export interface Param {
   type: string,
   name: string,

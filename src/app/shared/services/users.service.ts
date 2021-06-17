@@ -58,15 +58,9 @@ export class UsersService {
       );
   }
 
-  downloadProject(user: User, projectId: string, req:any) {
+  downloadMetadata(user: User, projectId: string, req:any) {
     return this.http
-      .put(`/api/v1/users/${user.id}/project/${projectId}/export-metadata`, req,{
-        observe: 'response',
-      })
-      .pipe(
-        map((response) => response.body),
-        catchError((err) => throwError(err))
-      );
+      .put(`/api/v1/users/${user.id}/project/${projectId}/export-metadata`, req,{ responseType: 'arraybuffer' });
   }
 
   getAllUsers(): Observable<User[]> {

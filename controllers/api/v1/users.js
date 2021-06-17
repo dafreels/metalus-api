@@ -530,7 +530,7 @@ async function exportMetadata(req, res, next) {
 
   const userKey = {
     id: user.id,
-    projectId,
+    defaultProjectId: projectId,
   };
 
   const downloadsBaseDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/downloads/${userId}/${projectId}`;
@@ -603,7 +603,9 @@ async function exportMetadata(req, res, next) {
   await MetalusUtils.mkdir(`${tempDir}/packageForms`, {recursive: true});
   for await (let pkgId of classFormIds) {
     pkgObj = await pkgObjModel.getByKey({ id: pkgId }, userKey);
-    await MetalusUtils.writefile(`${tempDir}/packageForms/${pkgId.replace(/\\./g, '_')}.json`, Buffer.from(pkgObj.template));
+    if (pkgObj.template) {
+      await MetalusUtils.writefile(`${tempDir}/packageForms/${pkgId.replace(/\./g, '_')}.json`, Buffer.from(pkgObj.template));
+    }
   }
 
   // Create jar
@@ -613,7 +615,7 @@ async function exportMetadata(req, res, next) {
   process.chdir(cwd);
   // Push jar to client
   await MetalusUtils.pipeline(
-    fs.createReadStream(`${downloadsBaseDir}/tmp/${jarName}.jar`),
+    fs.createReadStream(`${downloadsBaseDir}/tmp/${jarName}/${jarName}.jar`),
     res,
   );
   // Cleanup the temp directory

@@ -22,8 +22,17 @@ async function getTemplates(req, res) {
     } else {
       if (steps) {
         const returnObj = {};
+        const stepIds = steps.map(t => t.id);
+        const metadata = await stepsModel.findByKey({
+          id: { $in: stepIds }
+        }, user);
+        const stepLookup = {};
+        metadata.forEach((step) => {
+          stepLookup[step.id] = step.displayName;
+        });
         returnObj['stepTemplates'] = steps.map((template) => {
           delete template._id;
+          template.name = stepLookup[template.id];
           return template;
         });
         res.status(200).json(returnObj);

@@ -52,6 +52,7 @@
     "deep-object-diff": "^1.1.0",
     "express": "^4.12.2",
     "express-session": "^1.17.1",
+    "file-saver": "^2.0.5",
     "formidable": "^1.2.2",
     "google-auth-library": "^7.0.3",
     "jsoneditor": "^9.0.3",

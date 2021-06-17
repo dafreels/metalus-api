@@ -1,17 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material';
-import { Application, ExecutionTemplate } from 'src/app/applications/applications.model';
-import { ApplicationsService } from 'src/app/applications/applications.service';
-import { ExecutionsService } from 'src/app/applications/executions.service';
-import { PackageObject } from 'src/app/core/package-objects/package-objects.model';
-import { PackageObjectsService } from 'src/app/core/package-objects/package-objects.service';
-import { User, Project } from 'src/app/shared/models/users.models';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { UsersService } from 'src/app/shared/services/users.service';
-import { Step } from 'src/app/steps/steps.model';
-import { StepsService } from 'src/app/steps/steps.service';
-import { Pipeline } from '../../models/pipelines.model';
-import { PipelinesService } from '../../services/pipelines.service';
+import {Component, OnInit} from '@angular/core';
+import {MatSnackBar} from '@angular/material';
+import {Application, ExecutionTemplate} from 'src/app/applications/applications.model';
+import {ApplicationsService} from 'src/app/applications/applications.service';
+import {ExecutionsService} from 'src/app/applications/executions.service';
+import {PackageObject} from 'src/app/core/package-objects/package-objects.model';
+import {PackageObjectsService} from 'src/app/core/package-objects/package-objects.service';
+import {Project, User} from 'src/app/shared/models/users.models';
+import {AuthService} from 'src/app/shared/services/auth.service';
+import {UsersService} from 'src/app/shared/services/users.service';
+import {StepTemplate} from 'src/app/steps/steps.model';
+import {StepsService} from 'src/app/steps/steps.service';
+import {Pipeline} from '../../models/pipelines.model';
+import {PipelinesService} from '../../services/pipelines.service';
+import * as fileSaver from 'file-saver';
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
+import {MatDialog} from "@angular/material/dialog";
+
 interface ISelectExtend<T> {
   item: T;
   checked: boolean;
@@ -26,7 +30,7 @@ export class DownloadMetadataComponent implements OnInit {
   pipelines: ISelectExtend<Pipeline>[];
   packageObjects: ISelectExtend<PackageObject>[];
   executions: ISelectExtend<ExecutionTemplate>[];
-  steps: ISelectExtend<Step>[];
+  steps: ISelectExtend<StepTemplate>[];
   defaultUser: User;
   defaultProject: Project;
   jarName: string;
@@ -45,7 +49,8 @@ export class DownloadMetadataComponent implements OnInit {
     private packageObjectsService: PackageObjectsService,
     private userService: UsersService,
     private _snackBar: MatSnackBar,
-    private authService: AuthService) {
+    private authService: AuthService,
+    public dialog: MatDialog) {
     this.user = this.authService.getUserInfo();
   }
 
@@ -78,7 +83,7 @@ export class DownloadMetadataComponent implements OnInit {
 
   public getpackageObjects() {
     this.packageObjectsService.getPackageObjects().subscribe(data => {
-      this.packageObjects = data.map(item => {
+      this.packageObjects = data.filter(p => !!p.template).map(item => {
         return {
           item, checked: false
         }
@@ -86,7 +91,7 @@ export class DownloadMetadataComponent implements OnInit {
     })
   }
   public getSteps() {
-    this.stepsService.getSteps().subscribe(data => {
+    this.stepsService.getStepTemplates().subscribe(data => {
       this.steps = data.map(item => {
         return {
           item, checked: false
@@ -111,9 +116,12 @@ export class DownloadMetadataComponent implements OnInit {
     const stepFormIds = this.steps.filter(item => item.checked).map(item => item.item.id);
     const classFormIds = this.packageObjects.filter(item => item.checked).map(item => item.item.id);
 
-    if (this.jarName && applicationIds.length) {
-
-      this.userService.downloadProject(this.defaultUser, this.defaultProject.id, {
+    if (this.jarName) {
+      const waitDialogRef = this.dialog.open(WaitModalComponent, {
+        width: '25%',
+        height: '25%',
+      });
+      this.userService.downloadMetadata(this.defaultUser, this.defaultProject.id, {
         "name": this.jarName,
         "recursive": this.recursive,
         applicationIds,
@@ -121,11 +129,13 @@ export class DownloadMetadataComponent implements OnInit {
         pipelineIds,
         stepFormIds,
         classFormIds
-      }).subscribe(data => {
-      })
+      }).subscribe((data) => {
+        waitDialogRef.close();
+        let blob = new Blob([data], { type: 'application/octet-stream'});
+        fileSaver.saveAs(blob, `${this.jarName}.jar`);
+      });
     } else {
-      const message = this.jarName ? "Chose at least one application" : "Jar name is required";
-      this._snackBar.open(message);
+      this._snackBar.open("Jar name is required");
     }
   }
 }

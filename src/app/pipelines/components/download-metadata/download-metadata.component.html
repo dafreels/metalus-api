@@ -38,7 +38,7 @@
       <h4>Choose Step Templates</h4>
       <div class="step">
       <div  class="step-item" *ngFor="let step of steps; let i = index" [attr.data-index]="i">
-          <mat-checkbox [(ngModel)]="step.checked" [value]="step.item.id"></mat-checkbox> {{step.item.displayName}}
+          <mat-checkbox [(ngModel)]="step.checked" [value]="step.item.id"></mat-checkbox> {{step.item.name}}
       </div>
     </div>
     </mat-card>
