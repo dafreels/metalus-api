@@ -104,6 +104,8 @@ export class ProjectTemplatesComponent implements OnInit {
         return '2.11';
       case '3.0':
         return '2.12';
+      case '3.1':
+        return '2.12';
       default:
         return '2.11';
     }

@@ -187,7 +187,7 @@ async function updateUser(req, res, next) {
           await pipelinesModel.createMany(pipelines, metadataUser);
         }
         if (executions && executions.length > 0) {
-          await new ExecutionsModel().createMany(executions.executions, metadataUser);
+          await new ExecutionsModel().createMany(executions, metadataUser);
         }
         if (applications && applications.length > 0) {
           await new AppsModel().createMany(applications.applications, metadataUser);

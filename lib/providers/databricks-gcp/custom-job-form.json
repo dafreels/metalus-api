@@ -1,0 +1,103 @@
+[
+  {
+    "key": "useNewCluster",
+    "type": "checkbox",
+    "defaultValue": false,
+    "templateOptions": {
+      "label": "Create Cluster?",
+      "placeholder": "",
+      "focus": false,
+      "disabled": false,
+      "hideFieldUnderline": true,
+      "indeterminate": true,
+      "floatLabel": "always",
+      "hideLabel": true,
+      "align": "start",
+      "color": "accent"
+    }
+  },
+  {
+    "type": "select",
+    "key": "new_cluster.spark_version",
+    "templateOptions": {
+      "label": "Version",
+      "options": [],
+      "valueProp": "key",
+      "labelProp": "name"
+    },
+    "expressionProperties": {
+      "templateOptions.disabled": "model.useNewCluster ? false : true"
+    }
+  },
+  {
+    "type": "select",
+    "key": "new_cluster.node_type_id",
+    "templateOptions": {
+      "label": "Executor Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    },
+    "expressionProperties": {
+      "templateOptions.disabled": "model.useNewCluster ? false : true"
+    }
+  },
+  {
+    "type": "select",
+    "key": "new_cluster.driver_node_type_id",
+    "templateOptions": {
+      "label": "Driver Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    },
+    "expressionProperties": {
+      "templateOptions.disabled": "model.useNewCluster ? false : true"
+    }
+  },
+  {
+    "key": "new_cluster.autoscale",
+    "wrappers": [
+      "panel"
+    ],
+    "templateOptions": {
+      "label": "Auto Scale"
+    },
+    "fieldGroup": [
+      {
+        "type": "input",
+        "key": "min_workers",
+        "templateOptions": {
+          "label": "Min. Workers",
+          "type": "number"
+        }
+      },
+      {
+        "type": "input",
+        "key": "max_workers",
+        "templateOptions": {
+          "label": "Max. Workers",
+          "type": "number"
+        }
+      }
+    ]
+  },
+  {
+    "key": "new_cluster.gcp_attributes",
+    "wrappers": [
+      "panel"
+    ],
+    "templateOptions": {
+      "label": "GCP Attributes"
+    },
+    "fieldGroup": [
+      {
+        "type": "input",
+        "key": "google_service_account",
+        "templateOptions": {
+          "label": "Service Account Name"
+        }
+      }
+    ]
+  }
+]

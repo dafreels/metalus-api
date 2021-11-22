@@ -1,0 +1,84 @@
+[
+  {
+    "type": "input",
+    "key": "cluster_name",
+    "templateOptions": {
+      "label": "Name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "spark_version",
+    "templateOptions": {
+      "label": "Version",
+      "options": [],
+      "valueProp": "key",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "node_type_id",
+    "templateOptions": {
+      "label": "Executor Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "type": "select",
+    "key": "driver_node_type_id",
+    "templateOptions": {
+      "label": "Driver Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
+    }
+  },
+  {
+    "key": "new_cluster.autoscale",
+    "wrappers": [
+      "panel"
+    ],
+    "templateOptions": {
+      "label": "Auto Scale"
+    },
+    "fieldGroup": [
+      {
+        "type": "input",
+        "key": "autoscale.min_workers",
+        "templateOptions": {
+          "label": "Min. Workers",
+          "type": "number"
+        }
+      },
+      {
+        "type": "input",
+        "key": "autoscale.max_workers",
+        "templateOptions": {
+          "label": "Max. Workers",
+          "type": "number"
+        }
+      }
+    ]
+  },
+  {
+    "key": "gcp_attributes",
+    "wrappers": [
+      "panel"
+    ],
+    "templateOptions": {
+      "label": "GCP Attributes"
+    },
+    "fieldGroup": [
+      {
+        "type": "input",
+        "key": "google_service_account",
+        "templateOptions": {
+          "label": "Service Account Name"
+        }
+      }
+    ]
+  }
+]

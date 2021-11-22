@@ -1,0 +1,15 @@
+{
+  "name": "Metalus Kafka",
+  "group": "metalus-kafka",
+  "version": "1.8.4",
+  "sparkVersion": "3.1",
+  "metalusVersion": "1.8.4",
+  "dependencies": [
+    {
+      "group": "metalus-common",
+      "version": "1.8.4",
+      "sparkVersion": "3.1",
+      "metalusVersion": "1.8.4"
+    }
+  ]
+}
