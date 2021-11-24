@@ -651,10 +651,10 @@ async function processJars(jarFiles, remoteJars, userJarDir, skipPipelines, skip
         let metadataPath;
         let usedSharedMetaData = false;
         // Loop over the jarFiles and read in the sub-directories for each jar
-        for await (const jar of jarFiles) {
+        for await (const jar of jarFiles.filter(j => j.length > 0)) {
           template = jar.substring(jar.lastIndexOf('/') + 1, jar.indexOf('.jar'));
           // Determine if any jarFiles were filtered, then use shared metadata
-          if (finalJarFiles.indexOf(jar) === -1) {
+          if (finalJarFiles.findIndex(j => j.indexOf(jar) !== -1) === -1) {
             usedSharedMetaData = true;
             metadataPath = `${sharedMetadataDir}/${template}`;
           } else {
