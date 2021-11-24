@@ -10,15 +10,15 @@ import {GetTemplatesResponse, Template} from "../models/templates.model";
 export class TemplatesService {
   constructor(private http: HttpClient) {}
 
-  getTemplates(): Observable<Template[]> {
+  getTemplate(): Observable<Template> {
     return this.http
       .get<GetTemplatesResponse>(`/api/v1/templates`, {observe: 'response'})
       .pipe(
         map((response) => {
           if (response && response.body) {
-            return response.body.templates;
+            return response.body.template;
           }
-          return [];
+          return null;
         }),
         catchError((err) => throwError(err))
       );

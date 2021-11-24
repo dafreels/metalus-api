@@ -1,0 +1,99 @@
+{
+  "projectSets": [
+    {
+      "name": "1.8",
+      "components": [
+        {
+          "name": "Metalus Common",
+          "artifact": "metalus-common"
+        },
+        {
+          "name": "Metalus AWS",
+          "artifact": "metalus-aws",
+          "dependencies": [
+            "metalus-common"
+          ]
+        },
+        {
+          "name": "Metalus Delta",
+          "artifact": "metalus-delta",
+          "dependencies": [
+            "metalus-common"
+          ]
+        },
+        {
+          "name": "Metalus GCP",
+          "artifact": "metalus-gcp",
+          "dependencies": [
+            "metalus-common"
+          ]
+        },
+        {
+          "name": "Metalus Kafka",
+          "artifact": "metalus-kafka",
+          "dependencies": [
+            "metalus-common"
+          ]
+        },
+        {
+          "name": "Metalus Mongo",
+          "artifact": "metalus-mongo",
+          "dependencies": [
+            "metalus-common"
+          ]
+        }
+      ]
+    }
+  ],
+  "libraries": [
+    {
+      "mavenPath": "https://repo1.maven.org/maven2/com/acxiom/",
+      "versions": [
+        "1.8.0"
+      ],
+      "scala_spark_versions": [
+        {
+          "scala": "2.11",
+          "spark": "2.4"
+        },
+        {
+          "scala": "2.12",
+          "spark": "3.0"
+        },
+        {
+          "scala": "2.12",
+          "spark": "3.1"
+        }
+      ],
+      "projectSet": "1.8"
+    },
+    {
+      "mavenPath": "https://repo1.maven.org/maven2/com/acxiom/",
+      "versions": [
+        "1.8.1",
+        "1.8.2",
+        "1.8.3",
+        "1.8.4"
+      ],
+      "scala_spark_versions": [
+        {
+          "scala": "2.11",
+          "spark": "2.4"
+        },
+        {
+          "scala": "2.12",
+          "spark": "2.4"
+        },
+        {
+          "scala": "2.12",
+          "spark": "3.0"
+        },
+        {
+          "scala": "2.12",
+          "spark": "3.1"
+        }
+      ],
+      "projectSet": "1.8"
+    }
+  ]
+}

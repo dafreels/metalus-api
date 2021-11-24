@@ -9,6 +9,11 @@ import {MatDialog} from "@angular/material/dialog";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {NewProjectDialogComponent} from "./new-project/new-project.component";
 import {ProjectTemplatesDialogComponent} from "./project-templates/project-templates-dialog.component";
+import {FilesService} from "../../../shared/services/files.service";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
+import {Subject, timer} from "rxjs";
+import {takeUntil} from "rxjs/operators";
+import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 
 @Component({
   selector: 'app-profile',
@@ -22,6 +27,7 @@ export class ProfileComponent implements OnInit {
   constructor(private authService: AuthService,
               private usersService: UsersService,
               private displayDialogService: DisplayDialogService,
+              private filesService: FilesService,
               public dialog: MatDialog) {
   }
 
@@ -54,7 +60,7 @@ export class ProfileComponent implements OnInit {
 
   openProjectTemplates(projectId: string) {
     const deleteProjectDialogDimensions: DialogDimensions = {
-      width: '450px',
+      width: '600px',
       height: '400px',
     };
     const selectedProject = this.user.projects.find(p => p.id === projectId);
@@ -86,9 +92,34 @@ export class ProfileComponent implements OnInit {
           projectId: user.defaultProjectId,
           selectedTemplates,
         };
-        this.usersService.updateUser(user).subscribe(updatedUser => {
-          this.authService.setUserInfo(updatedUser);
+        const waitDialogRef = this.dialog.open(WaitModalComponent, {
+          width: '25%',
+          height: '25%',
         });
+        this.usersService.updateUser(user).subscribe(updatedUser => {
+          if (user.metaDataLoad) {
+            const subject = new Subject();
+            // Wait 20 seconds before checking status and then poll every 10 seconds
+            timer(20000, 10000).pipe(
+              takeUntil(subject),
+            ).subscribe(() => {
+              this.filesService.checkProcessingStatus(this.user).subscribe((status) => {
+                if (status.status === 'failed') {
+                  subject.next();
+                  this.handleError(new Error(status.error || 'There was an error processing metadata.'), waitDialogRef);
+                } else if (status.status === 'complete') {
+                  subject.next();
+                  waitDialogRef.close();
+                  // this.router.navigate(['landing']);
+                }
+              });
+            });
+          }
+          this.authService.setUserInfo(updatedUser);
+        },
+          (error) => {
+            this.handleError(error, waitDialogRef);
+          });
       }
     });
   }
@@ -147,6 +178,22 @@ export class ProfileComponent implements OnInit {
           this.authService.setUserInfo(updatedUser);
         });
       }
+    });
+  }
+
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: { messages: message.split('\n') },
     });
   }
 }

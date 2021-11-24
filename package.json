@@ -54,6 +54,7 @@
     "express-session": "^1.17.1",
     "file-saver": "^2.0.5",
     "formidable": "^1.2.2",
+    "fs-extra": "^10.0.0",
     "google-auth-library": "^7.0.3",
     "jsoneditor": "^9.0.3",
     "jsplumb": "^2.12.8",

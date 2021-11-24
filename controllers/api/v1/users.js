@@ -12,6 +12,7 @@ const IncomingForm = require('formidable').IncomingForm;
 const ValidationError = require('../../../lib/ValidationError');
 const MetalusUtils = require('../../../lib/metalus-utils');
 const fs = require('fs');
+const fse = require('fs-extra');
 
 const metalusCommand = `${process.cwd()}/metalus-utils/bin/metadata-extractor.sh`;
 
@@ -163,40 +164,50 @@ async function updateUser(req, res, next) {
     let metaDataUpload = updateUser.metaDataLoad;
     delete updateUser.metaDataLoad;
     // Determine if any templates were selected and load the data
+    let metadataJars = new Set();
+    const metadataUser = {
+      id: updateUser.id,
+    };
     if (metaDataUpload) {
-      const templatesDir = getTemplatesDir(req);
-      const metadataUser = {
-        id: updateUser.id,
-        defaultProjectId: metaDataUpload.projectId,
-      };
+      const templatesJSON = JSON.parse(await MetalusUtils.readfile(`${getTemplatesDir(req)}/templates.json`));
+      let lib;
+      let jar;
+      let component;
+      let versionInfo;
+      let projectSet;
+      let project;
+      metadataUser.defaultProjectId = metaDataUpload.projectId;
       for await (const template of metaDataUpload.selectedTemplates) {
-        const steps = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/steps.json`));
-        const pipelines = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/pipelines.json`));
-        const executions = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/executions.json`));
-        const applications = JSON.parse(await MetalusUtils.readfile(`${templatesDir}/${template}/applications.json`));
-        if (steps.steps && steps.steps.length > 0) {
-          const stepsModel = new StepsModel();
-          await stepsModel.createMany(steps.steps, metadataUser);
-        }
-        if (steps.pkgObjs && steps.pkgObjs.length > 0) {
-          const pkgObjsModel = new PkgObjsModel();
-          await pkgObjsModel.createMany(steps.pkgObjs, metadataUser);
-        }
-        if (pipelines && pipelines.length > 0) {
-          const pipelinesModel = new PipelinesModel();
-          await pipelinesModel.createMany(pipelines, metadataUser);
-        }
-        if (executions && executions.length > 0) {
-          await new ExecutionsModel().createMany(executions, metadataUser);
-        }
-        if (applications && applications.length > 0) {
-          await new AppsModel().createMany(applications.applications, metadataUser);
+        jar = `${template}.jar`;
+        versionInfo = MetalusUtils.getMetalusVersionInfo(`${template}.jar`);
+        lib = templatesJSON.libraries.find(l => l.versions.indexOf(versionInfo.version) !== -1);
+        projectSet = templatesJSON.projectSets.find(p => p.name === lib.projectSet);
+        project = projectSet.components.find(c => c.artifact === versionInfo.component);
+        metadataJars.add(`https://repo1.maven.org/maven2/com/acxiom/${versionInfo.component}_${versionInfo.scala}-spark_${versionInfo.spark}/${versionInfo.version}/${jar}`);
+        if (project && project.dependencies && project.dependencies.length > 0) {
+          project.dependencies.forEach((dep) => {
+            component = `${dep}_${versionInfo.scala}-spark_${versionInfo.spark}-${versionInfo.version}.jar`;
+            jar = `${lib.mavenPath}${dep}_${versionInfo.scala}-spark_${versionInfo.spark}/${versionInfo.version}/${component}`;
+            metadataJars.add(jar);
+          });
         }
       }
     }
+    metadataJars = Array.from(metadataJars);
     const newuser = await userModel.update(updateUser.id, updateUser);
     delete newuser.secretKey;
     res.status(200).json(newuser);
+    // Process the metadata
+    if (metadataJars.length > 0) {
+      const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${updateUser.id}/${metaDataUpload.projectId}`;
+      // Handle the case where the directory structure does not exist
+      if (!MetalusUtils.exists(userJarDir)) {
+        await MetalusUtils.mkdir(userJarDir, {recursive: true});
+      }
+      const sharedTemplatesDirectory = await getSharedTemplatesDir(MetalusUtils.getProjectJarsBaseDir(req));
+      await processJars([], metadataJars, userJarDir, false, false, '',
+        `${userJarDir}/staging`, metadataUser, sharedTemplatesDirectory);
+    }
   } catch (err) {
     if (err instanceof ValidationError) {
       res.status(422).json({errors: err.getValidationErrors(), body: req.body});
@@ -393,7 +404,7 @@ async function processUploadedJars(req, res, next) {
   const projectId = req.params.projectId;
   const password = req.body.password;
   const repos = req.body.repos;
-  const remoteJars = req.body.remoteJars;
+  const remoteJars = req.body.remoteJars || '';
   const skipPipelines = req.body.skipPipelines;
   const skipSteps = req.body.skipSteps;
   if (userId !== user.id) {
@@ -406,13 +417,11 @@ async function processUploadedJars(req, res, next) {
     next(new Error('Unable to upload metadata: Invalid password!'));
     return;
   }
-  const processJSON = {};
   const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;
-  // Handle the case where thee directory structure does not exist
+  // Handle the case where the directory structure does not exist
   if (!MetalusUtils.exists(userJarDir)) {
     await MetalusUtils.mkdir(userJarDir, {recursive: true});
   }
-  const stagingDir = `${userJarDir}/staging`;
   const jarFiles = [];
   try {
     const stats = await MetalusUtils.stat(userJarDir);
@@ -429,85 +438,13 @@ async function processUploadedJars(req, res, next) {
   } catch (err) {
     // Do nothing since it is a valid state to not have a project directory when uploading remote jars
   }
-  if (remoteJars && remoteJars.trim().length > 0) {
-    processJSON.remoteJars = remoteJars.split(',');
-    processJSON.remoteJars.forEach(f => jarFiles.push(f));
-  }
   if (jarFiles.length > 0) {
-    processJSON.jarFiles = jarFiles;
-    const parameters = [
-      '--api-url',
-      `http://localhost:${req.socket.localPort}`,
-      '--authorization.class',
-      'com.acxiom.pipeline.api.SessionAuthorization',
-      '--authorization.username',
-      projectUser.username,
-      '--authorization.password',
-      password,
-      '--authorization.authUrl',
-      `http://localhost:${req.socket.localPort}/api/v1/users/login`,
-      '--extractors',
-      'com.acxiom.metalus.executions.ExecutionsMetadataExtractor,com.acxiom.metalus.applications.ApplicationsMetadataExtractor',
-      '--staging-dir',
-      stagingDir,
-      '--jar-files',
-      jarFiles.join(','),
-      '--no-auth-download',
-      'true',
-      '--clean-staging',
-      'true'
-    ];
-    if (repos && repos.trim().length > 0) {
-      parameters.push('--repo');
-      parameters.push(`${userJarDir},${repos}`);
-      processJSON.repos = repos;
-    } else {
-      parameters.push('--repo');
-      parameters.push(userJarDir);
-    }
-    if (skipPipelines) {
-      parameters.push('--excludePipelines');
-      parameters.push('true');
-    }
-    if (skipSteps) {
-      parameters.push('--excludeSteps');
-      parameters.push('true');
-    }
-    try {
-      processJSON.status = 'processing';
-      // Write the process file
-      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
-      res.status(200).json(processJSON);
-    } catch (err) {
-      MetalusUtils.log(`Error updating status file: ${err}`);
-      res.status(400).json({error: err});
-      return;
-    }
-    try {
-      const { err, stdout, stderr } = await MetalusUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
-      processJSON.status = 'complete';
-      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
-    } catch (err) {
-      MetalusUtils.log(`Error processing jars: ${err}`);
-      processJSON.status = 'failed';
-      processJSON.error = `Error processing jars: ${err}`;
-      try {
-        await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
-      } catch (error) {
-        MetalusUtils.log(`Error updating status file: ${err}`);
-        res.status(400).json({error: err});
-      }
-      return;
-    }
-    try {
-      // Delete the jar directory
-      await MetalusUtils.removeDir(stagingDir);
-      // await MetalusUtils.removeDir(userJarDir);
-    } catch (err) {
-      MetalusUtils.log(`Error removing staging dir: ${err}`);
-    }
+    res.status(200).json({
+      status: 'processing'
+    });
+    await processJars(jarFiles, remoteJars.trim().split(','), userJarDir, skipPipelines, skipSteps, repos, `${userJarDir}/staging`,
+      user);
   } else {
-    // MetalusUtils.log('Process Jars Complete');
     res.sendStatus(204);
   }
 }
@@ -639,9 +576,177 @@ async function deleteProjectData(userId, projectId, userJarDir) {
   await new ExecutionsModel().deleteMany(query);
   delete query.project.projectId;
   await new JobsModel().deleteMany(query);
-  return await new ProvidersModel().deleteMany(query);
+  return new ProvidersModel().deleteMany(query);
+}
+
+async function processJars(jarFiles, remoteJars, userJarDir, skipPipelines, skipSteps, repos,
+                           stagingDir, metadataUser, sharedMetadataDir) {
+  const processJSON = {};
+  if (remoteJars && remoteJars.length > 0) {
+    processJSON.remoteJars = remoteJars;
+    processJSON.remoteJars.forEach(f => jarFiles.push(f));
+  }
+  let finalJarFiles = jarFiles;
+  if (sharedMetadataDir) {
+    const sharedMetadata = await MetalusUtils.readdir(sharedMetadataDir);
+    finalJarFiles = jarFiles.filter(j => sharedMetadata.indexOf(j.substring(j.lastIndexOf('/') + 1, j.indexOf('.jar'))) === -1);
+  }
+  // shareMetadata true indicates we should check the shared dir first
+  if (jarFiles.length > 0) {
+    const templatesDir = `${stagingDir}/metadata`;
+    processJSON.jarFiles = jarFiles;
+    const parameters = [
+      '--output-path',
+      templatesDir,
+      '--extractors',
+      'com.acxiom.metalus.executions.ExecutionsMetadataExtractor,com.acxiom.metalus.applications.ApplicationsMetadataExtractor',
+      '--staging-dir',
+      `${stagingDir}/jars`,
+      '--jar-files',
+      finalJarFiles.join(','),
+      '--no-auth-download',
+      'true',
+      '--clean-staging',
+      'true'
+    ];
+    if (repos && repos.trim().length > 0) {
+      parameters.push('--repo');
+      parameters.push(`${userJarDir},${repos}`);
+      processJSON.repos = repos;
+    } else {
+      parameters.push('--repo');
+      parameters.push(userJarDir);
+    }
+    if (skipPipelines) {
+      parameters.push('--excludePipelines');
+      parameters.push('true');
+    }
+    if (skipSteps) {
+      parameters.push('--excludeSteps');
+      parameters.push('true');
+    }
+
+    try {
+      processJSON.status = 'processing';
+      // Write the process file
+      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+    } catch (err) {
+      MetalusUtils.log(`Error updating status file: ${err}`);
+      return;
+    }
+    try {
+      // Only run this code if finalJarFiles.length > 0
+      let error;
+      if (finalJarFiles.length > 0) {
+        error = await MetalusUtils.exec(metalusCommand, parameters, {maxBuffer: 1024 * 10000});
+      } else {
+        error = null;
+      }
+      if (error && error.error) {
+        processJSON.status = 'error';
+        processJSON.error = `Error processing jars: ${error.stdout}`;
+      } else {
+        const errors = [];
+        let template;
+        let metadataPath;
+        let usedSharedMetaData = false;
+        // Loop over the jarFiles and read in the sub-directories for each jar
+        for await (const jar of jarFiles) {
+          template = jar.substring(jar.lastIndexOf('/') + 1, jar.indexOf('.jar'));
+          // Determine if any jarFiles were filtered, then use shared metadata
+          if (finalJarFiles.indexOf(jar) === -1) {
+            usedSharedMetaData = true;
+            metadataPath = `${sharedMetadataDir}/${template}`;
+          } else {
+            usedSharedMetaData = false;
+            metadataPath = `${templatesDir}/${template}`;
+          }
+          // If the shared metadata dir has been specified and we haven't already used it, copy files over
+          if (!usedSharedMetaData && sharedMetadataDir) {
+            let exists;
+            try {
+              const stats = await MetalusUtils.stat(`${sharedMetadataDir}/${template}`);
+              exists = stats.isDirectory();
+            } catch (err) {
+              exists = false;
+            }
+            if (!exists) {
+              await fse.copy(`${templatesDir}/${template}`, `${sharedMetadataDir}/${template}`)
+            }
+          }
+          const steps = JSON.parse(await MetalusUtils.readfile(`${metadataPath}/steps.json`));
+          const pipelines = JSON.parse(await MetalusUtils.readfile(`${metadataPath}/pipelines.json`));
+          const executions = JSON.parse(await MetalusUtils.readfile(`${metadataPath}/executions.json`));
+          const applications = JSON.parse(await MetalusUtils.readfile(`${metadataPath}/applications.json`));
+          if (steps.steps && steps.steps.length > 0) {
+            errors.concat(await insertMetadata(new StepsModel(), steps.steps, metadataUser));
+          }
+          if (steps.pkgObjs && steps.pkgObjs.length > 0) {
+            errors.concat(await insertMetadata(new PkgObjsModel(), steps.pkgObjs, metadataUser));
+          }
+          if (pipelines && pipelines.length > 0) {
+            errors.concat(await insertMetadata(new PipelinesModel(), pipelines, metadataUser));
+          }
+          if (executions && executions.length > 0) {
+            errors.concat(await insertMetadata(new ExecutionsModel(), executions, metadataUser));
+          }
+          if (applications && applications.length > 0) {
+            errors.concat(await insertMetadata(new AppsModel(), applications, metadataUser));
+          }
+        }
+        // Check the error lists
+        if (errors.length > 0) {
+          processJSON.status = 'error';
+          processJSON.error = `Error processing jars: ${JSON.stringify(errors)}`;
+        } else {
+          processJSON.status = 'complete';
+        }
+      }
+      await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+    } catch (err) {
+      MetalusUtils.log(`Error processing jars: ${err}`);
+      processJSON.status = 'failed';
+      processJSON.error = `Error processing jars: ${err}`;
+      try {
+        await MetalusUtils.writefile(`${userJarDir}/processedJars.json`, JSON.stringify(processJSON));
+      } catch (error) {
+        MetalusUtils.log(`Error updating status file: ${err}`);
+      }
+    }
+    try {
+      // Delete the jar directory
+      await MetalusUtils.removeDir(stagingDir);
+    } catch (err) {
+      MetalusUtils.log(`Error removing staging dir: ${err}`);
+    }
+  }
+}
+
+async function insertMetadata(model, metadataList, metadataUser) {
+  const errors = [];
+  for await (const m of metadataList) {
+    try {
+      await model.createOne(m, metadataUser);
+    } catch (err) {
+      errors.push({
+        metadata: m,
+        error: err,
+      });
+    }
+  }
+  return errors;
 }
 
 function getTemplatesDir(req) {
-  return req.app.kraken.get('baseTemplatesDir') || `${process.cwd()}/templates`;
+  return req.app.kraken.get('baseTemplatesDir') || `${process.cwd()}`;
+}
+
+async function getSharedTemplatesDir(projectJarsBaseDir) {
+  const path = `${projectJarsBaseDir}/shared/metadata`;
+  try {
+    await MetalusUtils.stat(path);
+  } catch (err) {
+    await MetalusUtils.mkdir(path, {recursive: true});
+  }
+  return path;
 }

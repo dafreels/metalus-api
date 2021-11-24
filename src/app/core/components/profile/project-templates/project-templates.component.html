@@ -7,14 +7,21 @@
     </mat-select>
   </mat-form-field>
   <mat-form-field>
+    <mat-label>Scala Version:</mat-label>
+    <mat-select required [(ngModel)]="selectedScalaVersion" [disabled]="scalaVersions.length === 0"
+    (selectionChange)="selectScalaVersion($event)">
+      <mat-option *ngFor="let version of scalaVersions" [value]="version">{{version}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
     <mat-label>Spark Version:</mat-label>
-    <mat-select required [(ngModel)]="selectedSparkVersion">
+    <mat-select required [(ngModel)]="selectedSparkVersion" [disabled]="sparkVersions.length === 0">
       <mat-option *ngFor="let version of sparkVersions" [value]="version">{{version}}</mat-option>
     </mat-select>
   </mat-form-field>
   <ul>
     <li *ngFor="let template of templates">
-      <mat-checkbox [(ngModel)]="template.checked" [disabled]="template.disabled || (selectedVersion === '' || selectedSparkVersion === '')" (change)="templatedClicked()">
+      <mat-checkbox [(ngModel)]="template.checked" [disabled]="selectedSparkVersion === null || template.disabled || (selectedVersion === '' || selectedSparkVersion === '')" (change)="templatedClicked()">
         {{template.name}}
       </mat-checkbox>
     </li>

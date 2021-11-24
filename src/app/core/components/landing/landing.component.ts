@@ -5,6 +5,12 @@ import {ApplicationsService} from '../../../applications/applications.service';
 import {PackageObjectsService} from '../../package-objects/package-objects.service';
 import {AuthService} from "../../../shared/services/auth.service";
 import {UsersService} from "../../../shared/services/users.service";
+import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
+import {MatDialog} from "@angular/material/dialog";
+import {Subject, timer} from "rxjs";
+import {takeUntil} from "rxjs/operators";
+import {FilesService} from "../../../shared/services/files.service";
+import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 
 @Component({
   selector: 'app-landing-page',
@@ -28,7 +34,9 @@ export class LandingComponent implements OnInit {
     private pipelinesService: PipelinesService,
     private stepsService: StepsService,
     private authService: AuthService,
-    private usersService: UsersService) {
+    private usersService: UsersService,
+    private filesService: FilesService,
+    private dialog: MatDialog) {
     this.authService.userItemSelection.subscribe(() => {
       this.loadCounts();
     });
@@ -88,9 +96,46 @@ export class LandingComponent implements OnInit {
     if (this.project.makeDefaultProject) {
       user.defaultProjectId = newProjectId;
     }
+    const waitDialogRef = this.dialog.open(WaitModalComponent, {
+      width: '25%',
+      height: '25%',
+    });
     this.usersService.updateUser(user).subscribe(updatedUser => {
+      if (user.metaDataLoad) {
+        const subject = new Subject();
+        // Wait 5 seconds before checking status and then poll every 5 seconds
+        timer(5000, 5000).pipe(
+          takeUntil(subject),
+        ).subscribe(() => {
+          this.filesService.checkProcessingStatus(user).subscribe((status) => {
+            if (status.status === 'failed') {
+              subject.next();
+              this.handleError(new Error(status.error || 'There was an error processing metadata.'), waitDialogRef);
+            } else if (status.status === 'complete') {
+              subject.next();
+              waitDialogRef.close();
+            }
+          });
+        });
+      }
       this.authService.setUserInfo(updatedUser);
       this.wizard = 'none';
+    });
+  }
+
+  private handleError(error, dialogRef) {
+    let message;
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      message = error.error.message;
+    } else {
+      message = error.message;
+    }
+    dialogRef.close();
+    this.dialog.open(ErrorModalComponent, {
+      width: '450px',
+      height: '300px',
+      data: { messages: message.split('\n') },
     });
   }
 }
