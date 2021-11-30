@@ -52,9 +52,9 @@
   },
   {
     "type": "select",
-    "key": "config.masterConfig.machineTypeUri",
+    "key": "config.gceClusterConfig.subNetworkUri",
     "templateOptions": {
-      "label": "Executor Node Type",
+      "label": "Subnet",
       "options": [],
       "valueProp": "id",
       "labelProp": "name"
@@ -64,7 +64,7 @@
     "type": "input",
     "key": "config.masterConfig.numInstances",
     "templateOptions": {
-      "label": "Master Instances",
+      "label": "Driver Instances",
       "type": "number",
       "min": 1
     }
@@ -83,9 +83,19 @@
     "type": "input",
     "key": "config.workerConfig.numInstances",
     "templateOptions": {
-      "label": "Worker Instances",
+      "label": "Executor Instances",
       "type": "number",
       "min": 1
+    }
+  },
+  {
+    "type": "select",
+    "key": "config.masterConfig.machineTypeUri",
+    "templateOptions": {
+      "label": "Executor Node Type",
+      "options": [],
+      "valueProp": "id",
+      "labelProp": "name"
     }
   }
 ]

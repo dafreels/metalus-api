@@ -37,7 +37,7 @@
     }
   },
   {
-    "key": "new_cluster.autoscale",
+    "key": "autoscale",
     "wrappers": [
       "panel"
     ],
@@ -47,7 +47,7 @@
     "fieldGroup": [
       {
         "type": "input",
-        "key": "autoscale.min_workers",
+        "key": "min_workers",
         "templateOptions": {
           "label": "Min. Workers",
           "type": "number"
@@ -55,7 +55,7 @@
       },
       {
         "type": "input",
-        "key": "autoscale.max_workers",
+        "key": "max_workers",
         "templateOptions": {
           "label": "Max. Workers",
           "type": "number"

@@ -338,7 +338,7 @@ async function startJob(req, res, next) {
       // Do nothing since we are just trying to load a file that may not exist
     }
     // Combine the local and remote jars that were uploaded
-    const jarFiles = processJSON.jarFiles.concat(processJSON.remoteJars);
+    const jarFiles = processJSON.jarFiles.concat(processJSON.remoteJars).filter(j => j.length > 0);
     // Add any runtime values
     if (mappingParameters) {
       application.globals = _.merge(application.globals, mappingParameters.globals);
