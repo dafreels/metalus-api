@@ -82,9 +82,8 @@ export class FilesService {
       .pipe(catchError((err) => throwError(err)));
   }
 
-  processFiles(user: User, password: string, additionalRepos: string, remoteJars: string, skipPipelines: boolean, skipSteps: boolean) {
+  processFiles(user: User, additionalRepos: string, remoteJars: string, skipPipelines: boolean, skipSteps: boolean) {
     const body = {
-      password,
       repos: additionalRepos,
       remoteJars,
       skipPipelines,

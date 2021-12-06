@@ -402,19 +402,12 @@ async function processUploadedJars(req, res, next) {
   const user = await req.user;
   const userId = req.params.id;
   const projectId = req.params.projectId;
-  const password = req.body.password;
   const repos = req.body.repos;
   const remoteJars = req.body.remoteJars || '';
   const skipPipelines = req.body.skipPipelines;
   const skipSteps = req.body.skipSteps;
   if (userId !== user.id) {
     next(new Error('User does not have permission to process files for different user!'));
-    return;
-  }
-  const userModel = new UsersModel();
-  const projectUser = await userModel.getUser(userId);
-  if (!bcrypt.compareSync(password, projectUser.password)) {
-    next(new Error('Unable to upload metadata: Invalid password!'));
     return;
   }
   const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${userId}/${projectId}`;

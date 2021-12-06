@@ -128,49 +128,40 @@ export class UploadComponent implements OnInit {
   }
 
   processJars() {
-    const dialogRef = this.dialog.open(PasswordDialogComponent, {
+    const waitDialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
-      height: '212px',
-      data: { password: '' },
+      height: '25%',
     });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const waitDialogRef = this.dialog.open(WaitModalComponent, {
-          width: '25%',
-          height: '25%',
-        });
-        this.filesService.processFiles(this.user, result,
-          this.additionalRepos.join(','),
-          this.remoteJars.join(','),
-          this.skipPipelines,
-          this.skipSteps).subscribe(() => {
-            const subject = new Subject();
-            // Wait 20 seconds before checking status and then poll every 10 seconds
-            timer(20000, 10000).pipe(
-              takeUntil(subject),
-            ).subscribe(() => {
-              this.filesService.checkProcessingStatus(this.user).subscribe((status) => {
-                if (status.status === 'failed') {
-                  subject.next();
-                  this.handleError(new Error(status.error || 'There was an error processing metadata.'), dialogRef);
-                  waitDialogRef.close();
-                } else if (status.status === 'complete') {
-                  subject.next();
-                  waitDialogRef.close();
-                  this.router.navigate(['landing']);
-                }
-              });
-            });
-        },
-          (error) => {
-            this.handleError(error, dialogRef);
-            waitDialogRef.close();
+    this.filesService.processFiles(this.user,
+      this.additionalRepos.join(','),
+      this.remoteJars.join(','),
+      this.skipPipelines,
+      this.skipSteps).subscribe(() => {
+        const subject = new Subject();
+        // Wait 20 seconds before checking status and then poll every 10 seconds
+        timer(20000, 10000).pipe(
+          takeUntil(subject),
+        ).subscribe(() => {
+          this.filesService.checkProcessingStatus(this.user).subscribe((status) => {
+            if (status.status === 'failed') {
+              subject.next();
+              this.handleError(new Error(status.error || 'There was an error processing metadata.'));
+              waitDialogRef.close();
+            } else if (status.status === 'complete') {
+              subject.next();
+              waitDialogRef.close();
+              this.router.navigate(['landing']);
+            }
           });
-      }
-    });
+        });
+      },
+      (error) => {
+        this.handleError(error);
+        waitDialogRef.close();
+      });
   }
 
-  private handleError(error, dialogRef) {
+  private handleError(error) {
     let message;
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
@@ -178,7 +169,6 @@ export class UploadComponent implements OnInit {
     } else {
       message = error.message;
     }
-    dialogRef.close();
     this.dialog.open(ErrorModalComponent, {
       width: '450px',
       height: '300px',
