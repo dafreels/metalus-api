@@ -660,8 +660,8 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
         stepId = this.designerModel.nodes[p.sourceNodeId].data.name;
         if (typeAhead.indexOf(stepId) === -1) {
           typeAhead.push(stepId);
+          this.addNodeToTypeAhead(p.sourceNodeId, typeAhead);
         }
-        this.addNodeToTypeAhead(p.sourceNodeId, typeAhead);
       });
     }
   }

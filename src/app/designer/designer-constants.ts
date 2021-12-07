@@ -1,4 +1,5 @@
-import {EndpointOptions, PaintStyle} from "jsplumb";
+import {EndpointOptions} from "@jsplumb/core";
+import {PaintStyle} from "@jsplumb/common";
 import {DndDropEvent} from "ngx-drag-drop";
 
 export class DesignerConstants {
@@ -22,18 +23,20 @@ export class DesignerConstants {
                                   connectorStyle: PaintStyle = null,
                                   connectorHoverStyle: PaintStyle = null): EndpointOptions {
     return {
-      id: '',
       maxConnections: 1,
       parameters: undefined,
       reattachConnections: false,
       scope: '',
-      type: '',
+      edgeType: '',
       anchor: 'Bottom',
-      isSource: true,
-      isTarget: false,
+      source: true,
+      target: false,
       paintStyle: endPointStyle,
       hoverPaintStyle: endPointHoverStyle,
-      connector:[ 'Straight', { } ],
+      connector: {
+        type: 'Straight',
+        options: {}
+      },
       connectorStyle,
       connectorHoverStyle
     };
@@ -42,18 +45,16 @@ export class DesignerConstants {
   static getTargetEndpointOptions(endPointStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_STYLE,
                                   endPointHoverStyle: PaintStyle = DesignerConstants.DEFAULT_ENDPOINT_HOVER_STYLE): EndpointOptions {
     return {
-      id: '',
       parameters: undefined,
       reattachConnections: false,
       scope: '',
-      type: '',
+      edgeType: '',
       anchor: 'Top',
-      isSource: false,
-      isTarget: true,
+      source: false,
+      target: true,
       paintStyle: endPointStyle,
       hoverPaintStyle: endPointHoverStyle,
-      maxConnections: -1,
-      dropOptions: { hoverClass: 'hover' }
+      maxConnections: -1
     };
   }
 }

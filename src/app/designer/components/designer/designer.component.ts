@@ -9,7 +9,6 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {DragEventCallbackOptions, jsPlumb} from 'jsplumb';
 import {DndDropEvent} from 'ngx-drag-drop';
 import {Subject, Subscription} from 'rxjs';
 import {DesignerNodeComponent} from '../designer-node/designer-node.component';
@@ -23,6 +22,7 @@ import {
   DesignerModel
 } from "../../designer-constants";
 import {SharedFunctions} from "../../../shared/utils/shared-functions";
+import {DragStopEventParams, newInstance} from '@jsplumb/browser-ui';
 
 @Component({
   selector: 'app-designer',
@@ -145,62 +145,69 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       x: x - canvasRect.x,
       y: y - canvasRect.y
     };
-    this.addNModelNode(nodeId, this.model.nodes[nodeId]);
+    this.jsPlumbInstance.batch(() => {
+      this.addNModelNode(nodeId, this.model.nodes[nodeId]);
+    });
   }
 
   populateFromModel() {
-    this.modelPopulating = true;
-    // Iterate the nodes in the model
-    for(let key of Object.keys(this.model.nodes)) {
-      this.addNModelNode(key, this.model.nodes[key]);
-    }
-    // Add connections from model
-    let connection;
-    const endpointEntries = Object.entries(this.model.endpoints);
-    for (let key of Object.keys(this.model.connections)) {
-      connection = this.model.connections[key];
-      // Only create a connection if both nodeIds are populated
-      if (connection.sourceNodeId && connection.targetNodeId){
-        connection.endpoints.forEach(ep => {
-          this.jsPlumbInstance.connect({
-            source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
-              e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
-              entry[1].nodeId === connection.sourceNodeId)[0]),
-            target: this.jsPlumbInstance.getEndpoints(connection.targetNodeId).find(e =>
-              e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
-              entry[1].nodeId === connection.targetNodeId)[0])
-          });
-        });
+    this.jsPlumbInstance.batch(() => {
+      this.modelPopulating = true;
+      // Iterate the nodes in the model
+      for (let key of Object.keys(this.model.nodes)) {
+        this.addNModelNode(key, this.model.nodes[key]);
       }
-    }
-    this.modelPopulating = false;
+      // Add connections from model
+      let connection;
+      const endpointEntries = Object.entries(this.model.endpoints);
+      for (let key of Object.keys(this.model.connections)) {
+        connection = this.model.connections[key];
+        // Only create a connection if both nodeIds are populated
+        if (connection.sourceNodeId && connection.targetNodeId) {
+          connection.endpoints.forEach(ep => {
+            this.jsPlumbInstance.connect({
+              source: this.jsPlumbInstance.getEndpoints(this.htmlNodeLookup[connection.sourceNodeId]).find(e =>
+                e.id === endpointEntries.find(entry => entry[1].name === ep.sourceEndPoint &&
+                  entry[1].nodeId === connection.sourceNodeId)[0]),
+              target: this.jsPlumbInstance.getEndpoints(this.htmlNodeLookup[connection.targetNodeId]).find(e =>
+                e.id === endpointEntries.find(entry => entry[1].name === ep.targetEndPoint &&
+                  entry[1].nodeId === connection.targetNodeId)[0])
+            });
+          });
+        }
+      }
+      this.modelPopulating = false;
+    });
   }
 
   private initializeDesigner() {
     this.elementSubscriptions = SharedFunctions.clearSubscriptions(this.elementSubscriptions);
     if (this.jsPlumbInstance) {
-      this.jsPlumbInstance.deleteEveryConnection();
-      this.jsPlumbInstance.deleteEveryEndpoint();
+      this.jsPlumbInstance.reset();
+      this.jsPlumbInstance.destroy();
     }
-    this.jsPlumbInstance = jsPlumb.getInstance();
-    this.jsPlumbInstance.setContainer(this.canvas.nativeElement);
-    this.jsPlumbInstance.bind('connection', (info) => {
-      if (this.modelPopulating) {
-        return;
-      }
-      this.addConnection(info.sourceId, info.targetId, info.sourceEndpoint, info.targetEndpoint);
-      this.broadCastModelChanges();
+    this.jsPlumbInstance = newInstance({
+      container: this.canvas.nativeElement
     });
-    this.jsPlumbInstance.bind('connectionMoved', (info) => {
-      this.removeConnection(info.originalSourceId, info.originalTargetId, info.originalSourceEndpoint);
-      this.addConnection(info.newSourceId, info.newTargetId, info.newSourceEndpoint, info.newTargetEndpoint);
-      this.broadCastModelChanges()
+    this.jsPlumbInstance.batch(() => {
+      this.jsPlumbInstance.bind('connection', (info) => {
+        if (this.modelPopulating) {
+          return;
+        }
+        this.addConnection(info.sourceId, info.targetId, info.sourceEndpoint, info.targetEndpoint);
+        this.broadCastModelChanges();
+      });
+      this.jsPlumbInstance.bind('connectionMoved', (info) => {
+        this.removeConnection(info.originalSourceId, info.originalTargetId, info.originalSourceEndpoint);
+        this.addConnection(info.newSourceId, info.newTargetId, info.newSourceEndpoint, info.newTargetEndpoint);
+        this.broadCastModelChanges()
+      });
+      this.jsPlumbInstance.bind('connectionDetached', (info) => {
+        this.removeConnection(info.sourceId, info.targetId, info.sourceEndpoint);
+        this.broadCastModelChanges();
+      });
+      this.designerCanvas.viewContainerRef.clear();
     });
-    this.jsPlumbInstance.bind('connectionDetached', (info) => {
-      this.removeConnection(info.sourceId, info.targetId, info.sourceEndpoint);
-      this.broadCastModelChanges();
-    });
-    this.designerCanvas.viewContainerRef.clear();
   }
 
   private removeConnection(sourceId, targetId, sourceEndpoint) {
@@ -243,45 +250,47 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     node.style.top = `${this.model.nodes[nodeId].y - 32}px`;
 
     this.htmlNodeLookup[nodeId] = node;
-    // Add the input connector
-    if (data.input) {
-      const endpoint = this.jsPlumbInstance.addEndpoint(node, DesignerConstants.DEFAULT_TARGET_ENDPOINT);
-      this.model.endpoints[endpoint.id] = {
-        name: 'input',
-        nodeId
-      }
-    }
-    // Add the output connectors
-    if (data.outputs && data.outputs.length > 0) {
-      let rotations = [];
-      let rotationStep = 180 / (data.outputs.length-1);
-      rotationStep = rotationStep > 90 ? 90: rotationStep;
-      let currentPosition = 270; // Right Side Fixed Position
-      data.outputs.forEach(() => {
-        rotations.push(currentPosition);
-        currentPosition = currentPosition + rotationStep;
-        currentPosition = currentPosition >= 360 ? currentPosition - 360 : currentPosition;
-      }); 
-      rotations= rotations.reverse();
-      let i = 0;
-      let endpoint;
-      data.outputs.forEach(output => {
-        endpoint =
-          this.jsPlumbInstance.addEndpoint(node, DesignerComponent.getSourceEndpointOptions(output, rotations[i++]));
+
+      // Add the input connector
+      if (data.input) {
+        const endpoint = this.jsPlumbInstance.addEndpoint(node, DesignerConstants.DEFAULT_TARGET_ENDPOINT);
         this.model.endpoints[endpoint.id] = {
-          name: output.name,
+          name: 'input',
           nodeId
         }
-      });
-    }
-    this.jsPlumbInstance.draggable(node, {
-      stop: (params:DragEventCallbackOptions) => {
-        this.model.nodes[nodeId].x = params.pos[0];
-        this.model.nodes[nodeId].y = params.pos[1];
-        this.broadCastModelChanges();
       }
-    });
-    this.broadCastModelChanges();
+      // Add the output connectors
+      if (data.outputs && data.outputs.length > 0) {
+        let rotations = [];
+        let rotationStep = 180 / (data.outputs.length - 1);
+        rotationStep = rotationStep > 90 ? 90 : rotationStep;
+        let currentPosition = 270; // Right Side Fixed Position
+        data.outputs.forEach(() => {
+          rotations.push(currentPosition);
+          currentPosition = currentPosition + rotationStep;
+          currentPosition = currentPosition >= 360 ? currentPosition - 360 : currentPosition;
+        });
+        rotations = rotations.reverse();
+        let i = 0;
+        let endpoint;
+        data.outputs.forEach(output => {
+          endpoint =
+            this.jsPlumbInstance.addEndpoint(node, DesignerComponent.getSourceEndpointOptions(output, rotations[i++]));
+          this.model.endpoints[endpoint.id] = {
+            name: output.name,
+            nodeId
+          }
+        });
+      }
+      // Register drag stop so we can track element positions
+      this.jsPlumbInstance.dragManager.collicat.draggable(node, {
+        stop: (params: DragStopEventParams) => {
+          this.model.nodes[nodeId].x = params.finalPos.x;
+          this.model.nodes[nodeId].y = params.finalPos.y;
+          this.broadCastModelChanges();
+        }
+      });
+      this.broadCastModelChanges();
   }
 
   private addDynamicNode(nodeId: string, data: DesignerElement) {
@@ -316,10 +325,23 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
   private static getSourceEndpointOptions(output: DesignerElementOutput, rotation: number) {
     const endPoint = output ? output.endPointOptions : JSON.parse(JSON.stringify(DesignerConstants.DEFAULT_SOURCE_ENDPOINT));
     const name = output && output.type !== 'normal' ? output.name : null;
-    endPoint.anchor = [ 'Perimeter', { shape:'Circle', rotation: rotation}];
+    endPoint.anchor = {
+      type: 'Perimeter',
+      options: {
+        shape: 'Circle',
+        rotation: rotation
+      }
+    };
     if (name) {
-      endPoint.overlays = [
-        ['Label', {location: [0.5, 1.5], label: name, cssClass: 'endpointSourceLabel'}]
+      endPoint.connectorOverlays = [
+        {
+          type: 'Label',
+          options: {
+            location: [0.5, 1.5],
+            id: name,
+            cssClass: 'endpointSourceLabel'
+          }
+        }
       ];
     }
     return endPoint;
