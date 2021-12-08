@@ -258,6 +258,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
     this.selectedStep = {
       stepId: '',
       executeIfEmpty: '',
+      retryLimit: 0,
       nextStepId: '',
       category: '',
       description: '',
@@ -281,6 +282,11 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
         this.selectedStep.params.shift();
       }
     }
+    if (this.selectedStep.params.length > 0) {
+      if (this.selectedStep.params[0].name === 'retryLimit') {
+        this.selectedStep.params.shift();
+      }
+    }
     this.selectedElement = data;
     this.configureStepGroup();
     this.typeAhead = [];
@@ -299,6 +305,18 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
       parameterType: undefined,
       description: 'Execute this step if the provided value is missing or empty'
     };
+    const retry = {
+      name: 'retryLimit',
+      value: this.selectedStep.retryLimit || 0,
+      type: 'integer',
+      required: false,
+      defaultValue: undefined,
+      language: undefined,
+      className: undefined,
+      parameterType: undefined,
+      description: 'Number of times to retry this step if an exception is thrown'
+    };
+    this.selectedStep.params.unshift(retry);
     this.selectedStep.params.unshift(executeIfEmpty);
     this.selectedStep.type.toLocaleLowerCase() === 'branch'
       ? (this.isABranchStep = true)
@@ -320,6 +338,9 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
   handleParameterUpdate(name: string, parameter: PipelineStepParam) {
     if (name === 'executeIfEmpty') {
       this.selectedStep.executeIfEmpty = parameter.value;
+    }
+    if (name === 'retryLimit') {
+      this.selectedStep.retryLimit = parameter.value;
     }
     this.configureStepGroup();
     this.validateChanges();
@@ -1198,8 +1219,15 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
     if (step.executeIfEmpty && step.executeIfEmpty.trim().length === 0) {
       delete step.executeIfEmpty;
     }
+    if (step.retryLimit && step.retryLimit.trim().length === 0) {
+      delete step.retryLimit;
+    }
     if (step.params && step.params.find(p => p.name === 'executeIfEmpty')) {
       const index = step.params.findIndex(p => p.name === 'executeIfEmpty');
+      step.params.splice(index, 1);
+    }
+    if (step.params && step.params.find(p => p.name === 'retryLimit')) {
+      const index = step.params.findIndex(p => p.name === 'retryLimit');
       step.params.splice(index, 1);
     }
     if (step.type === 'step-group' && step.params && step.params.find(p => p.type === 'result')) {

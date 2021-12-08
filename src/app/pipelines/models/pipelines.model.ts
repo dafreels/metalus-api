@@ -23,11 +23,12 @@ export interface PipelineStep extends Step {
   nextStepId?: string;
   nextStepOnError?: string;
   executeIfEmpty?: string;
+  retryLimit?: number;
 }
 
 export interface PipelineStepParam extends Param {
   value: any;
-  customType?: string; 
+  customType?: string;
 }
 
 export type PipelineCategory = 'pipeline' | 'step-group';
