@@ -61,7 +61,7 @@
     "google-auth-library": "^7.0.3",
     "jsoneditor": "^9.0.3",
     "kraken-js": "^2.2.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.15",
     "mingo": "^2.4.0",
     "mongodb": "^3.5.2",
