@@ -46,7 +46,7 @@
     "ajv": "^6.11.0",
     "ang-jsoneditor": "^1.9.4",
     "angular6-json-schema-form": "8.0.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "connect-mongodb-session": "^2.3.2",
