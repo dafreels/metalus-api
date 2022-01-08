@@ -1,8 +1,9 @@
-import {EndpointOptions} from "@jsplumb/core";
+import {DotEndpoint, EndpointOptions} from "@jsplumb/core";
 import {PaintStyle} from "@jsplumb/common";
 import {DndDropEvent} from "ngx-drag-drop";
 
 export class DesignerConstants {
+
   static DEFAULT_ENDPOINT_STYLE: PaintStyle = {
     fill: '#7AB02C',
     stroke: '7'
@@ -12,6 +13,13 @@ export class DesignerConstants {
     fill: '#216477',
     stroke: '7',
     strokeWidth: 4
+  };
+
+  static ENDPOINT_STYLE = {
+    type: DotEndpoint.type,
+    options: {
+      radius: 8
+    }
   };
 
   static DEFAULT_SOURCE_ENDPOINT: EndpointOptions = DesignerConstants.getSourceEndpointOptions();
@@ -69,7 +77,8 @@ export interface DesignerModel {
   nodeSeq: number,
   nodes: object,
   endpoints: object,
-  connections: object
+  connections: object,
+  groups: object
 }
 
 export interface DesignerElementAction {
@@ -92,6 +101,8 @@ export interface DesignerElement {
   event?: DndDropEvent;
   style?: string;
   actions?: DesignerAction[];
+  endGroupNode?: boolean;
+  rootGroupNode?: boolean;
   layout?: {
     x: number;
     y: number;

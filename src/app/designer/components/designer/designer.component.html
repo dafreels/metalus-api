@@ -1,8 +1,6 @@
 <mat-card class="designer-card">
-
   <ng-container *ngIf="selectedComponent?.instance.data">
     <mat-toolbar>
-      <!-- <span>Step: {{selectedComponent.instance.data.name}}</span> -->
       <span class="example-spacer"></span>
       <button mat-button color="primary" (click)="removeNode()">Remove</button>
     <button *ngFor="let action of selectedComponent.instance.data.actions" mat-button color="primary" (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>

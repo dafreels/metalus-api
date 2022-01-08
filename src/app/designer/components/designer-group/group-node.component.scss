@@ -1,0 +1,32 @@
+
+group-designer-node {
+  position: absolute;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width:100%;
+  border: 1px solid #d3d3d3;
+}
+
+.header {
+  background: #f5f5dc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 5%;
+  padding-left: 5px;
+  min-height: 32px;
+}
+
+.jtk-group-collapsed [data-jtk-managed] {
+  display: none;
+}
+
+.collapsed {
+  height: 0;
+}
+
+.expanded {
+  background: #f5f5ef;
+  height: 95%;
+}

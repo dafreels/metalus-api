@@ -1,18 +1,25 @@
-.node-label {
-  text-align: center;
+.branch-node-label {
+  text-align: left;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  transform: rotate(-45deg);
 }
 
-app-designer-node {
+.branch-node-icon {
+  text-align: right;
+  padding-right: 5px;
+  transform:rotate(-45deg);
+}
+
+branch-designer-node {
   box-shadow: 2px 2px 19px #aaa;
   -o-box-shadow: 2px 2px 19px #aaa;
   -webkit-box-shadow: 2px 2px 19px #aaa;
   -moz-box-shadow: 2px 2px 19px #aaa;
   opacity: 0.8;
   filter: alpha(opacity=80);
-  width: 128px;
+  width: 64px;
   height: 64px;
   line-height: 32px;
   cursor: pointer;
@@ -29,11 +36,12 @@ app-designer-node {
   -moz-transition: -moz-box-shadow 0.15s ease-in;
   -o-transition: -o-box-shadow 0.15s ease-in;
   transition: box-shadow 0.15s ease-in;
+  transform: rotate(45deg);
 
   .actions {
     position: absolute;
-    top: -1rem;
-    right: -2rem;
+    top: -25px;
+    right: 25px;
     display: none;
     // z-index: 10;
   }
@@ -43,6 +51,6 @@ app-designer-node {
   }
 }
 
-.designer-node-selected {
+.branch-node-selected {
   border: 3px dotted green;
 }

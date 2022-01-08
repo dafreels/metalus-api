@@ -1,13 +1,13 @@
 <div (click)="nodeClicked($event)"
      matTooltip="{{data.name}}: {{data.tooltip}}"
      matTooltipPosition="right">
-  <div class="node-label">{{data.name}}</div>
-  <div>
+  <div class="branch-node-label">{{data.name}}</div>
+  <div class="branch-node-icon">
     <mat-icon color="primary">{{data.icon}}</mat-icon>
   </div>
 </div>
 <div class="actions">
-  <mat-icon color="warn" (click)="removeNode()">delete</mat-icon>
+  <mat-icon class="branch-node-icon" color="warn" (click)="removeNode()">delete</mat-icon>
 </div>
 <div [matMenuTriggerFor]="nodeMenu">
   <mat-menu #nodeMenu="matMenu">

@@ -163,6 +163,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
           ];
           break;
         case 'object':
+        case 'list':
         case 'scalascript':
         case 'script':
         case 'template':

@@ -5,6 +5,8 @@ import { DesignerNodeComponent } from './components/designer-node/designer-node.
 import { DesignerNodeDirective } from './directives/designer-node.directive';
 import { DesignerPreviewComponent } from './components/designer-preview/designer-preview.component';
 import { SharedModule } from '../shared/shared.module';
+import {BranchNodeComponent} from "./components/branch-node/branch-node.component";
+import {GroupNodeComponent} from "./components/designer-group/group-node.component";
 
 @NgModule({
   imports: [
@@ -12,17 +14,21 @@ import { SharedModule } from '../shared/shared.module';
     SharedModule,
   ],
   declarations: [
+    BranchNodeComponent,
     DesignerComponent,
     DesignerNodeComponent,
     DesignerNodeDirective,
-    DesignerPreviewComponent
+    DesignerPreviewComponent,
+    GroupNodeComponent
   ],
   exports: [
     DesignerComponent
   ],
   entryComponents: [
+    BranchNodeComponent,
     DesignerNodeComponent,
-    DesignerPreviewComponent
+    DesignerPreviewComponent,
+    GroupNodeComponent
   ]
 })
 

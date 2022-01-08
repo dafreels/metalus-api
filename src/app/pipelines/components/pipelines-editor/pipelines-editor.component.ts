@@ -34,6 +34,7 @@ import {StepGroupResultModalComponent} from "../step-group-result-modal/step-gro
 import {DisplayDialogService} from "../../../shared/services/display-dialog.service";
 import {generalDialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-pipelines-editor',
@@ -69,6 +70,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
   private stepsLoading: boolean = false;
   private pipelinesLoading: boolean = false;
   addSplitOutput: Subject<DesignerElementAddOutput> = new Subject<DesignerElementAddOutput>();
+  useGroups: boolean;
 
   constructor(
     private stepsService: StepsService,
@@ -76,7 +78,8 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
     private packageObjectsService: PackageObjectsService,
     public dialog: MatDialog,
     private authService: AuthService,
-    private displayDialogService: DisplayDialogService) {
+    private displayDialogService: DisplayDialogService,
+    private route: ActivatedRoute) {
     super(dialog);
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
@@ -108,6 +111,11 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
       }
     }
     }));
+    route.queryParams
+      .subscribe(params => {
+          this.useGroups = params.useGroups && params.useGroups.toLowerCase() === 'true';
+        }
+      );
   }
 
   ngOnInit(): void {
@@ -668,6 +676,8 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
       event,
       style: step.type === 'step-group' ? 'designer-node-step-group' : null,
       actions,
+      endGroupNode: step.type.toLowerCase() === 'join' || step.type.toLowerCase() === 'merge',
+      rootGroupNode: step.type.toLowerCase() === 'fork' || step.type.toLowerCase() === 'split'
     };
   }
 
@@ -745,11 +755,11 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
 
   private generateOutputs(step: PipelineStep) {
     let outputs = [];
-    if (step.type.toLocaleLowerCase() === 'branch' ||
-      step.type.toLocaleLowerCase() === 'split') {
+    let stepType = step.type.toLocaleLowerCase();
+    if (stepType === 'branch' || stepType === 'split') {
       step.params.forEach((p) => {
         if (p.type.toLocaleLowerCase() === 'result') {
-          outputs.push(new DesignerElementOutput(p.name, 'result', DesignerConstants.getSourceEndpointOptions()));
+          outputs.push(new DesignerElementOutput(p.name, stepType === 'split' ? 'normal' : 'result', DesignerConstants.getSourceEndpointOptions()));
         }
       });
     } else {
@@ -820,7 +830,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
     const model = DesignerComponent.newModel();
     let nodeId;
     this.stepLookup = {};
-    const existingLayout = pipeline.layout && Object.keys(pipeline.layout).length > 0
+    let existingLayout = pipeline.layout && Object.keys(pipeline.layout).length > 0;
     pipeline.steps.forEach((step) => {
       nodeId = `designer-node-${model.nodeSeq++}`;
       model.nodes[nodeId] = {
@@ -901,20 +911,84 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
           });
       }
     });
+    // Setup groups
+    if (this.useGroups) {
+      pipeline.steps.forEach(step => this.buildGroup(step, model, null));
+      // Handle groups layout
+      Object.keys(model.groups).forEach((group) => {
+        if (pipeline.layout && pipeline.layout[group]) {
+          model.groups[group].x = pipeline.layout[group].x;
+          model.groups[group].y = pipeline.layout[group].y;
+          model.groups[group].expanded = pipeline.layout[group].expanded;
+        } else {
+          // Need to use automatic layout
+          existingLayout = false;
+        }
+      });
+    }
     // See if automatic layout needs to be applied
     if (!existingLayout) {
-      DesignerComponent.performAutoLayout(model, this.designerElement);
+      DesignerComponent.performAutoLayout(model, this.designerElement, this.useGroups);
       if (!pipeline.layout) {
         pipeline.layout = {};
       }
+      // Since an automatic layout was performed, capture the new coordinates
       Object.keys(model.nodes).forEach(k => {
         pipeline.layout[model.nodes[k].data.data.id] = {
             x: model.nodes[k].x,
             y: model.nodes[k].y,
           };
       });
+      if (this.useGroups) {
+        Object.keys(model.groups).forEach((group) => {
+          pipeline.layout[group] = {
+            x: model.groups[group].x,
+            y: model.groups[group].y,
+            expanded: model.groups[group].expanded,
+          };
+        });
+      }
     }
     return model;
+  }
+
+  private buildGroup(step, model, group) {
+    if (!model.groups[step.id]) {
+      switch (step.type.toLocaleLowerCase()) {
+        case 'fork':
+        case 'split':
+          if (!model.groups[`group-${step.id}`]) {
+            model.groups[`group-${step.id}`] = {
+              childNodes: [],
+              parentNode: this.stepLookup[step.id],
+              name: step.id,
+              parent: group
+            };
+          }
+          this.getChildNodes(step, model, `group-${step.id}`);
+          break;
+        case 'join':
+        case 'merge':
+          if (group && model.groups[group].childNodes.indexOf(this.stepLookup[step.id]) === -1) {
+            model.groups[group].childNodes.push(this.stepLookup[step.id]);
+          }
+          break;
+        default:
+          if (group && model.groups[group].childNodes.indexOf(this.stepLookup[step.id]) === -1) {
+            model.groups[group].childNodes.push(this.stepLookup[step.id]);
+            this.getChildNodes(step, model, group);
+          }
+      }
+    }
+  }
+
+  private getChildNodes(step, model, group) {
+    // Branch/Split steps have results that have to be followed
+    if (step.type.toLocaleLowerCase() === 'branch' || step.type.toLocaleLowerCase() === 'split') {
+      step.params.filter(p => p.type === 'result').forEach(param => this.buildGroup(model.nodes[this.stepLookup[param.value]].data.data, model, group));
+    } else if (step.nextStepId) { // Check nextStepId
+      this.buildGroup(model.nodes[this.stepLookup[step.nextStepId]].data.data, model, group);
+    }
   }
 
   private handleCopyPipeline() {
@@ -1010,7 +1084,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
       });
       let forkCount = 0;
       let joinCount = 0;
-      const splitFLows = [];
+      const splitFlows = [];
       pipeline.steps.forEach((step) => {
         if (step.type === 'fork') {
           forkCount++;
@@ -1023,23 +1097,24 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
               field: 'split',
               message: `${step.id} must have at least two paths!`
             });
+          } else {
+            const splitFlow = {
+              step,
+              flows: []
+            };
+            step.params.forEach(p => {
+              if (p.type !== 'result') {
+                errors.push({
+                  component: 'pipeline',
+                  field: 'split',
+                  message: `${step.id} must only have result parameters!`
+                });
+              } else {
+                splitFlow.flows.push(this.buildSplitStepFlow(stepsLookup[p.value], stepsLookup, [], errors));
+              }
+            });
+            splitFlows.push(splitFlow);
           }
-          const splitFlow = {
-            step,
-            flows: []
-          };
-          step.params.forEach(p => {
-            if (p.type !== 'result') {
-              errors.push({
-                component: 'pipeline',
-                field: 'split',
-                message: `${step.id} must only have result parameters!`
-              });
-            } else {
-              splitFlow.flows.push(this.buildSplitStepFlow(stepsLookup[p.value], stepsLookup, [], errors));
-            }
-          });
-          splitFLows.push(splitFlow);
         }
         if (step.params && step.params.length > 0) {
           if (step.type.toLocaleLowerCase() === 'branch') {
@@ -1091,17 +1166,19 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
           message: `must have closing join when multiple forks are present.`
         });
       }
-      splitFLows.forEach(flow => {
+      splitFlows.forEach(flow => {
         const result = flow.flows.shift().filter((v) => {
           return flow.flows.every((a) => {
             return a.indexOf(v) !== -1;
           });
         });
-        errors.push({
-          component: 'pipeline',
-          field: 'split',
-          message: `step ids ${result} must be unique across split flows!`
-        });
+        if (result.length > 0) {
+          errors.push({
+            component: 'pipeline',
+            field: 'split',
+            message: `step ids ${result} must be unique across split flows!`
+          });
+        }
       });
     }
     return errors;
@@ -1202,6 +1279,14 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
         this.addNodeToPipeline(this.designerModel.nodes[conn.targetNodeId], pipeline);
       }
     });
+    // Update layout with group x/y
+    Object.keys(this.designerModel.groups || {}).forEach((group) => {
+      pipeline.layout[group] = {
+        x: this.designerModel.groups[group].x,
+        y: this.designerModel.groups[group].y,
+        expanded: this.designerModel.groups[group].expanded,
+      };
+    });
     return pipeline;
   }
 
@@ -1219,7 +1304,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
     if (step.executeIfEmpty && step.executeIfEmpty.trim().length === 0) {
       delete step.executeIfEmpty;
     }
-    if (step.retryLimit && step.retryLimit.trim().length === 0) {
+    if (step.retryLimit) {
       delete step.retryLimit;
     }
     if (step.params && step.params.find(p => p.name === 'executeIfEmpty')) {

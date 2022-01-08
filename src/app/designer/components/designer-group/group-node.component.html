@@ -1,0 +1,8 @@
+<div class="header">
+  {{name}} <!-- Replace with the icon for the step type (fork/split) -->
+  <button style="margin-left: 5px;" mat-icon-button color="primary" (click)="handleAction('')">
+    <mat-icon color="primary" *ngIf="!collapsed" aria-label="Collapse">minimize</mat-icon>
+    <mat-icon color="primary" *ngIf="collapsed" aria-label="Expand">expand</mat-icon>
+  </button>
+</div>
+<div [className]="contentClass" data-jtk-group-content=true></div>
