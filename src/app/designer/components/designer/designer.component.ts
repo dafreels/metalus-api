@@ -182,7 +182,6 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  // TODO [Groups] Handle collapsed groups
   populateFromModel() {
     this.jsPlumbInstance.batch(() => {
       this.modelPopulating = true;
@@ -190,7 +189,15 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       const groupLookup = new Map();
       if (this.useGroups) {
         const embeddedGroups = new Map();
-        Object.keys(this.model.groups).forEach((group) => {
+        // Add all root groups first
+        Object.keys(this.model.groups).sort((g1, g2) => {
+          if (this.model.groups[g1].parent && !this.model.groups[g2].parent) {
+            return -1;
+          } else if (this.model.groups[g2].parent && !this.model.groups[g1].parent) {
+            return 1;
+          }
+          return 0;
+        }).forEach((group) => {
           // Add parent node to the group
           groupLookup.set(this.model.groups[group].parentNode, group);
           // Add each child node to the group
@@ -327,7 +334,6 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
   private getGroupExpansionHandler(groupId) {
     return (data) => {
       this.jsPlumbInstance.batch(() => {
-        // TODO [Groups] Handle embedded groups
         const groupNode = this.htmlNodeLookup[groupId];
         let shiftPosition;
         if (data.action === "collapse") {
@@ -779,7 +785,11 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       } else {
         if (groupNodes.has(n) || parentNodes.has(n)) {
           offsetX = gnode.x - graph.node(groupNodes.get(n) || parentNodes.get(n)).x;
-          if (model.groups[groupNodes.get(n) || parentNodes.get(n)].parent) {
+          if (parentNodes.has(n) &&
+            Object.keys(model.connections)
+              .findIndex(c => c.split('::')[1] === n) === -1) {
+            offsetY = 0;
+          } else {
             offsetY = -128;
           }
         } else {

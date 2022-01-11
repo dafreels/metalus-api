@@ -32,14 +32,10 @@ app-designer-node {
 
   .actions {
     position: absolute;
-    top: -1rem;
-    right: -2rem;
-    display: none;
-    // z-index: 10;
-  }
-
-  .actions {
+    bottom: -1em;
+    left: 0;
     display: block;
+    color: #999999;
   }
 }
 

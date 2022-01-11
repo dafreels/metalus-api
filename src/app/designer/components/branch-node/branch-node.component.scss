@@ -40,14 +40,10 @@ branch-designer-node {
 
   .actions {
     position: absolute;
-    top: -25px;
-    right: 25px;
-    display: none;
-    // z-index: 10;
-  }
-
-  .actions {
+    left: 0;
+    bottom: -6px;
     display: block;
+    color: #999999;
   }
 }
 
