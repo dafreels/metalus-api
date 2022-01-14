@@ -1,5 +1,6 @@
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
+
 import 'brace';
 import 'brace/mode/scala';
 import 'brace/mode/javascript';
@@ -7,6 +8,7 @@ import 'brace/mode/sql';
 import 'brace/mode/json';
 import 'brace/theme/solarized_light';
 import { SharedFunctions } from 'src/app/shared/utils/shared-functions';
+import { LucidchartExport } from 'src/app/shared/utils/lucidchart-export';
 
 export interface CodeEditorDialogData {
   code: string;
@@ -29,6 +31,12 @@ export class CodeEditorComponent {
   exportTemplate() {
     const fileName = this.data.exportFileName || 'Export Data.json';
     SharedFunctions.downloadAsFile(fileName,JSON.stringify(JSON.parse(this.data.code)));
+  }
+
+  exportChart() {
+    const chartData = LucidchartExport.createLucidchartData(JSON.parse(this.data.code));
+    SharedFunctions.downloadAsFile("export.csv", chartData.shapeData);
+    SharedFunctions.downloadAsFile("notes.csv", chartData.notesData);
   }
   
   onFileLoad(event) {
