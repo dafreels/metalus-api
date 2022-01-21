@@ -335,7 +335,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     return (data) => {
       this.jsPlumbInstance.batch(() => {
         const groupNode = this.htmlNodeLookup[groupId];
-        let shiftPosition;
+        // let shiftPosition;
         if (data.action === "collapse") {
           this.model.groups[groupId].expanded = false;
           // shiftPosition = 32 - DesignerComponent.convertPositionToInt(groupNode.style.height);
@@ -349,10 +349,10 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
           groupNode.style.height = `${expandedSize.height}px`;
           this.jsPlumbInstance.expandGroup(groupId);
         }
-        let tempNode;
+        // let tempNode;
         const groupNodes = this.model.groups[groupId].childNodes;
         groupNodes.push(this.model.groups[groupId].parentNode);
-        const groupTop = DesignerComponent.convertPositionToInt(groupNode.style.top);
+        // const groupTop = DesignerComponent.convertPositionToInt(groupNode.style.top);
         // const groupY = groupTop + DesignerComponent.convertPositionToInt(groupNode.style.height);
         // let top;
         // this.jsPlumbInstance.currentlyDragging = true;

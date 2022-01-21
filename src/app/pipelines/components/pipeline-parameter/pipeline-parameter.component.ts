@@ -209,9 +209,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
                   type === 'runtime' ||
                   type === 'mapped_runtime')
               ) {
-                value = value.substring(1);
+                value = SharedFunctions.trimSpecialCharacter(value);
               } else if (value && type === 'step' || type === 'secondary') {
-                value = value.substring(1);
+                value = SharedFunctions.trimSpecialCharacter(value);
                 if (value.indexOf('.') > -1) {
                   extraPath = value.substring(value.indexOf('.') + 1);
                   value = value.substring(0, value.indexOf('.'));
@@ -587,11 +587,13 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   selectParam(param, expanded){
     if(expanded) {
       this.selectedParam.emit(param);
     }
   }
+
   templateValueChanged(value) {
     this.parameter.value = value;
     this.parameter.type = 'template';

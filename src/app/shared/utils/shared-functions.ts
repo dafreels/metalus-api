@@ -70,6 +70,21 @@ export class SharedFunctions {
     return this.getLeadCharacter(type) ? this.getLeadCharacter(type) + value : value;
   }
 
+  static trimSpecialCharacter(value) {
+    switch (value.charAt(0)) {
+      case '!':
+      case '@':
+      case '#':
+      case '&':
+      case '?':
+      case '$':
+      case '%':
+        return value.substring(1);
+      default:
+        return value
+    }
+  }
+
   static getParameterValue(param: PipelineStepParam) {
     if (param) {
       if (param.value) {

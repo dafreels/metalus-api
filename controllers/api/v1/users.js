@@ -431,11 +431,12 @@ async function processUploadedJars(req, res, next) {
   } catch (err) {
     // Do nothing since it is a valid state to not have a project directory when uploading remote jars
   }
-  if (jarFiles.length > 0) {
+  const remoteJarList = remoteJars.trim().split(',');
+  if (jarFiles.length > 0 || remoteJarList.length > 0) {
     res.status(200).json({
       status: 'processing'
     });
-    await processJars(jarFiles, remoteJars.trim().split(','), userJarDir, skipPipelines, skipSteps, repos, `${userJarDir}/staging`,
+    await processJars(jarFiles, remoteJarList, userJarDir, skipPipelines, skipSteps, repos, `${userJarDir}/staging`,
       user);
   } else {
     res.sendStatus(204);

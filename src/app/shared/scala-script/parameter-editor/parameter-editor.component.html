@@ -1,136 +1,135 @@
-<div mat-dialog-content [ngClass]="{ 'single-item': true }">
-    <div>
-      <mat-form-field>
-        <mat-label>Property</mat-label>
-        <input
-          matInput
-          type="text"
-          [value]="param.name"
-        />
-      </mat-form-field>
-    </div>
-    <div [ngClass]="{ 'value': !isComplex }">
-      <ng-container *ngIf="!param.node.expandable">
-        <ng-container [ngSwitch]="isComplex ? 'complex' : param.type">
-          <mat-slide-toggle
-            *ngSwitchCase="'boolean'"
-            [(ngModel)]="param.value">
-            {{ param.value }}
-          </mat-slide-toggle>
-          <mat-form-field *ngSwitchCase="'number'">
-            <mat-label>Value</mat-label>
-            <input
-              matInput
-              type="number"
-              [(ngModel)]="param.value"
-            />
-          </mat-form-field>
-          <ng-container *ngSwitchCase="'complex'">
-            <div
-              class="complex-item"
-              *ngFor="let item of complexItems; let i = index">
-              <ng-container [ngSwitch]="item.type">
-                <mat-form-field *ngSwitchCase="'number'">
-                  <mat-label>Value</mat-label>
-                  <input
-                    matInput
-                    type="number"
-                    (change)="updateValue()"
-                    [(ngModel)]="item.value"
-                  />
-                </mat-form-field>
-                <mat-form-field *ngSwitchDefault>
-                  <mat-label>Value</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    [disabled]="!item.type"
-                    [(ngModel)]="item.value"
-                    (change)="this.updateValue()"/>
-                </mat-form-field>
-                <mat-slide-toggle
-                  *ngSwitchCase="'boolean'"
-                  (change)="this.updateValue()"
-                  [(ngModel)]="item.value">
-                  {{ item.value }}
-                </mat-slide-toggle>
-                <mat-form-field>
-                  <mat-label>Type</mat-label>
-                  <mat-select
-                    [(ngModel)]="item.type"
-                    (ngModelChange)="complextItemTypeChanged(item)">
-                    <mat-option
-                      *ngFor="let type of complexTypes"
-                      [value]="type.name"
-                      [disabled]=" complexItems.length - 1 > i && (type.name | isGenericType)">
-                      {{ type.displayName }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  [disabled]="item.type | isGenericType"
-                  (click)="addComplexItem(i + 1)">
-                  <mat-icon>add</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="deleteComplexItem(item)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </ng-container>
-            </div>
-          </ng-container>
-          <mat-form-field *ngSwitchDefault>
-            <mat-label>Value</mat-label>
-            <input
-              matInput
-              type="text"
-              (change)="updateValue($event.target.value)"
-              [(ngModel)]="param.value"
-            />
-          </mat-form-field>
-        </ng-container>
-        <mat-form-field *ngIf="param.type == undefined">
-          <input
-            matInput
-            type="text"
-            (change)="updateValue($event.target.value)"
-            [(ngModel)]="param.value"
-          />
-        </mat-form-field>
-      </ng-container>
-      <mat-form-field *ngIf="param.type === undefined || !isComplex">
-        <mat-label>Type</mat-label>
-        <mat-select [(ngModel)]="param.type" (ngModelChange)="typeChanged()">
-          <mat-option *ngFor="let type of types" [value]="type.name">
-            {{ type.displayName }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div class="count" *ngIf="param.node.expandable">
-      <span class="length" *ngIf="param.node.type == 'array'">
-        [{{ param.node.length }}]</span>
-      <span class="length" *ngIf="param.node.type == 'object'">
-        {{ '{' + param.node.length + '}' }}</span>
-    </div>
-    <button *ngIf="!param.node.expandable && !isComplex"
-      mat-icon-button
-      color="primary"
-      [disabled]="param.type | isGenericType"
-      (click)="addComplexItem(-1)">
-      <mat-icon>add</mat-icon>
-    </button>
-    <button
-      *ngIf="!param.node.expandable && !isComplex"
-      class="action-delete"
-      mat-icon-button
-      color="primary"
-      (click)="deleteItem()">
-      <mat-icon>delete</mat-icon>
-    </button>
-  </div>
-  
+<!--<div mat-dialog-content [ngClass]="{ 'single-item': true }">-->
+<!--    <div>-->
+<!--      <mat-form-field>-->
+<!--        <mat-label>Property</mat-label>-->
+<!--        <input-->
+<!--          matInput-->
+<!--          type="text"-->
+<!--          [value]="param.name"-->
+<!--        />-->
+<!--      </mat-form-field>-->
+<!--    </div>-->
+<!--    <div [ngClass]="{ 'value': !isComplex }">-->
+<!--      <ng-container>-->
+<!--        <ng-container [ngSwitch]="isComplex ? 'complex' : param.type">-->
+<!--          <mat-slide-toggle-->
+<!--            *ngSwitchCase="'boolean'"-->
+<!--            [(ngModel)]="param.value">-->
+<!--            {{ param.value }}-->
+<!--          </mat-slide-toggle>-->
+<!--          <mat-form-field *ngSwitchCase="'number'">-->
+<!--            <mat-label>Value</mat-label>-->
+<!--            <input-->
+<!--              matInput-->
+<!--              type="number"-->
+<!--              [(ngModel)]="param.value"-->
+<!--            />-->
+<!--          </mat-form-field>-->
+<!--          <ng-container *ngSwitchCase="'complex'">-->
+<!--            <div-->
+<!--              class="complex-item"-->
+<!--              *ngFor="let item of complexItems; let i = index">-->
+<!--              <ng-container [ngSwitch]="item.type">-->
+<!--                <mat-form-field *ngSwitchCase="'number'">-->
+<!--                  <mat-label>Value</mat-label>-->
+<!--                  <input-->
+<!--                    matInput-->
+<!--                    type="number"-->
+<!--                    (change)="updateValue()"-->
+<!--                    [(ngModel)]="item.value"-->
+<!--                  />-->
+<!--                </mat-form-field>-->
+<!--                <mat-form-field *ngSwitchDefault>-->
+<!--                  <mat-label>Value</mat-label>-->
+<!--                  <input-->
+<!--                    matInput-->
+<!--                    type="text"-->
+<!--                    [disabled]="!item.type"-->
+<!--                    [(ngModel)]="item.value"-->
+<!--                    (change)="this.updateValue()"/>-->
+<!--                </mat-form-field>-->
+<!--                <mat-slide-toggle-->
+<!--                  *ngSwitchCase="'boolean'"-->
+<!--                  (change)="this.updateValue()"-->
+<!--                  [(ngModel)]="item.value">-->
+<!--                  {{ item.value }}-->
+<!--                </mat-slide-toggle>-->
+<!--                <mat-form-field>-->
+<!--                  <mat-label>Type</mat-label>-->
+<!--                  <mat-select-->
+<!--                    [(ngModel)]="item.type"-->
+<!--                    (ngModelChange)="complextItemTypeChanged(item)">-->
+<!--                    <mat-option-->
+<!--                      *ngFor="let type of complexTypes"-->
+<!--                      [value]="type.name"-->
+<!--                      [disabled]=" complexItems.length - 1 > i && (type.name | isGenericType)">-->
+<!--                      {{ type.displayName }}-->
+<!--                    </mat-option>-->
+<!--                  </mat-select>-->
+<!--                </mat-form-field>-->
+<!--                <button-->
+<!--                  mat-icon-button-->
+<!--                  color="primary"-->
+<!--                  [disabled]="item.type | isGenericType"-->
+<!--                  (click)="addComplexItem(i + 1)">-->
+<!--                  <mat-icon>add</mat-icon>-->
+<!--                </button>-->
+<!--                <button-->
+<!--                  mat-icon-button-->
+<!--                  color="primary"-->
+<!--                  (click)="deleteComplexItem(item)">-->
+<!--                  <mat-icon>delete</mat-icon>-->
+<!--                </button>-->
+<!--              </ng-container>-->
+<!--            </div>-->
+<!--          </ng-container>-->
+<!--          <mat-form-field *ngSwitchDefault>-->
+<!--            <mat-label>Value</mat-label>-->
+<!--            <input-->
+<!--              matInput-->
+<!--              type="text"-->
+<!--              (change)="updateValue($event.target.value)"-->
+<!--              [(ngModel)]="param.value"-->
+<!--            />-->
+<!--          </mat-form-field>-->
+<!--        </ng-container>-->
+<!--        <mat-form-field *ngIf="param.type == undefined">-->
+<!--          <input-->
+<!--            matInput-->
+<!--            type="text"-->
+<!--            (change)="updateValue($event.target.value)"-->
+<!--            [(ngModel)]="param.value"-->
+<!--          />-->
+<!--        </mat-form-field>-->
+<!--      </ng-container>-->
+<!--      <mat-form-field *ngIf="param.type === undefined || !isComplex">-->
+<!--        <mat-label>Type</mat-label>-->
+<!--        <mat-select [(ngModel)]="param.type" (ngModelChange)="typeChanged()">-->
+<!--          <mat-option *ngFor="let type of types" [value]="type.name">-->
+<!--            {{ type.displayName }}-->
+<!--          </mat-option>-->
+<!--        </mat-select>-->
+<!--      </mat-form-field>-->
+<!--    </div>-->
+<!--    <div class="count">-->
+<!--      <span class="length" *ngIf="param.type == 'array'">-->
+<!--        [{{ param.value.length }}]</span>-->
+<!--      <span class="length" *ngIf="param.type == 'object'">-->
+<!--        {{ '{' + param.value.length + '}' }}</span>-->
+<!--    </div>-->
+<!--    <button *ngIf="!isComplex"-->
+<!--      mat-icon-button-->
+<!--      color="primary"-->
+<!--      [disabled]="param.type | isGenericType"-->
+<!--      (click)="addComplexItem(-1)">-->
+<!--      <mat-icon>add</mat-icon>-->
+<!--    </button>-->
+<!--    <button-->
+<!--      *ngIf="!isComplex"-->
+<!--      class="action-delete"-->
+<!--      mat-icon-button-->
+<!--      color="primary"-->
+<!--      (click)="deleteItem()">-->
+<!--      <mat-icon>delete</mat-icon>-->
+<!--    </button>-->
+<!--  </div>-->
