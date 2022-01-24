@@ -19,6 +19,7 @@
                                    [selectedProvider]="selectedProvider"
                                    (providerSelection)="handleProviderSelection($event)"
                                    (removeProviderEmit)="removeProvider($event)"
+                                   (editProviderEmit)="editProvider($event)"
               (newClusterEmit)="newCluster($event)"></providers-list-item>
             </mat-action-list>
           </div>

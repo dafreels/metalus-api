@@ -44,7 +44,9 @@ export class ProvidersComponent extends ErrorHandlingComponent implements OnInit
     const addDialog = this.displayDialogService.openDialog(
       NewProviderComponent,
       generalDialogDimensions,
-      this.providerTypes
+      {
+        providers: this.providerTypes
+      }
     );
     addDialog.afterClosed().subscribe((result) => {
       if (result) {
@@ -72,7 +74,7 @@ export class ProvidersComponent extends ErrorHandlingComponent implements OnInit
           });
         this.providersService.removeProvider(id).subscribe(() => {
           this.providersService.getProvidersList().subscribe(provs => {
-            if (this.selectedProvider.id === id && provs && provs.length > 0) {
+            if (this.selectedProvider && this.selectedProvider.id === id && provs && provs.length > 0) {
               this.handleProviderSelection(provs[0]);
             }
             waitDialog.close();
@@ -81,6 +83,25 @@ export class ProvidersComponent extends ErrorHandlingComponent implements OnInit
         },(error) => this.handleError(error, waitDialog));
       }
     },(error) => this.handleError(error, null)));
+  }
+
+  editProvider(providerId: string) {
+    const addDialog = this.displayDialogService.openDialog(
+      NewProviderComponent,
+      generalDialogDimensions,
+      {
+        providers: this.providerTypes,
+        formData: this.providers.find(p => p.id === providerId)
+      }
+    );
+    addDialog.afterClosed().subscribe((result) => {
+      if (result) {
+        result.id = providerId;
+        this.providersService.editProvider(result).subscribe(prov => {
+          this.providersService.getProvidersList().subscribe(provs => this.providers = provs);
+        },(error) => this.handleError(error, null));
+      }
+    },(error) => this.handleError(error, null));
   }
 
   handleProviderSelection($event: Provider) {

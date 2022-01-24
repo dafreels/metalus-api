@@ -7,6 +7,11 @@ import {FormGroup} from "@angular/forms";
 import {ProvidersService} from "../../../services/providers.service";
 import {ErrorHandlingComponent} from "../../../../shared/utils/error-handling-component";
 
+export interface ProviderData {
+  providers: ProviderType[];
+  formData?: object;
+}
+
 @Component({
   templateUrl: './new-provider.component.html'
 })
@@ -23,13 +28,19 @@ export class NewProviderComponent extends ErrorHandlingComponent implements Afte
 
   formValue: object;
   providerTypeId: string;
+  providers: ProviderType[];
 
   constructor(public dialogRef: MatDialogRef<NewProviderComponent>,
-              @Inject(MAT_DIALOG_DATA) public providers: ProviderType[],
+              @Inject(MAT_DIALOG_DATA) data: ProviderData,
               private formlyJsonschema: FormlyJsonschema,
               private providersService: ProvidersService,
               public dialog: MatDialog) {
     super(dialog);
+    this.providers = data.providers;
+    if (data.formData) {
+      this._model = data.formData;
+      this.setFields({ value: data.formData['providerTypeId'] })
+    }
   }
 
   closeDialog(): void {

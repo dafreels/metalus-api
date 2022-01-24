@@ -11,6 +11,7 @@ export class ProvidersListItemComponent {
   @Input() selectedProvider: Provider;
   @Output() providerSelection = new EventEmitter();
   @Output() removeProviderEmit = new EventEmitter();
+  @Output() editProviderEmit = new EventEmitter();
   @Output() newClusterEmit = new EventEmitter();
 
   constructor() {}
@@ -29,5 +30,9 @@ export class ProvidersListItemComponent {
 
   addCluster(id: string) {
     this.newClusterEmit.emit(id);
+  }
+
+  editProvider(id: string) {
+    this.editProviderEmit.emit(id);
   }
 }

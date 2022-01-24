@@ -111,6 +111,17 @@ export class ProvidersService {
       );
   }
 
+  editProvider(provider: Provider): Observable<Provider> {
+    return this.http
+      .put<ProviderResponse>(`/api/v1/providers/${provider.id}`, provider, {
+        observe: 'response',
+      })
+      .pipe(
+        map((response) => response.body.provider),
+        catchError((err) => throwError(err))
+      );
+  }
+
   removeProvider(providerId: string) {
     return this.http
       .delete(`/api/v1/providers/${providerId}`, {

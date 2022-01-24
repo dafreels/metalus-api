@@ -1,7 +1,7 @@
 <div>
   <mat-form-field>
     <mat-label>Select Provider: </mat-label>
-    <mat-select (selectionChange)="setFields($event)">
+    <mat-select [value]="providerTypeId" (selectionChange)="setFields($event)">
       <mat-option *ngFor="let provider of providers" [value]="provider.id">{{ provider.name }}</mat-option>
     </mat-select>
   </mat-form-field>

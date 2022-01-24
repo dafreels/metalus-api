@@ -17,6 +17,7 @@ module.exports = function (router) {
   router.get('/', getProviders);
   router.post('/', createProvider);
   router.get('/:id', getProvider);
+  router.put('/:id', updateProvider);
   router.delete('/:id', deleteProvider);
   router.get('/:id/clusters', getClusters);
   router.post('/:id/clusters', createCluster);
@@ -111,6 +112,26 @@ async function getProvider(req, res) {
     delete provider.providerInstance.credentials;
     provider.providerName = providerTypes.find(t => t.id === provider.providerTypeId).name;
     res.status(200).json({provider});
+  } else {
+    res.sendStatus(404);
+  }
+}
+
+async function updateProvider(req, res) {
+  const user = await req.user;
+  const body = req.body;
+  const providerTypes = ProviderFactory.getProviderList(user);
+  const providerType = ProviderFactory.getProvider(body.providerTypeId);
+  const providersModel = new ProvidersModel();
+  const provider = await providersModel.getByKey({ id: req.params.id }, user);
+  if (provider) {
+    provider.providerInstance.credentials = providerType.extractCredentials(provider.providerInstance, user);
+    _.merge(provider, body);
+    provider.providerInstance.credentials = providerType.secureCredentials(provider.providerInstance.credentials, user.secretKey);
+    const newProvider = await providersModel.update(req.params.id, provider, user);
+    delete newProvider.providerInstance.credentials;
+    newProvider.providerName = providerTypes.find(t => t.id === newProvider.providerTypeId).name;
+    res.status(200).json({ provider: newProvider });
   } else {
     res.sendStatus(404);
   }

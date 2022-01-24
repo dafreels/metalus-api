@@ -36,14 +36,14 @@
   },
   {
     "type": "input",
-    "key": "providerInstance.credentials.awsKey",
+    "key": "providerInstance.credentials.accessKeyId",
     "templateOptions": {
       "label": "AWS API Key"
     }
   },
   {
     "type": "input",
-    "key": "providerInstance.credentials.awsSecret",
+    "key": "providerInstance.credentials.secretAccessKey",
     "templateOptions": {
       "label": "AWS API Secret"
     }
