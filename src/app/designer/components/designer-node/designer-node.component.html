@@ -7,11 +7,9 @@
   </div>
   <div class="actions">
     <mat-icon (click)="removeNode()">delete</mat-icon>
+    <mat-icon [matMenuTriggerFor]="menu">more_vert</mat-icon>
+    <mat-menu #menu="matMenu">
+      <button *ngFor="let action of data.actions" mat-menu-item (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
+    </mat-menu>
   </div>
-</div>
-<div [matMenuTriggerFor]="nodeMenu">
-  <mat-menu #nodeMenu="matMenu">
-    <button mat-menu-item (click)="removeNode()">Remove</button>
-    <button *ngFor="let action of data.actions" mat-menu-item (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
-  </mat-menu>
 </div>

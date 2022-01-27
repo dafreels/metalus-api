@@ -13,6 +13,7 @@ const ValidationError = require('../../../lib/ValidationError');
 const MetalusUtils = require('../../../lib/metalus-utils');
 const fs = require('fs');
 const fse = require('fs-extra');
+const MAVEN_SETTINGS = require('../../../maven_settings.json');
 
 const metalusCommand = `${process.cwd()}/metalus-utils/bin/metadata-extractor.sh`;
 
@@ -183,7 +184,7 @@ async function updateUser(req, res, next) {
         lib = templatesJSON.libraries.find(l => l.versions.indexOf(versionInfo.version) !== -1);
         projectSet = templatesJSON.projectSets.find(p => p.name === lib.projectSet);
         project = projectSet.components.find(c => c.artifact === versionInfo.component);
-        metadataJars.add(`https://repo1.maven.org/maven2/com/acxiom/${versionInfo.component}_${versionInfo.scala}-spark_${versionInfo.spark}/${versionInfo.version}/${jar}`);
+        metadataJars.add(`${MAVEN_SETTINGS.maven_central_url}/com/acxiom/${versionInfo.component}_${versionInfo.scala}-spark_${versionInfo.spark}/${versionInfo.version}/${jar}`);
         if (project && project.dependencies && project.dependencies.length > 0) {
           project.dependencies.forEach((dep) => {
             component = `${dep}_${versionInfo.scala}-spark_${versionInfo.spark}-${versionInfo.version}.jar`;
@@ -205,7 +206,7 @@ async function updateUser(req, res, next) {
         await MetalusUtils.mkdir(userJarDir, {recursive: true});
       }
       const sharedTemplatesDirectory = await getSharedTemplatesDir(MetalusUtils.getProjectJarsBaseDir(req));
-      await processJars([], metadataJars, userJarDir, false, false, '',
+      await processJars([], metadataJars, userJarDir, false, false, (MAVEN_SETTINGS.additionalRepos || []).join(','),
         `${userJarDir}/staging`, metadataUser, sharedTemplatesDirectory);
     }
   } catch (err) {

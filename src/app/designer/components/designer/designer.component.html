@@ -1,11 +1,4 @@
 <mat-card class="designer-card">
-  <ng-container *ngIf="selectedComponent?.instance.data">
-    <mat-toolbar>
-      <span class="example-spacer"></span>
-      <button mat-button color="primary" (click)="removeNode()">Remove</button>
-    <button *ngFor="let action of selectedComponent.instance.data.actions" mat-button color="primary" (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
-    </mat-toolbar>
-  </ng-container>
   <mat-card-content class="designer-card">
     <div #canvas id="canvas" class="designer-canvas canvas canvas-wide jtk-surface jtk-surface-nopan"
          [dndDropzone]
