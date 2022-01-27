@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import {Observable, of, throwError} from 'rxjs';
 import {StaticSteps, Step, StepResponse, StepsResponse, StepTemplate, StepTemplateResponse} from './steps.model';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 
@@ -11,6 +11,10 @@ export class StepsService {
   constructor(private http: HttpClient) {}
 
   getSteps(addStaticSteps = false): Observable<Step[]> {
+    const cachedSteps = sessionStorage.getItem('steps');
+    if (cachedSteps) {
+      return of(JSON.parse(cachedSteps));
+    }
     return this.http.get<StepsResponse>('/api/v1/steps', {observe: 'response'})
       .pipe(
         map(response => {
@@ -24,6 +28,7 @@ export class StepsService {
               steps.push(StaticSteps.STEP_GROUP);
               steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
             }
+            sessionStorage.setItem('steps', JSON.stringify(steps));
             return steps;
           }
           return [];
@@ -32,6 +37,7 @@ export class StepsService {
   }
 
   addStep(step: Step): Observable<Step> {
+    sessionStorage.removeItem('steps');
     return this.http.post<StepResponse>('/api/v1/steps', step, {observe: 'response'})
       .pipe(
         map(response => response.body.step),
@@ -39,6 +45,7 @@ export class StepsService {
   }
 
   updateStep(step: Step): Observable<Step> {
+    sessionStorage.removeItem('steps');
     return this.http.put<StepResponse>(`/api/v1/steps/${step.id}`, step, {observe: 'response'})
       .pipe(
         map(response => response.body.step),
@@ -77,6 +84,7 @@ export class StepsService {
   }
 
   updateSteps(steps: Step[]): Observable<Step[]> {
+    sessionStorage.removeItem('steps');
     const bulkSteps = steps.map(s => {
       delete s['_id'];
       return s;
@@ -87,6 +95,7 @@ export class StepsService {
   }
 
   deleteStep(step: Step): Observable<boolean> {
+    sessionStorage.removeItem('steps');
     return this.http.delete(`/api/v1/steps/${step.id}`, {observe: 'response'})
       .pipe(map(response => true),
         catchError(err => throwError(err)));

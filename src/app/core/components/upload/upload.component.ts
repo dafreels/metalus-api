@@ -9,7 +9,6 @@ import {MatDialog} from "@angular/material/dialog";
 import {DialogDimensions} from "../../../shared/models/custom-dialog.model";
 import {ConfirmationModalComponent} from "../../../shared/components/confirmation/confirmation-modal.component";
 import {Router} from "@angular/router";
-import {PasswordDialogComponent} from "../../../shared/components/password-dialog/password-dialog.component";
 import {WaitModalComponent} from "../../../shared/components/wait-modal/wait-modal.component";
 import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
@@ -92,7 +91,7 @@ export class UploadComponent implements OnInit {
       allProgressObservables.push(this.progress[key].progress);
     }
     // When all progress-observables are completed...
-    forkJoin(allProgressObservables).subscribe(end => {
+    forkJoin(allProgressObservables).subscribe(() => {
       this.filesService.getFiles(this.user).subscribe(data => {
         this.uploadSuccessful = true;
         this.uploading = false;
@@ -118,7 +117,7 @@ export class UploadComponent implements OnInit {
     );
     deleteStepDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
-        this.filesService.removeFile(this.user, fileName).subscribe( data => {
+        this.filesService.removeFile(this.user, fileName).subscribe( () => {
           this.filesService.getFiles(this.user).subscribe(d => {
             this.uploadedFiles = d;
           });
@@ -128,6 +127,7 @@ export class UploadComponent implements OnInit {
   }
 
   processJars() {
+    sessionStorage.removeItem('steps');
     const waitDialogRef = this.dialog.open(WaitModalComponent, {
       width: '25%',
       height: '25%',
@@ -150,7 +150,7 @@ export class UploadComponent implements OnInit {
             } else if (status.status === 'complete') {
               subject.next();
               waitDialogRef.close();
-              this.router.navigate(['landing']);
+              return this.router.navigate(['landing']);
             }
           });
         });
@@ -184,7 +184,6 @@ export class UploadComponent implements OnInit {
   }
 
   addAdditionalRepo(event: MatChipInputEvent) {
-    const input = event.input;
     const value = event.value;
 
     // Add our package
@@ -199,8 +198,8 @@ export class UploadComponent implements OnInit {
     }
 
     // Reset the input value
-    if (input) {
-      input.value = '';
+    if (event.input) {
+      event.input.value = '';
     }
 
     this.additionalReposCtrl.setValue(null);

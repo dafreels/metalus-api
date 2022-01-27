@@ -3,12 +3,14 @@ import {HttpClient} from "@angular/common/http";
 import {catchError, map} from "rxjs/operators";
 import {Observable, throwError} from "rxjs";
 import {ChangePassword, UsageReportResponse, User, UserResponse} from "../models/users.models";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private authService: AuthService) {}
 
   changePassword(password: ChangePassword): Observable<User> {
     return this.http
@@ -22,6 +24,10 @@ export class UsersService {
   }
 
   updateUser(user: User): Observable<User> {
+    const originalUser = this.authService.getUserInfo();
+    if (originalUser.defaultProjectId !== user.defaultProjectId) {
+      sessionStorage.removeItem('steps');
+    }
     return this.http
       .put<User>(`/api/v1/users/${user.id}`, user, {
         observe: 'response',
@@ -48,6 +54,9 @@ export class UsersService {
   }
 
   removeProject(user: User, projectId: string): Observable<User> {
+    if (user.defaultProjectId === projectId) {
+      sessionStorage.removeItem('steps');
+    }
     return this.http
       .delete<User>(`/api/v1/users/${user.id}/project/${projectId}`, {
         observe: 'response',
