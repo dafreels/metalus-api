@@ -264,14 +264,14 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
         });
         this.broadCastModelChanges();
       });
-      this.jsPlumbInstance.bind('connectionMoved', (info) => {
+      this.jsPlumbInstance.bind('connection:move', (info) => {
         this.jsPlumbInstance.batch(() => {
-          this.removeConnection(info.originalSourceId, info.originalTargetId, info.originalSourceEndpoint);
-          this.addConnection(info.newSourceId, info.newTargetId, info.newSourceEndpoint, info.newTargetEndpoint);
+          const endPoint = info.connection.endpoints.find(e => e.elementId === info.originalSourceId);
+          this.removeConnection(info.originalSourceId, info.originalTargetId, endPoint);
         });
         this.broadCastModelChanges()
       });
-      this.jsPlumbInstance.bind('connectionDetached', (info) => {
+      this.jsPlumbInstance.bind('connection:detach', (info) => {
         this.jsPlumbInstance.batch(() => {
           this.removeConnection(info.sourceId, info.targetId, info.sourceEndpoint);
         });
