@@ -6,8 +6,8 @@
     <mat-icon color="primary">{{data.icon}}</mat-icon>
   </div>
   <div class="actions">
-    <mat-icon (click)="removeNode()">delete</mat-icon>
-    <mat-icon [matMenuTriggerFor]="menu">more_vert</mat-icon>
+    <mat-icon class="actions-icon" (click)="removeNode()">delete</mat-icon>
+    <mat-icon class="actions-icon" [matMenuTriggerFor]="menu">more_vert</mat-icon>
     <mat-menu #menu="matMenu">
       <button *ngFor="let action of data.actions" mat-menu-item (click)="handleAction(action.action)" [disabled]="!action.enableFunction()">{{action.displayName}}</button>
     </mat-menu>
