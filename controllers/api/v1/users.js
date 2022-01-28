@@ -13,7 +13,6 @@ const ValidationError = require('../../../lib/ValidationError');
 const MetalusUtils = require('../../../lib/metalus-utils');
 const fs = require('fs');
 const fse = require('fs-extra');
-const MAVEN_SETTINGS = require('../../../maven_settings.json');
 
 const metalusCommand = `${process.cwd()}/metalus-utils/bin/metadata-extractor.sh`;
 
@@ -169,8 +168,10 @@ async function updateUser(req, res, next) {
     const metadataUser = {
       id: updateUser.id,
     };
+    let additionalRepos = '';
     if (metaDataUpload) {
       const templatesJSON = JSON.parse(await MetalusUtils.readfile(`${getTemplatesDir(req)}/templates.json`));
+      additionalRepos = (templatesJSON.additionalRepos || []).join(',');
       let lib;
       let jar;
       let component;
@@ -184,7 +185,7 @@ async function updateUser(req, res, next) {
         lib = templatesJSON.libraries.find(l => l.versions.indexOf(versionInfo.version) !== -1);
         projectSet = templatesJSON.projectSets.find(p => p.name === lib.projectSet);
         project = projectSet.components.find(c => c.artifact === versionInfo.component);
-        metadataJars.add(`${MAVEN_SETTINGS.maven_central_url}/com/acxiom/${versionInfo.component}_${versionInfo.scala}-spark_${versionInfo.spark}/${versionInfo.version}/${jar}`);
+        metadataJars.add(`${templatesJSON.maven_central_url}/com/acxiom/${versionInfo.component}_${versionInfo.scala}-spark_${versionInfo.spark}/${versionInfo.version}/${jar}`);
         if (project && project.dependencies && project.dependencies.length > 0) {
           project.dependencies.forEach((dep) => {
             component = `${dep}_${versionInfo.scala}-spark_${versionInfo.spark}-${versionInfo.version}.jar`;
@@ -206,7 +207,7 @@ async function updateUser(req, res, next) {
         await MetalusUtils.mkdir(userJarDir, {recursive: true});
       }
       const sharedTemplatesDirectory = await getSharedTemplatesDir(MetalusUtils.getProjectJarsBaseDir(req));
-      await processJars([], metadataJars, userJarDir, false, false, (MAVEN_SETTINGS.additionalRepos || []).join(','),
+      await processJars([], metadataJars, userJarDir, false, false, additionalRepos,
         `${userJarDir}/staging`, metadataUser, sharedTemplatesDirectory);
     }
   } catch (err) {
@@ -295,9 +296,7 @@ async function listUploadedFiles(req, res, next) {
     exists = false;
   }
   const files = exists ? await MetalusUtils.readdir(userJarDir) : [];
-  if (files.length === 0) {
-    res.sendStatus(204);
-  } else {
+  if (files.length > 0) {
     const existingFiles = [];
     let fileStat;
     for await (const file of files) {
@@ -310,7 +309,8 @@ async function listUploadedFiles(req, res, next) {
         modifiedDate: fileStat.mtime
       });
     }
-    res.status(200).json({files: existingFiles});
+    const templatesJSON = JSON.parse(await MetalusUtils.readfile(`${getTemplatesDir(req)}/templates.json`));
+    res.status(200).json({ files: existingFiles, additionalRepos: templatesJSON.additionalRepos || [] });
   }
 }
 

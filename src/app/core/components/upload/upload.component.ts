@@ -54,14 +54,20 @@ export class UploadComponent implements OnInit {
     this.authService.userItemSelection.subscribe(data => {
       this.user = data;
       if (this.user) {
-        this.filesService.getFiles(this.user).subscribe(d => this.uploadedFiles = d);
+        this.filesService.getFiles(this.user).subscribe((d) => {
+          this.uploadedFiles = d.files;
+          this.additionalRepos = d.additionalRepos;
+        });
       }
     });
   }
 
   ngOnInit(): void {
     if (this.user) {
-      this.filesService.getFiles(this.user).subscribe(data => this.uploadedFiles = data);
+      this.filesService.getFiles(this.user).subscribe((data) => {
+        this.uploadedFiles = data.files;
+        this.additionalRepos = data.additionalRepos;
+      });
     }
   }
 
@@ -95,7 +101,8 @@ export class UploadComponent implements OnInit {
       this.filesService.getFiles(this.user).subscribe(data => {
         this.uploadSuccessful = true;
         this.uploading = false;
-        this.uploadedFiles = data;
+        this.uploadedFiles = data.files;
+        this.additionalRepos = data.additionalRepos;
         this.files = new Set();
       });
     });
@@ -118,8 +125,9 @@ export class UploadComponent implements OnInit {
     deleteStepDialog.afterClosed().subscribe(confirmation => {
       if (confirmation) {
         this.filesService.removeFile(this.user, fileName).subscribe( () => {
-          this.filesService.getFiles(this.user).subscribe(d => {
-            this.uploadedFiles = d;
+          this.filesService.getFiles(this.user).subscribe((d) => {
+            this.uploadedFiles = d.files;
+            this.additionalRepos = d.additionalRepos;
           });
         });
       }

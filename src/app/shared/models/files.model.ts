@@ -8,4 +8,5 @@ export interface UploadedFile {
 
 export interface GetFilesResponse {
   files: UploadedFile[];
+  additionalRepos: string[];
 }

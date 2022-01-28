@@ -11,18 +11,15 @@ import {GetFilesResponse, UploadedFile} from "../models/files.model";
 export class FilesService {
   constructor(private http: HttpClient) {}
 
-  getFiles(user: User): Observable<UploadedFile[]> {
+  getFiles(user: User): Observable<GetFilesResponse> {
     return this.http
       .get<GetFilesResponse>(`/api/v1/users/${user.id}/project/${user.defaultProjectId}/files`, { observe: 'response' })
       .pipe(
         map((response) => {
           if (response && response.body) {
-            return response.body.files.map((p) => {
-              delete p['_id'];
-              return p;
-            });
+            return response.body;
           }
-          return [];
+          return { files: [], additionalRepos: []};
         }),
         catchError((err) => throwError(err))
       );
