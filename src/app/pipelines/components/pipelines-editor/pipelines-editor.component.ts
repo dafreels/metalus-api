@@ -52,6 +52,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
   selectedPipeline: Pipeline;
   _pipeline: Pipeline;
   selectedStep: PipelineStep;
+  selectedStepTemplate: Step;
   stepTemplate = {};
   selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
@@ -284,6 +285,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
 
   stepSelected(data: DesignerElement) {
     this.selectedStep = data.data as PipelineStep;
+    this.selectedStepTemplate = this.steps.find(s => s.id === this.selectedStep.stepId);
     this.getStepParamTemplate(this.selectedStep);
     if (this.selectedStep.params.length > 0) {
       if (this.selectedStep.params[0].name === 'executeIfEmpty') {
@@ -324,6 +326,9 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
       parameterType: undefined,
       description: 'Number of times to retry this step if an exception is thrown'
     };
+    if (this.selectedStepTemplate) {
+      this.selectedStep.params.forEach(p => p.parameterTemplate = this.selectedStepTemplate.params.find(p1 => p1.name === p.name));
+    }
     this.selectedStep.params.unshift(retry);
     this.selectedStep.params.unshift(executeIfEmpty);
     this.selectedStep.type.toLocaleLowerCase() === 'branch'

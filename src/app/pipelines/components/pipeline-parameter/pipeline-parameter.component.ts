@@ -92,23 +92,24 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     if (stepParameter.language) {
       this.isAScriptParameter = stepParameter.language;
       this.parameterType = 'script';
-    } else if (stepParameter.type === 'script') {
+    } else if (stepParameter.type === 'script' ||
+      (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'script')) {
       this.isAScriptParameter = 'script';
       this.parameterType = 'script';
-    } else if (stepParameter.className && stepParameter.className === 'com.acxiom.pipeline.steps.Schema') {
+    } else if (stepParameter.className && (stepParameter.className === 'com.acxiom.pipeline.steps.Schema' ||
+      stepParameter.type !== 'script')) {
       this.isAnObjectParameter = stepParameter.className;
       this.parameterType = 'object';
-    } else if (stepParameter.className && stepParameter.type !== 'script') {
-      this.isAnObjectParameter = stepParameter.className;
-      this.parameterType = 'object';
-    } else if (stepParameter.type === 'object') {
+    } else if (stepParameter.type === 'object' ||
+      (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'object')) {
       this.isAnObjectParameter = 'object';
       this.parameterType = 'object';
     } else if (stepParameter.type === 'text' && this.template) {
       stepParameter.type = 'template';
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
-    } else if (stepParameter.type === 'list') {
+    } else if (stepParameter.type === 'list' ||
+      (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'list')) {
       this.parameterType = 'list';
     }
     if (
@@ -190,7 +191,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
             let value;
             let type;
             let extraPath;
-            this.parameters = stepParameter.value.split('||').map((e) => {
+            this.parameters = stepParameter.value.split('||').map((e, index) => {
               extraPath = undefined;
               const isAPipeline = this.pipelinesData.find(
                 (pipeline) => `&${pipeline.id}` === e
@@ -200,7 +201,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
                 type = 'pipeline';
               } else {
                 value = e.trim();
-                type = mappedType ? this.parameterType : SharedFunctions.getType(value, stepParameter.type);
+                type = mappedType && index === 0 ? this.parameterType : SharedFunctions.getType(value, stepParameter.type);
               }
               if (
                 value &&
