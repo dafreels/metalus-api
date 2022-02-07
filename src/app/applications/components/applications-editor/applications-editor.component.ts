@@ -23,7 +23,6 @@ import {
 import {ErrorModalComponent} from "../../../shared/components/error-modal/error-modal.component";
 import {MatDialog} from "@angular/material/dialog";
 import {DndDropEvent, DropEffect} from "ngx-drag-drop";
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
 import * as Ajv from "ajv";
 import {StepsService} from "../../../steps/steps.service";
 import {AuthService} from "../../../shared/services/auth.service";
@@ -63,7 +62,6 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   applications: Application[];
   pipelines: Pipeline[];
   availablePipelines: Pipeline[] = [];
-  selectedPipelines: Pipeline[] = [];
   packageObjects: PackageObject[];
   applicationValidator;
   executionTemplates: ExecutionTemplate[] = [{
@@ -364,6 +362,10 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       this.createModelNode(model, execution, -1, -1);
       execution.pipelines = [];
       execution.pipelineIds.forEach(pid => execution.pipelines.push(pipelineList.find(p => p.id === pid)));
+      if (execution.evaluationPipelineIds) {
+        execution.evaluationPipelines = [];
+        execution.evaluationPipelineIds.forEach(pid => execution.evaluationPipelines.push(pipelineList.find(p => p.id === pid)));
+      }
     });
     // Create connections
     const connectedNodes = [];
@@ -497,33 +499,15 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
 
   handleExecutionSelection(event: DesignerElement) {
     const execution = event.data as ExecutionTemplate;
-    let pipelines = [];
-    const executionPipelines = execution.pipelines || [];
     // pipelineIds override pipelines
-    let pipeline;
     if (execution.pipelineIds && execution.pipelineIds.length > 0) {
-      execution.pipelineIds.forEach((id) => {
-        // See if the execution pipelines have the pipeline we need
-        executionPipelines.forEach((pipe) => {
-          if (pipe.id === id) {
-            pipeline = pipe;
-          }
-        });
-        // Grab it from the global pipelines
-        if (!pipeline) {
-          this.pipelines.forEach((pipe) => {
-            if (pipe.id === id) {
-              pipeline = pipe;
-            }
-          });
-          executionPipelines.push(pipeline);
-          execution.pipelines = executionPipelines;
-        }
-        pipelines.push(pipeline);
-        pipeline = null;
-      });
+      execution.pipelines = this.convertPipelineIds(execution.pipelineIds, execution.pipelines || []);
     } else {
-      pipelines = execution.pipelines || [];
+      execution.pipelines = execution.pipelines || [];
+    }
+    const pipelines = execution.pipelines
+    if (execution.evaluationPipelineIds && execution.evaluationPipelineIds.length > 0) {
+      execution.evaluationPipelines = this.convertPipelineIds(execution.evaluationPipelineIds, execution.evaluationPipelines || []);
     }
 
     // Use the embedded pipelines instead of the global pipelines
@@ -538,9 +522,24 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       }
       return !existingPipeline;
     });
-    this.selectedPipelines = pipelines;
     this.selectedElement = event;
     this.selectedExecution = execution;
+  }
+
+  private convertPipelineIds(pipelineIds, executionPipelines: Pipeline[]) {
+    let pipeline;
+    const pipelines: Pipeline[] = [];
+    pipelineIds.forEach((id) => {
+      // See if the execution pipelines have the pipeline we need
+      pipeline = executionPipelines.find(p => p.id === id);
+      // Grab it from the global pipelines
+      if (!pipeline) {
+        pipeline = this.pipelines.find(p => p.id === id);
+      }
+      pipelines.push(pipeline);
+      pipeline = null;
+    });
+    return pipelines;
   }
 
   openSparkConfEditor() {
@@ -675,24 +674,6 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     }
   }
 
-  dropPipeline(event: CdkDragDrop<Pipeline[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
-    this.validateApplication();
-  }
-
   private generateApplication(includePipelines = false) {
     const application = SharedFunctions.clone(this.selectedApplication);
     const pipelines = [];
@@ -724,46 +705,12 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
         }
       });
       if (execution.pipelines && execution.pipelines.length > 0) {
-        execution.pipelineIds = [];
-        execution.pipelines.forEach((pipeline) => {
-          execution.pipelineIds.push(pipeline.id);
-          if (pipelines.findIndex(p => p.id === pipeline.id) === -1) {
-            pipelines.push(pipeline);
-            pipeline.steps.forEach((step) => {
-              if (step.type === 'step-group') {
-                stepParameter = step.params.find(
-                  (p) => p.name === 'pipelineId'
-                );
-                if (
-                  stepParameter &&
-                  stepParameter.value &&
-                  stepParameter.value.trim().length > 0
-                ) {
-                  this.setGlobalPipeline(
-                    stepParameter.value,
-                    pipelineIds,
-                    pipelines
-                  );
-                } else {
-                  stepParameter = step.params.find((p) => p.name === 'pipeline');
-                  if (
-                    stepParameter &&
-                    stepParameter.type === 'pipeline' &&
-                    stepParameter.value &&
-                    stepParameter.value.trim().length > 0
-                  ) {
-                    this.setGlobalPipeline(
-                      stepParameter.value.substring(0),
-                      pipelineIds,
-                      pipelines
-                    );
-                  }
-                }
-              }
-            });
-          }
-        });
+        execution.pipelineIds = this.updatePipelineIds(execution.pipelines);
         delete execution.pipelines;
+      }
+      if (execution.evaluationPipelines && execution.evaluationPipelines.length > 0) {
+        execution.evaluationPipelineIds = this.updatePipelineIds(execution.evaluationPipelines);
+        delete execution.evaluationPipelines;
       }
     });
     if (includePipelines) {
@@ -773,6 +720,50 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     application.layout = layout;
     application.project = this.user.projects.find(p => p.id === this.user.defaultProjectId);
     return application;
+  }
+
+  private updatePipelineIds(pipelines) {
+    const pipelineIds = [];
+    let stepParameter;
+    pipelines.forEach((pipeline) => {
+      pipelineIds.push(pipeline.id);
+      if (pipelines.findIndex(p => p.id === pipeline.id) === -1) {
+        pipelines.push(pipeline);
+        pipeline.steps.forEach((step) => {
+          if (step.type === 'step-group') {
+            stepParameter = step.params.find(
+              (p) => p.name === 'pipelineId'
+            );
+            if (
+              stepParameter &&
+              stepParameter.value &&
+              stepParameter.value.trim().length > 0
+            ) {
+              this.setGlobalPipeline(
+                stepParameter.value,
+                pipelineIds,
+                pipelines
+              );
+            } else {
+              stepParameter = step.params.find((p) => p.name === 'pipeline');
+              if (
+                stepParameter &&
+                stepParameter.type === 'pipeline' &&
+                stepParameter.value &&
+                stepParameter.value.trim().length > 0
+              ) {
+                this.setGlobalPipeline(
+                  stepParameter.value.substring(0),
+                  pipelineIds,
+                  pipelines
+                );
+              }
+            }
+          }
+        });
+      }
+    });
+    return pipelineIds;
   }
 
   private setGlobalPipeline(
@@ -1102,5 +1093,20 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   templateValueChanged(value) {
     const execution = SharedFunctions.mergeDeep(this.selectedExecution, value);
     this.selectedExecution = Object.assign(this.selectedExecution, execution);
+  }
+
+  removeExecutionPipeline(pipeline: Pipeline, evaluation: boolean) {
+    const pipelineList = evaluation ? this.selectedExecution.evaluationPipelines : this.selectedExecution.pipelines;
+    pipelineList.splice(pipelineList.findIndex(p => p.id === pipeline.id), 1);
+    this.validateApplication();
+  }
+
+  appendPipeline(pipeline: Pipeline, evaluation: boolean) {
+    if (evaluation && !this.selectedExecution.evaluationPipelines) {
+      this.selectedExecution.evaluationPipelines = [];
+    }
+    const pipelineList = evaluation ? this.selectedExecution.evaluationPipelines : this.selectedExecution.pipelines;
+    pipelineList.push(pipeline);
+    this.validateApplication();
   }
 }

@@ -1379,6 +1379,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
             break;
           default:
         }
+        delete param.parameterTemplate;
       });
     }
   }

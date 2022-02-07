@@ -27,6 +27,26 @@ export class StepsService {
               steps.push(StaticSteps.MERGE_STEP);
               steps.push(StaticSteps.STEP_GROUP);
               steps.push(StaticSteps.CUSTOM_BRANCH_STEP);
+              steps.push(StaticSteps.EXCEPTION_SKIP);
+              steps.push(StaticSteps.EXCEPTION_PIPELINE);
+              if (!steps.find(s => s.id === 'a7e17c9d-6956-4be0-a602-5b5db4d1c08b')) {
+                steps.push(StaticSteps.SCALA_SCRIPT_STEP_BASE)
+              }
+              if (!steps.find(s => s.id === '8bf8cef6-cf32-4d85-99f4-e4687a142f84')) {
+                steps.push(StaticSteps.SCALA_SCRIPT_STEP_OBJ)
+              }
+              if (!steps.find(s => s.id === '3ab721e8-0075-4418-aef1-26abdf3041be')) {
+                steps.push(StaticSteps.SCALA_SCRIPT_STEP_OBJS)
+              }
+              if (!steps.find(s => s.id === '5e0358a0-d567-5508-af61-c35a69286e4e')) {
+                steps.push(StaticSteps.JAVASCRIPT_STEP_BASE)
+              }
+              if (!steps.find(s => s.id === '570c9a80-8bd1-5f0c-9ae0-605921fe51e2')) {
+                steps.push(StaticSteps.JAVASCRIPT_STEP_OBJ)
+              }
+              if (!steps.find(s => s.id === 'f92d4816-3c62-4c29-b420-f00994bfcd86')) {
+                steps.push(StaticSteps.JAVASCRIPT_STEP_OBJS)
+              }
             }
             sessionStorage.setItem('steps', JSON.stringify(steps));
             return steps;

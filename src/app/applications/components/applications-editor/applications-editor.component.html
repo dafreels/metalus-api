@@ -129,9 +129,24 @@
                   </mat-slide-toggle>
                 </span>
                 <mat-form-field *ngIf="selectedExecution">
+                  <mat-label>Execution Type:</mat-label>
+                  <mat-select [(ngModel)]="selectedExecution.executionType">
+                    <mat-option value="pipeline">Normal</mat-option>
+                    <mat-option value="fork">Fork</mat-option>
+                    <mat-option value="join">Join</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <input matInput placeholder="Fork Values Mapping"
+                         [(ngModel)]="selectedExecution.forkByValue"
+                         name="forkByValue"
+                         [disabled]="!selectedExecution || selectedExecution.executionType !== 'fork'"
+                         [required]="selectedExecution && selectedExecution.executionType === 'fork'">
+                </mat-form-field>
+                <mat-form-field *ngIf="selectedExecution">
                   <mat-label>Initial Pipeline Id</mat-label>
-                  <mat-select required [(ngModel)]="selectedExecution.initialPipelineId">
-                    <mat-option *ngFor="let pipeline of selectedPipelines" value="pipeline.id">
+                  <mat-select [(ngModel)]="selectedExecution.initialPipelineId">
+                    <mat-option *ngFor="let pipeline of selectedExecution.pipelines" value="pipeline.id">
                       {{pipeline.name}}
                     </mat-option>
                   </mat-select>
@@ -142,34 +157,74 @@
                                               [model]="selectedExecution"></app-preview-parameter-editor>
               </div>
             </mat-expansion-panel>
+            <mat-expansion-panel [disabled]="!selectedExecution || selectedExecution.executionType === 'join'">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Conditional Pipelines</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="pipeline-container">
+                <h3>Selected
+                  <button mat-icon-button color="primary"
+                          matTooltip="Add Pipeline"
+                          style="margin-right: 5px;"
+                          [matMenuTriggerFor]="conditionalMenu" aria-label="Navigation">
+                    <mat-icon>add</mat-icon></button>
+                  <mat-menu #conditionalMenu="matMenu">
+                    <a mat-menu-item *ngFor="let pipeline of availablePipelines" (click)="appendPipeline(pipeline, true)">
+                      <div class="pipeline-box">{{pipeline.name}}</div>
+                    </a>
+                  </mat-menu>
+                </h3>
+                <mat-list>
+                  <mat-list-item *ngFor="let pipeline of selectedExecution?.evaluationPipelines">
+                    <div class="pipeline-box">
+                      {{pipeline.name}}
+                      <span>
+                      <button mat-icon-button color="primary"
+                              matTooltip="Edit Execution Pipeline Parameters"
+                              (click)="openPipelineParametersEditor(pipeline)"
+                              style="margin-right: 5px;">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary"
+                            matTooltip="Edit Global Pipeline Parameters"
+                            (click)="openPipelineParametersEditor(pipeline, false)"
+                            style="margin-right: 5px;">
+                      <mat-icon>language</mat-icon>
+                    </button>
+                      <button mat-icon-button color="primary"
+                              matTooltip="Remove"
+                              (click)="removeExecutionPipeline(pipeline, true)"
+                              style="margin-right: 5px;">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    </span>
+                    </div>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+            </mat-expansion-panel>
             <mat-expansion-panel [disabled]="!selectedExecution">
               <mat-expansion-panel-header>
                 <mat-panel-title>Pipelines</mat-panel-title>
               </mat-expansion-panel-header>
               <div class="pipeline-container">
-                <h3>Available</h3>
-                <div
-                  cdkDropList
-                  #availableList="cdkDropList"
-                  [cdkDropListData]="availablePipelines"
-                  [cdkDropListConnectedTo]="[selectedList]"
-                  class="pipeline-list"
-                  (cdkDropListDropped)="dropPipeline($event)">
-                  <div class="pipeline-box" *ngFor="let pipeline of availablePipelines" cdkDrag>{{pipeline.name}}</div>
-                </div>
-              </div>
-              <div class="pipeline-container">
-                <h3>Selected</h3>
-                <div
-                  cdkDropList
-                  #selectedList="cdkDropList"
-                  [cdkDropListData]="selectedExecution?.pipelines"
-                  [cdkDropListConnectedTo]="[availableList]"
-                  class="pipeline-list"
-                  (cdkDropListDropped)="dropPipeline($event)">
-                  <div class="pipeline-box" *ngFor="let pipeline of selectedExecution?.pipelines" cdkDrag>
-                    {{pipeline.name}}
-                    <span>
+                <h3>Selected
+                  <button mat-icon-button color="primary"
+                          matTooltip="Add Pipeline"
+                          style="margin-right: 5px;"
+                          [matMenuTriggerFor]="menu" aria-label="Navigation">
+                    <mat-icon>add</mat-icon></button>
+                  <mat-menu #menu="matMenu">
+                    <a mat-menu-item *ngFor="let pipeline of availablePipelines" (click)="appendPipeline(pipeline, false)">
+                      <div class="pipeline-box">{{pipeline.name}}</div>
+                    </a>
+                  </mat-menu>
+                </h3>
+                <mat-list>
+                  <mat-list-item *ngFor="let pipeline of selectedExecution?.pipelines">
+                    <div class="pipeline-box">
+                      {{pipeline.name}}
+                      <span>
                       <button mat-icon-button color="primary"
                               matTooltip="Edit Execution Parameters"
                               (click)="openPipelineParametersEditor(pipeline)"
@@ -182,9 +237,16 @@
                             style="margin-right: 5px;">
                       <mat-icon>language</mat-icon>
                     </button>
+                      <button mat-icon-button color="primary"
+                              matTooltip="Remove"
+                              (click)="removeExecutionPipeline(pipeline, false)"
+                              style="margin-right: 5px;">
+                      <mat-icon>remove</mat-icon>
+                    </button>
                     </span>
-                  </div>
-                </div>
+                    </div>
+                  </mat-list-item>
+                </mat-list>
               </div>
             </mat-expansion-panel>
             <mat-expansion-panel [disabled]="!selectedExecution">

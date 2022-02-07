@@ -43,9 +43,12 @@ export interface Execution extends BaseApplicationProperties {
   id: string;
   parents: string[];
   pipelineIds?: string[];
+  evaluationPipelineIds?: string[];
   initialPipelineId: string;
   mergeGlobals: boolean;
   executionId?: string;
+  executionType?: string;
+  forkByValue?: string;
 }
 
 export interface ExecutionTemplate extends Execution, ClassComponentProperties {
@@ -56,6 +59,7 @@ export interface ExecutionTemplate extends Execution, ClassComponentProperties {
 
 export interface BaseApplicationProperties {
   pipelines?: Pipeline[];
+  evaluationPipelines?: Pipeline[];
   globals: object;
   pipelineListener: ClassInfo;
   securityManager: ClassInfo;

@@ -1,4 +1,4 @@
-import {Project} from "../shared/models/users.models";
+import {Project} from '../shared/models/users.models';
 
 export interface Step {
   id: string,
@@ -12,7 +12,7 @@ export interface Step {
   engineMeta?: {
     spark: string,
     pkg: string,
-    stepResults: StepResults[]
+    stepResults?: StepResults[]
   }
 }
 
@@ -159,5 +159,309 @@ export class StaticSteps {
         description: 'The values to use as the globals for the pipeline. Values may be mapped from the outer pipeline context.'
       }
     ]
+  };
+  static SCALA_SCRIPT_STEP_BASE: Step = {
+    id : 'a7e17c9d-6956-4be0-a602-5b5db4d1c08b',
+    category : 'Scripting',
+    description: 'Executes a script and returns the result',
+    displayName: 'Scala script Step',
+    engineMeta: {
+      spark: 'ScalaSteps.processScript',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'script',
+        name: 'script',
+        required: true,
+        language: 'scala',
+        parameterType: 'String',
+        description: 'A scala script to execute',
+        defaultValue: undefined,
+        className: undefined,
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static SCALA_SCRIPT_STEP_OBJ: Step = {
+    id : '8bf8cef6-cf32-4d85-99f4-e4687a142f84',
+    category : 'Scripting',
+    description: 'Executes a script with the provided object and returns the result',
+    displayName: 'Scala script Step with additional object provided',
+    engineMeta: {
+      spark: 'ScalaSteps.processScriptWithValue',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'script',
+        name: 'script',
+        required: true,
+        language: 'scala',
+        parameterType: 'String',
+        description: 'A scala script to execute',
+        defaultValue: undefined,
+        className: undefined,
+      },
+      {
+        type: 'text',
+        name: 'value',
+        required: true,
+        parameterType: 'Any',
+        description: 'A value to pass to the script',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        type: 'text',
+        name: 'type',
+        required: false,
+        parameterType: 'String',
+        description: 'The type of the value to pass to the script',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static SCALA_SCRIPT_STEP_OBJS: Step = {
+    id : '3ab721e8-0075-4418-aef1-26abdf3041be',
+    category : 'Scripting',
+    description: 'Executes a script with the provided object and returns the result',
+    displayName: 'Scala script Step with additional objects provided',
+    engineMeta: {
+      spark: 'ScalaSteps.processScriptWithValues',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'script',
+        name: 'script',
+        required: true,
+        language: 'scala',
+        parameterType: 'String',
+        description: 'A scala script to execute',
+        defaultValue: undefined,
+        className: undefined,
+      },
+      {
+        type: 'object',
+        name: 'values',
+        required: true,
+        parameterType: 'Map[String,Any]',
+        description: 'Map of name/value pairs that will be bound to the script',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        type: 'object',
+        name: 'types',
+        required: false,
+        parameterType: 'Map[String,String]',
+        description: 'Map of type overrides for the values provided',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        type: 'boolean',
+        name: 'unwrapOptions',
+        required: false,
+        parameterType: 'Boolean',
+        description: 'Flag to toggle option unwrapping behavior',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static JAVASCRIPT_STEP_BASE: Step = {
+    id : '5e0358a0-d567-5508-af61-c35a69286e4e',
+    category : 'Scripting',
+    description: 'Executes a script and returns the result',
+    displayName: 'Javascript Step',
+    engineMeta: {
+      spark: 'JavascriptSteps.processScript',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'script',
+        name: 'script',
+        required: true,
+        language: 'javascript',
+        parameterType: 'String',
+        description: 'Javascript to execute',
+        defaultValue: undefined,
+        className: undefined,
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static JAVASCRIPT_STEP_OBJ: Step = {
+    id : '570c9a80-8bd1-5f0c-9ae0-605921fe51e2',
+    category : 'Scripting',
+    description: 'Executes a script with single object provided and returns the result',
+    displayName: 'Javascript Step with single object provided',
+    engineMeta: {
+      spark: 'JavascriptSteps.processScriptWithValue',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'script',
+        name: 'script',
+        required: true,
+        language: 'javascript',
+        parameterType: 'String',
+        description: 'Javascript script to execute',
+        defaultValue: undefined,
+        className: undefined,
+      },
+      {
+        type: 'text',
+        name: 'value',
+        required: true,
+        parameterType: 'Any',
+        description: 'Value to bind to the script',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static JAVASCRIPT_STEP_OBJS: Step = {
+    id : 'f92d4816-3c62-4c29-b420-f00994bfcd86',
+    category : 'Scripting',
+    description: 'Executes a script with map of objects provided and returns the result',
+    displayName: 'Javascript Step with map of objects provided',
+    engineMeta: {
+      spark: 'JavascriptSteps.processScriptWithValues',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'script',
+        name: 'script',
+        required: true,
+        language: 'javascript',
+        parameterType: 'String',
+        defaultValue: undefined,
+        className: undefined,
+      },
+      {
+        type: 'text',
+        name: 'values',
+        required: true,
+        parameterType: 'Map[String,Any]',
+        description: 'Map of name/value pairs to bind to the script',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        type: 'boolean',
+        name: 'unwrapOptions',
+        required: false,
+        parameterType: 'Boolean',
+        description: 'Flag to control option unwrapping behavior',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static EXCEPTION_SKIP: Step = {
+    id : '403b1b7e-13d1-4e28-856a-6c1185442b2c',
+    category : 'Exceptions',
+    description: 'Throws an Exception that will indicate that the current execution should be skipped. This exception is intended to be used in evaluation pipelines only.',
+    displayName: 'Skip Exception',
+    engineMeta: {
+      spark: 'ExceptionSteps.throwSkipExecutionException',
+      pkg: 'com.acxiom.pipeline.steps',
+      stepResults: [{
+        primaryType: 'com.acxiom.pipeline.PipelineStepResponse'
+      }]
+    },
+    params: [
+      {
+        type: 'text',
+        name: 'message',
+        required: true,
+        parameterType: 'String',
+        description: 'The message to log when the exception is thrown',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ],
+    type: 'Pipeline'
+  };
+  static EXCEPTION_PIPELINE: Step = {
+    id : 'fb6c6293-c51d-49ab-a77e-de389610cdd6c',
+    category : 'Exceptions',
+    description: 'Throws an Exception that will indicate that the current pipeline should stop.',
+    displayName: 'Pipeline Exception',
+    engineMeta: {
+      spark: 'ExceptionSteps.throwPipelineException',
+      pkg: 'com.acxiom.pipeline.steps'
+    },
+    params: [
+      {
+        type: 'text',
+        name: 'message',
+        required: true,
+        parameterType: 'String',
+        description: 'The message to log when the exception is thrown',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        type: 'text',
+        name: 'cause',
+        required: false,
+        description: 'An optional exception to include in the thrown exception',
+        defaultValue: undefined,
+        parameterType: undefined,
+        className: undefined,
+        language: undefined
+      },
+      {
+        type: 'text',
+        name: 'stepIdOverride',
+        required: false,
+        parameterType: 'String',
+        description: 'An optional stepId to use instead of the default',
+        defaultValue: undefined,
+        className: undefined,
+        language: undefined
+      }
+    ],
+    type: 'Pipeline'
   };
 }
