@@ -58,6 +58,8 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
   designerModel: DesignerModel = DesignerComponent.newModel();
   stepCreated: Subject<PipelineStep> = new Subject<PipelineStep>();
   dndSubject: Subject<DesignerElement> = new Subject<DesignerElement>();
+  zoomSubject: Subject<number> = new Subject<number>();
+  zoomRatio = 1;
   isABranchStep: boolean;
   stepLookup = {};
   typeAhead: string[] = [];
@@ -193,6 +195,16 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
     });
   }
 
+  changeZoom(increase: boolean) {
+    this.zoomRatio += (increase ? 0.25 : -0.25);
+    this.zoomSubject.next(this.zoomRatio);
+  }
+
+  resetZoom() {
+    this.zoomRatio = 1;
+    this.zoomSubject.next(this.zoomRatio);
+  }
+
   private createStepGroupSteps() {
     if (this.stepGroupSteps &&
       this.stepGroupSteps.length > 0 &&
@@ -258,6 +270,7 @@ export class PipelinesEditorComponent extends ErrorHandlingComponent implements 
       category: 'pipeline',
     };
     this.selectedPipeline = JSON.parse(JSON.stringify(this._pipeline));
+    this.resetZoom();
     this.newStep();
     this.enableNameEdit();
     this.loadPipelineToDesigner();

@@ -54,6 +54,8 @@ import {isArray} from "rxjs/internal-compatibility";
 export class ApplicationsEditorComponent extends ErrorHandlingComponent implements OnInit, OnDestroy {
   @ViewChild('canvas', { static: false }) canvas: ElementRef;
   @ViewChild('designerElement', {static: false}) designerElement: DesignerComponent;
+  zoomSubject: Subject<number> = new Subject<number>();
+  zoomRatio = 1;
   originalApplication: Application;
   selectedApplication: Application;
   selectedExecution: ExecutionTemplate;
@@ -672,6 +674,16 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     if (this.selectedElement) {
       this.selectedElement.name = this.selectedExecution.id;
     }
+  }
+
+  changeZoom(increase: boolean) {
+    this.zoomRatio += (increase ? 0.25 : -0.25);
+    this.zoomSubject.next(this.zoomRatio);
+  }
+
+  resetZoom() {
+    this.zoomRatio = 1;
+    this.zoomSubject.next(this.zoomRatio);
   }
 
   private generateApplication(includePipelines = false) {

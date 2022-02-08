@@ -48,6 +48,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
   @Input() addElementSubject: Subject<DesignerElement>;
   @Input() addElementOutput: Subject<DesignerElementAddOutput>;
   @Input() useGroups: boolean = false;
+  @Input() zoomSubject: Subject<number>;
   model: DesignerModel;
   @Output() designerDropEvent = new EventEmitter<DndDropEvent>();
   @Output() modelChanged = new EventEmitter();
@@ -104,6 +105,12 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
           name: request.output,
           nodeId
         }
+      }));
+    }
+    if (this.zoomSubject) {
+      this.subscriptions.push(this.zoomSubject.subscribe((ratio) => {
+        this.canvas.nativeElement.style.transform = `scale(${ratio})`;
+        this.jsPlumbInstance.setZoom(ratio);
       }));
     }
     this.populateFromModel();

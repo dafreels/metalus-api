@@ -68,8 +68,17 @@
             <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0" (click)="autoLayout()">
               Autolayout
             </button>
-              <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0 || !selectedPipeline || selectedPipeline.steps.length === 0" (click)="refreshStepMetadata('')">
+            <button mat-button color="primary" style="margin-right: 5px;" [disabled]="errors.length > 0 || !selectedPipeline || selectedPipeline.steps.length === 0" (click)="refreshStepMetadata('')">
               Refresh Steps
+            </button>
+            <button mat-icon-button color="primary" matTooltip="Zoom In" (click)="changeZoom(true)">
+              <mat-icon>zoom_in</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" matTooltip="Reset Zoom" (click)="resetZoom()">
+              <mat-icon>fullscreen</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" matTooltip="Zoom Out" (click)="changeZoom(false)">
+              <mat-icon>zoom_out</mat-icon>
             </button>
           </span>
           </mat-card-content>
@@ -78,6 +87,7 @@
 
       <app-designer
         [addElementSubject]="dndSubject"
+        [zoomSubject]="zoomSubject"
         (designerDropEvent)="addStep($event)"
         (elementSelected)="stepSelected($event)"
         (elementAction)="handleElementAction($event)"

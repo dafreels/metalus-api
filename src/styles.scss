@@ -1,9 +1,9 @@
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
 @import '~@angular/material/theming';
 @import "~jsoneditor/dist/jsoneditor.min.css";
 @include mat-core();
 // Define a theme.
-$primary: mat-palette($mat-deep-purple);
+$primary: mat-palette($mat-blue-grey);
 $accent:  mat-palette($mat-amber, A200, A100, A400);
 $theme: mat-light-theme($primary, $accent);
 // Include all theme styles for the components.
@@ -38,7 +38,7 @@ mat-table {
     display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 80%;   
+    max-width: 80%;
   }
 }
 .designer-node-step-group {
