@@ -104,13 +104,13 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'object')) {
       this.isAnObjectParameter = 'object';
       this.parameterType = 'object';
+    } else if (stepParameter.type === 'list' ||
+      (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'list')) {
+      this.parameterType = 'list';
     } else if (stepParameter.type === 'text' && this.template) {
       stepParameter.type = 'template';
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
-    } else if (stepParameter.type === 'list' ||
-      (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'list')) {
-      this.parameterType = 'list';
     }
     if (
       stepParameter.type !== 'result' &&
@@ -149,7 +149,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     if (stepParameter) {
       this.parameter = stepParameter;
       this.parameterName = stepParameter.name;
-      switch (stepParameter.type.toLowerCase()) {
+      switch (this.parameterType) {
         case 'boolean':
         case 'integer':
           this.complexParameter = false;
