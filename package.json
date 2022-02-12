@@ -43,7 +43,7 @@
     "@ngx-formly/schematics": "^5.10.12",
     "@types/dagre": "^0.7.44",
     "acorn": "^7.1.1",
-    "ajv": "^6.11.0",
+    "ajv": "^6.12.3",
     "ang-jsoneditor": "^1.9.4",
     "angular6-json-schema-form": "8.0.0",
     "axios": "^0.21.1",
