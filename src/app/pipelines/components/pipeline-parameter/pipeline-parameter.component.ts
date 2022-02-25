@@ -13,6 +13,7 @@ import {TreeEditorComponent} from '../../../shared/components/tree-editor/tree-e
 import {ScalaScriptComponent} from 'src/app/shared/scala-script/scala-script.component';
 import { PackageObjectsService } from 'src/app/core/package-objects/package-objects.service';
 import {SchemaEditorModalComponent} from "../../../shared/components/schema-editor/modal/schema-editor-modal.component";
+import {PrimitiveEditorDialogComponent} from "../../../applications/components/primitive-editor/primitive-editor-dialog.component";
 
 export interface SplitParameter {
   id: number;
@@ -94,7 +95,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       this.parameterType = 'script';
     } else if (stepParameter.type === 'script' ||
       (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'script')) {
-      this.isAScriptParameter = 'script';
+      this.isAScriptParameter = stepParameter.parameterTemplate ? stepParameter.parameterTemplate.language : 'script';
       this.parameterType = 'script';
     } else if (stepParameter.className && (stepParameter.className === 'com.acxiom.pipeline.steps.Schema' ||
       stepParameter.type !== 'script')) {
@@ -599,5 +600,20 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     this.parameter.value = value;
     this.parameter.type = 'template';
     this.parameterUpdate.emit(this.parameter);
+  }
+
+  changeDescription(parameter: PipelineStepParam) {
+    const dialog = this.displayDialogService.openDialog(
+      PrimitiveEditorDialogComponent,
+      {
+        width: '35%',
+        height: '25%',
+      },
+      parameter.description);
+    dialog.afterClosed().subscribe((desc) => {
+      if (desc) {
+        parameter.description = desc;
+      }
+    });
   }
 }

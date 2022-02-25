@@ -23,19 +23,19 @@
     <!-- Control Panel -->
     <div class="control-panel">
       <mat-card>
-        <mat-card-content>
+        <mat-card-content style="height: 74px">
           <div class="header-content">
             <div class="application-data">
-            <span>
-            <mat-form-field *ngIf="editName">
-              <input matInput placeholder=" Application Name" [(ngModel)]="selectedApplication.name" required
-                     (focusout)="disableNameEdit()"/>
-            </mat-form-field>
-            <span class="application-name" *ngIf="!editName">{{selectedApplication.name}}</span>
-            <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </span>
+              <span>
+                <mat-form-field *ngIf="editName">
+                  <input matInput placeholder=" Application Name" [(ngModel)]="selectedApplication.name" required
+                         (focusout)="disableNameEdit()"/>
+                </mat-form-field>
+                <span class="application-name" *ngIf="!editName">{{selectedApplication.name}}</span>
+                <button mat-icon-button color="primary" aria-label="Edit" *ngIf="!editName" (click)="enableNameEdit()">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </span>
               <span class="pipeline-id">ID: {{selectedApplication.id}}</span>
             </div>
             <span>
@@ -60,23 +60,28 @@
               <button mat-icon-button color="primary" matTooltip="Zoom In" (click)="changeZoom(true)">
                 <mat-icon>zoom_in</mat-icon>
               </button>
-              <button mat-icon-button color="primary" matTooltip="Reset Zoom" (click)="resetZoom()">
+              <button mat-icon-button color="primary" matTooltip="Reset Zoom" (click)="resetZoom()"
+                      [disabled]="zoomRatio === 1">
                 <mat-icon>fullscreen</mat-icon>
               </button>
-              <button mat-icon-button color="primary" matTooltip="Zoom Out" (click)="changeZoom(false)">
+              <button mat-icon-button color="primary" matTooltip="Zoom Out" (click)="changeZoom(false)"
+              [disabled]="zoomRatio <= 0.25">
                 <mat-icon>zoom_out</mat-icon>
               </button>
+              <button mat-icon-button [matMenuTriggerFor]="advancedMenu" aria-label="Advanced">
+                <mat-icon color="primary">more_vert</mat-icon>
+              </button>
+              <mat-menu #advancedMenu="matMenu">
+                <button mat-menu-item (click)="openSparkConfEditor()">Spark Settings</button>
+                <button mat-menu-item (click)="openMapEditor(selectedApplication)">Globals</button>
+                <button mat-menu-item [disabled]="selectedApplication.executions?.length === 0"
+                         (click)="openGlobalLinksEditor(selectedApplication)">Global Links</button>
+                <button mat-menu-item (click)="openClassOverridesEditor()">Class Overrides</button>
+                <button mat-menu-item (click)="openUDCsEditor()">User Defined Classes</button>
+                <button mat-menu-item (click)="openMapEditor(selectedApplication, 'applicationProperties')">Setup Properties</button>
+                <button mat-menu-item (click)="openPropertiesEditor()">Required Properties</button>
+              </mat-menu>
             </span>
-          </div>
-          <div style="text-align: center">
-            <button mat-button color="primary" (click)="openSparkConfEditor()">Spark Settings</button>
-            |<button mat-button color="primary" (click)="openMapEditor(selectedApplication)">Globals</button>
-            |<button mat-button color="primary" [disabled]="selectedApplication.executions?.length === 0"
-                     (click)="openGlobalLinksEditor(selectedApplication)">Global Links</button>
-            |<button mat-button color="primary" (click)="openClassOverridesEditor()">Class Overrides</button>
-            |<button mat-button color="primary" (click)="openUDCsEditor()">User Defined Classes</button>
-            |<button mat-button color="primary" (click)="openMapEditor(selectedApplication, 'applicationProperties')">Setup Properties</button>
-            |<button mat-button color="primary" (click)="openPropertiesEditor()">Required Properties</button>
           </div>
         </mat-card-content>
       </mat-card>
@@ -235,18 +240,18 @@
                     <div class="pipeline-box">
                       {{pipeline.name}}
                       <span>
-                      <button mat-icon-button color="primary"
+                      <button *ngIf="!useRuntimeProfile" mat-icon-button color="primary"
                               matTooltip="Edit Execution Parameters"
                               (click)="openPipelineParametersEditor(pipeline)"
                               style="margin-right: 5px;">
-                      <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-icon-button color="primary"
-                            matTooltip="Edit Global Parameters"
-                            (click)="openPipelineParametersEditor(pipeline, false)"
-                            style="margin-right: 5px;">
-                      <mat-icon>language</mat-icon>
-                    </button>
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button *ngIf="!useRuntimeProfile" mat-icon-button color="primary"
+                              matTooltip="Edit Global Parameters"
+                              (click)="openPipelineParametersEditor(pipeline, false)"
+                              style="margin-right: 5px;">
+                        <mat-icon>language</mat-icon>
+                      </button>
                       <button mat-icon-button color="primary"
                               matTooltip="Remove"
                               (click)="removeExecutionPipeline(pipeline, false)"
@@ -258,6 +263,85 @@
                   </mat-list-item>
                 </mat-list>
               </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel *ngIf="useRuntimeProfile" [disabled]="!selectedExecution || !runTimeProfile">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Parameters</mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-accordion *ngIf="selectedExecution && runTimeProfile">
+                <!-- New Code -->
+                <mat-expansion-panel *ngFor="let mparam of executionParameterMap | keyvalue: originalOrder">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title style="display: flex; justify-content: space-between">
+                      <span style="display: inline-flex;text-align: center">
+                        <mat-icon color="primary"
+                                  [color]="mparam.value.required ? 'accent' : 'primary'"
+                                  [matTooltip]="runTimeProfile.steps[mparam.value.stepId].description"
+                                  style="margin-right: 3px">
+                          info
+                        </mat-icon>
+                        {{mparam.value.stepId}}
+                      </span>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <mat-accordion>
+                    <mat-expansion-panel *ngFor="let param of mparam.value.entries">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title style="display: flex; justify-content: space-between">
+                          <span style="display: inline-flex;text-align: center">
+                            <mat-icon [color]="runTimeProfile.parameters[param.paramId]?.required ? 'warn' : 'primary'"
+                                      [matTooltip]="runTimeProfile.parameters[param.paramId]?.description"
+                                      style="margin-right: 3px">
+                              info
+                            </mat-icon>
+                            {{runTimeProfile.parameters[param.paramId]?.name}}
+                          </span>
+                          <span>
+                            <mat-slide-toggle
+                              matTooltip="Require this value be provided at Runtime"
+                              [(ngModel)]="runTimeProfile.executions[selectedExecution.id].parameters[param.paramId].setAtRuntime">
+                              Runtime
+                            </mat-slide-toggle>
+                          </span>
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <div>
+                        <div class="pipeline-box" *ngFor="let mapping of param.mappings">
+                          {{mapping.mappingName}}
+                          <span *ngIf="!mapping.defaultMapping">
+                            <mat-menu #globalMenu="matMenu">
+                              <button mat-menu-item (click)="openParameterEditor(param.paramId, mapping, true, false)">Shared</button>
+                              <button mat-menu-item (click)="openParameterEditor(param.paramId, mapping, false, false)">Local Execution</button>
+                              <button mat-menu-item [disabled]="!selectedExecution.parents || selectedExecution.parents.length === 0" (click)="openParameterEditor(param.paramId, mapping, false, true)">Execution Value</button>
+                            </mat-menu>
+                            <button mat-icon-button
+                                    color="primary"
+                                    [disabled]="mapping.type !== 'global'"
+                                    [matMenuTriggerFor]="globalMenu"
+                                    matTooltip="Edit Global"
+                                    style="margin-right: 5px;">
+                              <mat-icon [matBadge]="mapping.level === 'application' ? 'A' : 'E'"
+                                        matBadgeSize="small"
+                                        [matBadgeHidden]="!mapping.populated || mapping.type !== 'global'">language</mat-icon>
+                            </button>
+                            <button mat-icon-button
+                                    color="primary"
+                                    [disabled]="mapping.type === 'global'"
+                                    [matMenuTriggerFor]="globalMenu"
+                                    matTooltip="Edit Pipeline Parameter"
+                                    style="margin-right: 5px;">
+                              <mat-icon [matBadge]="mapping.level === 'application' ? 'A' : 'E'"
+                                        matBadgeSize="small"
+                                        [matBadgeHidden]="!mapping.populated || mapping.type === 'global'">more_vert</mat-icon>
+                            </button>
+                          </span>
+                          <span *ngIf="mapping.defaultMapping">(Default Value)</span>
+                        </div>
+                      </div>
+                    </mat-expansion-panel>
+                  </mat-accordion>
+                </mat-expansion-panel>
+              </mat-accordion>
             </mat-expansion-panel>
             <mat-expansion-panel [disabled]="!selectedExecution">
               <mat-expansion-panel-header>

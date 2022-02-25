@@ -10,6 +10,7 @@ import {CoreModule} from "../core/core.module";
 import {UdcEditorComponent} from "./components/udc-editor/udc-editor.component";
 import {GlobalLinksEditorComponent} from "./components/global-links-editor/global-links-editor.components";
 import {ComponentsEditorModalComponent} from "./components/components-editor/components-editor-modal.component";
+import {PrimitiveEditorDialogComponent} from "./components/primitive-editor/primitive-editor-dialog.component";
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import {ComponentsEditorModalComponent} from "./components/components-editor/com
     ComponentsEditorComponent,
     ComponentsEditorModalComponent,
     GlobalLinksEditorComponent,
+    PrimitiveEditorDialogComponent,
     SparkConfEditorComponent,
     UdcEditorComponent
   ],
@@ -31,6 +33,7 @@ import {ComponentsEditorModalComponent} from "./components/components-editor/com
     ComponentsEditorComponent,
     ComponentsEditorModalComponent,
     GlobalLinksEditorComponent,
+    PrimitiveEditorDialogComponent,
     SparkConfEditorComponent,
     UdcEditorComponent
   ]

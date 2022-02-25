@@ -74,10 +74,12 @@
             <button mat-icon-button color="primary" matTooltip="Zoom In" (click)="changeZoom(true)">
               <mat-icon>zoom_in</mat-icon>
             </button>
-            <button mat-icon-button color="primary" matTooltip="Reset Zoom" (click)="resetZoom()">
+            <button mat-icon-button color="primary" matTooltip="Reset Zoom" (click)="resetZoom()"
+                    [disabled]="zoomRatio === 1">
               <mat-icon>fullscreen</mat-icon>
             </button>
-            <button mat-icon-button color="primary" matTooltip="Zoom Out" (click)="changeZoom(false)">
+            <button mat-icon-button color="primary" matTooltip="Zoom Out" (click)="changeZoom(false)"
+                    [disabled]="zoomRatio <= 0.25">
               <mat-icon>zoom_out</mat-icon>
             </button>
           </span>

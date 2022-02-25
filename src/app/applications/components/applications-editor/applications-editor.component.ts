@@ -45,6 +45,10 @@ import {catchError, map} from "rxjs/operators";
 import {diff} from 'deep-object-diff';
 import {ErrorHandlingComponent} from "../../../shared/utils/error-handling-component";
 import {isArray} from "rxjs/internal-compatibility";
+import {Step} from "../../../steps/steps.model";
+import {ActivatedRoute} from "@angular/router";
+import {SchemaEditorModalComponent} from "../../../shared/components/schema-editor/modal/schema-editor-modal.component";
+import {PrimitiveEditorDialogComponent} from "../primitive-editor/primitive-editor-dialog.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -59,6 +63,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   originalApplication: Application;
   selectedApplication: Application;
   selectedExecution: ExecutionTemplate;
+  executionParameterMap: object;
   selectedElement: DesignerElement;
   designerModel: DesignerModel = DesignerComponent.newModel();
   applications: Application[];
@@ -103,6 +108,10 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   subscriptions: Subscription[] = [];
   private providers: Provider[];
   jobs: Job[];
+  private steps: Step[];
+
+  useRuntimeProfile = false;
+  runTimeProfile: { mappings: { pipeline: {}; globals: {} }; executions: {}; parameters: {} };
 
   constructor(
     private applicationsService: ApplicationsService,
@@ -115,7 +124,8 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     private authService: AuthService,
     private providersService: ProvidersService,
     private jobsService: JobsService,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,
+    route: ActivatedRoute) {
     super(dialog);
     this.user = this.authService.getUserInfo();
     this.subscriptions.push(
@@ -145,6 +155,11 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
         }
       }
       }));
+    route.queryParams
+      .subscribe(params => {
+          this.useRuntimeProfile = params.useRuntimeProfile && params.useRuntimeProfile.toLowerCase() === 'true';
+        }
+      );
   }
 
   ngOnInit(): void {
@@ -160,6 +175,9 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
             .compile(applicationSchema.definitions.applications);
         });
       });
+    });
+    this.stepsService.getSteps(true).subscribe((steps: Step[]) => {
+      this.steps = steps;
     });
     this.providersService.getProvidersList().subscribe(result => {
       this.providers = result;
@@ -353,7 +371,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     const model = DesignerComponent.newModel();
     this.executionLookup = {};
     const pipelineList = this.pipelines;
-    this.convertPipelineParameters(this.selectedApplication);
+    ApplicationsEditorComponent.convertPipelineParameters(this.selectedApplication);
     this.selectedApplication.executions.forEach((execution) => {
       if (execution.executionId && !execution['template']) {
         const template = this.executionTemplates.find((e) => e.id === execution.executionId);
@@ -373,7 +391,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     const connectedNodes = [];
     let connection;
     this.selectedApplication.executions.forEach((execution) => {
-      this.convertPipelineParameters(execution);
+      ApplicationsEditorComponent.convertPipelineParameters(execution);
       if (execution.parents) {
         execution.parents.forEach((parent) => {
           if (connectedNodes.indexOf(execution.id) === -1) {
@@ -400,10 +418,8 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       }
     });
     // See if automatic layout needs to be applied
-    if (
-      !this.selectedApplication.layout ||
-      Object.keys(this.selectedApplication.layout).length === 0
-    ) {
+    if (!this.selectedApplication.layout ||
+      Object.keys(this.selectedApplication.layout).length === 0) {
         DesignerComponent.performAutoLayout(model, this.designerElement);
         if (!this.selectedApplication.layout) {
           this.selectedApplication.layout = {};
@@ -415,11 +431,17 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
           };
         });
     }
+    // Create the runtime profile if it doesn't exist
+    if (this.useRuntimeProfile) {
+      // TODO Once this becomes a thing, pull the existing profile or include in the call to get applications
+      this.runTimeProfile = this.createRunProfile(this.selectedApplication);
+      console.log(JSON.stringify(this.runTimeProfile, null, 4));
+    }
     this.designerModel = model;
     this.validateApplication();
   }
 
-  private convertPipelineParameters(obj) {
+  private static convertPipelineParameters(obj) {
     if (isArray(obj.pipelineParameters)) {
       obj.pipelineParameters = {
         parameters: obj.pipelineParameters
@@ -524,6 +546,31 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       }
       return !existingPipeline;
     });
+    // Group the parameters for this execution by pipeline/step
+    if (this.useRuntimeProfile && this.runTimeProfile.executions[execution.id]) {
+      const parameterMap = {};
+      let entry;
+      let paramId;
+      let param;
+      Object.keys(this.runTimeProfile.executions[execution.id].parameters).forEach((key) => {
+        entry = this.runTimeProfile.executions[execution.id].parameters[key];
+        paramId = `${entry.pipelineId}::${entry.stepId}`
+        if (parameterMap[paramId]) {
+          param = parameterMap[paramId];
+        } else {
+          param = {
+            stepId: entry.stepId,
+            entries: [],
+          };
+          parameterMap[paramId] = param;
+        }
+        if (this.runTimeProfile.parameters[entry.paramId] && this.runTimeProfile.parameters[entry.paramId].required) {
+          param.required = true;
+        }
+        param.entries.push(entry);
+      });
+      this.executionParameterMap = parameterMap;
+    }
     this.selectedElement = event;
     this.selectedExecution = execution;
   }
@@ -689,12 +736,10 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   private generateApplication(includePipelines = false) {
     const application = SharedFunctions.clone(this.selectedApplication);
     const pipelines = [];
-    const pipelineIds = [];
     const executions = [];
     const layout = {};
     const connectionKeys = Object.keys(this.designerModel.connections);
     let execution;
-    let stepParameter;
     let connection;
     Object.keys(this.designerModel.nodes).forEach((key) => {
       execution = SharedFunctions.clone(this.designerModel.nodes[key].data.data);
@@ -1120,5 +1165,362 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     const pipelineList = evaluation ? this.selectedExecution.evaluationPipelines : this.selectedExecution.pipelines;
     pipelineList.push(pipeline);
     this.validateApplication();
+  }
+
+  openParameterEditor(paramName, mapping, applicationLevel, globalLink) {
+    /* TODO
+     * How will the user indicate whether the value should be application or execution level?
+     * User will have to indicate, otherwise how will we know when they are updating the value versus overriding at the execution level?
+     * Users may not understand application versus global so should it be presented as shared versus local?
+     * A toggle that indicates if the value should be 'Shared across executions'
+     * Save the data to the specified location
+     * Update the runtime profile to indicate the value has been set and the proper level
+     */
+    // Get the step parameter
+    const parameter = this.runTimeProfile.parameters[paramName];
+    let dialog;
+    if (parameter) {
+      // The type will determine the editor
+      // TODO use the applicationLevel flag to determine where to edit this value
+      // TODO Handle Global Links. How can the user indicate they want to map to the result in an upstream execution?
+      if (mapping.isGlobalLink || globalLink) {
+
+        dialog = this.displayDialogService.openDialog(
+          GlobalLinksEditorComponent,
+          generalDialogDimensions,
+          {
+            executions: Array.from(this.getParentExecutions(this.selectedExecution).values()),
+            globalLinks: this.getMappingValue(mapping, {}),
+            addName: mapping.mappingName,
+          });
+      } else {
+        switch (parameter.type) {
+          case 'script':
+            console.log(parameter.language);
+            dialog = this.displayDialogService.openDialog(
+              CodeEditorComponent,
+              generalDialogDimensions,
+              {
+                code: this.getMappingValue(mapping, ''),
+                language: parameter.language,
+                allowSave: true,
+              });
+            break;
+          case 'object':
+            console.log(parameter.parameterType)
+            console.log(parameter.className)
+            if (parameter.className === 'com.acxiom.pipeline.steps.Schema') {
+              dialog = this.displayDialogService.openDialog(
+                SchemaEditorModalComponent,
+                generalDialogDimensions,
+                this.getMappingValue(mapping, {
+                  attributes: []
+                }));
+            } else {
+              dialog = this.displayDialogService.openDialog(
+                TreeEditorComponent,
+                generalDialogDimensions,
+                {
+                  mappings: this.getMappingValue(mapping, {}),
+                }
+              );
+            }
+            break;
+          case 'list':
+            dialog = this.displayDialogService.openDialog(
+              TreeEditorComponent,
+              generalDialogDimensions,
+              {
+                mappings: this.getMappingValue(mapping, []),
+              }
+            );
+            break;
+          default:
+            console.log(`Type is ${parameter.type}`);
+            dialog = this.displayDialogService.openDialog(
+              PrimitiveEditorDialogComponent,
+              {
+                width: '35%',
+                height: '25%',
+              },
+              this.getMappingValue(mapping, ''));
+        }
+      }
+      if (dialog) {
+        dialog.afterClosed().subscribe(() => {
+          this.validateApplication();
+        });
+      }
+    }
+  }
+
+  private getParentExecutions(execution, parents = new Map()) {
+    let parent;
+    if (execution.parents && execution.parents.length > 0) {
+      execution.parents.forEach(executionId => {
+        parent = this.selectedApplication.executions.find(e => e.id === executionId);
+        if (!parents.has(executionId)) {
+          parents.set(executionId, parent);
+          this.getParentExecutions(parent, parents);
+        }
+      });
+    }
+    return parents;
+  }
+
+  private getMappingValue(mapping, defaultValue) {
+    let mappings = defaultValue;
+    const obj = mapping.level === 'application' ? this.selectedApplication : this.selectedExecution;
+    if (mapping.populated) {
+      if (mapping.isGlobalLink && obj.globals['GlobalLinks']) {
+        mappings = obj.globals['GlobalLinks'][mapping.mappingName];
+      } else if (mapping.type === 'global') {
+        mappings = obj.globals[mapping.mappingName];
+      } else {
+        mappings = obj.pipelineParameters.parameters.find(p => p.pipelineId === mapping.pipelineId)[mapping.mappingName];
+      }
+    }
+    return mappings;
+  }
+
+  /**
+   * Creates a run profile for a given application.
+   * @param application The application to use for the run profile.
+   */
+  createRunProfile(application: Application) {
+    const runTimeProfile = {
+      parameters: {},
+      mappings: {
+        globals: {},
+        pipeline: {}
+      },
+      executions: {},
+      steps: {}
+    };
+    application.executions.forEach(execution => this.addExecutionRuntimeProfile(execution, runTimeProfile, application));
+    return runTimeProfile;
+  }
+
+  /**
+   * Called when an execution is added to an application.
+   * @param execution The execution to process
+   * @param runTimeProfile The current run time profile
+   * @param application The owner application
+   */
+  private addExecutionRuntimeProfile(execution, runTimeProfile, application) {
+    let pipelines;
+    // Get all the pipelines for this execution
+    pipelines = this.gatherPipelines(execution.pipelines, execution.pipelineIds);
+    pipelines.concat(this.gatherPipelines(execution.evaluationPipelines, execution.evaluationPipelineIds));
+    // Iterate the pipelines building the profile
+    pipelines.forEach(pipeline => this.addPipelineRuntimeProfile(pipeline, execution, runTimeProfile, application));
+  }
+
+  /**
+   * Called when a pipeline is added to an execution.
+   * @param pipeline The pipeline to process
+   * @param execution The execution to process
+   * @param runTimeProfile The current run time profile
+   * @param application The owner application
+   */
+  private addPipelineRuntimeProfile(pipeline, execution, runTimeProfile, application) {
+    let value;
+    let values;
+    let paramId;
+    let stepTemplate;
+    let paramTemplate;
+    pipeline.steps.forEach((step) => {
+      if (step.params && step.params.length > 0) {
+        step.params.forEach((param) => {
+          value = param.value || param.defaultValue;
+          if (value && typeof value === 'string' &&
+            (value.indexOf('!') === 0 || value.indexOf('$') === 0 || value.indexOf('?') === 0)) {
+            values = value.split('||').map((s) => s.trim());
+            values.forEach((v, index) => {
+              // Create the execution lookup
+              if (!runTimeProfile.executions[execution.id]) {
+                runTimeProfile.executions[execution.id] = {
+                  parameters: {}
+                };
+              }
+              const type = SharedFunctions.getType(v, 'text');
+              paramId = `${step.id}_${pipeline.id}_${param.name}`;
+              switch (type) {
+                case 'global':
+                case 'runtime':
+                case 'mapped_runtime':
+                  let v1 = SharedFunctions.trimSpecialCharacter(v);
+                  // Create the parameter lookup
+                  if (!runTimeProfile.executions[execution.id].parameters[paramId]) {
+                    runTimeProfile.executions[execution.id].parameters[paramId] = {
+                      setAtRuntime: false,
+                      pipelineId: pipeline.id,
+                      stepId: step.id,
+                      paramName: param.name,
+                      paramId,
+                      mappings: [{
+                        index,
+                        mappingName: v1,
+                        type: type === 'global' ? type : 'pipeline',
+                        originalType: type,
+                      }]
+                    };
+                  } else {
+                    runTimeProfile.executions[execution.id].parameters[paramId].mappings.push({
+                      index,
+                      mappingName: v1,
+                      type: type === 'global' ? type : 'pipeline',
+                      originalType: type,
+                      pipelineId: pipeline.id,
+                      stepId: step.stepId,
+                    });
+                  }
+                  // Keep the mappings in index order
+                  runTimeProfile.executions[execution.id].parameters[paramId].mappings.sort((e1, e2) => e1.index - e2.index);
+                  // Create a parameter lookup
+                  if (!runTimeProfile.parameters[paramId]) {
+                    stepTemplate = this.steps.find(s => s.id === step.stepId) || { params: [] };
+                    paramTemplate = stepTemplate.params.find(p => p.name === param.name) || {};
+                    runTimeProfile.parameters[paramId] = {
+                      name: param.name || paramTemplate.displayName,
+                      type: paramTemplate.type,
+                      language: paramTemplate.language,
+                      className: paramTemplate.className,
+                      parameterType: paramTemplate.parameterType,
+                      description: param.description || paramTemplate.description,
+                      required: paramTemplate.required || false,
+                      stepId: step.stepId,
+                    };
+                  }
+                  if (!runTimeProfile.steps[step.id]) {
+                    // TODO Add step parameter name/descriptions
+                    runTimeProfile.steps[step.id] = {
+                      name: step.displayName,
+                      description: step.description
+                    }
+                  }
+                  const dotIndex = v1.indexOf('.');
+                  if (dotIndex > -1) {
+                    v1 = v1.substring(0, dotIndex);
+                  }
+                  // Add this location
+                  const populated = this.addRuntimeParameterLocation(type, execution, v1, runTimeProfile, application, pipeline, step, paramId);
+                  if (populated) {
+                    runTimeProfile.parameters[paramId].required = false;
+                  }
+                  break;
+                case 'text':
+                  if (runTimeProfile.parameters[paramId]) {
+                    runTimeProfile.parameters[paramId].required = false;
+                  }
+                  // Push the static value to the already existing mappings
+                  runTimeProfile.executions[execution.id].parameters[paramId].mappings.push({
+                    index,
+                    mappingName: v,
+                    type,
+                    originalType: type,
+                    pipelineId: pipeline.id,
+                    stepId: step.stepId,
+                    defaultMapping: true,
+                  });
+                  break;
+                default:
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  private addRuntimeParameterLocation(type, execution, mappingName, runTimeProfile, application, pipeline, step, paramId) {
+    // TODO Go ahead and update the execution parameter mapping entry with the populated info
+    let level = 'execution'
+    let populated = false;
+    let isGlobalLink = false;
+    if (type === 'global') {
+      if (execution.globals && execution.globals.GlobalLinks && execution.globals.GlobalLinks[mappingName]) {
+        isGlobalLink = true;
+        populated = true;
+      } else if (execution.globals && execution.globals[mappingName]) {
+        populated = true;
+      } else if (application.globals && application.globals.GlobalLinks && application.globals.GlobalLinks[mappingName]) {
+        level = 'application';
+        isGlobalLink = true;
+        populated = true;
+      } else if (application.globals && application.globals[mappingName]) {
+        level = 'application';
+        populated = true;
+      }
+
+      if (!runTimeProfile.mappings.globals[mappingName]) {
+        runTimeProfile.mappings.globals[mappingName] = {
+          references: []
+        };
+      }
+      if (!runTimeProfile.mappings.globals[mappingName].references.find(r => r.executionId === execution.id &&
+        r.pipelineId == pipeline.id &&
+      r.stepId === step.id)) {
+        runTimeProfile.mappings.globals[mappingName].references.push({
+          executionId: execution.id,
+          pipelineId: pipeline.id,
+          stepId: step.id,
+          level,
+          populated,
+          isGlobalLink
+        });
+      }
+    } else {
+      const mappingId = `${pipeline.id}_${mappingName}`;
+      if (!runTimeProfile.mappings.pipeline[mappingId]) {
+        runTimeProfile.mappings.pipeline[mappingId] = {
+          references: []
+        };
+      }
+      let params = (application.pipelineParameters.parameters || []).find(p => p.pipelineId === pipeline.id);
+      if (params && params.parameters[mappingName]) {
+        level = 'application';
+        populated = true;
+      }
+      params = (execution.pipelineParameters ? execution.pipelineParameters.parameters || [] : []).find(p => p.pipelineId === pipeline.id);
+      if (params && params.parameters[mappingName]) {
+        level = 'execution';
+        populated = true;
+      }
+      if (!runTimeProfile.mappings.pipeline[mappingId].references.find(r => r.executionId === execution.id &&
+        r.pipelineId == pipeline.id &&
+        r.stepId === step.id)) {
+        runTimeProfile.mappings.pipeline[mappingId].references.push({
+          executionId: execution.id,
+          pipelineId: pipeline.id,
+          stepId: step.id,
+          level,
+          populated,
+          isGlobalLink: false,
+        });
+      }
+    }
+    const param = runTimeProfile.executions[execution.id].parameters[paramId].mappings.find(p => p.mappingName === mappingName);
+    param.level = level;
+    param.populated = populated;
+    param.isGlobalLink = isGlobalLink;
+
+    return populated;
+  }
+
+  private gatherPipelines(pipelines, pipelineIds) {
+    const pipelineList = this.pipelines;
+    const pipelineArray = [];
+    (pipelines || []).forEach((pipeline) => {
+      if (pipelineArray.findIndex(p => p.id === pipeline.id) === -1) {
+        pipelineArray.push(pipeline);
+      }
+    });
+    (pipelineIds || []).forEach((pid) => {
+      if (pipelineArray.findIndex(p => p.id === pid) === -1) {
+        pipelineArray.push(pipelineList.find(p => p.id === pid));
+      }
+    });
+    return pipelineArray;
   }
 }

@@ -18,7 +18,14 @@
     <span class="step-description">{{selectedStep?.engineMeta?.spark || selectedStepTemplate?.engineMeta?.spark}}</span>
     <span class="step-label">Engine Meta Package:</span>
     <span class="step-description">{{selectedStep?.engineMeta?.pkg || selectedStepTemplate?.engineMeta.pkg}}</span>
-    <span class="step-label">Description:</span>
+    <span class="step-label">
+      Description
+      <button mat-icon-button color="primary" aria-label="Edit"
+              [disabled]="!selectedStep"
+              (click)="enableDescription()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </span>
     <mat-form-field>
       <textarea matInput [ngModel]="selectedStep?.description || selectedStepTemplate?.description" name="description" disabled="true"></textarea>
     </mat-form-field>

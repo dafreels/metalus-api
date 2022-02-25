@@ -369,6 +369,7 @@ export class StaticSteps {
         required: true,
         language: 'javascript',
         parameterType: 'String',
+        description: 'The javascript script to be executed',
         defaultValue: undefined,
         className: undefined,
       },

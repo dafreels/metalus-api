@@ -15,11 +15,13 @@ export interface GlobalLink {
 export interface GlobalLinkData {
   executions: Execution[];
   globalLinks: object;
+  addName?: string;
 }
 
 @Component({
   selector: 'global-links-editor',
   templateUrl: './global-links-editor.components.html',
+  styleUrls: ['./global-links-editor.components.scss'],
 })
 export class GlobalLinksEditorComponent {
   id = 0;
@@ -46,12 +48,15 @@ export class GlobalLinksEditorComponent {
         });
       });
     }
+    if (data.addName) {
+      this.addGlobalLink(data.addName);
+    }
   }
 
-  addGlobalLink() {
+  addGlobalLink(name = '') {
     this.globalLinks.push({
       id: this.id++,
-      name: '',
+      name,
       execution: null,
       pipeline: null,
       step: null,
