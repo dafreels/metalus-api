@@ -2,7 +2,7 @@ import {Component, Inject, Input, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {ProvidersService} from "../../../services/providers.service";
 import {Cluster, Provider} from "../../../models/providers.model";
-import {Application, Execution} from "../../../../applications/applications.model";
+import {Application, Execution, RunTimeProfile} from "../../../../applications/applications.model";
 import {Pipeline} from "../../../../pipelines/models/pipelines.model";
 import {PipelinesService} from "../../../../pipelines/services/pipelines.service";
 import {JobsService} from "../../../services/jobs.service";
@@ -22,6 +22,7 @@ export interface RunJobConfiguration {
   providers: Provider[];
   jobs: Job[];
   application: Application;
+  runTimeProfile?: RunTimeProfile;
 }
 
 export interface JobType {
@@ -141,30 +142,35 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
     // TODO Track required fields and disable run button
     // Separate the globals from the runtime
     let info;
-    const globals = {};
-    const pipelineParameters = {
+    let globals = {};
+    let pipelineParameters = {
       parameters: []
     };
-    let parameter;
-    Object.keys(this.missingParameters || {}).forEach(key => {
-      info = this.runtimeParameterInformation[key];
-      // TODO Strip the leading character from the value?
-      if (!info || info.type === 'global') {
-        globals[key] = this.missingParameters[key];
-      } else if (info.type === 'runtime' || info.type === 'mapped_runtime') {
-        new Set(info.pipelineIds).forEach(pipelineId => {
-          parameter = pipelineParameters.parameters.find(p => p.pipelineId === pipelineId);
-          if (!parameter) {
-            parameter = {
-              pipelineId: pipelineId,
-              parameters: {}
+    if (!this.data.runTimeProfile) {
+      let parameter;
+      Object.keys(this.missingParameters || {}).forEach(key => {
+        info = this.runtimeParameterInformation[key];
+        // TODO Strip the leading character from the value?
+        if (!info || info.type === 'global') {
+          globals[key] = this.missingParameters[key];
+        } else if (info.type === 'runtime' || info.type === 'mapped_runtime') {
+          new Set(info.pipelineIds).forEach(pipelineId => {
+            parameter = pipelineParameters.parameters.find(p => p.pipelineId === pipelineId);
+            if (!parameter) {
+              parameter = {
+                pipelineId: pipelineId,
+                parameters: {}
+              }
+              pipelineParameters.parameters.push(parameter);
             }
-            pipelineParameters.parameters.push(parameter);
-          }
-          parameter.parameters[key] = this.missingParameters[key];
-        });
-      }
-    });
+            parameter.parameters[key] = this.missingParameters[key];
+          });
+        }
+      });
+    } else {
+      globals = this.missingParameters['globals'];
+      pipelineParameters = this.missingParameters['pipelineParameters'];
+    }
     const body = {
       name: this.name,
       clusterId: this.selectedCluster.id,
@@ -204,7 +210,61 @@ export class RunJobComponent extends ErrorHandlingComponent implements OnInit {
       } else {
         this.pipelines = [];
       }
-      this.determineRequiredFields();
+      if (this.data.runTimeProfile) {
+        const parameters = {
+          globals: {},
+          pipelineParameters:{
+            parameters: []
+          }
+        };
+        let defaultValue;
+        let executionParameter;
+        let pipelineParameter;
+        Object.keys(this.data.runTimeProfile.executions).forEach((key) => {
+          Object.keys(this.data.runTimeProfile.executions[key].parameters).forEach((paramKey) => {
+            if (this.data.runTimeProfile.executions[key].parameters[paramKey].setAtRuntime) {
+              switch (this.data.runTimeProfile.parameters[paramKey].type) {
+                case 'object':
+                  defaultValue = {};
+                  break;
+                case 'list':
+                  defaultValue = [];
+                  break;
+                case 'boolean':
+                  defaultValue = false;
+                  break;
+                case 'integer':
+                  defaultValue = 0;
+                  break;
+                case 'scalascript':
+                case 'script':
+                case 'text':
+                default:
+                  defaultValue = ''
+              }
+              executionParameter = this.data.runTimeProfile.executions[key].parameters[paramKey];
+              executionParameter.mappings.forEach((mapping) => {
+                if (mapping.type === 'global') {
+                  parameters.globals[mapping.mappingName] = defaultValue;
+                } else {
+                  pipelineParameter = parameters.pipelineParameters.parameters.find(p => p.pipelineId === executionParameter.pipelineId);
+                  if (!pipelineParameter) {
+                    pipelineParameter = {
+                      pipelineId: executionParameter.pipelineId,
+                      parameters: {}
+                    }
+                    parameters.pipelineParameters.parameters.push(pipelineParameter);
+                  }
+                  pipelineParameter.parameters[mapping.mappingName] = defaultValue;
+                }
+              });
+            }
+          });
+        });
+        this.missingParameters = parameters;
+      } else {
+        this.determineRequiredFields();
+      }
     });
   }
 

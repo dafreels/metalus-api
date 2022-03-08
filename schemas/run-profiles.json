@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "jobs.json",
+  "$ref": "#/definitions/runProfiles",
+  "definitions": {
+    "runProfiles": {
+      "required": [
+        "id",
+        "applicationId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "applicationId": {
+          "type": "string"
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string"
+            },
+            "projectId": {
+              "type": "string"
+            }
+          }
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "mappings": {
+          "type": "object",
+          "properties": {
+            "globals": {
+              "type": "object"
+            },
+            "pipeline": {
+              "type": "object"
+            }
+          }
+        },
+        "executions": {
+          "type": "object"
+        },
+        "steps": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

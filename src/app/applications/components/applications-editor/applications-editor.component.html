@@ -111,6 +111,7 @@
         <mat-card-content>
           <app-designer [dataModel]="designerModel"
                         [zoomSubject]="zoomSubject"
+                        (modelChanged)="modelChanged($event)"
                         (designerDropEvent)="addExecution($event)"
                         (elementAction)="handleElementAction($event)"
                         (elementSelected)="handleExecutionSelection($event)"

@@ -1,0 +1,45 @@
+<div>
+  <mat-form-field>
+    <mat-label>Connector Type</mat-label>
+    <mat-select [(ngModel)]="connectorType">
+      <mat-option *ngFor="let connector of connectorTypes" value="{{connector}}">
+        {{connector}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div>
+  <mat-form-field *ngIf="connectorType === 'Batch'">
+    <mat-label>Connector</mat-label>
+    <mat-select (valueChange)="selectForm($event)" [(ngModel)]="_model.className">
+      <mat-option *ngFor="let connector of batchConnectors" value="{{connector.className}}">
+        {{connector.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="connectorType === 'File'">
+    <mat-label>Connector</mat-label>
+    <mat-select (valueChange)="selectForm($event)" [(ngModel)]="_model.className">
+      <mat-option *ngFor="let connector of fileConnectors" value="{{connector.className}}">
+        {{connector.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="connectorType === 'Streaming'">
+    <mat-label>Connector</mat-label>
+    <mat-select (valueChange)="selectForm($event)" [(ngModel)]="_model.className">
+      <mat-option *ngFor="let connector of streamingConnectors" value="{{connector.className}}">
+        {{connector.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div *ngIf="showEmbeddedVariablesToggle">
+  <mat-slide-toggle [(ngModel)]="_model.mapEmbeddedVariables"
+  matTooltip="When enabled, embedded globals (!) are allowed to be used.">Map global values?</mat-slide-toggle>
+</div>
+<div>
+  <form [formGroup]="form">
+    <formly-form [form]="form" [model]="model" [fields]="_fields"></formly-form>
+  </form>
+</div>

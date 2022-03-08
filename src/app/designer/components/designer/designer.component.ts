@@ -24,15 +24,7 @@ import {
   DesignerModel
 } from "../../designer-constants";
 import {SharedFunctions} from "../../../shared/utils/shared-functions";
-import {
-  BeforeStartEventParams, BrowserJsPlumbInstance,
-  Drag,
-  DragEventParams,
-  DragStartEventParams,
-  DragStopEventParams,
-  ElementDragHandler,
-  newInstance
-} from '@jsplumb/browser-ui';
+import {newInstance} from '@jsplumb/browser-ui';
 import {BranchNodeComponent} from "../branch-node/branch-node.component";
 import {GroupNodeComponent} from "../designer-group/group-node.component";
 

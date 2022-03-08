@@ -1,0 +1,11 @@
+<connector-form [model]="connector"
+                [showEmbeddedVariablesToggle]="data.showEmbeddedVariablesToggle"
+                (formValidation)="setValidation($event)"></connector-form>
+<div mat-dialog-actions style="float:left">
+  <button mat-raised-button color="primary" (click)="closeDialog()">
+    Cancel
+  </button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="!validForm">
+    Save
+  </button>
+</div>

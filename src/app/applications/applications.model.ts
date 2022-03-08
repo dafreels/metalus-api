@@ -90,3 +90,16 @@ export interface NameValuePair {
   name: string;
   value: string;
 }
+
+export interface RunTimeProfileResponse {
+  runProfile: RunTimeProfile
+}
+
+export interface RunTimeProfile {
+  id?: string;
+  applicationId?: string;
+  parameters: object;
+  mappings: object;
+  executions: object;
+  steps: object;
+}

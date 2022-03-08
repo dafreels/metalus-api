@@ -1,13 +1,16 @@
 <div mat-dialog-content class="message">
   <mat-form-field *ngIf="value">
-    <textarea matInput [(ngModel)]="data"></textarea>
+    <textarea matInput [(ngModel)]="data.value"></textarea>
   </mat-form-field>
   <mat-form-field *ngIf="num">
-    <input *ngIf="num" type="number" matInput [(ngModel)]="data" required>
+    <input *ngIf="num" type="number" matInput [(ngModel)]="data.value" required>
   </mat-form-field>
-  <mat-slide-toggle *ngIf="bool" [(ngModel)]="data"></mat-slide-toggle>
+  <mat-slide-toggle *ngIf="bool" [(ngModel)]="data.value"></mat-slide-toggle>
+  <ng-container *ngIf="showTemplate">
+    <app-preview-parameter-editor (valueChange)="templateValueChanged($event)" [fields]="data.template" [model]="templateValue"></app-preview-parameter-editor>
+  </ng-container>
 </div>
 <mat-dialog-actions align = "end">
   <button mat-button (click)="closeDialog()">Cancel</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+  <button mat-button [mat-dialog-close]="data.value" cdkFocusInitial>Ok</button>
 </mat-dialog-actions>

@@ -1,7 +1,7 @@
 import {DisplayDialogService} from '../../../shared/services/display-dialog.service';
 import {PipelinesService} from '../../../pipelines/services/pipelines.service';
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Application, Execution, ExecutionTemplate} from '../../applications.model';
+import {Application, Execution, ExecutionTemplate, RunTimeProfile} from '../../applications.model';
 import {ApplicationsService} from '../../applications.service';
 import {Pipeline} from '../../../pipelines/models/pipelines.model';
 import {SharedFunctions} from '../../../shared/utils/shared-functions';
@@ -49,6 +49,7 @@ import {Step} from "../../../steps/steps.model";
 import {ActivatedRoute} from "@angular/router";
 import {SchemaEditorModalComponent} from "../../../shared/components/schema-editor/modal/schema-editor-modal.component";
 import {PrimitiveEditorDialogComponent} from "../primitive-editor/primitive-editor-dialog.component";
+import {ConnectorsModalComponent} from "../../../shared/components/connectors/modal/connectors-modal.component";
 
 @Component({
   selector: 'app-applications-editor',
@@ -111,7 +112,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   private steps: Step[];
 
   useRuntimeProfile = false;
-  runTimeProfile: { mappings: { pipeline: {}; globals: {} }; executions: {}; parameters: {} };
+  runTimeProfile: RunTimeProfile;
 
   constructor(
     private applicationsService: ApplicationsService,
@@ -160,6 +161,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
           this.useRuntimeProfile = params.useRuntimeProfile && params.useRuntimeProfile.toLowerCase() === 'true';
         }
       );
+    // this.useRuntimeProfile = true;
   }
 
   ngOnInit(): void {
@@ -271,6 +273,17 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   }
 
   newApplication() {
+    if (this.useRuntimeProfile) {
+      this.runTimeProfile = {
+        parameters: {},
+        mappings: {
+          globals: {},
+          pipeline: {}
+        },
+        executions: {},
+        steps: {}
+      };
+    }
     this.originalApplication = {
       applicationProperties: {},
       executions: [],
@@ -433,12 +446,29 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     }
     // Create the runtime profile if it doesn't exist
     if (this.useRuntimeProfile) {
-      // TODO Once this becomes a thing, pull the existing profile or include in the call to get applications
-      this.runTimeProfile = this.createRunProfile(this.selectedApplication);
-      console.log(JSON.stringify(this.runTimeProfile, null, 4));
+      this.applicationsService.getRuntimeProfile(this.selectedApplication.id).subscribe((profile) => {
+        if (profile) {
+          this.runTimeProfile = profile;
+        } else {
+          this.runTimeProfile = this.createRunProfile(this.selectedApplication);
+        }
+      });
     }
     this.designerModel = model;
     this.validateApplication();
+  }
+
+  modelChanged(event) {
+    // Handle elements being removed
+    if (Object.keys(event.nodes).length < this.selectedApplication.executions.length) {
+      const executions = Object.keys(event.nodes).map(key => event.nodes[key].data.name);
+      this.selectedApplication.executions.forEach((exe, index) => {
+        if (executions.indexOf(exe.id) === -1) {
+          // this.selectedApplication.executions.splice(index, 1);
+          this.removeExecutionRuntimeProfile(exe, this.runTimeProfile);
+        }
+      });
+    }
   }
 
   private static convertPipelineParameters(obj) {
@@ -546,6 +576,12 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       }
       return !existingPipeline;
     });
+    this.parseExecutionParameters(execution);
+    this.selectedElement = event;
+    this.selectedExecution = execution;
+  }
+
+  private parseExecutionParameters(execution: ExecutionTemplate) {
     // Group the parameters for this execution by pipeline/step
     if (this.useRuntimeProfile && this.runTimeProfile.executions[execution.id]) {
       const parameterMap = {};
@@ -571,8 +607,6 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       });
       this.executionParameterMap = parameterMap;
     }
-    this.selectedElement = event;
-    this.selectedExecution = execution;
   }
 
   private convertPipelineIds(pipelineIds, executionPipelines: Pipeline[]) {
@@ -671,9 +705,13 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
 
   copyApplication() {
     const application = SharedFunctions.clone(this.selectedApplication);
+    const runtime = SharedFunctions.clone(this.runTimeProfile || {});
     application.name = `${this.selectedApplication.name} (Copy)`;
     delete application.id;
+    delete runtime.applicationId;
+    delete runtime.id;
     this.selectedApplication = application;
+    this.runTimeProfile = runtime;
   }
 
   exportApplication() {
@@ -708,6 +746,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   }
 
   addExecution(event: DndDropEvent) {
+    this.addExecutionRuntimeProfile(event.data, this.runTimeProfile, this.selectedApplication);
     let element = this.createDesignerElement(
       event.data,
       this.selectedApplication.executions
@@ -719,7 +758,12 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
 
   handleExecutionIdChange() {
     if (this.selectedElement) {
+      const originalId = this.selectedElement.name;
       this.selectedElement.name = this.selectedExecution.id;
+      if (this.useRuntimeProfile) {
+        this.runTimeProfile.executions[this.selectedExecution.id] = this.runTimeProfile.executions[originalId];
+        delete this.runTimeProfile.executions[originalId];
+      }
     }
   }
 
@@ -922,10 +966,8 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     });
     const newApplication = this.generateApplication();
     let observable;
-    if (
-      this.selectedApplication.id &&
-      this.pipelines.findIndex((p) => p.id === this.selectedApplication.id)
-    ) {
+    if (this.selectedApplication.id &&
+      this.pipelines.findIndex((p) => p.id === this.selectedApplication.id)) {
       observable = this.applicationsService.updateApplication(newApplication);
     } else {
       observable = this.applicationsService.addApplication(newApplication);
@@ -938,9 +980,27 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
         } else {
           this.applications[index] = this.selectedApplication;
         }
-        // Change the reference to force the selector to refresh
-        this.applications = [...this.applications];
-        dialogRef.close();
+        if (this.useRuntimeProfile) {
+          if (!this.runTimeProfile.applicationId) {
+            this.runTimeProfile.applicationId = this.selectedApplication.id;
+            delete this.runTimeProfile.id;
+          }
+          if (this.runTimeProfile.id) {
+            observable = this.applicationsService.updateRuntimeProfile(this.runTimeProfile);
+          } else {
+            observable = this.applicationsService.addRuntimeProfile(this.runTimeProfile);
+          }
+          this.subscriptions.push(observable.subscribe((profile) => {
+            this.runTimeProfile = profile;
+            // Change the reference to force the selector to refresh
+            this.applications = [...this.applications];
+            dialogRef.close();
+          }, (error) => this.handleError(error, dialogRef)));
+        } else {
+          // Change the reference to force the selector to refresh
+          this.applications = [...this.applications];
+          dialogRef.close();
+        }
       }, (error) => this.handleError(error, dialogRef)
     ));
   }
@@ -1120,7 +1180,8 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
       {
         providers: this.providers,
         jobs: this.jobs,
-        application: this.selectedApplication
+        application: this.selectedApplication,
+        runTimeProfile: this.runTimeProfile,
       }
     );
     addDialog.afterClosed().subscribe((result) => {
@@ -1155,6 +1216,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   removeExecutionPipeline(pipeline: Pipeline, evaluation: boolean) {
     const pipelineList = evaluation ? this.selectedExecution.evaluationPipelines : this.selectedExecution.pipelines;
     pipelineList.splice(pipelineList.findIndex(p => p.id === pipeline.id), 1);
+    this.removePipelineRuntimeProfile(pipeline, this.selectedExecution, this.runTimeProfile);
     this.validateApplication();
   }
 
@@ -1164,65 +1226,72 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     }
     const pipelineList = evaluation ? this.selectedExecution.evaluationPipelines : this.selectedExecution.pipelines;
     pipelineList.push(pipeline);
+    this.addPipelineRuntimeProfile(pipeline, this.selectedExecution, this.runTimeProfile, this.selectedApplication);
+    this.parseExecutionParameters(this.selectedExecution);
     this.validateApplication();
   }
 
   openParameterEditor(paramName, mapping, applicationLevel, globalLink) {
-    /* TODO
-     * How will the user indicate whether the value should be application or execution level?
-     * User will have to indicate, otherwise how will we know when they are updating the value versus overriding at the execution level?
-     * Users may not understand application versus global so should it be presented as shared versus local?
-     * A toggle that indicates if the value should be 'Shared across executions'
-     * Save the data to the specified location
-     * Update the runtime profile to indicate the value has been set and the proper level
-     */
     // Get the step parameter
     const parameter = this.runTimeProfile.parameters[paramName];
     let dialog;
     if (parameter) {
       // The type will determine the editor
-      // TODO use the applicationLevel flag to determine where to edit this value
-      // TODO Handle Global Links. How can the user indicate they want to map to the result in an upstream execution?
       if (mapping.isGlobalLink || globalLink) {
-
         dialog = this.displayDialogService.openDialog(
           GlobalLinksEditorComponent,
           generalDialogDimensions,
           {
             executions: Array.from(this.getParentExecutions(this.selectedExecution).values()),
-            globalLinks: this.getMappingValue(mapping, {}),
+            globalLinks: this.getMappingValue(mapping, {}, applicationLevel),
             addName: mapping.mappingName,
+          });
+      } else if (SharedFunctions.isConnector(this.runTimeProfile.parameters[paramName].parameterType)) {
+        dialog = this.displayDialogService.openDialog(
+          ConnectorsModalComponent,
+          generalDialogDimensions,
+          {
+            connector: this.getMappingValue(mapping, {}, applicationLevel),
+            showEmbeddedVariablesToggle: true
           });
       } else {
         switch (parameter.type) {
           case 'script':
-            console.log(parameter.language);
             dialog = this.displayDialogService.openDialog(
               CodeEditorComponent,
               generalDialogDimensions,
               {
-                code: this.getMappingValue(mapping, ''),
+                code: this.getMappingValue(mapping, '', applicationLevel),
                 language: parameter.language,
                 allowSave: true,
               });
             break;
           case 'object':
-            console.log(parameter.parameterType)
-            console.log(parameter.className)
             if (parameter.className === 'com.acxiom.pipeline.steps.Schema') {
               dialog = this.displayDialogService.openDialog(
                 SchemaEditorModalComponent,
                 generalDialogDimensions,
                 this.getMappingValue(mapping, {
                   attributes: []
-                }));
+                }, applicationLevel));
             } else {
-              dialog = this.displayDialogService.openDialog(
-                TreeEditorComponent,
-                generalDialogDimensions,
-                {
-                  mappings: this.getMappingValue(mapping, {}),
+              let component: any = TreeEditorComponent;
+              let data: object = {
+                mappings: this.getMappingValue(mapping, {}, applicationLevel),
+              };
+              const pkg = this.packageObjects.find(p => p.id === parameter.className);
+              if (parameter.className && pkg && pkg.template) {
+                // See if the className is set and then see if there is a form that can be used
+                component = PrimitiveEditorDialogComponent;
+                data = {
+                  value: data['mappings'],
+                  template: pkg.template
                 }
+              }
+              dialog = this.displayDialogService.openDialog(
+                component,
+                generalDialogDimensions,
+                data,
               );
             }
             break;
@@ -1231,27 +1300,95 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
               TreeEditorComponent,
               generalDialogDimensions,
               {
-                mappings: this.getMappingValue(mapping, []),
+                mappings: this.getMappingValue(mapping, [], applicationLevel),
               }
             );
             break;
           default:
-            console.log(`Type is ${parameter.type}`);
             dialog = this.displayDialogService.openDialog(
               PrimitiveEditorDialogComponent,
               {
                 width: '35%',
                 height: '25%',
               },
-              this.getMappingValue(mapping, ''));
+              this.getMappingValue(mapping, '', applicationLevel));
         }
       }
       if (dialog) {
-        dialog.afterClosed().subscribe(() => {
+        dialog.afterClosed().subscribe((value) => {
+          if (value) {
+            this.setMappingParameter(paramName, applicationLevel, mapping, value, globalLink);
+          }
           this.validateApplication();
         });
       }
     }
+  }
+
+  private setMappingParameter(paramId, applicationLevel, mapping, value, globalLink) {
+    const parent = applicationLevel ? this.selectedApplication : this.selectedExecution;
+    let mappingLoc = 'globals';
+    let mappingKey = mapping.mappingName;
+    const executionParameter = this.runTimeProfile.executions[this.selectedExecution.id].parameters[paramId];
+    const executionId = executionParameter.executionId;
+    const pipelineId = executionParameter.pipelineId;
+    const stepId = executionParameter.stepId;
+    if (mapping.type === 'global') {
+      parent.globals[mapping.mappingName] = value;
+    } else {
+      mappingLoc = 'pipeline';
+      mappingKey = `${pipelineId}_${mapping.mappingName}`;
+      let parameters = parent.pipelineParameters.parameters.find(p => p.pipelineId === pipelineId);
+      if (!parameters) {
+        parameters = {
+          pipelineId: pipelineId,
+          parameters: {}
+        };
+        parent.pipelineParameters.parameters.push(parameters);
+      }
+      parameters.parameters[mapping.mappingName] = value;
+    }
+    let mappingRef = this.runTimeProfile.mappings[mappingLoc][mappingKey].references.find(m =>
+      m.executionId === this.selectedExecution.id &&
+      m.pipelineId === pipelineId &&
+      m.stepId === stepId);
+    if (!mappingRef) {
+      mappingRef = {
+        executionId: this.selectedExecution.id,
+        pipelineId: pipelineId,
+        stepId: stepId,
+        level: (applicationLevel ? 'application' : 'execution'),
+        populated: true,
+        isGlobalLink: globalLink
+      };
+      this.runTimeProfile.mappings[mappingLoc][mappingKey].references.push(mappingRef);
+    }
+    mappingRef.populated = true;
+    mappingRef.isGlobalLink = globalLink;
+    mappingRef.level = applicationLevel ? 'application' : 'execution';
+    mapping.level = applicationLevel ? 'application' : 'execution';
+    mapping.populated = true;
+    mapping.isGlobalLink = globalLink;
+    // Find other instances of this mapping and mark them populated at the appropriate level
+    this.runTimeProfile.mappings[mappingLoc][mappingKey].references
+      .filter(r => (r.level === mapping.level || !r.populated) &&
+          (mapping.level === 'application' || r.executionId === executionId))
+      .forEach((ref) => {
+        // Update the reference
+        ref.populated = mapping.populated;
+        ref.isGlobalLink = mapping.isGlobalLink;
+        ref.level = mapping.level;
+        // Navigate to the execution mapping and update
+        this.runTimeProfile.parameters[ref.paramId].required = false;
+        this.runTimeProfile.executions[ref.executionId].parameters[ref.paramId].mappings
+          .filter(m => m.mappingName === mapping.mappingName).forEach((m) => {
+          m.populated = mapping.populated;
+          m.isGlobalLink = mapping.isGlobalLink;
+          m.level = mapping.level;
+        });
+      });
+    this.runTimeProfile.parameters[paramId].required = false;
+    this.parseExecutionParameters(this.selectedExecution);
   }
 
   private getParentExecutions(execution, parents = new Map()) {
@@ -1268,9 +1405,9 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
     return parents;
   }
 
-  private getMappingValue(mapping, defaultValue) {
+  private getMappingValue(mapping, defaultValue, applicationLevel) {
     let mappings = defaultValue;
-    const obj = mapping.level === 'application' ? this.selectedApplication : this.selectedExecution;
+    const obj = applicationLevel || mapping.level === 'application' ? this.selectedApplication : this.selectedExecution;
     if (mapping.populated) {
       if (mapping.isGlobalLink && obj.globals['GlobalLinks']) {
         mappings = obj.globals['GlobalLinks'][mapping.mappingName];
@@ -1287,8 +1424,12 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
    * Creates a run profile for a given application.
    * @param application The application to use for the run profile.
    */
-  createRunProfile(application: Application) {
+  createRunProfile(application: Application): RunTimeProfile {
+    if (!this.useRuntimeProfile) {
+      return null;
+    }
     const runTimeProfile = {
+      applicationId: application.id,
       parameters: {},
       mappings: {
         globals: {},
@@ -1308,12 +1449,136 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
    * @param application The owner application
    */
   private addExecutionRuntimeProfile(execution, runTimeProfile, application) {
+    if (!this.useRuntimeProfile) {
+      return;
+    }
+    // Create the execution lookup
+    if (!runTimeProfile.executions[execution.id]) {
+      runTimeProfile.executions[execution.id] = {
+        parameters: {}
+      };
+    }
     let pipelines;
     // Get all the pipelines for this execution
     pipelines = this.gatherPipelines(execution.pipelines, execution.pipelineIds);
     pipelines.concat(this.gatherPipelines(execution.evaluationPipelines, execution.evaluationPipelineIds));
     // Iterate the pipelines building the profile
     pipelines.forEach(pipeline => this.addPipelineRuntimeProfile(pipeline, execution, runTimeProfile, application));
+  }
+
+  /**
+   * Called when an execution is removed to clean up the runtime profile.
+   *
+   * @param execution The execution that owned the pipeline
+   * @param runTimeProfile The profile to update
+   */
+  private removeExecutionRuntimeProfile(execution, runTimeProfile) {
+    if (!this.useRuntimeProfile) {
+      return;
+    }
+    let pipelines;
+    // Get all the pipelines for this execution
+    pipelines = this.gatherPipelines(execution.pipelines, execution.pipelineIds);
+    pipelines.concat(this.gatherPipelines(execution.evaluationPipelines, execution.evaluationPipelineIds));
+    // Iterate the pipelines building the profile
+    pipelines.forEach(pipeline => this.removePipelineRuntimeProfile(pipeline, execution, runTimeProfile));
+
+    delete runTimeProfile.executions[execution.id];
+  }
+
+  /**
+   * Called when a pipeline is removed from an execution to clean up the runtime profile.
+   *
+   * @param pipeline The pipeline being removed
+   * @param execution The execution that owned the pipeline
+   * @param runTimeProfile The profile to update
+   */
+  private removePipelineRuntimeProfile(pipeline, execution, runTimeProfile) {
+    if (!this.useRuntimeProfile) {
+      return;
+    }
+    let paramId;
+    let mappedEntity;
+    let mappedKey;
+    pipeline.steps.forEach((step) => {
+      if (step.params && step.params.length > 0) {
+        step.params.forEach((param) => {
+          paramId = `${step.id}_${pipeline.id}_${param.name}`;
+          // Remove any mapped values that only exist for this execution.pipeline.step.param combination
+          if (runTimeProfile.executions[execution.id].parameters[paramId]) {
+            runTimeProfile.executions[execution.id].parameters[paramId].mappings.forEach((mapping) => {
+              if (mapping.defaultMapping) {
+                // Nothing to do here, just want to catch the condition and ignore
+              } else if (mapping.type === 'global') {
+                if (runTimeProfile.mappings.globals[mapping.mappingName]) {
+                  mappedEntity = runTimeProfile.mappings.globals[mapping.mappingName];
+                  mappedKey = mapping.mappingName;
+                }
+              } else {
+                mappedKey = `${pipeline.id}_${mapping.mappingName}`;
+                if (runTimeProfile.mappings.pipeline[mappedKey]) {
+                  mappedEntity = runTimeProfile.mappings.pipeline[mappedKey];
+                }
+              }
+              if (mappedEntity) {
+                const indexes = [];
+                mappedEntity.references.forEach((ref, index) => {
+                  if (ref.executionId === execution.id &&
+                    ref.pipelineId === pipeline.id &&
+                    ref.stepId === step.id) {
+                    indexes.push(index);
+                  }
+                });
+                indexes.reverse().forEach(index => mappedEntity.references.splice(index, 1));
+              }
+            });
+            // Remove the execution parameter
+            delete runTimeProfile.executions[execution.id].parameters[paramId];
+          }
+          // Remove the parameter
+          delete runTimeProfile.parameters[paramId];
+        });
+      }
+    });
+  }
+
+  /**
+   * Used to clean out unused mappings from the globals and pipeline parameters.
+   * @param runTimeProfile The runTimeProfile to use
+   * @param application The application to clean
+   */
+  private cleanUnusedMappings(runTimeProfile, application) {
+    if (!this.useRuntimeProfile) {
+      return;
+    }
+    Object.keys(runTimeProfile.mappings.globals).forEach((key) => {
+      if (runTimeProfile.mappings.globals[key].references.length === 0) {
+        delete runTimeProfile.mappings.globals[key];
+        delete application.globals[key];
+        application.executions.forEach(exe => delete exe.globals[key]);
+      }
+    });
+    // execution.pipelineParameters.parameters <-- keyed by pipeline id
+    let pipelineId;
+    let mapping;
+    let pipelineMappings;
+    Object.keys(runTimeProfile.mappings.pipeline).forEach((key) => {
+      if (runTimeProfile.mappings.pipeline[key].references.length === 0) {
+        delete runTimeProfile.mappings.pipeline[key];
+        pipelineId = key.split('_')[0];
+        mapping = key.split('_')[1];
+        if (application.pipelineParameters && application.pipelineParameters.parameters) {
+          pipelineMappings = application.pipelineParameters.parameters.find(p => p.pipelineId === pipelineId) || {};
+          delete pipelineMappings[mapping];
+        }
+        application.executions.forEach((exe) => {
+          if (exe.pipelineParameters && exe.pipelineParameters.parameters) {
+            pipelineMappings = exe.pipelineParameters.parameters.find(p => p.pipelineId === pipelineId) || {};
+            delete pipelineMappings[mapping];
+          }
+        });
+      }
+    });
   }
 
   /**
@@ -1324,6 +1589,9 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
    * @param application The owner application
    */
   private addPipelineRuntimeProfile(pipeline, execution, runTimeProfile, application) {
+    if (!this.useRuntimeProfile) {
+      return;
+    }
     let value;
     let values;
     let paramId;
@@ -1337,12 +1605,6 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
             (value.indexOf('!') === 0 || value.indexOf('$') === 0 || value.indexOf('?') === 0)) {
             values = value.split('||').map((s) => s.trim());
             values.forEach((v, index) => {
-              // Create the execution lookup
-              if (!runTimeProfile.executions[execution.id]) {
-                runTimeProfile.executions[execution.id] = {
-                  parameters: {}
-                };
-              }
               const type = SharedFunctions.getType(v, 'text');
               paramId = `${step.id}_${pipeline.id}_${param.name}`;
               switch (type) {
@@ -1393,7 +1655,6 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
                     };
                   }
                   if (!runTimeProfile.steps[step.id]) {
-                    // TODO Add step parameter name/descriptions
                     runTimeProfile.steps[step.id] = {
                       name: step.displayName,
                       description: step.description
@@ -1434,7 +1695,6 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
   }
 
   private addRuntimeParameterLocation(type, execution, mappingName, runTimeProfile, application, pipeline, step, paramId) {
-    // TODO Go ahead and update the execution parameter mapping entry with the populated info
     let level = 'execution'
     let populated = false;
     let isGlobalLink = false;
@@ -1467,7 +1727,8 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
           stepId: step.id,
           level,
           populated,
-          isGlobalLink
+          isGlobalLink,
+          paramId,
         });
       }
     } else {
@@ -1497,6 +1758,7 @@ export class ApplicationsEditorComponent extends ErrorHandlingComponent implemen
           level,
           populated,
           isGlobalLink: false,
+          paramId,
         });
       }
     }

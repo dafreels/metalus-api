@@ -7,7 +7,7 @@ import { FieldType } from '@ngx-formly/core';
 @Component({
   selector: 'formly-null-type',
   template: `
-    <mat-form-field class="example-chip-list">
+    <mat-form-field>
       <mat-label>{{to.label}}</mat-label>
       <mat-chip-list #chipList >
         <mat-chip

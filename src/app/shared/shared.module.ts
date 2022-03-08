@@ -39,6 +39,8 @@ import {SchemaEditorComponent} from "./components/schema-editor/schema-editor.co
 import {AttributeComponent} from "./components/schema-editor/attributes/attribute.component";
 import {SchemaEditorModalComponent} from "./components/schema-editor/modal/schema-editor-modal.component";
 import {AttributeTypesComponent} from "./components/schema-editor/attribute-types/attribute-types.component";
+import {ConnectorsComponent} from "./components/connectors/connectors.component";
+import {ConnectorsModalComponent} from "./components/connectors/modal/connectors-modal.component";
 
 const DEFAULT_ACE_CONFIG: AceConfigInterface = {};
 
@@ -101,6 +103,8 @@ const commonModules = [
     NameDialogComponent,
     PasswordDialogComponent,
     ConfirmationModalComponent,
+    ConnectorsComponent,
+    ConnectorsModalComponent,
     ErrorModalComponent,
     PropertiesEditorComponent,
     PropertiesEditorModalComponent,
@@ -142,6 +146,7 @@ const commonModules = [
     NameDialogComponent,
     PasswordDialogComponent,
     ConfirmationModalComponent,
+    ConnectorsModalComponent,
     ErrorModalComponent,
     PropertiesEditorModalComponent,
     WaitModalComponent,

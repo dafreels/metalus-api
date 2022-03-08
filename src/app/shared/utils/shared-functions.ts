@@ -3,6 +3,14 @@ import {
   PipelineStepParam,
 } from '../../pipelines/models/pipelines.model';
 import {Subscription} from "rxjs";
+import {
+  BASE_CONNECTOR_FORM,
+  BIG_QUERY_FORM,
+  GCS_FILE_FORM,
+  JDBC_FORM, KAFKA_FORM, KINESIS_FORM,
+  MONGO_FORM,
+  S3_FILE_FORM, SFTP_FILE_FORM
+} from "../models/connectors";
 
 export class SharedFunctions {
   static getType(value, defaultType) {
@@ -190,6 +198,37 @@ export class SharedFunctions {
        }
        return item;
      });
+   }
+
+  static isConnector(parameterType: string) {
+    return parameterType.startsWith('com.acxiom.gcp.pipeline.connectors') ||
+      parameterType.startsWith('com.acxiom.pipeline.connectors') ||
+      parameterType.startsWith('com.acxiom.metalus.pipeline.connectors') ||
+      parameterType.startsWith('com.acxiom.aws.pipeline.connectors') ||
+      parameterType.startsWith('com.acxiom.kafka.pipeline.connectors');
+  }
+
+   static getConnectorForm(className: string) {
+    switch (className) {
+      case 'com.acxiom.gcp.pipeline.connectors.BigQueryDataConnector':
+        return BIG_QUERY_FORM;
+      case 'com.acxiom.pipeline.connectors.JDBCDataConnector':
+        return JDBC_FORM;
+      case 'com.acxiom.metalus.pipeline.connectors.MongoDataConnector':
+        return MONGO_FORM;
+      case 'com.acxiom.aws.pipeline.connectors.S3FileConnector':
+        return S3_FILE_FORM;
+      case 'com.acxiom.gcp.pipeline.connectors.GCSFileConnector':
+        return GCS_FILE_FORM;
+      case 'com.acxiom.pipeline.connectors.SFTPFileConnector':
+        return SFTP_FILE_FORM;
+      case 'com.acxiom.aws.pipeline.connectors.KinesisDataConnector':
+        return KINESIS_FORM;
+      case 'com.acxiom.kafka.pipeline.connectors.KafkaDataConnector':
+        return KAFKA_FORM;
+      default: // S3, GCS, HDFS
+        return BASE_CONNECTOR_FORM;
+    }
    }
 
   /**

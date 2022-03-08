@@ -1,7 +1,7 @@
 const BaseModel = require('../lib/base.model');
 const schema = require('../schemas/jobs.json');
 
-class ProvidersModel extends BaseModel {
+class JobsModel extends BaseModel {
   constructor() {
     super('jobs', schema, true);
   }
@@ -27,4 +27,4 @@ class ProvidersModel extends BaseModel {
   }
 }
 
-module.exports = ProvidersModel;
+module.exports = JobsModel;
