@@ -14,6 +14,7 @@ import {ScalaScriptComponent} from 'src/app/shared/scala-script/scala-script.com
 import { PackageObjectsService } from 'src/app/core/package-objects/package-objects.service';
 import {SchemaEditorModalComponent} from "../../../shared/components/schema-editor/modal/schema-editor-modal.component";
 import {PrimitiveEditorDialogComponent} from "../../../applications/components/primitive-editor/primitive-editor-dialog.component";
+import {ConnectorsModalComponent} from "../../../shared/components/connectors/modal/connectors-modal.component";
 
 export interface SplitParameter {
   id: number;
@@ -22,6 +23,7 @@ export interface SplitParameter {
   type: string;
   language?: string;
   className?: string;
+  parameterType?: string;
   suggestions?: string[];
   customType?: string;
   extraPath?: string;
@@ -101,6 +103,9 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       stepParameter.type !== 'script')) {
       this.isAnObjectParameter = stepParameter.className;
       this.parameterType = 'object';
+    } else if (stepParameter.parameterType) {
+      this.isAnObjectParameter = stepParameter.parameterType;
+      this.parameterType = 'object';
     } else if (stepParameter.type === 'object' ||
       (stepParameter.parameterTemplate && stepParameter.parameterTemplate.type === 'object')) {
       this.isAnObjectParameter = 'object';
@@ -113,11 +118,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     } else if (stepParameter.type === 'text') {
       this.parameterType = 'text';
     }
-    if (
-      stepParameter.type !== 'result' &&
-      stepParameter.value &&
-      typeof stepParameter.value === 'string'
-    ) {
+    if (stepParameter.type !== 'result' && stepParameter.value && typeof stepParameter.value === 'string') {
       if (stepParameter.value.startsWith('&')) {
         this.parameterType = 'pipeline';
         mappedType = true;
@@ -176,9 +177,10 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
                 id: this.id++,
                 name: stepParameter.name,
                 value: stepParameter.value,
-                type: stepParameter.type == 'template' ? 'object' : stepParameter.type,
+                type: stepParameter.type == 'template' || SharedFunctions.isConnector(stepParameter.parameterType) ? 'object' : stepParameter.type,
                 language: stepParameter.language,
                 className: stepParameter.className,
+                parameterType: stepParameter.parameterType,
               },
             ];
             break;
@@ -204,13 +206,8 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
                 value = e.trim();
                 type = mappedType && index === 0 ? this.parameterType : SharedFunctions.getType(value, stepParameter.type);
               }
-              if (
-                value &&
-                (type === 'global' ||
-                  type === 'credential' ||
-                  type === 'runtime' ||
-                  type === 'mapped_runtime')
-              ) {
+              if (value &&
+                (type === 'global' || type === 'credential' || type === 'runtime' || type === 'mapped_runtime')) {
                 value = SharedFunctions.trimSpecialCharacter(value);
               } else if (value && type === 'step' || type === 'secondary') {
                 value = SharedFunctions.trimSpecialCharacter(value);
@@ -414,6 +411,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
     this.parameter.language = this.isAScriptParameter;
     if (this.isAnObjectParameter !== 'object') {
       this.parameter.className = this.isAnObjectParameter;
+      this.parameter.parameterType = this.isAnObjectParameter;
     }
     this.changeDetector.detectChanges();
     this.parameterUpdate.emit(this.parameter);
@@ -499,7 +497,7 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       });
     } else if (inputData.className === 'com.acxiom.pipeline.steps.Schema') {
       let schema = {
-        attributes:[]
+        attributes: []
       };
       if (this.parameter.value && typeof this.parameter.value === 'object') {
         schema = this.parameter.value;
@@ -512,6 +510,30 @@ export class PipelineParameterComponent implements OnInit, OnDestroy {
       schemaDialog.afterClosed().subscribe((result) => {
         if (result) {
           inputData.value = result;
+          this.handleChange(id);
+        }
+      });
+    } else if (SharedFunctions.isConnector(inputData.parameterType)) {
+      let connector = {
+        className: inputData.parameterType,
+        object: {}
+      };
+      if (this.parameter.value && typeof this.parameter.value === 'object') {
+        connector.object = this.parameter.value;
+      }
+      const connectorDialog = this.displayDialogService.openDialog(
+        ConnectorsModalComponent,
+        generalDialogDimensions,
+        {
+          connector,
+          showEmbeddedVariablesToggle: false
+        });
+      connectorDialog.afterClosed().subscribe((result) => {
+        if (result) {
+          inputData.value = result.object;
+          inputData.parameterType = result.className;
+          inputData.className = result.className;
+          this.isAnObjectParameter = result.className;
           this.handleChange(id);
         }
       });
