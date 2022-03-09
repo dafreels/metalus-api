@@ -38,6 +38,8 @@ describe('Applications API File Tests', () => {
         fs.mkdirSync(dataDir);
         // Inject a user.json for authentication
         fs.copyFileSync(`${process.cwd()}/test/data/mock-users.json`, `${dataDir}/users.json`);
+        // Create a mock runProfiles file
+        fs.copyFileSync(`${process.cwd()}/test/data/runProfiles.json`, `${dataDir}/runProfiles.json`);
         next(null, config);
       }
     }));
