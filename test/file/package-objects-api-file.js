@@ -10,6 +10,9 @@ const util = require('util');
 const fs = require('fs');
 const auth = require('../../lib/auth');
 const TestHelpers = require('../helpers/TestHelpers');
+const MetalusUtils = require('../../lib/metalus-utils');
+
+MetalusUtils.initializeMasterKeys('2nimwnt/PnsW4HuZFe7NCOTl4Q4FEeDa', 'LjFHb0G5GGbXp35eT5p43vLstS1pb9tP');
 
 describe('Package Objects API File Tests', () => {
   let dataDir;

@@ -7,7 +7,6 @@ const AppsModel = require('../../../models/applications.model');
 const ExecutionsModel = require('../../../models/executions.model');
 const PipelinesModel = require('../../../models/pipelines.model');
 const passport = require('passport');
-const bcrypt = require('bcrypt');
 const IncomingForm = require('formidable').IncomingForm;
 const ValidationError = require('../../../lib/ValidationError');
 const MetalusUtils = require('../../../lib/metalus-utils');
@@ -58,7 +57,7 @@ function login(req, res, next) {
 function logout(req, res) {
   if (req.logout) {
     req.logout();
-    req.session.destroy((err) => {
+    req.session.destroy(() => {
       res.sendStatus(204);
     });
   } else {
@@ -111,9 +110,9 @@ async function createUser(req, res, next) {
     try {
       // Create an encryption key
       const key = MetalusUtils.generateSecretKey();
-      newUser.secretKey = MetalusUtils.encryptString(key, MetalusUtils.createSecretKeyFromString(newUser.password));
+      newUser.secretKey = MetalusUtils.encryptString(key, MetalusUtils.getMasterKey());
       // hash the password
-      newUser.password = bcrypt.hashSync(newUser.password, 8);
+      newUser.password = MetalusUtils.encryptString(newUser.password, MetalusUtils.getMasterKey());
       const fullUser = await userModel.createOne(newUser);
       delete fullUser.secretKey;
       res.status(201).json(fullUser);
@@ -128,45 +127,56 @@ async function createUser(req, res, next) {
 }
 
 async function changePassword(req, res, next) {
-  const changePassword = req.body;
+  const passwordChangeRequest = req.body;
   const userModel = new UsersModel();
   const user = await req.user;
-  if (changePassword.id !== user.id) {
+  if (passwordChangeRequest.id !== user.id) {
     next(new Error('User does not have permission to change password for different user!'));
   }
   // Verify the provided password matches the password on file
-  const updateUser = await userModel.getUser(changePassword.id);
-  if (!bcrypt.compareSync(changePassword.password, updateUser.password)) {
+  const originalUser = await userModel.getUser(passwordChangeRequest.id);
+  const passwordResult = MetalusUtils.verifyPassword(passwordChangeRequest.password, originalUser);
+  if (!passwordResult.match) {
     next(new Error('Invalid password provided!'));
   }
-  // Change password and return new user
-  updateUser.password = bcrypt.hashSync(changePassword.newPassword, 8);
-  // Re-encrypt the secretKey
-  const secretKey = MetalusUtils.decryptString(updateUser.secretKey, MetalusUtils.createSecretKeyFromString(changePassword.password));
-  updateUser.secretKey = MetalusUtils.encryptString(secretKey, MetalusUtils.createSecretKeyFromString(changePassword.newPassword));
-  const newuser = await userModel.update(updateUser.id, updateUser);
+  // Handle
+  const userResult = MetalusUtils.handleEncryptionKeyChange(passwordResult, passwordChangeRequest.newPassword, originalUser);
+  const newuser = await userModel.update(userResult.user.id, userResult.user);
   delete newuser.secretKey;
   res.status(200).json(newuser);
 }
 
 async function updateUser(req, res, next) {
-  const updateUser = req.body;
+  const modifiedUser = req.body;
   const userModel = new UsersModel();
   const user = await req.user;
-  if (updateUser.id !== user.id && user.role !== 'admin') {
+  if (modifiedUser.id !== user.id && user.role !== 'admin') {
     next(new Error('User does not have permission to update this user!'));
   }
-  const existingUser = await userModel.getUser(updateUser.id);
+  const existingUser = await userModel.getUser(modifiedUser.id);
   try {
-    // Password cannot be changed using this method
-    updateUser.password = existingUser.password;
+    // Allow admins to change passwords
+    const passwordResult = MetalusUtils.verifyPassword(modifiedUser.password, existingUser);
+    if (user.role === 'admin' &&
+      modifiedUser.password &&
+      modifiedUser.password.trim().length > 0 &&
+      !passwordResult.match) {
+      // If this user has not logged in and been automatically upgraded, delete the secret key so a new one is generated
+      if (existingUser.version !== 2) {
+        delete modifiedUser.secretKey;
+      }
+      MetalusUtils.handleEncryptionKeyChange(passwordResult, modifiedUser.password, modifiedUser);
+    } else {
+      // Password cannot be changed using this method
+      modifiedUser.password = existingUser.password;
+    }
 
-    let metaDataUpload = updateUser.metaDataLoad;
-    delete updateUser.metaDataLoad;
+    let metaDataUpload = modifiedUser.metaDataLoad;
+    delete modifiedUser.metaDataLoad;
     // Determine if any templates were selected and load the data
     let metadataJars = new Set();
     const metadataUser = {
-      id: updateUser.id,
+      id: modifiedUser.id,
     };
     let additionalRepos = '';
     if (metaDataUpload) {
@@ -196,12 +206,12 @@ async function updateUser(req, res, next) {
       }
     }
     metadataJars = Array.from(metadataJars);
-    const newuser = await userModel.update(updateUser.id, updateUser);
+    const newuser = await userModel.update(modifiedUser.id, modifiedUser);
     delete newuser.secretKey;
     res.status(200).json(newuser);
     // Process the metadata
     if (metadataJars.length > 0) {
-      const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${updateUser.id}/${metaDataUpload.projectId}`;
+      const userJarDir = `${MetalusUtils.getProjectJarsBaseDir(req)}/${modifiedUser.id}/${metaDataUpload.projectId}`;
       // Handle the case where the directory structure does not exist
       if (!MetalusUtils.exists(userJarDir)) {
         await MetalusUtils.mkdir(userJarDir, {recursive: true});

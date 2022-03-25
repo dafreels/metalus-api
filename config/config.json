@@ -1,5 +1,7 @@
 {
   "storageType": "file",
+  "previousMasterKey": "5+If75cL1c2XrvAs+QJ9Gv5Z4js9mOml",
+  "masterKey": "5+If75cL1c2XrvAs+QJ9Gv5Z4js9mOml",
   "middleware": {
     "multipart": {
       "enabled": false

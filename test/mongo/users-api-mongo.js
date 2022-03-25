@@ -8,10 +8,11 @@ const MongoDb = require('../../lib/mongo');
 const util = require('util');
 const auth = require('../../lib/auth');
 const TestHelpers = require('../helpers/TestHelpers');
-const bcrypt = require('bcrypt');
 const fs = require('fs');
-const mUtils = require('../../lib/metalus-utils');
 const UsersModel = require('../../models/users.model');
+const MetalusUtils = require('../../lib/metalus-utils');
+
+MetalusUtils.initializeMasterKeys('2nimwnt/PnsW4HuZFe7NCOTl4Q4FEeDa', 'LjFHb0G5GGbXp35eT5p43vLstS1pb9tP');
 
 describe('Users API Mongo Tests', () => {
   let app;
@@ -85,7 +86,7 @@ describe('Users API Mongo Tests', () => {
     await MongoDb.getDatabase().dropDatabase();
     await MongoDb.disconnect();
     await util.promisify(mock.close.bind(mock))();
-    await mUtils.removeDir('jars');
+    await MetalusUtils.removeDir('jars');
   });
 
   it('Should fail insert on missing body', async () => {
@@ -159,7 +160,7 @@ describe('Users API Mongo Tests', () => {
     const userModel = new UsersModel();
     // Get the secretKey from the database how it is stored and decrypt
     let dbUser = await userModel.getUser('mock-dev-user');
-    const dbSecretKey = mUtils.decryptString(dbUser.secretKey, mUtils.createSecretKeyFromString('dev'));
+    const dbSecretKey = MetalusUtils.decryptString(dbUser.secretKey, MetalusUtils.getMasterKey());
     const changePassword = {
       id: 'mock-dev-user',
       password: 'dev',
@@ -174,12 +175,12 @@ describe('Users API Mongo Tests', () => {
       .expect(200);
     const resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(bcrypt.compareSync(changePassword.newPassword, resp.password)).to.equal(true);
+    expect(MetalusUtils.verifyPassword(changePassword.newPassword, resp).match).to.equal(true);
     expect(resp).to.not.have.property('secretKey');
     // Validate the secretKey was saved to the data store
     user = await userModel.getUser(resp.id);
     expect(user).to.have.property('secretKey');
-    const updatedKey = mUtils.decryptString(user.secretKey, mUtils.createSecretKeyFromString('newdevpassword'));
+    const updatedKey = MetalusUtils.decryptString(user.secretKey, MetalusUtils.getMasterKey());
     expect(dbSecretKey).eq(updatedKey);
   });
 

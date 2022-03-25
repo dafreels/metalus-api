@@ -26,6 +26,7 @@ const options = {
         saveUninitialized: false
       }));
     }
+    MetalusUtils.initializeMasterKeys(config.get('masterKey'), config.get('previousMasterKey'));
     BaseModel.initialStorageParameters(config);
     next(null, config);
   }

@@ -25,6 +25,9 @@
         "secretKey": {
           "type": "string"
         },
+        "version": {
+          "type": "integer"
+        },
         "displayName": {
           "type": "string",
           "minLength": 4
