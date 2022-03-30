@@ -6,6 +6,7 @@ export interface User {
   role: Role;
   defaultProjectId: string;
   projects: Project[];
+  version?: number;
 }
 
 export enum Role {
