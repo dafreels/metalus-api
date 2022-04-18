@@ -22,20 +22,31 @@
     [(value)]="data.code"
   ></ace>
 </div>
-<div mat-dialog-actions class="code-button-div">
-  <button mat-raised-button mat-dialog-close>Close</button>
-  <button mat-raised-button  
-    *ngIf="data.exportFileName"
-    color="primary"
-    (click)="exportTemplate()"> 
-    Export 
-  </button>
-  <button
-    *ngIf="data.allowSave"
-    mat-raised-button
-    color="primary"
-    [mat-dialog-close]="data"
-  >
-    Ok
-  </button>
+<div mat-dialog-actions class="code-bottom-toolbar">
+  <div>
+    <button mat-raised-button  
+      *ngIf="data.exportFileName"
+      color="primary"
+      (click)="exportChart()"> 
+      Export Chart Data (CSV) 
+    </button>
+  </div>
+  <div class="code-bottom-toolbar-fill"></div>
+  <div>
+    <button mat-raised-button mat-dialog-close>Close</button>
+    <button mat-raised-button  
+      *ngIf="data.exportFileName"
+      color="primary"
+      (click)="exportTemplate()"> 
+      Export 
+    </button>
+    <button
+      *ngIf="data.allowSave"
+      mat-raised-button
+      color="primary"
+      [mat-dialog-close]="data"
+    >
+      Ok
+    </button>
+  </div>
 </div>

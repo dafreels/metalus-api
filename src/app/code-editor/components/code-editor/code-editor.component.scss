@@ -9,6 +9,14 @@
   float: right;
 }
 
+.code-bottom-toolbar {
+  display: flex;
+  align-items: center;
+}
+.code-bottom-toolbar-fill {
+  flex: auto;
+}
+
 .code-language {
   width: 100%;
 }
