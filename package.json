@@ -84,7 +84,7 @@
     "@types/node": "^10.17.13",
     "chai": "^4.2.0",
     "codelyzer": "~4.5.0",
-    "grunt": "^1.0.4",
+    "grunt": "^1.5.3",
     "grunt-config-dir": "^0.3.2",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-copy": "^1.0.0",
