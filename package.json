@@ -53,7 +53,7 @@
     "core-js": "^2.6.11",
     "dagre": "^0.8.5",
     "deep-object-diff": "^1.1.0",
-    "express": "^4.12.2",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "file-saver": "^2.0.5",
     "formidable": "^1.2.2",
